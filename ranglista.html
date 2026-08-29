@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goats - Ranglista</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="Styles/style.css">
+    <link rel="stylesheet" href="Styles/style-ranglista.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <ul>
+        <li><a href="index.html">
+                <span class="teljes-szoveg">Kezdőlap</span>
+                <span class="rovid-szoveg">🏠</span>
+            </a></li>
+        <li><a href="tartozasok.html">
+                <span class="teljes-szoveg">Tartozások</span>
+                <span class="rovid-szoveg">💸</span>
+            </a></li>
+        <li><a href="tervek.html">
+                <span class="teljes-szoveg">Tervek</span>
+                <span class="rovid-szoveg">📋</span>
+            </a></li>
+        <li class="active"><a href="ranglista.html">
+                <span class="teljes-szoveg">Ranglista</span>
+                <span class="rovid-szoveg">🏅</span>
+            </a></li>
+    </ul>
+
+    <div class="ranglista-fo-tarolo">
+        <div class="kategoria-kontener">
+            <h3 class="cimke legjobb">🏆 Legjobb ital</h3>
+            <div class="ranglista-dropzone" data-kategoria="legjobb" ondragover="engedelyez(event)"
+                ondrop="ejtes(event)"></div>
+        </div>
+
+        <div class="kategoria-kontener">
+            <h3 class="cimke elmegy">👍 Elmegy</h3>
+            <div class="ranglista-dropzone" data-kategoria="elmegy" ondragover="engedelyez(event)"
+                ondrop="ejtes(event)"></div>
+        </div>
+
+        <div class="kategoria-kontener">
+            <h3 class="cimke soha">💀 Soha többet</h3>
+            <div class="ranglista-dropzone" data-kategoria="soha" ondragover="engedelyez(event)" ondrop="ejtes(event)">
+            </div>
+        </div>
+
+        <div class="forras-doboz">
+            <h3>Vodkák</h3>
+            <div class="ital-lista" id="vodkaLista" ondragover="engedelyez(event)" ondrop="ejtes(event)"></div>
+        </div>
+        <div class="forras-doboz">
+            <h3>Whiskeyk</h3>
+            <div class="ital-lista" id="whiskeyLista" ondragover="engedelyez(event)" ondrop="ejtes(event)"></div>
+        </div>
+        <div class="forras-doboz">
+            <h3>Likőrök</h3>
+            <div class="ital-lista" id="likorLista" ondragover="engedelyez(event)" ondrop="ejtes(event)"></div>
+        </div>
+        <div class="forras-doboz">
+            <h3>Bitterek</h3>
+            <div class="ital-lista" id="bitterLista" ondragover="engedelyez(event)" ondrop="ejtes(event)"></div>
+        </div>
+        <div class="forras-doboz">
+            <h3>Egyéb</h3>
+            <div class="ital-lista" id="italLista" ondragover="engedelyez(event)" ondrop="ejtes(event)"></div>
+        </div>
+    </div>
+    <div id="modal-hatter"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+        <div
+            style="background:#1e1e1e; padding:20px; border-radius:10px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.5);">
+            <img id="modal-kep" src="" alt="Kiválasztott ital"
+                style="max-height:150px; display:block; margin:0 auto 5px auto;">
+            <div id="modal-nev" style="color: white; font-size: 14px; margin-bottom: 15px; font-weight: bold;"></div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                <button onclick="kategoriatValaszt('legjobb')"
+                    style="background:#28a745; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer;">🏆
+                    Legjobb</button>
+                <button onclick="kategoriatValaszt('elmegy')"
+                    style="background:#fd7e14; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer;">👍
+                    Elmegy</button>
+                <button onclick="kategoriatValaszt('soha')"
+                    style="background:#dc3545; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer;">💀
+                    Soha</button>
+                <button onclick="kategoriatValaszt('forras')"
+                    style="background:#6c757d; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer;">↩️
+                    Vissza</button>
+                <button onclick="modalBezár()"
+                    style="background:#343a40; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer;">Mégse</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="JS files/supabase-client.js"></script>
+<script src="JS files/ranglista-mozgatas.js"></script>
+
+</html>

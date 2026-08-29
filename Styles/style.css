@@ -180,6 +180,14 @@ h1 {
     visibility: hidden;
 }
 
+.rovid-szoveg {
+    display: none;
+}
+
+.teljes-szoveg {
+    display: inline;
+}
+
 @media screen and (max-width: 1200px) {
     .hatter {
         display: flex;
@@ -259,9 +267,16 @@ h1 {
     }
 
     ul {
-        flex-direction: column;
+        flex-direction: row;
         text-align: center;
-        width: 50%;
+    }
+
+    .teljes-szoveg {
+        display: none;
+    }
+
+    .rovid-szoveg {
+        display: inline;
     }
 
     .input-tartozasok,
