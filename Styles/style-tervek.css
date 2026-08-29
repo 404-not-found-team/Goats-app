@@ -1,6 +1,6 @@
 .container {
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
     background-color: var(--card-bg);
     padding: 25px;
     border-radius: 16px;

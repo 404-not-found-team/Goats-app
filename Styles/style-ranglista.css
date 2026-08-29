@@ -82,7 +82,7 @@
 
 .ital-lista img:hover,
 .ranglista-dropzone img:hover {
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
 .ital-kartya {
@@ -96,15 +96,15 @@
 }
 
 .ital-kartya img {
-    max-height: 70px; /* Igazítsd a meglévő méretekhez */
+    max-height: 100px; 
     object-fit: contain;
 }
 
 .ital-nev {
-    font-size: 11px;
+    font-size: 13px;
     color: #ccc;
     margin-top: 3px;
-    max-width: 80px;
+    max-width: 100px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

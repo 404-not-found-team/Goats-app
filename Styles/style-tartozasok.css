@@ -7,7 +7,7 @@
 
 .container-tartozasok {
     width: 100%;
-    max-width: 1000px;
+    max-width: 1350px;
     background-color: var(--card-bg);
     padding: 30px;
     border-radius: 16px;
@@ -17,7 +17,7 @@
 .tartozasok-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    gap: 25px;
 }
 
 .box {
@@ -27,7 +27,7 @@
     box-shadow: var(--box-shadow);
     display: flex;
     flex-direction: column;
-    min-height: 220px;
+    min-height: 340px;
     border-top: 4px solid transparent;
 }
 

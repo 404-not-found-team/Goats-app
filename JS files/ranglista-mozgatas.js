@@ -1,28 +1,28 @@
 const Vodkak = [
-    "ab-citrom.png", "ab-mango.png", "ab-passionfruit.png", "ab-pear.png",
-    "ab-raspbery.png", "ab-tabasco.png", "ab-vanilia.png", "ab-watermelon.png",
-    "beluga.png", "belveder.png", "cr-apple.png", "cr-mango.png", "cr.png",
-    "euphoria-ca.png", "euphoria-co.png", "fl-cranberry.png", "fl-cucumber.png",
-    "fl-grapefruit.png", "fl-kókusz.png", "fl-lime.png", "fl-redberry.png",
-    "fl-wildberry.png", "grey-goose.png"
+    "Absolut.png", "Absolut Citron.png", "Absolut Mango.png", "Absolut Passionfruit.png", "Absolut Pears.png",
+    "Absolut Raspberry.png", "Absolut Tabasco.png", "Absolut Vanilia.png", "Absolut Watermelon.png",
+    "Beluga Noble.png", "Belvedere.png", "Ciroc.png", "Ciroc Green Apple.png", "Ciroc Mango.png",
+    "Euphoria Cannabis.png", "Euphoria Cocaine.png", "Finlandia.png", "Finlandia Cranberry.png", "Finlandia Cucumber & Mint.png",
+    "Finlandia Grapefruit.png", "Finlandia Coconut.png", "Finlandia Lime.png", "Finlandia Redberry.png",
+    "Finlandia Wildberry & Rose.png", "Grey Goose.png"
 ];
 
 const Whiskeyk = [
-    "ballantines.png", "ballantines-sunshine.png", "chivas.png", "jack-daniels.png",
-    "jameson.png", "jameson-black-barrel.png", "jameson-tripple-tripple.png",
-    "jb-apple.png", "jb-cherry.png", "jb-honey.png", "jb-peach.png", "jb-pineapple.png",
-    "jd-apple.png", "jd-blackberry.png", "jd-fire.png", "jd-tennessee-honey.png",
-    "jim-beam.png", "jw-black.png", "jw-red.png", "southern-comfort.png"
+    "Ballantines.png", "Ballantines Sunshine.png", "Chivas Regal.png",
+    "Jameson.png", "Jameson Black Barrel.png", "Jameson Tripple Tripple.png", "Jim Beam.png",
+    "Jim Beam Apple.png", "Jim Beam Black Cherry.png", "Jim Beam Honey.png", "Jim Beam Peach.png", "Jim Beam Pineapple.png", "Jack Daniels.png",
+    "Jack Daniels Apple.png", "Jack Daniels Blackberry.png", "Jack Daniels Fire.png", "Jack Daniels Tennessee Honey.png",
+    "Johnnie Walker Black.png", "Johnnie Walker Red.png", "Southern Comfort.png"
 ];
 
 const Likorok = [
-    "tatra-22.png", "tatra-32.png", "tatra-35.png", "tatra-37.png", "tatra-42.png",
-    "tatra-47.png", "tatra-52.png", "tatra-57.png", "tatra-62.png", "tatra-67.png",
-    "tatra-72.png"
+    "Tatratea Coconut 22.png", "Tatratea Citrus 32.png", "Tatratea Original Light 35.png", "Tatratea Hibiscus & Red 37.png", "Tatratea Peach 42.png",
+    "Tatratea Flower 47.png", "Tatratea Original 52.png", "Tatratea Homoktövis Csipkebogyó 57.png", "Tatratea Forest Fruit 62.png", "Tatratea Apple & Pear 67.png",
+    "Tatratea Betyáros 72.png"
 ];
 
 const Bitterek = [
-    "jager.png", "jager-narancs.png"
+    "Jägermeister.png", "Jägermeister Orange.png"
 ];
 
 const Italok = [];
@@ -76,7 +76,7 @@ async function inicializalas() {
 
     // Mentett adatok betöltése Supabase-ből
     const { data, error } = await _supabase.from('ital_ranglista').select('*');
-    
+
     if (error) {
         console.error('Hiba az adatok betöltésekor:', error);
         return;
