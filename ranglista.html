@@ -33,67 +33,106 @@
 
     <div class="ranglista-fo-tarolo">
         <div class="kategoria-kontener">
-            <h3 class="cimke legjobb">🏆 Legjobb ital</h3>
-            <div class="ranglista-dropzone" data-kategoria="legjobb" ondragover="engedelyez(event)"
-                ondrop="ejtes(event)"></div>
+            <h3 class="cimke legeslegjobb dark">S</h3>
+            <div class="ranglista-dropzone" data-kategoria="legeslegjobb"></div>
+        </div>
+        <div class="kategoria-kontener">
+            <h3 class="cimke legjobb dark">A</h3>
+            <div class="ranglista-dropzone" data-kategoria="legjobb"></div>
         </div>
 
         <div class="kategoria-kontener">
-            <h3 class="cimke elmegy">👍 Elmegy</h3>
-            <div class="ranglista-dropzone" data-kategoria="elmegy" ondragover="engedelyez(event)"
-                ondrop="ejtes(event)"></div>
+            <h3 class="cimke elmegy dark">B</h3>
+            <div class="ranglista-dropzone" data-kategoria="elmegy"></div>
         </div>
 
         <div class="kategoria-kontener">
-            <h3 class="cimke soha">💀 Soha többet</h3>
-            <div class="ranglista-dropzone" data-kategoria="soha" ondragover="engedelyez(event)" ondrop="ejtes(event)">
+            <h3 class="cimke soha dark">C</h3>
+            <div class="ranglista-dropzone" data-kategoria="soha"></div>
+        </div>
+
+        <div class="forras-doboz">
+            <div class="forras-fejlec">
+                <h3>Vodkák</h3>
+                <span class="ital-szamlalo" id="szamlalo-vodka">0 / 0</span>
+            </div>
+            <div class="ital-lista" id="vodkaLista">
             </div>
         </div>
-
         <div class="forras-doboz">
-            <h3>Vodkák</h3>
-            <div class="ital-lista" id="vodkaLista" ondragover="engedelyez(event)" ondrop="ejtes(event)"></div>
+            <div class="forras-fejlec">
+                <h3>Whiskeyk</h3>
+                <span class="ital-szamlalo" id="szamlalo-whiskey">0 / 0</span>
+            </div>
+            <div class="ital-lista" id="whiskeyLista">
+            </div>
         </div>
         <div class="forras-doboz">
-            <h3>Whiskeyk</h3>
-            <div class="ital-lista" id="whiskeyLista" ondragover="engedelyez(event)" ondrop="ejtes(event)"></div>
+            <div class="forras-fejlec">
+                <h3>Likőrök</h3>
+                <span class="ital-szamlalo" id="szamlalo-likor">0 / 0</span>
+            </div>
+            <div class="ital-lista" id="likorLista">
+            </div>
         </div>
         <div class="forras-doboz">
-            <h3>Likőrök</h3>
-            <div class="ital-lista" id="likorLista" ondragover="engedelyez(event)" ondrop="ejtes(event)"></div>
+            <div class="forras-fejlec">
+                <h3>Bitterek</h3>
+                <span class="ital-szamlalo" id="szamlalo-bitter">0 / 0</span>
+            </div>
+            <div class="ital-lista" id="bitterLista">
+            </div>
         </div>
         <div class="forras-doboz">
-            <h3>Bitterek</h3>
-            <div class="ital-lista" id="bitterLista" ondragover="engedelyez(event)" ondrop="ejtes(event)"></div>
+            <div class="forras-fejlec">
+                <h3>Ciderek</h3>
+                <span class="ital-szamlalo" id="szamlalo-cider">0 / 0</span>
+            </div>
+            <div class="ital-lista" id="ciderLista">
+            </div>
         </div>
         <div class="forras-doboz">
-            <h3>Egyéb</h3>
-            <div class="ital-lista" id="italLista" ondragover="engedelyez(event)" ondrop="ejtes(event)"></div>
+            <div class="forras-fejlec">
+                <h3>Sörök</h3>
+                <span class="ital-szamlalo" id="szamlalo-sor">0 / 0</span>
+            </div>
+            <div class="ital-lista" id="sorLista"></div>
+        </div>
+        <div class="forras-doboz">
+            <div class="forras-fejlec">
+                <h3>Fröccs</h3>
+                <span class="ital-szamlalo" id="szamlalo-froccs">0 / 0</span>
+            </div>
+            <div class="ital-lista" id="froccsLista"></div>
+        </div>
+        <div class="forras-doboz">
+            <div class="forras-fejlec">
+                <h3>Borok</h3>
+                <span class="ital-szamlalo" id="szamlalo-bor">0 / 0</span>
+            </div>
+            <div class="ital-lista" id="borLista"></div>
+        </div>
+        <div class="forras-doboz">
+            <div class="forras-fejlec">
+                <h3>Egyéb</h3>
+                <span class="ital-szamlalo" id="szamlalo-egyeb">0 / 0</span>
+            </div>
+            <div class="ital-lista" id="italLista"></div>
         </div>
     </div>
-    <div id="modal-hatter"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
-        <div
-            style="background:#1e1e1e; padding:20px; border-radius:10px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.5);">
-            <img id="modal-kep" src="" alt="Kiválasztott ital"
-                style="max-height:350px; display:block; margin:0 auto 5px auto;">
-            <div id="modal-nev" style="color: white; font-size: 20px; margin-bottom: 15px; font-weight: bold;"></div>
+    <div id="modal-hatter">
+        <div id="hatter">
+            <img id="modal-kep" src="" alt="Kiválasztott ital">
+            <div id="modal-nev" style="color: white; font-size: 20px; margin-bottom: 15px; font-weight: bold;">
+            </div>
 
             <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
-                <button onclick="kategoriatValaszt('legjobb')"
-                    style="background:#28a745; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer;">🏆
-                    Legjobb</button>
-                <button onclick="kategoriatValaszt('elmegy')"
-                    style="background:#fd7e14; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer;">👍
-                    Elmegy</button>
-                <button onclick="kategoriatValaszt('soha')"
-                    style="background:#dc3545; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer;">💀
-                    Soha</button>
-                <button onclick="kategoriatValaszt('forras')"
-                    style="background:#6c757d; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer;">↩️
-                    Vissza</button>
-                <button onclick="modalBezár()"
-                    style="background:#343a40; color:white; border:none; padding:10px 15px; border-radius:5px; cursor:pointer;">Mégse</button>
+                <button id="legeslegjobb" class="gombok dark" onclick="kategoriatValaszt('legeslegjobb')">S</button>
+                <button id="legjobb" class="gombok dark" onclick="kategoriatValaszt('legjobb')">A</button>
+                <button id="elmegy" class="gombok dark" onclick="kategoriatValaszt('elmegy')">B</button>
+                <button id="soha" class="gombok dark" onclick="kategoriatValaszt('soha')">C</button>
+                <button id="forras" class="gombok" onclick="kategoriatValaszt('forras')">↩️ Vissza</button>
+                <button id="bezar" class="gombok" onclick="modalBezár()">Mégse</button>
             </div>
         </div>
     </div>

@@ -1,3 +1,10 @@
+:root {
+    --legeslegjobb: #ff7f7f;
+    --legjobb: #ffdf7f;
+    --elmegy: #bfff7f;
+    --soha: #7fbfff;
+}
+
 .ranglista-fo-tarolo {
     display: flex;
     flex-direction: column;
@@ -6,15 +13,19 @@
     max-width: 900px;
     margin: 0 auto;
     padding-bottom: 40px;
+    box-sizing: border-box;
 }
 
-.kategoria-kontener {
+.kategoria-kontener,
+.forras-doboz {
     background-color: var(--card-bg);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .cimke {
@@ -24,55 +35,66 @@
     color: #fff;
 }
 
-/* Kategória színek */
-.cimke.legjobb { background-color: #2e7d32; } /* Zöld */
-.cimke.elmegy { background-color: #f57f17; }  /* Narancs/Sárga */
-.cimke.soha { background-color: #c62828; }    /* Piros */
-
-.ranglista-dropzone {
-    min-height: 100px;
-    padding: 15px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.15);
+.cimke.legeslegjobb {
+    background-color: var(--legeslegjobb);
 }
 
-.forras-doboz {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 15px;
+.cimke.legjobb {
+    background-color: var(--legjobb);
+}
+
+.cimke.elmegy {
+    background-color: var(--elmegy);
+}
+
+.cimke.soha {
+    background-color: var(--soha);
+}
+
+.ranglista-dropzone,
+.ital-lista {
+    min-height: 100px;
+    padding: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.15);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .forras-doboz h3 {
     margin-bottom: 10px;
     color: var(--text-primary);
+    padding: 0 5px;
 }
 
-.ital-lista {
-    min-height: 120px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
+.ital-kartya {
+    display: inline-flex;
+    flex-direction: column;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.15);
-    border-radius: 8px;
-    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+    vertical-align: top;
+    flex: 1 1 calc(33.333% - 105px);
+    /* Rugalmas méretezés */
+    min-width: 90px;
+    max-width: 110px;
 }
 
-/* Maguk a képek stílusa a ranglistán belül */
+.ital-kartya img,
 .ital-lista img,
 .ranglista-dropzone img {
-    width: 110px;
-    height: 110px;
+    width: 100%;
+    max-height: 100px;
     object-fit: contain;
     cursor: grab;
     transition: transform 0.2s ease;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 6px;
     padding: 4px;
+    box-sizing: border-box;
 }
 
 .ital-lista img:active,
@@ -82,30 +104,130 @@
 
 .ital-lista img:hover,
 .ranglista-dropzone img:hover {
-    transform: scale(1.1);
-}
-
-.ital-kartya {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 5px;
-    cursor: pointer;
-    text-align: center;
-    vertical-align: top;
-}
-
-.ital-kartya img {
-    max-height: 100px; 
-    object-fit: contain;
+    transform: scale(1.05);
 }
 
 .ital-nev {
-    font-size: 13px;
+    font-size: 12px;
     color: #ccc;
     margin-top: 3px;
-    max-width: 100px;
+    width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.forras-doboz h3 {
+    background-color: transparent;
+    padding: 10px 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+}
+
+.forras-fejlec {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #3f3f3f;
+}
+
+.forras-fejlec h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+}
+
+.ital-szamlalo {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+#modal-hatter {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+#hatter {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+#modal-kep {
+    max-height: 350px;
+    display: block;
+    margin: 0 auto 5px auto;
+}
+
+.gombok {
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dark {
+    color: black;
+}
+
+#legeslegjobb {
+    background: var(--legeslegjobb);
+}
+
+#legjobb {
+    background: var(--legjobb);
+}
+
+#elmegy {
+    background: var(--elmegy);
+}
+
+#soha {
+    background: var(--soha);
+}
+
+#forras {
+    background: #6c757d;
+}
+
+#bezar {
+    background: #343a40;
+}
+
+@media (max-width: 360px) {
+    .ranglista-fo-tarolo {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .ranglista-dropzone,
+    .ital-lista {
+        gap: 6px;
+        padding: 8px;
+    }
+
+    .ital-kartya {
+        flex: 1 1 calc(33% - 6px);
+        min-width: 85px;
+        max-width: 100px;
+    }
+
+    .ital-kartya img {
+        max-height: 90px;
+    }
 }

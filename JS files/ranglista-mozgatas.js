@@ -4,7 +4,9 @@ const Vodkak = [
     "Beluga Noble.png", "Belvedere.png", "Ciroc.png", "Ciroc Green Apple.png", "Ciroc Mango.png",
     "Euphoria Cannabis.png", "Euphoria Cocaine.png", "Finlandia.png", "Finlandia Cranberry.png", "Finlandia Cucumber & Mint.png",
     "Finlandia Grapefruit.png", "Finlandia Coconut.png", "Finlandia Lime.png", "Finlandia Redberry.png",
-    "Finlandia Wildberry & Rose.png", "Grey Goose.png"
+    "Finlandia Wildberry & Rose.png", "Grey Goose.png", "Royal.png", "Royal Szilva.png", "Royal Sárgabarack.png", "Royal Mogyoró.png",
+     "Royal Meggy.png", "Royal Mangó-Maracuja.png", "Royal Málna.png", "Royal Kávé.png", "Royal Kaktusz.png", "Royal Feketeribizli.png", "Royal Citrom.png",
+      "Royal Bitter.png", "Royal Alma.png",
 ];
 
 const Whiskeyk = [
@@ -22,8 +24,18 @@ const Likorok = [
 ];
 
 const Bitterek = [
-    "Jägermeister.png", "Jägermeister Orange.png"
+    "Jägermeister.png", "Jägermeister Orange.png", "Jägermeister Scharf.png", "Jägermeister Manifest.png","Jägermeister Cold Brew Coffee.png"
 ];
+
+const Sorok = ["Coors.png", "Kőbányai.png", "Guinness.png", "Miller.png", "Miller Lime.png", "Dreher Gold.png", "Dreher Meggy.png", "Dreher Citrus.png", "Dreher Bak.png",
+    "Dreher Hideg Komlós.png", "Dreher Session Ipa.png", "Soproni Lager.png", "Soproni Ipa.png", "Soproni Démon.png", "Soproni Apa.png", "Soproni Citrus.png", "Soproni Meggy.png"];
+
+const Ciderek = ["Somersby Blueberry.png", "Somersby Mango & Lime.png", "Somersby Orange Spritz.png", "Somersby Pear.png", "Somersby Raspberry & Lime.png", "Somersby Sour Cherry.png",
+    "Somersby Watermelon.png"];
+
+const Borok = [];
+
+const Froccsok = ["Bakteranyós.png", "Borcsi Fröccs.png", "Háziúr.png", "Házmester.png", "Hosszúlépés.png", "Kisfröccs.png", "Nagyfröccs.png", "Permet.png", "Sport.png", "Vice-házmester.png"];
 
 const Italok = [];
 
@@ -34,20 +46,23 @@ async function inicializalas() {
     const whiskeyListaDiv = document.getElementById('whiskeyLista');
     const likorListaDiv = document.getElementById('likorLista');
     const bitterListaDiv = document.getElementById('bitterLista');
+    const sorListaDiv = document.getElementById('sorLista');
+    const ciderListaDiv = document.getElementById('ciderLista');
+    const borListaDiv = document.getElementById('borLista');
+    const froccsListaDiv = document.getElementById('froccsLista');
     const italListaDiv = document.getElementById('italLista');
 
     const kepeketGeneral = (lista, mappa, szuloDiv, prefix) => {
+        if (!szuloDiv) return;
         lista.forEach((fajlNev, index) => {
-            // Létrehozunk egy kis kártyát a képnek és a szövegnek
             const kartya = document.createElement('div');
             kartya.className = 'ital-kartya';
-            kartya.id = `${prefix}-${index}`; // Az ID most a kártyára kerül
+            kartya.id = `${prefix}-${index}`;
 
             const img = document.createElement('img');
             img.src = `Images/Ranglista/${mappa ? mappa + '/' : ''}${fajlNev}`;
             img.alt = fajlNev;
 
-            // Szöveg kiszedése (pl. "jack-daniels.png" -> "jack-daniels")
             const nevCsak = fajlNev.substring(0, fajlNev.lastIndexOf('.'));
             const felirat = document.createElement('span');
             felirat.className = 'ital-nev';
@@ -56,7 +71,6 @@ async function inicializalas() {
             kartya.appendChild(img);
             kartya.appendChild(felirat);
 
-            // Kattintásra megnyitja a modalt
             kartya.addEventListener('click', () => {
                 aktivElemId = kartya.id;
                 document.getElementById('modal-kep').src = img.src;
@@ -72,6 +86,10 @@ async function inicializalas() {
     kepeketGeneral(Whiskeyk, 'Whiskey', whiskeyListaDiv, 'whiskey');
     kepeketGeneral(Likorok, 'Likor', likorListaDiv, 'likor');
     kepeketGeneral(Bitterek, 'Bitter', bitterListaDiv, 'bitter');
+    kepeketGeneral(Sorok, 'Sor', sorListaDiv, 'sor');
+    kepeketGeneral(Ciderek, 'Cider', ciderListaDiv, 'cider');
+    kepeketGeneral(Borok, 'Bor', borListaDiv, 'bor');
+    kepeketGeneral(Froccsok, 'Froccs', froccsListaDiv, 'froccs');
     kepeketGeneral(Italok, '', italListaDiv, 'egyeb');
 
     // Mentett adatok betöltése Supabase-ből
@@ -79,6 +97,7 @@ async function inicializalas() {
 
     if (error) {
         console.error('Hiba az adatok betöltésekor:', error);
+        frissitsSzamlalokat();
         return;
     }
 
@@ -93,6 +112,10 @@ async function inicializalas() {
                     else if (prefix === 'whiskey') celZona = whiskeyListaDiv;
                     else if (prefix === 'likor') celZona = likorListaDiv;
                     else if (prefix === 'bitter') celZona = bitterListaDiv;
+                    else if (prefix === 'sor') celZona = sorListaDiv;
+                    else if (prefix === 'bor') celZona = borListaDiv;
+                    else if (prefix === 'froccs') celZona = froccsListaDiv;
+                    else if (prefix === 'cider') celZona = ciderListaDiv;
                     else celZona = italListaDiv;
                 } else {
                     celZona = document.querySelector(`.ranglista-dropzone[data-kategoria="${item.kategoria}"]`);
@@ -104,6 +127,9 @@ async function inicializalas() {
             }
         });
     }
+
+    // Számlálók frissítése betöltés után
+    frissitsSzamlalokat();
 }
 
 async function kategoriatValaszt(kategoriaNev) {
@@ -118,6 +144,10 @@ async function kategoriatValaszt(kategoriaNev) {
         else if (prefix === 'whiskey') celZona = document.getElementById('whiskeyLista');
         else if (prefix === 'likor') celZona = document.getElementById('likorLista');
         else if (prefix === 'bitter') celZona = document.getElementById('bitterLista');
+        else if (prefix === 'sor') celZona = document.getElementById('sorLista');
+        else if (prefix === 'bor') celZona = document.getElementById('borLista');
+        else if (prefix === 'froccs') celZona = document.getElementById('froccsLista');
+        else if (prefix === 'cider') celZona = document.getElementById('ciderLista');
         else celZona = document.getElementById('italLista');
     } else {
         celZona = document.querySelector(`.ranglista-dropzone[data-kategoria="${kategoriaNev}"]`);
@@ -135,12 +165,46 @@ async function kategoriatValaszt(kategoriaNev) {
         }
     }
 
+    // Számlálók frissítése áthelyezés után
+    frissitsSzamlalokat();
     modalBezár();
 }
 
 function modalBezár() {
     document.getElementById('modal-hatter').style.display = 'none';
     aktivElemId = null;
+}
+
+function frissitsSzamlalokat() {
+    const kategóriak = [
+        { lista: Vodkak.length, elem: document.getElementById('vodkaLista'), szamlalo: document.getElementById('szamlalo-vodka') },
+        { lista: Whiskeyk.length, elem: document.getElementById('whiskeyLista'), szamlalo: document.getElementById('szamlalo-whiskey') },
+        { lista: Likorok.length, elem: document.getElementById('likorLista'), szamlalo: document.getElementById('szamlalo-likor') },
+        { lista: Bitterek.length, elem: document.getElementById('bitterLista'), szamlalo: document.getElementById('szamlalo-bitter') },
+        { lista: Sorok.length, elem: document.getElementById('sorLista'), szamlalo: document.getElementById('szamlalo-sor') },
+        { lista: Ciderek.length, elem: document.getElementById('ciderLista'), szamlalo: document.getElementById('szamlalo-cider') },
+        { lista: Borok.length, elem: document.getElementById('borLista'), szamlalo: document.getElementById('szamlalo-bor') },
+        { lista: Froccsok.length, elem: document.getElementById('froccsLista'), szamlalo: document.getElementById('szamlalo-froccs') },
+        { lista: Italok.length, elem: document.getElementById('italLista'), szamlalo: document.getElementById('szamlalo-egyeb') }
+    ];
+
+    kategóriak.forEach(kat => {
+        if (kat.szamlalo && kat.elem) {
+            const jelenlegiDb = kat.elem.getElementsByClassName('ital-kartya').length;
+            kat.szamlalo.textContent = `${jelenlegiDb} / ${kat.lista}`;
+
+            const doboz = kat.elem.closest('.forras-doboz');
+
+            if (doboz) {
+                if (jelenlegiDb === 0) {
+                    kat.elem.style.display = 'none';
+                    // doboz.style.display = 'none';
+                } else {
+                    kat.elem.style.display = 'flex';
+                }
+            }
+        }
+    });
 }
 
 window.addEventListener('DOMContentLoaded', inicializalas);
