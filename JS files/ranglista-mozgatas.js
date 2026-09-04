@@ -5,8 +5,8 @@ const Vodkak = [
     "Euphoria Cannabis.png", "Euphoria Cocaine.png", "Finlandia.png", "Finlandia Cranberry.png", "Finlandia Cucumber & Mint.png",
     "Finlandia Grapefruit.png", "Finlandia Coconut.png", "Finlandia Lime.png", "Finlandia Redberry.png",
     "Finlandia Wildberry & Rose.png", "Grey Goose.png", "Royal.png", "Royal Szilva.png", "Royal Sárgabarack.png", "Royal Mogyoró.png",
-     "Royal Meggy.png", "Royal Mangó-Maracuja.png", "Royal Málna.png", "Royal Kávé.png", "Royal Kaktusz.png", "Royal Feketeribizli.png", "Royal Citrom.png",
-      "Royal Bitter.png", "Royal Alma.png",
+    "Royal Meggy.png", "Royal Mangó-Maracuja.png", "Royal Málna.png", "Royal Kávé.png", "Royal Kaktusz.png", "Royal Feketeribizli.png", "Royal Citrom.png",
+    "Royal Bitter.png", "Royal Alma.png",
 ];
 
 const Whiskeyk = [
@@ -24,16 +24,18 @@ const Likorok = [
 ];
 
 const Bitterek = [
-    "Jägermeister.png", "Jägermeister Orange.png", "Jägermeister Scharf.png", "Jägermeister Manifest.png","Jägermeister Cold Brew Coffee.png"
+    "Jägermeister.png", "Jägermeister Orange.png", "Jägermeister Scharf.png", "Jägermeister Manifest.png", "Jägermeister Cold Brew Coffee.png"
 ];
 
 const Sorok = ["Coors.png", "Kőbányai.png", "Guinness.png", "Miller.png", "Miller Lime.png", "Dreher Gold.png", "Dreher Meggy.png", "Dreher Citrus.png", "Dreher Bak.png",
-    "Dreher Hideg Komlós.png", "Dreher Session Ipa.png", "Soproni Lager.png", "Soproni Ipa.png", "Soproni Démon.png", "Soproni Apa.png", "Soproni Citrus.png", "Soproni Meggy.png"];
+    "Dreher Hideg Komlós.png", "Dreher Session Ipa.png", "Soproni Lager.png", "Soproni Ipa.png", "Soproni Démon.png", "Soproni Apa.png", "Soproni Citrus.png", "Soproni Meggy.png", "Heineken.png",
+    "Desperados.png", "1664 Blanc.png", "1664 Rosé.png", "Arany Ászok.png", "Arany Fácán.png", "Borsodi Ipa.png", "Borsodi Világos.png", "Budweiser Budvar.png", "Gösser Premium.png", "Kozel.png", "Löwenbrau.png",
+    "Pécsi Sör.png", "Peroni.png", "Staropramen.png", "Steffl.png", "Stella Artois.png",];
 
 const Ciderek = ["Somersby Blueberry.png", "Somersby Mango & Lime.png", "Somersby Orange Spritz.png", "Somersby Pear.png", "Somersby Raspberry & Lime.png", "Somersby Sour Cherry.png",
-    "Somersby Watermelon.png"];
+    "Somersby Watermelon.png", "Strongbow Gold Apple.png",];
 
-const Borok = [];
+const Borok = ["Figula Rosé száraz.png","Hugo Spritz Málna.png","Hugo Spritz mangó & őszibarack.png"];
 
 const Froccsok = ["Bakteranyós.png", "Borcsi Fröccs.png", "Háziúr.png", "Házmester.png", "Hosszúlépés.png", "Kisfröccs.png", "Nagyfröccs.png", "Permet.png", "Sport.png", "Vice-házmester.png"];
 
@@ -198,7 +200,7 @@ function frissitsSzamlalokat() {
             if (doboz) {
                 if (jelenlegiDb === 0) {
                     kat.elem.style.display = 'none';
-                    // doboz.style.display = 'none';
+                    doboz.style.display = 'none';
                 } else {
                     kat.elem.style.display = 'flex';
                 }

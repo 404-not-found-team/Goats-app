@@ -50,6 +50,10 @@
             <h3 class="cimke soha dark">C</h3>
             <div class="ranglista-dropzone" data-kategoria="soha"></div>
         </div>
+        <div class="kategoria-kontener">
+            <h3 class="cimke megjobbansoha dark">D</h3>
+            <div class="ranglista-dropzone" data-kategoria="megjobbansoha"></div>
+        </div>
 
         <div class="forras-doboz">
             <div class="forras-fejlec">
@@ -100,17 +104,17 @@
         </div>
         <div class="forras-doboz">
             <div class="forras-fejlec">
-                <h3>Fröccs</h3>
-                <span class="ital-szamlalo" id="szamlalo-froccs">0 / 0</span>
-            </div>
-            <div class="ital-lista" id="froccsLista"></div>
-        </div>
-        <div class="forras-doboz">
-            <div class="forras-fejlec">
                 <h3>Borok</h3>
                 <span class="ital-szamlalo" id="szamlalo-bor">0 / 0</span>
             </div>
             <div class="ital-lista" id="borLista"></div>
+        </div>
+        <div class="forras-doboz">
+            <div class="forras-fejlec">
+                <h3>Fröccs</h3>
+                <span class="ital-szamlalo" id="szamlalo-froccs">0 / 0</span>
+            </div>
+            <div class="ital-lista" id="froccsLista"></div>
         </div>
         <div class="forras-doboz">
             <div class="forras-fejlec">
@@ -131,6 +135,7 @@
                 <button id="legjobb" class="gombok dark" onclick="kategoriatValaszt('legjobb')">A</button>
                 <button id="elmegy" class="gombok dark" onclick="kategoriatValaszt('elmegy')">B</button>
                 <button id="soha" class="gombok dark" onclick="kategoriatValaszt('soha')">C</button>
+                <button id="megjobbansoha" class="gombok dark" onclick="kategoriatValaszt('megjobbansoha')">D</button>
                 <button id="forras" class="gombok" onclick="kategoriatValaszt('forras')">↩️ Vissza</button>
                 <button id="bezar" class="gombok" onclick="modalBezár()">Mégse</button>
             </div>

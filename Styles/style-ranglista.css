@@ -2,7 +2,8 @@
     --legeslegjobb: #ff7f7f;
     --legjobb: #ffdf7f;
     --elmegy: #bfff7f;
-    --soha: #7fbfff;
+    --soha: #7fff7f;
+    --megjobbansoha:#7fbfff;
 }
 
 .ranglista-fo-tarolo {
@@ -49,6 +50,10 @@
 
 .cimke.soha {
     background-color: var(--soha);
+}
+
+.cimke.megjobbansoha{
+    background-color: var(--megjobbansoha);
 }
 
 .ranglista-dropzone,
@@ -199,6 +204,10 @@
 
 #soha {
     background: var(--soha);
+}
+
+#megjobbansoha{
+    background: var(--megjobbansoha);
 }
 
 #forras {
