@@ -39,7 +39,7 @@ const Borok = ["Figula Rosé száraz.png","Hugo Spritz Málna.png","Hugo Spritz 
 
 const Froccsok = ["Bakteranyós.png", "Borcsi Fröccs.png", "Háziúr.png", "Házmester.png", "Hosszúlépés.png", "Kisfröccs.png", "Nagyfröccs.png", "Permet.png", "Sport.png", "Vice-házmester.png"];
 
-const Italok = [];
+const Italok = ["Bacardi White Rum.png"];
 
 let aktivElemId = null;
 
