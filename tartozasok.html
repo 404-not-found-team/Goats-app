@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="Styles/style.css">
     <link rel="stylesheet" href="Styles/style-tartozasok.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="JS files/main.js"></script>
+    <script src="JS files/tartozasok.js"></script>
+
 </head>
 
 <body>
@@ -21,50 +24,19 @@
             <input type="text" id="miertInput" placeholder="Miért">
             <input type="text" id="mennyiertInput" placeholder="Mennyiért">
 
-            <!-- Kinek választó lista -->
             <select id="kinekInput">
                 <option value="" disabled selected>Kinek</option>
-                <option value="Ákosnak">Ákosnak</option>
-                <option value="Ferinek">Ferinek</option>
-                <option value="Zalának">Zalának</option>
-                <option value="Zolinak">Zolinak</option>
             </select>
 
-            <!-- Ki tartozik választó lista -->
             <select id="kiTartozikInput">
                 <option value="" disabled selected>Ki tartozik</option>
-                <option value="Ákos">Ákos</option>
-                <option value="Feri">Feri</option>
-                <option value="Zalán">Zalán</option>
-                <option value="Zoli">Zoli</option>
             </select>
 
             <input type="button" value="Hozzáad" onclick="addTartozas()">
         </div>
 
-        <div class="tartozasok-grid">
-            <div class="box">
-                <h3>Ákos</h3>
-                <div class="akos"></div>
-            </div>
-            <div class="box">
-                <h3>Feri</h3>
-                <div class="feri"></div>
-            </div>
-            <div class="box">
-                <h3>Zalán</h3>
-                <div class="zalan"></div>
-            </div>
-            <div class="box">
-                <h3>Zoli</h3>
-                <div class="zoli"></div>
-            </div>
-        </div>
+        <div class="tartozasok-kontener tartozasok-grid"></div>
     </div>
 </body>
-
-<script src="JS files/supabase-client.js"></script>
-<script src="JS files/tartozasok.js"></script>
-<script src="JS files/nav.js"></script>
 
 </html>

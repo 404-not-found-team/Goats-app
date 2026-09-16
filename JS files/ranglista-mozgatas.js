@@ -35,7 +35,7 @@ const Sorok = ["Coors.png", "Kőbányai.png", "Guinness.png", "Miller.png", "Mil
 const Ciderek = ["Somersby Blueberry.png", "Somersby Mango & Lime.png", "Somersby Orange Spritz.png", "Somersby Pear.png", "Somersby Raspberry & Lime.png", "Somersby Sour Cherry.png",
     "Somersby Watermelon.png", "Strongbow Gold Apple.png",];
 
-const Borok = ["Figula Rosé száraz.png","Hugo Spritz Málna.png","Hugo Spritz mangó & őszibarack.png"];
+const Borok = ["Figula Rosé száraz.png", "Hugo Spritz Málna.png", "Hugo Spritz mangó & őszibarack.png"];
 
 const Froccsok = ["Bakteranyós.png", "Borcsi Fröccs.png", "Háziúr.png", "Házmester.png", "Hosszúlépés.png", "Kisfröccs.png", "Nagyfröccs.png", "Permet.png", "Sport.png", "Vice-házmester.png"];
 
@@ -44,6 +44,8 @@ const Italok = ["Bacardi White Rum.png"];
 let aktivElemId = null;
 
 async function inicializalas() {
+    const groupCode = localStorage.getItem('goats_group_code');
+
     const vodkaListaDiv = document.getElementById('vodkaLista');
     const whiskeyListaDiv = document.getElementById('whiskeyLista');
     const likorListaDiv = document.getElementById('likorLista');
@@ -94,8 +96,17 @@ async function inicializalas() {
     kepeketGeneral(Froccsok, 'Froccs', froccsListaDiv, 'froccs');
     kepeketGeneral(Italok, '', italListaDiv, 'egyeb');
 
-    // Mentett adatok betöltése Supabase-ből
-    const { data, error } = await _supabase.from('ital_ranglista').select('*');
+    // 🔒 HA NINCS BEJELENTKEZVE: Nem kérünk le adatokat a Supabase-ből[cite: 6]
+    if (!groupCode) {
+        frissitsSzamlalokat();
+        return;
+    }
+
+    // Mentett adatok betöltése Supabase-ből - Csak a jelenlegi csoporté[cite: 6]
+    const { data, error } = await _supabase
+        .from('ital_ranglista')
+        .select('*')
+        .eq('group_code', groupCode);
 
     if (error) {
         console.error('Hiba az adatok betöltésekor:', error);
@@ -130,13 +141,13 @@ async function inicializalas() {
         });
     }
 
-    // Számlálók frissítése betöltés után
     frissitsSzamlalokat();
 }
 
 async function kategoriatValaszt(kategoriaNev) {
     if (!aktivElemId) return;
 
+    const groupCode = localStorage.getItem('goats_group_code');
     const kartyaElem = document.getElementById(aktivElemId);
     let celZona;
 
@@ -158,16 +169,24 @@ async function kategoriatValaszt(kategoriaNev) {
     if (kartyaElem && celZona) {
         celZona.appendChild(kartyaElem);
 
-        const { error } = await _supabase
-            .from('ital_ranglista')
-            .upsert({ id: aktivElemId, kategoria: kategoriaNev });
+        // 🔒 MENTÉS CSAK AKKOR, HA BE VAN JELENTKEZVE CSOPORTBA[cite: 6]
+        if (groupCode) {
+            const { error } = await _supabase
+                .from('ital_ranglista')
+                .upsert({
+                    id: aktivElemId,
+                    kategoria: kategoriaNev,
+                    group_code: groupCode
+                });
 
-        if (error) {
-            console.error('Hiba a mentés során:', error);
+            if (error) {
+                console.error('Hiba a mentés során:', error);
+            }
+        } else {
+            console.warn('Kijelentkezett állapot: A rangsorolás nem mentődik az adatbázisba.');
         }
     }
 
-    // Számlálók frissítése áthelyezés után
     frissitsSzamlalokat();
     modalBezár();
 }

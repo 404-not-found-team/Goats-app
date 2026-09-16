@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="Styles/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="JS files/main.js"></script>
 </head>
 
 <body>
@@ -19,7 +20,7 @@
     <input type="file" id="kepFeltoltesInput" accept="image/*" multiple style="display: none;">
 
     <div class="hatter">
-        <div class="videok">
+        <div class="videok" id="youtube-doboz">
             <i class="fa-solid fa-caret-left nyil video-nyil"></i>
             <iframe width="600" height="600" src="https://www.youtube.com/embed/qGmIoFmBnKs?autoplay=1&mute=1&rel=0"
                 frameborder="0"
@@ -41,7 +42,7 @@
             <i class="fa-solid fa-caret-right nyil" style="color: rgb(255, 255, 255);" onclick="kovKep()"></i>
         </div>
 
-        <div class="naptar">
+        <div class="naptar" id="naptar-doboz">
             <iframe
                 src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FBudapest&showPrint=0&hl=hu&showTitle=0&showTabs=0&showTz=0&src=YWtvc2hlcmN6ZWcwOEBnbWFpbC5jb20&src=YWIwMDcxNzM4ODg5MTFjNjI3ZDhiNDNlMjY4ZTE4OTVlNmU2NzUzNGVmNTljN2ZmMGM1MmY4YjJjYmViZDQ2NUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=aHUuaHVuZ2FyaWFuI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%238e24aa&color=%239e69af&color=%23e67c73"
                 style="border-width:0" height="350" frameborder="0" scrolling="no"></iframe>
@@ -49,7 +50,5 @@
     </div>
 </body>
 
-<script src="JS files/supabase-client.js"></script>
 <script src="JS files/kep-mozgatas.js"></script>
-<script src="JS files/nav.js"></script>
 </html>

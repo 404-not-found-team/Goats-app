@@ -3,10 +3,14 @@ window.onload = function () {
 };
 
 async function loadTervek() {
+    const groupCode = localStorage.getItem('goats_group_code');
+
     const { data, error } = await _supabase
         .from('tervek')
         .select('*')
+        .eq('group_code', groupCode) // Csak a csoport tervei[cite: 4]
         .order('id', { ascending: false });
+
     if (error) {
         console.error('Hiba a betöltéskor:', error);
         return;
@@ -20,6 +24,7 @@ async function loadTervek() {
 }
 
 async function add() {
+    const groupCode = localStorage.getItem('goats_group_code');
     const inputField = document.getElementById('tervInput');
     const text = inputField.value.trim();
 
@@ -27,7 +32,11 @@ async function add() {
 
     const { data, error } = await _supabase
         .from('tervek')
-        .insert([{ text: text, completed: false }])
+        .insert([{ 
+            text: text, 
+            completed: false,
+            group_code: groupCode // Mentés group_code-dal[cite: 4]
+        }])
         .select();
 
     if (error) {
@@ -56,12 +65,14 @@ function renderTervItem(id, text, isCompleted) {
     span.textContent = text;
 
     checkbox.addEventListener('change', async function () {
+        const groupCode = localStorage.getItem('goats_group_code');
         const checked = checkbox.checked;
 
         const { error } = await _supabase
             .from('tervek')
             .update({ completed: checked })
-            .eq('id', id);
+            .eq('id', id)
+            .eq('group_code', groupCode); // Biztonsági frissítés[cite: 4]
 
         if (error) {
             console.error('Hiba a frissítéskor:', error);
