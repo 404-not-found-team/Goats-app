@@ -1,10 +1,84 @@
-:root {
+:root, [data-theme="dark"] {
     --bg-color: #121212;
+    --bg-gradient: linear-gradient(135deg, #121212 0%, #1a1a24 100%);
     --card-bg: #1e1e1e;
+    --inner-bg: #242424;
+    --input-bg: #2a2a2a;
+    --border-color: #333333;
     --text-primary: #e0e0e0;
     --text-secondary: #a0a0a0;
-    --border-radius: 12px;
-    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    --accent-color: #6366f1;
+    --accent-hover: #4f46e5;
+}
+
+/* Discord Classic Sötét */
+[data-theme="discord"] {
+    --bg-color: #313338;
+    --bg-gradient: linear-gradient(135deg, #2b2d31 0%, #1e1f22 100%);
+    --card-bg: rgba(43, 45, 49, 0.85);
+    --inner-bg: #1e1f22;
+    --input-bg: #1e1f22;
+    --border-color: #3f4147;
+    --text-primary: #f2f3f5;
+    --text-secondary: #949ba4;
+    --accent-color: #5865f2;
+    --accent-hover: #4752c4;
+}
+
+/* Discord Meleg Barna (az 1. képed alapján) */
+[data-theme="discord-brown"] {
+    --bg-color: #1f1b18;
+    --bg-gradient: linear-gradient(135deg, #2e1c14 0%, #120d0a 100%);
+    --card-bg: rgba(43, 37, 34, 0.85);
+    --inner-bg: #181513;
+    --input-bg: #181513;
+    --border-color: #4a3b32;
+    --text-primary: #f0e6df;
+    --text-secondary: #a3958c;
+    --accent-color: #d97706;
+    --accent-hover: #b45309;
+}
+
+/* Discord Mélylila (a 2. képed alapján) */
+[data-theme="discord-purple"] {
+    --bg-color: #181528;
+    --bg-gradient: linear-gradient(135deg, #2d1f47 0%, #0f0c1b 100%);
+    --card-bg: rgba(35, 31, 58, 0.85);
+    --inner-bg: #121020;
+    --input-bg: #121020;
+    --border-color: #3e3363;
+    --text-primary: #ebdfff;
+    --text-secondary: #998eb8;
+    --accent-color: #8b5cf6;
+    --accent-hover: #7c3aed;
+}
+
+/* Cyberpunk Neon */
+[data-theme="cyberpunk"] {
+    --bg-color: #0d0f18;
+    --bg-gradient: linear-gradient(135deg, #1f092b 0%, #081226 100%);
+    --card-bg: rgba(21, 24, 40, 0.85);
+    --inner-bg: #090a10;
+    --input-bg: #090a10;
+    --border-color: #2b3254;
+    --text-primary: #00ffcc;
+    --text-secondary: #708090;
+    --accent-color: #ff0055;
+    --accent-hover: #cc0044;
+}
+
+/* Világos téma átmenettel */
+[data-theme="light"] {
+    --bg-color: #f4f4f5;
+    --bg-gradient: linear-gradient(135deg, #e4e4e7 0%, #ffffff 100%);
+    --card-bg: #ffffff;
+    --inner-bg: #f0f0f2;
+    --input-bg: #ffffff;
+    --border-color: #e4e4e7;
+    --text-primary: #18181b;
+    --text-secondary: #71717a;
+    --accent-color: #4f46e5;
+    --accent-hover: #4338ca;
 }
 
 * {
@@ -15,7 +89,8 @@
 }
 
 body {
-    background-color: var(--bg-color);
+    background: var(--bg-gradient, var(--bg-color));
+    background-attachment: fixed;
     color: var(--text-primary);
     display: flex;
     flex-direction: column;
@@ -44,10 +119,17 @@ ul li a {
     transition: all 0.3s ease;
 }
 
-ul li a:hover,
+ul li a:hover {
+    color: var(--text-primary);
+    background-color: var(--inner-bg);
+}
 ul li.active a {
     color: #ffffff;
-    background-color: #333333;
+    background-color: var(--accent-color);
+}
+
+#navBar{
+    border-radius: 10px;
 }
 
 #kepFeltoltesGomb {
@@ -127,14 +209,18 @@ h1 {
 
 #kepFeltoltesGomb {
     position: absolute;
-    top: 20px;   /* Felső sarokhoz való igazítás */
-    right: 20px; /* Jobb sarokhoz való igazítás */
+    top: 20px;
+    right: 20px;
     z-index: 10;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: auto;
-    color: white;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+}
+
+#kepFeltoltesGomb:hover {
+    color: var(--text-primary);
 }
 
 .kepek img {
@@ -174,6 +260,13 @@ h1 {
 .nyil {
     font-size: xx-large;
     margin: -.5rem;
+    color: var(--text-secondary);
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nyil:hover {
+    color: var(--text-primary);
+    transform: scale(1.15);
 }
 
 .video-nyil{
@@ -187,6 +280,30 @@ h1 {
 .teljes-szoveg {
     display: inline;
 }
+
+#settings-btn {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        z-index: 9999;
+        background: #1e1e24;
+        color: #fff;
+        border: 1px solid #333;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      }
+
+      @media (max-width: 600px) {
+        #settings-btn {
+          top: auto;
+          bottom: 15px;
+          right: 15px;
+        }
+      }
 
 @media screen and (max-width: 1200px) {
     .hatter {

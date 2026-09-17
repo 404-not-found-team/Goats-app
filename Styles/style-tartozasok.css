@@ -1,10 +1,3 @@
-:root {
-    --zoli: #470047;
-    --zalan: #15BF16;
-    --feri: #5D3FD3;
-    --akos: #FF7F50;
-}
-
 .container-tartozasok {
     width: 100%;
     max-width: 1350px;
@@ -21,7 +14,7 @@
 }
 
 .box {
-    background-color: #242424;
+    background-color: var(--inner-bg);
     padding: 15px;
     border-radius: 12px;
     box-shadow: var(--box-shadow);
@@ -37,49 +30,17 @@
     color: var(--text-primary);
     text-align: center;
     padding-bottom: 8px;
-    border-bottom: 1px solid #333;
-}
-
-.box:has(.akos) {
-    border-top-color: var(--akos);
-}
-
-.box:has(.feri) {
-    border-top-color: var(--feri);
-}
-
-.box:has(.zalan) {
-    border-top-color: var(--zalan);
-}
-
-.box:has(.zoli) {
-    border-top-color: var(--zoli);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .tartozas-kartya {
-    background-color: #2c2c2c;
+    background-color: var(--inner-bg);
     padding: 10px;
     border-radius: 8px;
     margin-bottom: 8px;
     border-left: 3px solid transparent;
     font-size: 0.9rem;
     color: var(--text-primary);
-}
-
-.box .akos .tartozas-kartya {
-    border-left-color: var(--akos);
-}
-
-.box .feri .tartozas-kartya {
-    border-left-color: var(--feri);
-}
-
-.box .zalan .tartozas-kartya {
-    border-left-color: var(--zalan);
-}
-
-.box .zoli .tartozas-kartya {
-    border-left-color: var(--zoli);
 }
 
 .tartozas-kartya span {
@@ -97,26 +58,6 @@
     transition: 0.2s;
 }
 
-.akos:empty,
-.feri:empty,
-.zalan:empty,
-.zoli:empty {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex: 1;
-    color: var(--text-secondary);
-    font-style: italic;
-    font-size: 0.85rem;
-}
-
-.akos:empty::after,
-.feri:empty::after,
-.zalan:empty::after,
-.zoli:empty::after {
-    content: "Még nincs tartozás";
-}
-
 .input-tartozasok {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr auto;
@@ -127,10 +68,10 @@
 .input-tartozasok input,
 .input-tartozasok select {
     padding: 12px 15px;
-    background-color: #2a2a2a;
-    border: 1px solid #3d3d3d;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    color: #ffffff;
+    color: var(--text-primary);
     font-size: 0.95rem;
     outline: none;
     width: 100%;
@@ -146,22 +87,23 @@
 }
 
 .input-tartozasok select option {
-    background-color: #2a2a2a;
-    color: #ffffff;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
 }
 
 .input-tartozasok input[type="button"] {
-    background-color: #6366f1;
-    color: white;
+    background-color: var(--accent-color);
+    color: #ffffff;
     border: none;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s;
     padding: 12px 20px;
+    border-radius: 8px;
 }
 
 .input-tartozasok input[type="button"]:hover {
-    background-color: #4f46e5;
+    background-color: var(--accent-hover);
 }
 
 @media (max-width: 900px) {

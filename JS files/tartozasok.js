@@ -17,6 +17,33 @@ function getNakNek(name) {
     return name + 'nek';
 }
 
+const PALETTE = [
+    '#470047',
+    '#FF7F50',
+    '#5D3FD3', 
+    '#15BF16', 
+    '#9C27B0', 
+    '#FF9800', 
+    '#00BCD4', 
+    '#E91E63', 
+    '#4CAF50', 
+    '#FFEB3B', 
+    '#3F51B5', 
+    '#009688', 
+    '#FF5722', 
+    '#795548', 
+    '#607D8B'  
+];
+
+function getMemberColor(index) {
+    if (index < PALETTE.length) {
+        return PALETTE[index];
+    }
+
+    const extraIndex = index - PALETTE.length;
+    const hue = (extraIndex * 137.5) % 360; 
+}
+
 async function initMembersAndContainers() {
     const groupCode = localStorage.getItem('goats_group_code');
     let members = [];
@@ -58,7 +85,7 @@ async function initMembersAndContainers() {
     if (gridContainer) {
         gridContainer.innerHTML = ''; 
 
-        members.forEach(member => {
+        members.forEach((member, index) => {
             const normalizedName = member
                 .toLowerCase()
                 .normalize("NFD")
@@ -67,6 +94,9 @@ async function initMembersAndContainers() {
 
             const boxDiv = document.createElement('div');
             boxDiv.className = 'box';
+            
+            const color = getMemberColor(index, Math.max(members.length, 20));
+            boxDiv.style.borderTopColor = color;
 
             const h3 = document.createElement('h3');
             h3.textContent = member;
@@ -114,6 +144,12 @@ async function loadTartozasok() {
                 const card = document.createElement('div');
                 card.className = 'tartozas-kartya';
 
+                const memberIndex = members.indexOf(item.kitartozik);
+                if (memberIndex !== -1) {
+                    const color = getMemberColor(memberIndex, Math.max(members.length, 20));
+                    card.style.borderLeftColor = color;
+                }
+
                 const row = document.createElement('div');
                 row.style.display = 'flex';
                 row.style.justifyContent = 'space-between';
@@ -138,7 +174,6 @@ async function loadTartozasok() {
         });
     }
 
-    // Ha egy doboz üres, berakjuk a "Még nincs tartozás" feliratot
     members.forEach(member => {
         const normalizedName = member.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
         const targetDiv = document.querySelector(`.${normalizedName}`);

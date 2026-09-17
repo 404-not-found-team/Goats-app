@@ -16,13 +16,12 @@
 .input input[type="text"] {
     flex: 1;
     padding: 12px 15px;
-    background-color: #2a2a2a;
-    border: 1px solid #3d3d3d;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    color: #ffffff;
+    color: var(--text-primary);
     font-size: 1rem;
     outline: none;
-    transition: border-color 0.3s;
 }
 
 .input input[type="text"]:focus {
@@ -30,14 +29,13 @@
 }
 
 .input input[type="button"] {
-    background-color: #6366f1;
+    background-color: var(--accent-color);
     color: white;
     border: none;
     padding: 12px 20px;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s;
 }
 
 .input input[type="button"]:hover {
@@ -53,11 +51,11 @@
 .terv-item {
     display: flex;
     align-items: center;
-    background-color: #2a2a2a;
+    background-color: var(--inner-bg);
     padding: 12px 15px;
     border-radius: 8px;
     gap: 12px;
-    border: 1px solid #333;
+    border: 1px solid var(--border-color);
 }
 
 .terv-item input[type="checkbox"] {
@@ -71,7 +69,7 @@
     flex: 1;
     font-size: 1rem;
     word-break: break-word;
-    color: #f3f4f6;
+    color: var(--text-primary);
 }
 
 .terv-item.completed {

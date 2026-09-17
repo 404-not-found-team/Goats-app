@@ -29,7 +29,7 @@
 }
 
 .tablazat {
-    border: 1px solid white;
+    border: 1px solid var(--border-color);
     width: 100px;
     min-width: 100px;
     height: 350px;
@@ -39,7 +39,8 @@
     justify-content: space-around;
     box-sizing: border-box;
     border-radius: 8px;
-    color: white;
+    color: var(--text-primary);
+    background-color: var(--inner-bg);
 }
 
 .fejlec {
@@ -103,12 +104,13 @@
     width: 450px;
     height: 35px;
     padding: 5px 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);   
+    border: 1px solid var(--border-color);   
     justify-content: space-between;
     align-items: center;
     box-sizing: border-box;
     border-radius: 6px;
-    color: white;
+    color: var(--text-primary);
+    background-color: var(--inner-bg);
 }
 
 .teljesit-gomb {

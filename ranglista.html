@@ -10,118 +10,31 @@
     <link rel="stylesheet" href="Styles/style-ranglista.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="JS files/main.js"></script>
-    <script src="JS files/ranglista-mozgatas.js" defer></script>
+    <script src="JS files/ranglista.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        (function () {
+            emailjs.init("2wdZeM2a3phUPdOaT");
+        })();
+    </script>
 </head>
 
 <body>
     <ul id="navBar"></ul>
 
-    <div class="ranglista-fo-tarolo">
-        <div class="kategoria-kontener">
-            <h3 class="cimke legeslegjobb dark">S</h3>
-            <div class="ranglista-dropzone" data-kategoria="S"></div>
-        </div>
-        <div class="kategoria-kontener">
-            <h3 class="cimke legjobb dark">A</h3>
-            <div class="ranglista-dropzone" data-kategoria="A"></div>
-        </div>
-
-        <div class="kategoria-kontener">
-            <h3 class="cimke elmegy dark">B</h3>
-            <div class="ranglista-dropzone" data-kategoria="B"></div>
-        </div>
-
-        <div class="kategoria-kontener">
-            <h3 class="cimke soha dark">C</h3>
-            <div class="ranglista-dropzone" data-kategoria="C"></div>
-        </div>
-        <div class="kategoria-kontener">
-            <h3 class="cimke megjobbansoha dark">D</h3>
-            <div class="ranglista-dropzone" data-kategoria="D"></div>
-        </div>
-
-        <div class="forras-doboz">
-            <div class="forras-fejlec">
-                <h3>Vodkák</h3>
-                <span class="ital-szamlalo" id="szamlalo-vodka">0 / 0</span>
-            </div>
-            <div class="ital-lista" id="vodkaLista">
-            </div>
-        </div>
-        <div class="forras-doboz">
-            <div class="forras-fejlec">
-                <h3>Whiskeyk</h3>
-                <span class="ital-szamlalo" id="szamlalo-whiskey">0 / 0</span>
-            </div>
-            <div class="ital-lista" id="whiskeyLista">
-            </div>
-        </div>
-        <div class="forras-doboz">
-            <div class="forras-fejlec">
-                <h3>Likőrök</h3>
-                <span class="ital-szamlalo" id="szamlalo-likor">0 / 0</span>
-            </div>
-            <div class="ital-lista" id="likorLista">
-            </div>
-        </div>
-        <div class="forras-doboz">
-            <div class="forras-fejlec">
-                <h3>Bitterek</h3>
-                <span class="ital-szamlalo" id="szamlalo-bitter">0 / 0</span>
-            </div>
-            <div class="ital-lista" id="bitterLista">
-            </div>
-        </div>
-        <div class="forras-doboz">
-            <div class="forras-fejlec">
-                <h3>Ciderek</h3>
-                <span class="ital-szamlalo" id="szamlalo-cider">0 / 0</span>
-            </div>
-            <div class="ital-lista" id="ciderLista">
-            </div>
-        </div>
-        <div class="forras-doboz">
-            <div class="forras-fejlec">
-                <h3>Sörök</h3>
-                <span class="ital-szamlalo" id="szamlalo-sor">0 / 0</span>
-            </div>
-            <div class="ital-lista" id="sorLista"></div>
-        </div>
-        <div class="forras-doboz">
-            <div class="forras-fejlec">
-                <h3>Borok</h3>
-                <span class="ital-szamlalo" id="szamlalo-bor">0 / 0</span>
-            </div>
-            <div class="ital-lista" id="borLista"></div>
-        </div>
-        <div class="forras-doboz">
-            <div class="forras-fejlec">
-                <h3>Fröccs</h3>
-                <span class="ital-szamlalo" id="szamlalo-froccs">0 / 0</span>
-            </div>
-            <div class="ital-lista" id="froccsLista"></div>
-        </div>
-        <div class="forras-doboz">
-            <div class="forras-fejlec">
-                <h3>Egyéb</h3>
-                <span class="ital-szamlalo" id="szamlalo-egyeb">0 / 0</span>
-            </div>
-            <div class="ital-lista" id="italLista"></div>
-        </div>
-        <div class="forras-doboz" id="doboz-fuggoben">
-            <div class="forras-fejlec">
-                <h3>⏳ Jóváhagyásra váró italok</h3>
-                <span class="szamlalo" id="szamlalo-fuggoben">0 db</span>
-            </div>
-            <div class="ital-lista" id="fuggobenLista"></div>
-        </div>
+    <div style="width: 100%; max-width: 900px; margin: 0 auto 15px auto; display: flex; justify-content: flex-end;">
+        <button id="uj-ital-gomb" onclick="nyisdUjItalModal()" class="gomb-uj-ital">➕ Új ital hozzáadása</button>
     </div>
+
+    <div class="ranglista-fo-tarolo">
+        <div id="kategoriak-kontener"></div>
+        <div id="forras-dobozok-kontener"></div>
+    </div>
+
     <div id="modal-hatter">
         <div id="hatter">
             <img id="modal-kep" src="" alt="Kiválasztott ital">
-            <div id="modal-nev" style="color: white; font-size: 20px; margin-bottom: 15px; font-weight: bold;">
-            </div>
-
+            <div id="modal-nev" style="color: white; font-size: 20px; margin-bottom: 15px; font-weight: bold;"></div>
             <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
                 <button id="legeslegjobb" class="gombok dark" onclick="kategoriatValaszt('S')">S</button>
                 <button id="legjobb" class="gombok dark" onclick="kategoriatValaszt('A')">A</button>
@@ -130,6 +43,38 @@
                 <button id="megjobbansoha" class="gombok dark" onclick="kategoriatValaszt('D')">D</button>
                 <button id="forras" class="gombok" onclick="kategoriatValaszt('forras')">↩️ Vissza</button>
                 <button id="bezar" class="gombok" onclick="modalBezár()">Mégse</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="uj-ital-modal" class="modal-hatter-ui">
+        <div class="modal-doboz-ui">
+            <h3>Új ital felvétele</h3>
+
+            <label>Ital neve:</label>
+            <input type="text" id="uj-ital-nev" class="sm-input" placeholder="pl. Royal Kaktusz" />
+
+            <label>Kategória / Fajta:</label>
+            <select id="uj-ital-kategoria" class="sm-input">
+                <option value="vodka">Vodka</option>
+                <option value="whiskey">Whiskey</option>
+                <option value="likor">Likőr</option>
+                <option value="bitter">Bitter</option>
+                <option value="cider">Cider</option>
+                <option value="sor">Sör</option>
+                <option value="bor">Bor</option>
+                <option value="froccs">Fröccs</option>
+                <option value="egyeb">Egyéb</option>
+            </select>
+
+            <label>Alkoholfok (%):</label>
+            <input type="number" id="uj-ital-szazalek" class="sm-input" placeholder="pl. 37.5" step="0.1" />
+
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button onclick="mentUjItal()" class="sm-btn"
+                    style="background: var(--accent-color); color: #fff;">Hozzáadás</button>
+                <button onclick="zardUjItalModal()" class="sm-btn"
+                    style="background: var(--inner-bg); color: var(--text-primary); border: 1px solid var(--border-color);">Mégse</button>
             </div>
         </div>
     </div>
