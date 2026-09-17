@@ -19,25 +19,25 @@
     <div class="ranglista-fo-tarolo">
         <div class="kategoria-kontener">
             <h3 class="cimke legeslegjobb dark">S</h3>
-            <div class="ranglista-dropzone" data-kategoria="legeslegjobb"></div>
+            <div class="ranglista-dropzone" data-kategoria="S"></div>
         </div>
         <div class="kategoria-kontener">
             <h3 class="cimke legjobb dark">A</h3>
-            <div class="ranglista-dropzone" data-kategoria="legjobb"></div>
+            <div class="ranglista-dropzone" data-kategoria="A"></div>
         </div>
 
         <div class="kategoria-kontener">
             <h3 class="cimke elmegy dark">B</h3>
-            <div class="ranglista-dropzone" data-kategoria="elmegy"></div>
+            <div class="ranglista-dropzone" data-kategoria="B"></div>
         </div>
 
         <div class="kategoria-kontener">
             <h3 class="cimke soha dark">C</h3>
-            <div class="ranglista-dropzone" data-kategoria="soha"></div>
+            <div class="ranglista-dropzone" data-kategoria="C"></div>
         </div>
         <div class="kategoria-kontener">
             <h3 class="cimke megjobbansoha dark">D</h3>
-            <div class="ranglista-dropzone" data-kategoria="megjobbansoha"></div>
+            <div class="ranglista-dropzone" data-kategoria="D"></div>
         </div>
 
         <div class="forras-doboz">
@@ -108,6 +108,13 @@
             </div>
             <div class="ital-lista" id="italLista"></div>
         </div>
+        <div class="forras-doboz" id="doboz-fuggoben">
+            <div class="forras-fejlec">
+                <h3>⏳ Jóváhagyásra váró italok</h3>
+                <span class="szamlalo" id="szamlalo-fuggoben">0 db</span>
+            </div>
+            <div class="ital-lista" id="fuggobenLista"></div>
+        </div>
     </div>
     <div id="modal-hatter">
         <div id="hatter">
@@ -116,11 +123,11 @@
             </div>
 
             <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
-                <button id="legeslegjobb" class="gombok dark" onclick="kategoriatValaszt('legeslegjobb')">S</button>
-                <button id="legjobb" class="gombok dark" onclick="kategoriatValaszt('legjobb')">A</button>
-                <button id="elmegy" class="gombok dark" onclick="kategoriatValaszt('elmegy')">B</button>
-                <button id="soha" class="gombok dark" onclick="kategoriatValaszt('soha')">C</button>
-                <button id="megjobbansoha" class="gombok dark" onclick="kategoriatValaszt('megjobbansoha')">D</button>
+                <button id="legeslegjobb" class="gombok dark" onclick="kategoriatValaszt('S')">S</button>
+                <button id="legjobb" class="gombok dark" onclick="kategoriatValaszt('A')">A</button>
+                <button id="elmegy" class="gombok dark" onclick="kategoriatValaszt('B')">B</button>
+                <button id="soha" class="gombok dark" onclick="kategoriatValaszt('C')">C</button>
+                <button id="megjobbansoha" class="gombok dark" onclick="kategoriatValaszt('D')">D</button>
                 <button id="forras" class="gombok" onclick="kategoriatValaszt('forras')">↩️ Vissza</button>
                 <button id="bezar" class="gombok" onclick="modalBezár()">Mégse</button>
             </div>

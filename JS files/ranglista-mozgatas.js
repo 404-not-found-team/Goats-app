@@ -1,144 +1,100 @@
-const Vodkak = [
-    "Absolut.png", "Absolut Citron.png", "Absolut Mango.png", "Absolut Passionfruit.png", "Absolut Pears.png",
-    "Absolut Raspberry.png", "Absolut Tabasco.png", "Absolut Vanilia.png", "Absolut Watermelon.png",
-    "Beluga Noble.png", "Belvedere.png", "Ciroc.png", "Ciroc Green Apple.png", "Ciroc Mango.png",
-    "Euphoria Cannabis.png", "Euphoria Cocaine.png", "Finlandia.png", "Finlandia Cranberry.png", "Finlandia Cucumber & Mint.png",
-    "Finlandia Grapefruit.png", "Finlandia Coconut.png", "Finlandia Lime.png", "Finlandia Redberry.png",
-    "Finlandia Wildberry & Rose.png", "Grey Goose.png", "Royal.png", "Royal Szilva.png", "Royal Sárgabarack.png", "Royal Mogyoró.png",
-    "Royal Meggy.png", "Royal Mangó-Maracuja.png", "Royal Málna.png", "Royal Kávé.png", "Royal Kaktusz.png", "Royal Feketeribizli.png", "Royal Citrom.png",
-    "Royal Bitter.png", "Royal Alma.png",
-];
-
-const Whiskeyk = [
-    "Ballantines.png", "Ballantines Sunshine.png", "Chivas Regal.png",
-    "Jameson.png", "Jameson Black Barrel.png", "Jameson Tripple Tripple.png", "Jim Beam.png",
-    "Jim Beam Apple.png", "Jim Beam Black Cherry.png", "Jim Beam Honey.png", "Jim Beam Peach.png", "Jim Beam Pineapple.png", "Jack Daniels.png",
-    "Jack Daniels Apple.png", "Jack Daniels Blackberry.png", "Jack Daniels Fire.png", "Jack Daniels Tennessee Honey.png",
-    "Johnnie Walker Black.png", "Johnnie Walker Red.png", "Southern Comfort.png"
-];
-
-const Likorok = [
-    "Tatratea Coconut 22.png", "Tatratea Citrus 32.png", "Tatratea Original Light 35.png", "Tatratea Hibiscus & Red 37.png", "Tatratea Peach 42.png",
-    "Tatratea Flower 47.png", "Tatratea Original 52.png", "Tatratea Homoktövis Csipkebogyó 57.png", "Tatratea Forest Fruit 62.png", "Tatratea Apple & Pear 67.png",
-    "Tatratea Betyáros 72.png"
-];
-
-const Bitterek = [
-    "Jägermeister.png", "Jägermeister Orange.png", "Jägermeister Scharf.png", "Jägermeister Manifest.png", "Jägermeister Cold Brew Coffee.png"
-];
-
-const Sorok = ["Coors.png", "Kőbányai.png", "Guinness.png", "Miller.png", "Miller Lime.png", "Dreher Gold.png", "Dreher Meggy.png", "Dreher Citrus.png", "Dreher Bak.png",
-    "Dreher Hideg Komlós.png", "Dreher Session Ipa.png", "Soproni Lager.png", "Soproni Ipa.png", "Soproni Démon.png", "Soproni Apa.png", "Soproni Citrus.png", "Soproni Meggy.png", "Heineken.png",
-    "Desperados.png", "1664 Blanc.png", "1664 Rosé.png", "Arany Ászok.png", "Arany Fácán.png", "Borsodi Ipa.png", "Borsodi Világos.png", "Budweiser Budvar.png", "Gösser Premium.png", "Kozel.png", "Löwenbrau.png",
-    "Pécsi Sör.png", "Peroni.png", "Staropramen.png", "Steffl.png", "Stella Artois.png",];
-
-const Ciderek = ["Somersby Blueberry.png", "Somersby Mango & Lime.png", "Somersby Orange Spritz.png", "Somersby Pear.png", "Somersby Raspberry & Lime.png", "Somersby Sour Cherry.png",
-    "Somersby Watermelon.png", "Strongbow Gold Apple.png",];
-
-const Borok = ["Figula Rosé száraz.png", "Hugo Spritz Málna.png", "Hugo Spritz mangó & őszibarack.png"];
-
-const Froccsok = ["Bakteranyós.png", "Borcsi Fröccs.png", "Háziúr.png", "Házmester.png", "Hosszúlépés.png", "Kisfröccs.png", "Nagyfröccs.png", "Permet.png", "Sport.png", "Vice-házmester.png"];
-
-const Italok = ["Bacardi White Rum.png"];
-
 let aktivElemId = null;
 
 async function inicializalas() {
     const groupCode = localStorage.getItem('goats_group_code');
 
-    const vodkaListaDiv = document.getElementById('vodkaLista');
-    const whiskeyListaDiv = document.getElementById('whiskeyLista');
-    const likorListaDiv = document.getElementById('likorLista');
-    const bitterListaDiv = document.getElementById('bitterLista');
-    const sorListaDiv = document.getElementById('sorLista');
-    const ciderListaDiv = document.getElementById('ciderLista');
-    const borListaDiv = document.getElementById('borLista');
-    const froccsListaDiv = document.getElementById('froccsLista');
-    const italListaDiv = document.getElementById('italLista');
-
-    const kepeketGeneral = (lista, mappa, szuloDiv, prefix) => {
-        if (!szuloDiv) return;
-        lista.forEach((fajlNev, index) => {
-            const kartya = document.createElement('div');
-            kartya.className = 'ital-kartya';
-            kartya.id = `${prefix}-${index}`;
-
-            const img = document.createElement('img');
-            img.src = `Images/Ranglista/${mappa ? mappa + '/' : ''}${fajlNev}`;
-            img.alt = fajlNev;
-
-            const nevCsak = fajlNev.substring(0, fajlNev.lastIndexOf('.'));
-            const felirat = document.createElement('span');
-            felirat.className = 'ital-nev';
-            felirat.textContent = nevCsak;
-
-            kartya.appendChild(img);
-            kartya.appendChild(felirat);
-
-            kartya.addEventListener('click', () => {
-                aktivElemId = kartya.id;
-                document.getElementById('modal-kep').src = img.src;
-                document.getElementById('modal-nev').textContent = nevCsak;
-                document.getElementById('modal-hatter').style.display = 'flex';
-            });
-
-            szuloDiv.appendChild(kartya);
-        });
-    };
-
-    kepeketGeneral(Vodkak, 'Vodka', vodkaListaDiv, 'vodka');
-    kepeketGeneral(Whiskeyk, 'Whiskey', whiskeyListaDiv, 'whiskey');
-    kepeketGeneral(Likorok, 'Likor', likorListaDiv, 'likor');
-    kepeketGeneral(Bitterek, 'Bitter', bitterListaDiv, 'bitter');
-    kepeketGeneral(Sorok, 'Sor', sorListaDiv, 'sor');
-    kepeketGeneral(Ciderek, 'Cider', ciderListaDiv, 'cider');
-    kepeketGeneral(Borok, 'Bor', borListaDiv, 'bor');
-    kepeketGeneral(Froccsok, 'Froccs', froccsListaDiv, 'froccs');
-    kepeketGeneral(Italok, '', italListaDiv, 'egyeb');
-
-    // 🔒 HA NINCS BEJELENTKEZVE: Nem kérünk le adatokat a Supabase-ből[cite: 6]
-    if (!groupCode) {
-        frissitsSzamlalokat();
-        return;
-    }
-
-    // Mentett adatok betöltése Supabase-ből - Csak a jelenlegi csoporté[cite: 6]
-    const { data, error } = await _supabase
-        .from('ital_ranglista')
+    // 1. Katalógus betöltése a Supabase ital_katalogus táblájából
+    const { data: katalogus, error: katError } = await _supabase
+        .from('ital_katalogus')
         .select('*')
-        .eq('group_code', groupCode);
+        .eq('jovahagyva', true);
 
-    if (error) {
-        console.error('Hiba az adatok betöltésekor:', error);
-        frissitsSzamlalokat();
+    if (katError) {
+        console.error('Hiba a katalógus betöltésekor:', katError);
         return;
     }
 
-    if (data) {
-        data.forEach(item => {
-            const kartyaElem = document.getElementById(item.id);
-            if (kartyaElem) {
-                let celZona;
-                if (item.kategoria === 'forras') {
-                    const prefix = item.id.split('-')[0];
-                    if (prefix === 'vodka') celZona = vodkaListaDiv;
-                    else if (prefix === 'whiskey') celZona = whiskeyListaDiv;
-                    else if (prefix === 'likor') celZona = likorListaDiv;
-                    else if (prefix === 'bitter') celZona = bitterListaDiv;
-                    else if (prefix === 'sor') celZona = sorListaDiv;
-                    else if (prefix === 'bor') celZona = borListaDiv;
-                    else if (prefix === 'froccs') celZona = froccsListaDiv;
-                    else if (prefix === 'cider') celZona = ciderListaDiv;
-                    else celZona = italListaDiv;
-                } else {
-                    celZona = document.querySelector(`.ranglista-dropzone[data-kategoria="${item.kategoria}"]`);
-                }
+    // 2. Kártyák legyártása a forrás kategória dobozokba
+    katalogus.forEach(ital => {
+        const celListaDiv = getListaDivByKategoria(ital.kategoria);
+        if (!celListaDiv) return;
 
-                if (celZona) {
-                    celZona.appendChild(kartyaElem);
-                }
-            }
+        const kartya = document.createElement('div');
+        kartya.className = 'ital-kartya';
+        kartya.id = `ital-${ital.id}`;
+        kartya.dataset.kategoria = ital.kategoria;
+
+        const img = document.createElement('img');
+        img.src = ital.kep_url;
+        img.alt = ital.nev;
+
+        const felirat = document.createElement('span');
+        felirat.className = 'ital-nev';
+        felirat.textContent = ital.nev;
+
+        kartya.appendChild(img);
+        kartya.appendChild(felirat);
+
+        kartya.addEventListener('click', () => {
+            aktivElemId = kartya.id;
+            document.getElementById('modal-kep').src = img.src;
+            document.getElementById('modal-nev').textContent = ital.nev;
+            document.getElementById('modal-hatter').style.display = 'flex';
         });
+
+        celListaDiv.appendChild(kartya);
+    });
+
+    // Kezdő darabszámok mentése a számlálókhoz
+    document.querySelectorAll('.forras-doboz').forEach(doboz => {
+        const listaDiv = doboz.querySelector('.ital-lista');
+        if (listaDiv) {
+            const kezdodb = listaDiv.getElementsByClassName('ital-kartya').length;
+            doboz.setAttribute('data-osszes', kezdodb);
+        }
+    });
+
+    // 3. MENTETT ADATOK BETÖLTÉSE (Csak miután az összes kártya bekerült a DOM-ba!)
+    if (groupCode) {
+        const { data: mentettAdatok, error: rangError } = await _supabase
+            .from('ital_ranglista')
+            .select('*')
+            .eq('group_code', groupCode);
+
+        if (rangError) {
+            console.error('Hiba a ranglista betöltésekor:', rangError);
+        } else if (mentettAdatok) {
+            mentettAdatok.forEach(item => {
+                const kartyaElem = document.getElementById(item.id);
+                
+                if (kartyaElem) {
+                    let celZona = null;
+
+                    if (item.kategoria === 'forras') {
+                        const eredetiKategoria = kartyaElem.dataset.kategoria;
+                        celZona = getListaDivByKategoria(eredetiKategoria);
+                    } else {
+                        // Keresés több lehetséges HTML struktúrára felkészülve:
+                        // 1. .ranglista-dropzone[data-kategoria="A"]
+                        // 2. [data-kategoria="A"] .tier-tartalom / .dropzone
+                        // 3. #tier-A
+                        celZona = document.querySelector(`[data-kategoria="${item.kategoria}"] .tier-tartalom`) ||
+                                  document.querySelector(`[data-kategoria="${item.kategoria}"] .ranglista-dropzone`) ||
+                                  document.querySelector(`.ranglista-dropzone[data-kategoria="${item.kategoria}"]`) ||
+                                  document.querySelector(`[data-kategoria="${item.kategoria}"]`) ||
+                                  document.getElementById(`tier-${item.kategoria}`);
+                    }
+
+                    if (celZona) {
+                        celZona.appendChild(kartyaElem);
+                    } else {
+                        console.warn(`Nem található célzóna a(z) ${item.kategoria} kategóriához!`);
+                    }
+                } else {
+                    console.warn(`Nem található kártya a DOM-ban ezzel az ID-val: ${item.id}`);
+                }
+            });
+        }
     }
 
     frissitsSzamlalokat();
@@ -152,24 +108,19 @@ async function kategoriatValaszt(kategoriaNev) {
     let celZona;
 
     if (kategoriaNev === 'forras') {
-        const prefix = aktivElemId.split('-')[0];
-        if (prefix === 'vodka') celZona = document.getElementById('vodkaLista');
-        else if (prefix === 'whiskey') celZona = document.getElementById('whiskeyLista');
-        else if (prefix === 'likor') celZona = document.getElementById('likorLista');
-        else if (prefix === 'bitter') celZona = document.getElementById('bitterLista');
-        else if (prefix === 'sor') celZona = document.getElementById('sorLista');
-        else if (prefix === 'bor') celZona = document.getElementById('borLista');
-        else if (prefix === 'froccs') celZona = document.getElementById('froccsLista');
-        else if (prefix === 'cider') celZona = document.getElementById('ciderLista');
-        else celZona = document.getElementById('italLista');
+        const eredetiKategoria = kartyaElem.dataset.kategoria;
+        celZona = getListaDivByKategoria(eredetiKategoria);
     } else {
-        celZona = document.querySelector(`.ranglista-dropzone[data-kategoria="${kategoriaNev}"]`);
+        celZona = document.querySelector(`[data-kategoria="${kategoriaNev}"] .tier-tartalom`) ||
+                  document.querySelector(`[data-kategoria="${kategoriaNev}"] .ranglista-dropzone`) ||
+                  document.querySelector(`.ranglista-dropzone[data-kategoria="${kategoriaNev}"]`) ||
+                  document.querySelector(`[data-kategoria="${kategoriaNev}"]`) ||
+                  document.getElementById(`tier-${kategoriaNev}`);
     }
 
     if (kartyaElem && celZona) {
         celZona.appendChild(kartyaElem);
 
-        // 🔒 MENTÉS CSAK AKKOR, HA BE VAN JELENTKEZVE CSOPORTBA[cite: 6]
         if (groupCode) {
             const { error } = await _supabase
                 .from('ital_ranglista')
@@ -182,8 +133,6 @@ async function kategoriatValaszt(kategoriaNev) {
             if (error) {
                 console.error('Hiba a mentés során:', error);
             }
-        } else {
-            console.warn('Kijelentkezett állapot: A rangsorolás nem mentődik az adatbázisba.');
         }
     }
 
@@ -196,33 +145,44 @@ function modalBezár() {
     aktivElemId = null;
 }
 
+function getListaDivByKategoria(kategoria) {
+    const kat = kategoria ? kategoria.toLowerCase() : 'egyeb';
+    switch (kat) {
+        case 'vodka': return document.getElementById('vodkaLista');
+        case 'whiskey': return document.getElementById('whiskeyLista');
+        case 'likor': 
+        case 'likőr': return document.getElementById('likorLista');
+        case 'bitter': return document.getElementById('bitterLista');
+        case 'sor': 
+        case 'sör': return document.getElementById('sorLista');
+        case 'cider': return document.getElementById('ciderLista');
+        case 'bor': return document.getElementById('borLista');
+        case 'froccs': 
+        case 'fröccs': return document.getElementById('froccsLista');
+        default: return document.getElementById('italLista');
+    }
+}
+
 function frissitsSzamlalokat() {
-    const kategóriak = [
-        { lista: Vodkak.length, elem: document.getElementById('vodkaLista'), szamlalo: document.getElementById('szamlalo-vodka') },
-        { lista: Whiskeyk.length, elem: document.getElementById('whiskeyLista'), szamlalo: document.getElementById('szamlalo-whiskey') },
-        { lista: Likorok.length, elem: document.getElementById('likorLista'), szamlalo: document.getElementById('szamlalo-likor') },
-        { lista: Bitterek.length, elem: document.getElementById('bitterLista'), szamlalo: document.getElementById('szamlalo-bitter') },
-        { lista: Sorok.length, elem: document.getElementById('sorLista'), szamlalo: document.getElementById('szamlalo-sor') },
-        { lista: Ciderek.length, elem: document.getElementById('ciderLista'), szamlalo: document.getElementById('szamlalo-cider') },
-        { lista: Borok.length, elem: document.getElementById('borLista'), szamlalo: document.getElementById('szamlalo-bor') },
-        { lista: Froccsok.length, elem: document.getElementById('froccsLista'), szamlalo: document.getElementById('szamlalo-froccs') },
-        { lista: Italok.length, elem: document.getElementById('italLista'), szamlalo: document.getElementById('szamlalo-egyeb') }
-    ];
+    const forrasDobozok = document.querySelectorAll('.forras-doboz');
 
-    kategóriak.forEach(kat => {
-        if (kat.szamlalo && kat.elem) {
-            const jelenlegiDb = kat.elem.getElementsByClassName('ital-kartya').length;
-            kat.szamlalo.textContent = `${jelenlegiDb} / ${kat.lista}`;
+    forrasDobozok.forEach(doboz => {
+        const listaDiv = doboz.querySelector('.ital-lista');
+        const szamlalo = doboz.querySelector('.forras-fejlec span') || doboz.querySelector('.szamlalo');
 
-            const doboz = kat.elem.closest('.forras-doboz');
+        if (listaDiv) {
+            const jelenlegiDb = listaDiv.getElementsByClassName('ital-kartya').length;
+            const osszesDb = doboz.getAttribute('data-osszes') || jelenlegiDb;
 
-            if (doboz) {
-                if (jelenlegiDb === 0) {
-                    kat.elem.style.display = 'none';
-                    doboz.style.display = 'none';
-                } else {
-                    kat.elem.style.display = 'flex';
-                }
+            if (szamlalo) {
+                szamlalo.textContent = `${jelenlegiDb} / ${osszesDb}`;
+            }
+
+            if (parseInt(jelenlegiDb) === 0) {
+                doboz.style.display = 'none';
+            } else {
+                doboz.style.display = 'block';
+                listaDiv.style.display = 'flex';
             }
         }
     });
