@@ -7,30 +7,120 @@ document.addEventListener('DOMContentLoaded', () => {
   const loggedWrapper = get('logged-in-wrapper'), notice = get('login-notice');
   const btnLogout = get('logout-btn'), btnSave = get('save-settings-btn');
   const status = get('settings-status');
+  const toggleCodeVisibilityBtn = get('toggle-code-visibility');
 
-  // Custom Dropdown elemek
-  const userDropdown = get('custom-user-dropdown');
-  const userSelectedText = get('user-dropdown-selected-text');
-  const userOptionsContainer = get('user-dropdown-options');
+  // Tab váltó elemek
+  const tabs = document.querySelectorAll('.sm-tab-btn');
+  const tabContents = document.querySelectorAll('.sm-tab-content');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tabContents.forEach(c => c.classList.remove('active'));
+
+      tab.classList.add('active');
+      get(`tab-${tab.dataset.tab}`).classList.add('active');
+    });
+  });
 
   const setStatus = (msg, color) => {
     status.innerText = msg;
     status.style.color = color;
   };
 
-  // Custom Dropdown nyitása / zárása
-  userDropdown.addEventListener('click', (e) => {
-    e.stopPropagation();
-    userDropdown.classList.toggle('open');
-  });
+  // Csoportkód elrejtése / Megjelenítése (👁️ ikon vagy fókusz)
+  if (toggleCodeVisibilityBtn && codeInput) {
+    toggleCodeVisibilityBtn.addEventListener('click', () => {
+      const isPassword = codeInput.type === 'password';
+      codeInput.type = isPassword ? 'text' : 'password';
+      toggleCodeVisibilityBtn.textContent = isPassword ? '🙈' : '👁️';
+    });
 
-  document.addEventListener('click', () => {
-    userDropdown.classList.remove('open');
-  });
+    codeInput.addEventListener('focus', () => {
+      codeInput.type = 'text';
+      if (toggleCodeVisibilityBtn) toggleCodeVisibilityBtn.textContent = '🙈';
+    });
 
-  // Tagok feltöltése az egyedi dropdownba
+    codeInput.addEventListener('blur', () => {
+      codeInput.type = 'password';
+      if (toggleCodeVisibilityBtn) toggleCodeVisibilityBtn.textContent = '👁️';
+    });
+  }
+
+  // 1. TÉMA CUSTOM DROPDOWN
+  const themeDropdown = get('custom-theme-dropdown');
+  const themeSelectedText = get('theme-dropdown-selected-text');
+  const themeOptionsContainer = get('theme-dropdown-options');
+
+  const themes = [
+    { id: 'dark', name: '🌙 Dark (Alapértelmezett)' },
+    { id: 'light', name: '☀️ Light' },
+    { id: 'discord', name: '🎮 Discord Classic' },
+    { id: 'discord-brown', name: '🪵 Discord Meleg Barna' },
+    { id: 'discord-purple', name: '🔮 Discord Mélylila' },
+    { id: 'cyberpunk', name: '🤖 Cyberpunk Neon' }
+  ];
+
+  const currentTheme = localStorage.getItem('goats_theme') || 'dark';
+  const foundTheme = themes.find(t => t.id === currentTheme);
+  if (themeSelectedText && foundTheme) {
+    themeSelectedText.textContent = foundTheme.name;
+  }
+
+  if (themeOptionsContainer) {
+    themeOptionsContainer.innerHTML = '';
+    themes.forEach(t => {
+      const optionDiv = document.createElement('div');
+      optionDiv.className = `dropdown-option ${t.id === currentTheme ? 'selected' : ''}`;
+      optionDiv.textContent = t.name;
+
+      optionDiv.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.documentElement.setAttribute('data-theme', t.id);
+        localStorage.setItem('goats_theme', t.id);
+        themeSelectedText.textContent = t.name;
+
+        const allOpts = themeOptionsContainer.querySelectorAll('.dropdown-option');
+        allOpts.forEach(o => o.classList.remove('selected'));
+        optionDiv.classList.add('selected');
+
+        themeDropdown.classList.remove('open');
+      });
+
+      themeOptionsContainer.appendChild(optionDiv);
+    });
+  }
+
+  if (themeDropdown) {
+    themeDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeAllCustomDropdowns();
+      themeDropdown.classList.toggle('open');
+    });
+  }
+
+  // 2. USER CUSTOM DROPDOWN
+  const userDropdown = get('custom-user-dropdown');
+  const userSelectedText = get('user-dropdown-selected-text');
+  const userOptionsContainer = get('user-dropdown-options');
+
+  if (userDropdown) {
+    userDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeAllCustomDropdowns();
+      userDropdown.classList.toggle('open');
+    });
+  }
+
+  function closeAllCustomDropdowns() {
+    if (themeDropdown) themeDropdown.classList.remove('open');
+    if (userDropdown) userDropdown.classList.remove('open');
+  }
+
+  document.addEventListener('click', closeAllCustomDropdowns);
+
   const populateUserSelect = (members) => {
-    if (!members || members.length === 0) return;
+    if (!members || members.length === 0 || !userOptionsContainer) return;
 
     const currentUser = localStorage.getItem('goats_current_user');
     userOptionsContainer.innerHTML = '';
@@ -53,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('goats_current_user', member);
         userSelectedText.textContent = member;
         
-        // Kijelölési stílus frissítése
         const allOpts = userOptionsContainer.querySelectorAll('.dropdown-option');
         allOpts.forEach(o => o.classList.remove('selected'));
         optionDiv.classList.add('selected');
@@ -72,13 +161,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const isLogged = !!code;
 
     codeInput.value = code;
+    codeInput.type = 'password';
+    if (toggleCodeVisibilityBtn) toggleCodeVisibilityBtn.textContent = '👁️';
+
     membersInput.value = members.join(', ');
     codeInput.disabled = isLogged;
 
     loggedWrapper.style.display = isLogged ? 'block' : 'none';
     notice.style.display = isLogged ? 'none' : 'block';
-    btnLogout.style.display = isLogged ? 'block' : 'none';
     btnSave.style.display = isLogged ? 'none' : 'block';
+    
+    // A kijelentkezés gomb mindig látható az alsó láblécben, ha be van jelentkezve!
+    btnLogout.style.display = isLogged ? 'block' : 'none';
 
     if (isLogged) populateUserSelect(members);
 
@@ -113,6 +207,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (confirm('Biztosan ki szeretnél jelentkezni a csoportból?')) {
       localStorage.removeItem('goats_group_code');
       localStorage.removeItem('goats_group_members');
+      localStorage.removeItem('goats_current_user');
+      localStorage.removeItem('goats_group_pages');
       setStatus(' Kijelentkezés...', '#ef4444');
       setTimeout(() => location.reload(), 500);
     }
@@ -150,31 +246,58 @@ function injectSettingsUI() {
           <h3>Beállítások</h3>
           <button id="close-modal-btn" class="sm-close-btn">&times;</button>
         </div>
-        
-        <label class="sm-label">Csoport kódja:</label>
-        <input type="text" id="group-code-input" class="sm-input" />
-        
-        <p id="login-notice" class="sm-notice">🔒 A tagok szerkesztéséhez először lépj be a csoport kódjával!</p>
-        
-        <div id="logged-in-wrapper" style="display:none;">
-          <label class="sm-label">Én vagyok a csoportból:</label>
-          
-          <!-- Custom Single-Select Dropdown -->
-          <div id="custom-user-dropdown" class="custom-dropdown">
-            <div class="dropdown-selected">
-              <span id="user-dropdown-selected-text">Válaszd ki, hogy ki vagy...</span>
-              <span class="arrow">▼</span>
-            </div>
-            <div id="user-dropdown-options" class="dropdown-options"></div>
-          </div>
 
-          <label class="sm-label">Tagok (vesszővel elválasztva):</label>
-          <input type="text" id="group-members-input" class="sm-input" placeholder="Peti, Géza, Vivi" />
+        <div class="sm-tabs">
+          <button class="sm-tab-btn active" data-tab="altalanos">🎨 Megjelenés</button>
+          <button class="sm-tab-btn" data-tab="csoport">👥 Csoport</button>
         </div>
 
-        <button id="save-settings-btn" class="sm-btn sm-btn-save">Belépés</button>
-        <button id="logout-btn" class="sm-btn sm-btn-logout">Kijelentkezés</button>
-        <p id="settings-status"></p>
+        <div class="sm-body">
+          <!-- TAB 1: MEGJELENÉS -->
+          <div id="tab-altalanos" class="sm-tab-content active">
+            <label class="sm-label">Téma kiválasztása:</label>
+            <div id="custom-theme-dropdown" class="custom-dropdown">
+              <div class="dropdown-selected">
+                <span id="theme-dropdown-selected-text">🌙 Dark (Alapértelmezett)</span>
+                <span class="arrow">▼</span>
+              </div>
+              <div id="theme-dropdown-options" class="dropdown-options"></div>
+            </div>
+          </div>
+
+          <!-- TAB 2: CSOPORT -->
+          <div id="tab-csoport" class="sm-tab-content">
+            <label class="sm-label">Csoport kódja:</label>
+            <div style="position: relative; display: flex; align-items: center; margin-bottom: 15px;">
+              <input type="password" id="group-code-input" class="sm-input" style="margin-bottom: 0; padding-right: 40px;" placeholder="Pl. duckies" />
+              <button id="toggle-code-visibility" type="button" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; font-size: 16px;">👁️</button>
+            </div>
+            
+            <p id="login-notice" class="sm-notice">🔒 A tagok szerkesztéséhez először lépj be a csoport kódjával!</p>
+            
+            <div id="logged-in-wrapper" style="display:none;">
+              <label class="sm-label">Én vagyok a csoportból:</label>
+              <div id="custom-user-dropdown" class="custom-dropdown">
+                <div class="dropdown-selected">
+                  <span id="user-dropdown-selected-text">Válaszd ki, hogy ki vagy...</span>
+                  <span class="arrow">▼</span>
+                </div>
+                <div id="user-dropdown-options" class="dropdown-options"></div>
+              </div>
+
+              <label class="sm-label">Tagok (vesszővel elválasztva):</label>
+              <input type="text" id="group-members-input" class="sm-input" placeholder="Peti, Géza, Vivi" />
+            </div>
+
+            <button id="save-settings-btn" class="sm-btn sm-btn-save">Belépés</button>
+          </div>
+        </div>
+
+        <!-- FIX KÖZÖS LÁBLÉC -->
+        <div class="sm-footer">
+          <p id="settings-status"></p>
+          <button id="logout-btn" class="sm-btn sm-btn-logout">Kijelentkezés</button>
+        </div>
       </div>
     </div>
   `);

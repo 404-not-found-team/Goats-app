@@ -5,6 +5,7 @@
     padding: 30px;
     border-radius: 16px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    box-sizing: border-box;
 }
 
 .tartozasok-grid {
@@ -22,6 +23,7 @@
     flex-direction: column;
     min-height: 340px;
     border-top: 4px solid transparent;
+    box-sizing: border-box;
 }
 
 .box h3 {
@@ -35,11 +37,11 @@
 
 .tartozas-kartya {
     background-color: var(--inner-bg);
-    padding: 10px;
+    padding: 12px;
     border-radius: 8px;
     margin-bottom: 8px;
     border-left: 3px solid transparent;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--text-primary);
 }
 
@@ -58,66 +60,96 @@
     transition: 0.2s;
 }
 
+/* JAVÍTOTT BEVITELI MEZŐK ÉS DROPDOWN STÍLUSOK */
 .input-tartozasok {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr auto;
-    gap: 10px;
-    margin-bottom: 30px;
-}
-
-.input-tartozasok input {
-    padding: 12px 15px;
-    background-color: var(--input-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    color: var(--text-primary);
-    font-size: 0.95rem;
-    outline: none;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+    align-items: center; 
     width: 100%;
 }
 
-.input-tartozasok input:focus {
+.input-tartozasok input[type="text"],
+.input-tartozasok input[type="number"] {
+    flex: 1;
+    padding: 0 16px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+    height: 52px; /* Megnövelt magasság a jobb megjelenésért */
+    line-height: 52px;
+    box-sizing: border-box;
+    margin: 0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-tartozasok input[type="text"]:focus,
+.input-tartozasok input[type="number"]:focus {
     border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
 .input-tartozasok input[type="button"] {
     background-color: var(--accent-color);
     color: #ffffff;
     border: none;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s;
-    padding: 12px 20px;
-    border-radius: 8px;
+    transition: background-color 0.3s, transform 0.1s;
+    padding: 0 24px;
+    border-radius: 10px;
+    height: 52px; 
+    line-height: 52px;
+    box-sizing: border-box;
+    margin: 0;
+    flex-shrink: 0;
 }
 
 .input-tartozasok input[type="button"]:hover {
     background-color: var(--accent-hover);
 }
 
+.input-tartozasok input[type="button"]:active {
+    transform: scale(0.98);
+}
+
 .custom-dropdown {
     position: relative;
-    width: 100%;
+    flex: 1;
+    height: 52px;
+    margin: 0;
 }
 
 .dropdown-btn {
     background-color: var(--input-bg);
     color: var(--text-primary);
-    padding: 12px 16px;
+    padding: 0 16px;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     user-select: none;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.95rem;
-    height: 100%;
+    font-size: 1rem;
+    width: 100%;
+    height: 52px;
+    box-sizing: border-box;
+    margin: 0;
+    transition: border-color 0.2s;
+}
+
+.dropdown-btn:hover {
+    border-color: var(--text-secondary);
 }
 
 .dropdown-btn::after {
     content: '▼';
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     opacity: 0.7;
     margin-left: 10px;
 }
@@ -125,16 +157,16 @@
 .dropdown-content {
     display: none;
     position: absolute;
-    top: 105%;
+    top: calc(100% + 6px);
     left: 0;
     width: 100%;
-    max-height: 200px;
+    max-height: 220px;
     overflow-y: auto;
     background-color: var(--input-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 10px;
     z-index: 100;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 
 .dropdown-content.show {
@@ -142,13 +174,14 @@
 }
 
 .dropdown-item {
-    padding: 10px 14px;
+    padding: 12px 16px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     cursor: pointer;
     transition: background 0.2s;
     color: var(--text-primary);
+    font-size: 0.95rem;
 }
 
 .dropdown-item:hover {
@@ -158,8 +191,8 @@
 .dropdown-item input[type="checkbox"] {
     cursor: pointer;
     accent-color: var(--accent-color);
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
 }
 
 .dropdown-item.selected {
@@ -168,9 +201,11 @@
     font-weight: bold;
 }
 
+/* RESZPONZIVITÁS */
 @media (max-width: 900px) {
     .input-tartozasok {
-        grid-template-columns: 1fr 1fr;
+        flex-wrap: wrap;
+        gap: 12px;
     }
 
     .tartozasok-grid {
@@ -179,7 +214,19 @@
 }
 
 @media (max-width: 600px) {
-    .input-tartozasok,
+    .input-tartozasok {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .input-tartozasok input[type="text"],
+    .input-tartozasok input[type="number"],
+    .input-tartozasok .custom-dropdown,
+    .input-tartozasok input[type="button"] {
+        width: 100%;
+        height: 52px;
+    }
+
     .tartozasok-grid {
         grid-template-columns: 1fr;
     }

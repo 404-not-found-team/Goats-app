@@ -8,10 +8,14 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/main.css">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script type="module" src="js/main.js"></script>
-    <script src="js/pages/index.js"></script>
-    <script src="js/utils/galeria.js"></script>
+
+    <script defer src="js/pages/index.js"></script>
+    <script defer src="js/utils/galeria.js"></script>
+    <script defer src="js/components/naptar.js"></script>
 </head>
 
 <body>
@@ -57,7 +61,7 @@
     </div>
 
     <div id="bejelentkezett-nezet" class="hatter" style="display: none;">
-         <div class="videok" id="youtube-doboz">
+        <div class="videok" id="youtube-doboz">
             <i class="fa-solid fa-caret-left nyil video-nyil"></i>
             <iframe width="600" height="600" src="https://www.youtube.com/embed/qGmIoFmBnKs?autoplay=1&mute=1&rel=0"
                 frameborder="0"
@@ -80,9 +84,39 @@
             <i class="fa-solid fa-caret-right nyil" onclick="kovKep()"></i>
         </div>
 
-        <div class="naptar" id="naptar-doboz">
-           <h1>Naptár hamarosan...</h1>
+        <div class="naptar-kontener">
+            <div class="naptar-fejlec">
+                <button id="elozo-honap-btn">&lt;</button>
+                <h2 id="naptar-honap-nev">2026 Szeptember</h2>
+                <button id="kovetkezo-honap-btn">&gt;</button>
+            </div>
+
+            <div class="naptar-napok-fejlec">
+                <span>H</span><span>K</span><span>Sze</span><span>Cs</span><span>P</span><span>Szo</span><span>V</span>
+            </div>
+
+            <div id="naptar-rács" class="naptar-racs"></div>
+
+            <button id="uj-esemeny-gomb" class="sm-btn sm-btn-save" style="margin-top: 15px;">+ Új esemény</button>
         </div>
+
+        <!-- Új Esemény Modal -->
+        <div id="esemeny-modal" class="sm-overlay">
+            <div class="sm-card">
+                <div class="sm-header">
+                    <h3>Esemény hozzáadása</h3>
+                    <button id="close-esemeny-modal" class="sm-close-btn">&times;</button>
+                </div>
+                <label class="sm-label">Esemény neve:</label>
+                <input type="text" id="esemeny-cim-input" class="sm-input" placeholder="Pl. Buli, Mozi, Sörözés" />
+
+                <label class="sm-label">Dátum:</label>
+                <input type="date" id="esemeny-datum-input" class="sm-input" />
+
+                <button id="ment-esemeny-btn" class="sm-btn sm-btn-save">Mentés</button>
+            </div>
+        </div>
+    </div>
     </div>
 </body>
 

@@ -16,7 +16,7 @@ async function betoltKepek() {
         return;
     }
 
-    const { data, error } = await _supabase
+    const { data, error } = await supabase
         .storage
         .from(BUCKET_NEV)
         .list(groupCode, {
@@ -33,7 +33,7 @@ async function betoltKepek() {
     const fajlok = data ? data.filter(item => item.id !== null && item.name !== '.emptyFolderPlaceholder') : [];
 
     kepekLista = fajlok.map(fajl => {
-        const { data: publicData } = _supabase
+        const { data: publicData } = supabase
             .storage
             .from(BUCKET_NEV)
             .getPublicUrl(`${groupCode}/${fajl.name}`);
@@ -49,7 +49,7 @@ async function betoltKepek() {
 
 function frissitGaleria() {
     const groupCode = localStorage.getItem('goats_group_code');
-    if (!groupCode) return; // Kijelentkezve ne fusson le!
+    if (!groupCode) return;
 
     const elemBal = document.getElementById("kepBal");
     const elemKozep = document.getElementById("kepKozep");
@@ -62,7 +62,7 @@ function frissitGaleria() {
         placeholder.id = 'galeria-placeholder';
         placeholder.style.cssText = `
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 100%; height: 100%; min-height: 280px; color: #a1a1aa; text-align: center; font-family: sans-serif;
+            width: 100%; height: 100%; min-height: 200px; color: #a1a1aa; text-align: center; font-family: sans-serif;
             background: #18181b; border-radius: 16px; border: 1px solid #27272a; box-sizing: border-box; padding: 20px;
         `;
         galeriaDoboz.appendChild(placeholder);
@@ -85,9 +85,9 @@ function frissitGaleria() {
         if (placeholder) {
             placeholder.style.display = 'flex';
             placeholder.innerHTML = `
-                <span style="font-size: 40px; margin-bottom: 12px;">🖼️</span>
-                <p style="margin: 0; font-weight: bold; color: #fff; font-size: 18px;">Még nincsenek képek</p>
-                <span style="font-size: 14px; margin-top: 6px; color: #a1a1aa;">Töltsd fel az első képet a gombbal!</span>
+                <span style="font-size: 32px; margin-bottom: 8px;">🖼️</span>
+                <p style="margin: 0; font-weight: bold; color: #fff; font-size: 16px;">Még nincsenek képek</p>
+                <span style="font-size: 13px; margin-top: 4px; color: #a1a1aa;">Töltsd fel az első képet a gombbal!</span>
             `;
         }
         return;
@@ -142,7 +142,7 @@ async function feltoltKepek(event) {
         const egyediNev = `${Date.now()}-${Math.round(Math.random() * 1e6)}.${kiterjesztes}`;
         const eleresiUt = `${groupCode}/${egyediNev}`;
 
-        const { error } = await _supabase
+        const { error } = await supabase
             .storage
             .from(BUCKET_NEV)
             .upload(eleresiUt, fajl);
@@ -163,42 +163,16 @@ async function feltoltKepek(event) {
     await betoltKepek();
 }
 
-// JAVÍTOTT KELANDOZÓ/LAYOUT IGAZÍTÁS
 function frissitsKezdolapElrendezes() {
     const currentGroup = localStorage.getItem('goats_group_code');
-    
-    // Ha nincs bejelentkezve, NEM nyúlunk az elemek stilizálásához!
     if (!currentGroup) return;
 
     const ytDoboz = document.getElementById('youtube-doboz');
-    const naptarDoboz = document.getElementById('naptar-doboz');
-    const hatterKontener = document.querySelector('.hatter');
-    const kepekDoboz = document.querySelector('.kepek');
 
     if (currentGroup === 'duckies') {
         if (ytDoboz) ytDoboz.style.display = 'flex';
-        if (naptarDoboz) naptarDoboz.style.display = 'block';
-        if (hatterKontener) hatterKontener.style.display = '';
-        if (kepekDoboz) {
-            kepekDoboz.style.width = '';
-            kepekDoboz.style.minWidth = '';
-        }
     } else {
         if (ytDoboz) ytDoboz.style.display = 'none';
-        if (naptarDoboz) naptarDoboz.style.display = 'none';
-
-        if (hatterKontener) {
-            hatterKontener.style.display = 'flex';
-            hatterKontener.style.justifyContent = 'center';
-            hatterKontener.style.alignItems = 'center';
-            hatterKontener.style.width = '100%';
-        }
-
-        if (kepekDoboz) {
-            kepekDoboz.style.width = '100%';
-            kepekDoboz.style.maxWidth = '500px';
-            kepekDoboz.style.minHeight = '280px';
-        }
     }
 }
 

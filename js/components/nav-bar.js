@@ -14,22 +14,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     let allowedPages = publicPages;
 
     if (isLogged) {
-        const cachedPages = localStorage.getItem('goats_group_pages');
-        if (cachedPages) {
-            allowedPages = JSON.parse(cachedPages);
-        } else {
-            const { data } = await _supabase
-                .from('groups')
-                .select('enabled_pages')
-                .eq('group_code', groupCode)
-                .maybeSingle();
+        const { data } = await _supabase
+            .from('groups')
+            .select('enabled_pages')
+            .eq('group_code', groupCode)
+            .maybeSingle();
 
-            if (data && data.enabled_pages) {
-                allowedPages = data.enabled_pages;
-                localStorage.setItem('goats_group_pages', JSON.stringify(allowedPages));
-            } else {
-                allowedPages = htmlNevek; 
-            }
+        if (data && data.enabled_pages) {
+            allowedPages = data.enabled_pages;
+        } else {
+            allowedPages = htmlNevek; 
         }
     }
 
