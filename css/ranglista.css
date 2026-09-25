@@ -3,7 +3,7 @@
     --legjobb: #ffdf7f;
     --elmegy: #bfff7f;
     --soha: #7fff7f;
-    --megjobbansoha:#7fbfff;
+    --megjobbansoha: #7fbfff;
 }
 
 .ranglista-fo-tarolo {
@@ -43,11 +43,11 @@
     color: #111; 
 }
 
-.cimke.legeslegjobb { background-color: var(--legeslegjobb, #ff7f7f); }
-.cimke.legjobb { background-color: var(--legjobb, #ffdf7f); }
-.cimke.elmegy { background-color: var(--elmegy, #bfff7f); }
-.cimke.soha { background-color: var(--soha, #7fff7f); }
-.cimke.megjobbansoha { background-color: var(--megjobbansoha, #7fbfff); }
+.cimke.legeslegjobb { background-color: var(--legeslegjobb); }
+.cimke.legjobb { background-color: var(--legjobb); }
+.cimke.elmegy { background-color: var(--elmegy); }
+.cimke.soha { background-color: var(--soha); }
+.cimke.megjobbansoha { background-color: var(--megjobbansoha); }
 
 .ranglista-dropzone,
 .ital-lista {
@@ -65,9 +65,11 @@
 }
 
 .forras-doboz h3 {
-    margin-bottom: 10px;
+    padding: 10px 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
     color: var(--text-primary);
-    padding: 0 5px;
+    margin-bottom: 5px;
 }
 
 .ital-kartya {
@@ -120,15 +122,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.forras-doboz h3 {
-    background-color: transparent;
-    padding: 10px 15px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--text-primary);
-    margin-bottom: 5px;
 }
 
 .forras-fejlec {
@@ -249,33 +242,13 @@
     margin-top: 8px;
 }
 
-#legeslegjobb {
-    background: var(--legeslegjobb);
-}
-
-#legjobb {
-    background: var(--legjobb);
-}
-
-#elmegy {
-    background: var(--elmegy);
-}
-
-#soha {
-    background: var(--soha);
-}
-
-#megjobbansoha{
-    background: var(--megjobbansoha);
-}
-
-#forras {
-    background: #6c757d;
-}
-
-#bezar {
-    background: #343a40;
-}
+#legeslegjobb { background: var(--legeslegjobb); }
+#legjobb { background: var(--legjobb); }
+#elmegy { background: var(--elmegy); }
+#soha { background: var(--soha); }
+#megjobbansoha { background: var(--megjobbansoha); }
+#forras { background: #6c757d; }
+#bezar { background: #343a40; }
 
 @media (max-width: 360px) {
     .ranglista-fo-tarolo {

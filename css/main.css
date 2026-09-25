@@ -25,7 +25,7 @@
     --accent-hover: #4752c4;
 }
 
-/* Discord Meleg Barna (az 1. képed alapján) */
+/* Discord Meleg Barna */
 [data-theme="discord-brown"] {
     --bg-color: #1f1b18;
     --bg-gradient: linear-gradient(135deg, #2e1c14 0%, #120d0a 100%);
@@ -39,7 +39,7 @@
     --accent-hover: #b45309;
 }
 
-/* Discord Mélylila (a 2. képed alapján) */
+/* Discord Mélylila */
 [data-theme="discord-purple"] {
     --bg-color: #181528;
     --bg-gradient: linear-gradient(135deg, #2d1f47 0%, #0f0c1b 100%);
@@ -67,7 +67,7 @@
     --accent-hover: #cc0044;
 }
 
-/* Világos téma átmenettel */
+/* Világos téma */
 [data-theme="light"] {
     --bg-color: #f4f4f5;
     --bg-gradient: linear-gradient(135deg, #e4e4e7 0%, #ffffff 100%);
@@ -104,7 +104,7 @@ ul {
     display: flex;
     background-color: var(--card-bg);
     padding: 15px 20px;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius, 10px);
     margin-bottom: 30px;
     box-shadow: var(--box-shadow);
     gap: 15px;
@@ -123,12 +123,13 @@ ul li a:hover {
     color: var(--text-primary);
     background-color: var(--inner-bg);
 }
+
 ul li.active a {
     color: #ffffff;
     background-color: var(--accent-color);
 }
 
-#navBar{
+#navBar {
     border-radius: 10px;
 }
 
@@ -147,12 +148,9 @@ ul li.active a {
 }
 
 @keyframes feltoltes-pulzalas {
-
-    0%,
-    100% {
+    0%, 100% {
         opacity: 1;
     }
-
     50% {
         opacity: 0.4;
     }
@@ -239,7 +237,7 @@ h1 {
     height: 120px;
 }
 
-.kepek i:hover{
+.kepek i:hover {
     cursor: pointer;
 }
 
@@ -250,14 +248,16 @@ h1 {
     grid-column: 2 / 4;
 }
 
-.naptar h1{
+.naptar h1 {
     margin: auto;
     font-size: 2rem;
-}.index-container {
+}
+
+.index-container {
     width: 100%;
     max-width: 900px;
     display: flex;
-    flex-direction: column; /* Egymás alá rendezi a fő szekciókat */
+    flex-direction: column;
     gap: 25px;
     margin: 20px auto;
     padding: 0 15px;
@@ -390,7 +390,7 @@ h1 {
     transform: scale(1.15);
 }
 
-.video-nyil{
+.video-nyil {
     visibility: hidden;
 }
 
@@ -401,30 +401,6 @@ h1 {
 .teljes-szoveg {
     display: inline;
 }
-
-#settings-btn {
-        position: fixed;
-        top: 15px;
-        right: 15px;
-        z-index: 9999;
-        background: #1e1e24;
-        color: #fff;
-        border: 1px solid #333;
-        border-radius: 50%;
-        width: 44px;
-        height: 44px;
-        font-size: 20px;
-        cursor: pointer;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      }
-
-      @media (max-width: 600px) {
-        #settings-btn {
-          top: auto;
-          bottom: 15px;
-          right: 15px;
-        }
-      }
 
 @media screen and (max-width: 1200px) {
     .hatter {
@@ -476,7 +452,7 @@ h1 {
         gap: 8px;
     }
 
-    #kepFeltoltesGomb{
+    #kepFeltoltesGomb {
         top: 10px;
         right: 10px;
     }
@@ -496,8 +472,6 @@ h1 {
         height: 70px;
     }
 }
-
-
 
 @media (max-width: 600px) {
     body {
@@ -659,7 +633,7 @@ h1 {
     }
 }
 
-/* Custom Single Select Dropdown (Mint a Tartozásoknál) */
+/* Custom Single Select Dropdown */
 .custom-dropdown {
     position: relative;
     width: 100%;

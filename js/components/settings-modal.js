@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const membersArray = membersInput.value.split(',').map(n => n.trim()).filter(Boolean);
     
     try {
-      const { error } = await _supabase.from('groups').upsert(
+      const { error } = await supabase.from('groups').upsert(
         { group_code: rawCode, members: membersArray, updated_at: new Date() },
         { onConflict: 'group_code' }
       );
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setStatus('Feldolgozás...', 'var(--text-secondary)');
 
     try {
-      const { data, error } = await _supabase.from('groups').select('*').eq('group_code', rawCode).maybeSingle();
+      const { data, error } = await supabase.from('groups').select('*').eq('group_code', rawCode).maybeSingle();
       if (error) throw error;
 
       const members = data?.members || [];
