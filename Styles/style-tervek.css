@@ -25,7 +25,7 @@
 }
 
 .input input[type="text"]:focus {
-    border-color: #6366f1;
+    border-color: var(--accent-color);
 }
 
 .input input[type="button"] {
@@ -39,7 +39,7 @@
 }
 
 .input input[type="button"]:hover {
-    background-color: #4f46e5;
+    background-color: var(--accent-hover);
 }
 
 .tervek {
@@ -61,24 +61,41 @@
 .terv-item input[type="checkbox"] {
     width: 18px;
     height: 18px;
-    accent-color: #6366f1;
+    accent-color: var(--accent-color);
     cursor: pointer;
 }
 
-.terv-item span {
+/* KIZÁRÓLAG a terv leírását tartalmazó span terüljön ki */
+.terv-item span:not(.delete-btn) {
     flex: 1;
     font-size: 1rem;
     word-break: break-word;
     color: var(--text-primary);
 }
 
+/* A kuka ikon fix méretű marad */
+.terv-item .delete-btn {
+    cursor: pointer;
+    padding-left: 8px;
+    font-size: 1rem;
+    user-select: none;
+    transition: transform 0.2s, opacity 0.2s;
+    flex-shrink: 0;
+}
+
+.terv-item .delete-btn:hover {
+    opacity: 0.7;
+    transform: scale(1.1);
+}
+
 .terv-item.completed {
-    background-color: #181818;
-    border-color: #222;
+    background-color: var(--inner-bg);
+    border-color: var(--border-color);
     opacity: 0.6;
 }
 
-.terv-item.completed span {
+/* Csak a terv szövegét húzzuk át, a kuka ikont ne */
+.terv-item.completed span:not(.delete-btn) {
     text-decoration: line-through;
-    color: #6b7280;
+    color: var(--text-secondary);
 }

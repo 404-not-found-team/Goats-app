@@ -195,7 +195,7 @@ h1 {
 }
 
 .kepek {
-    position: relative; /* Szükséges az abszolút pozicionáláshoz */
+    position: relative; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -205,6 +205,7 @@ h1 {
     grid-column: 2 / 4;
     padding: 20px;
     gap: 15px;
+    height: fit-content;
 }
 
 #kepFeltoltesGomb {
@@ -243,12 +244,132 @@ h1 {
 }
 
 .naptar {
-    margin: auto;
     background-color: var(--card-bg);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     border-radius: 15px;
     grid-column: 2 / 4;
-    padding: 20px;
+}
+
+.naptar h1{
+    margin: auto;
+    font-size: 2rem;
+}.index-container {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column; /* Egymás alá rendezi a fő szekciókat */
+    gap: 25px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+/* Hero Fejléc */
+.hero-section {
+    background-color: var(--card-bg, #1e1e24);
+    padding: 30px 20px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color, #333);
+}
+
+.hero-section h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--text-primary, #fff);
+}
+
+.hero-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary, #aaa);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+/* Bejelentkezési kártya */
+.login-guide-card {
+    background-color: var(--inner-bg, #181513);
+    border: 2px dashed var(--accent-color, #d97706);
+    padding: 25px 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.login-guide-card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: var(--text-primary, #fff);
+}
+
+.steps-list {
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: var(--text-primary, #fff);
+    font-size: 0.95rem;
+}
+
+.steps-list strong {
+    color: var(--accent-color, #d97706);
+}
+
+.notice-text {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: var(--text-secondary, #aaa);
+}
+
+/* Funkció kártyák grid */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.feature-card {
+    background-color: var(--card-bg, #1e1e24);
+    padding: 20px 15px;
+    border-radius: 14px;
+    text-align: center;
+    border: 1px solid var(--border-color, #333);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.feature-icon {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+}
+
+.feature-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: var(--text-primary, #fff);
+}
+
+.feature-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #aaa);
+    line-height: 1.4;
+}
+
+/* Reszponzivitás mobilon */
+@media (max-width: 768px) {
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-section h1 {
+        font-size: 1.6rem;
+    }
+
+    .login-guide-card {
+        padding: 20px;
+    }
 }
 
 .naptar iframe {
@@ -404,4 +525,212 @@ h1 {
     .input input[type="text"] {
         width: 40px;
     }
+}
+
+/* Settings Modal & Button Stílusok */
+#settings-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 9999;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+#settings-btn:hover {
+    transform: scale(1.05);
+    background-color: var(--inner-bg);
+}
+
+.sm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+}
+
+.sm-card {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    padding: 24px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 380px;
+    border: 1px solid var(--border-color);
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.sm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.sm-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.sm-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+}
+
+.sm-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.sm-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    box-sizing: border-box;
+}
+
+.sm-notice {
+    font-size: 12px;
+    color: #eab308;
+    margin: -5px 0 15px;
+}
+
+.sm-btn {
+    width: 100%;
+    padding: 12px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.sm-btn:hover {
+    opacity: 0.9;
+}
+
+.sm-btn-save {
+    background: #22c55e;
+    color: #fff;
+}
+
+.sm-btn-logout {
+    display: none;
+    margin-top: 10px;
+    background: #ef4444;
+    color: #fff;
+}
+
+#settings-status {
+    font-size: 13px;
+    text-align: center;
+    margin: 10px 0 0;
+}
+
+@media (max-width: 600px) {
+    #settings-btn {
+        top: auto;
+        bottom: 15px;
+        right: 15px;
+    }
+}
+
+/* Custom Single Select Dropdown (Mint a Tartozásoknál) */
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.dropdown-selected {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.dropdown-selected:hover {
+    border-color: var(--accent-color);
+    background: var(--inner-bg);
+}
+
+.dropdown-selected .arrow {
+    font-size: 10px;
+    color: var(--text-secondary);
+    transition: transform 0.2s ease;
+}
+
+.custom-dropdown.open .dropdown-selected .arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-options {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    max-height: 160px;
+    overflow-y: auto;
+    z-index: 10005;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.custom-dropdown.open .dropdown-options {
+    display: block;
+}
+
+.dropdown-option {
+    padding: 10px 14px;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.15s ease;
+}
+
+.dropdown-option:hover {
+    background: var(--inner-bg);
+    color: var(--accent-color);
+}
+
+.dropdown-option.selected {
+    background: var(--accent-color);
+    color: #ffffff;
+    font-weight: bold;
 }

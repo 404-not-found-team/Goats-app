@@ -20,28 +20,92 @@ function getNakNek(name) {
 const PALETTE = [
     '#470047',
     '#FF7F50',
-    '#5D3FD3', 
-    '#15BF16', 
-    '#9C27B0', 
-    '#FF9800', 
-    '#00BCD4', 
-    '#E91E63', 
-    '#4CAF50', 
-    '#FFEB3B', 
-    '#3F51B5', 
-    '#009688', 
-    '#FF5722', 
-    '#795548', 
-    '#607D8B'  
+    '#5D3FD3',
+    '#15BF16',
+    '#9C27B0',
+    '#FF9800',
+    '#00BCD4',
+    '#E91E63',
+    '#4CAF50',
+    '#FFEB3B',
+    '#3F51B5',
+    '#009688',
+    '#FF5722',
+    '#795548',
+    '#607D8B'
 ];
 
 function getMemberColor(index) {
     if (index < PALETTE.length) {
         return PALETTE[index];
     }
-
     const extraIndex = index - PALETTE.length;
-    const hue = (extraIndex * 137.5) % 360; 
+    return `hsl(${(extraIndex * 137.5) % 360}, 70%, 50%)`;
+}
+
+let selectedKinek = '';
+
+function toggleDropdown() {
+    const content = document.getElementById('dropdownContent');
+    const isShowing = content ? content.classList.contains('show') : false;
+    closeAllDropdowns();
+    if (content && !isShowing) content.classList.add('show');
+}
+
+function toggleKinekDropdown() {
+    const content = document.getElementById('kinekDropdownContent');
+    const isShowing = content ? content.classList.contains('show') : false;
+    closeAllDropdowns();
+    if (content && !isShowing) content.classList.add('show');
+}
+
+function closeAllDropdowns() {
+    const c1 = document.getElementById('dropdownContent');
+    const c2 = document.getElementById('kinekDropdownContent');
+    if (c1) c1.classList.remove('show');
+    if (c2) c2.classList.remove('show');
+}
+
+window.addEventListener('click', function (e) {
+    const d1 = document.getElementById('kiTartozikDropdown');
+    const d2 = document.getElementById('kinekDropdown');
+
+    if ((!d1 || !d1.contains(e.target)) && (!d2 || !d2.contains(e.target))) {
+        closeAllDropdowns();
+    }
+});
+
+function selectKinek(member, ragozottNev) {
+    selectedKinek = member;
+    const label = document.getElementById('kinekDropdownLabel');
+    if (label) {
+        label.textContent = ragozottNev;
+    }
+
+    const items = document.querySelectorAll('#kinekDropdownContent .dropdown-item');
+    items.forEach(item => {
+        if (item.dataset.value === member) {
+            item.classList.add('selected');
+        } else {
+            item.classList.remove('selected');
+        }
+    });
+
+    closeAllDropdowns();
+}
+
+function updateDropdownLabel() {
+    const checkedBoxes = document.querySelectorAll('#dropdownContent input[type="checkbox"]:checked');
+    const label = document.getElementById('dropdownBtnLabel');
+    if (!label) return;
+
+    if (checkedBoxes.length === 0) {
+        label.textContent = 'Ki tartozik?';
+    } else if (checkedBoxes.length === 1) {
+        label.textContent = checkedBoxes[0].value;
+    } else {
+        label.textContent = `${checkedBoxes.length} ember kiválasztva`;
+    }
 }
 
 async function initMembersAndContainers() {
@@ -61,41 +125,51 @@ async function initMembersAndContainers() {
         members = JSON.parse(localStorage.getItem('goats_group_members') || '[]');
     }
 
-    const kinekSelect = document.getElementById('kinekInput');
-    const kiTartozikSelect = document.getElementById('kiTartozikInput');
+    const kinekContent = document.getElementById('kinekDropdownContent');
+    const dropdownContent = document.getElementById('dropdownContent');
 
-    if (kinekSelect && kiTartozikSelect) {
-        kinekSelect.innerHTML = '<option value="" disabled selected>Kinek tartozik?</option>';
-        kiTartozikSelect.innerHTML = '<option value="" disabled selected>Ki tartozik?</option>';
-
+    if (kinekContent) {
+        kinekContent.innerHTML = '';
         members.forEach(member => {
-            const opt1 = document.createElement('option');
-            opt1.value = member;
-            opt1.textContent = getNakNek(member);
-            kinekSelect.appendChild(opt1);
+            const ragozottNev = getNakNek(member);
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'dropdown-item';
+            itemDiv.dataset.value = member;
+            itemDiv.textContent = ragozottNev;
 
-            const opt2 = document.createElement('option');
-            opt2.value = member;
-            opt2.textContent = member;
-            kiTartozikSelect.appendChild(opt2);
+            itemDiv.addEventListener('click', () => selectKinek(member, ragozottNev));
+            kinekContent.appendChild(itemDiv);
+        });
+    }
+
+    if (dropdownContent) {
+        dropdownContent.innerHTML = '';
+        members.forEach(member => {
+            const itemDiv = document.createElement('label');
+            itemDiv.className = 'dropdown-item';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = member;
+            checkbox.addEventListener('change', updateDropdownLabel);
+
+            const span = document.createElement('span');
+            span.textContent = member;
+
+            itemDiv.appendChild(checkbox);
+            itemDiv.appendChild(span);
+            dropdownContent.appendChild(itemDiv);
         });
     }
 
     const gridContainer = document.querySelector('.tartozasok-grid');
     if (gridContainer) {
-        gridContainer.innerHTML = ''; 
-
+        gridContainer.innerHTML = '';
         members.forEach((member, index) => {
-            const normalizedName = member
-                .toLowerCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .trim();
-
+            const normalizedName = member.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
             const boxDiv = document.createElement('div');
             boxDiv.className = 'box';
-            
-            const color = getMemberColor(index, Math.max(members.length, 20));
+            const color = getMemberColor(index);
             boxDiv.style.borderTopColor = color;
 
             const h3 = document.createElement('h3');
@@ -146,7 +220,7 @@ async function loadTartozasok() {
 
                 const memberIndex = members.indexOf(item.kitartozik);
                 if (memberIndex !== -1) {
-                    const color = getMemberColor(memberIndex, Math.max(members.length, 20));
+                    const color = getMemberColor(memberIndex);
                     card.style.borderLeftColor = color;
                 }
 
@@ -161,6 +235,7 @@ async function loadTartozasok() {
 
                 const deleteSpan = document.createElement('span');
                 deleteSpan.textContent = '🗑️';
+                deleteSpan.title = 'Törlés';
                 deleteSpan.style.cursor = 'pointer';
                 deleteSpan.style.paddingLeft = '8px';
                 deleteSpan.addEventListener('click', () => deleteTartozas(item.id));
@@ -210,33 +285,43 @@ async function addTartozas() {
     const groupCode = localStorage.getItem('goats_group_code');
     const miert = document.getElementById('miertInput').value.trim();
     const mennyiert = document.getElementById('mennyiertInput').value.trim();
-    const kinek = document.getElementById('kinekInput').value;
-    const kiTartozik = document.getElementById('kiTartozikInput').value;
+    const kinek = selectedKinek;
 
-    if (!miert || !mennyiert || !kinek || !kiTartozik) {
-        alert('Kérlek töltsd ki az összes mezőt!');
+    const checkedBoxes = document.querySelectorAll('#dropdownContent input[type="checkbox"]:checked');
+    const kijeloltKik = Array.from(checkedBoxes).map(cb => cb.value);
+
+    if (!miert || !mennyiert || !kinek || kijeloltKik.length === 0) {
+        alert('Kérlek töltsd ki az összes mezőt és válassz ki legalább egy adóst!');
         return;
     }
 
+    const ujTartozasok = kijeloltKik.map(ki => ({
+        miert: miert,
+        mennyiert: mennyiert,
+        kinek: kinek,
+        kitartozik: ki,
+        group_code: groupCode
+    }));
+
     const { error } = await _supabase
         .from('tartozasok')
-        .insert([{
-            miert: miert,
-            mennyiert: mennyiert,
-            kinek: kinek,
-            kitartozik: kiTartozik,
-            group_code: groupCode
-        }]);
+        .insert(ujTartozasok);
 
     if (error) {
         console.error('Hiba a mentéskor:', error);
+        alert('Hiba történt a mentés során!');
         return;
     }
 
     document.getElementById('miertInput').value = '';
     document.getElementById('mennyiertInput').value = '';
-    document.getElementById('kinekInput').selectedIndex = 0;
-    document.getElementById('kiTartozikInput').selectedIndex = 0;
+
+    selectedKinek = '';
+    document.getElementById('kinekDropdownLabel').textContent = 'Kinek tartozik?';
+    document.querySelectorAll('#kinekDropdownContent .dropdown-item').forEach(i => i.classList.remove('selected'));
+
+    checkedBoxes.forEach(cb => cb.checked = false);
+    updateDropdownLabel();
 
     loadTartozasok();
 }

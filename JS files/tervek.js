@@ -8,7 +8,7 @@ async function loadTervek() {
     const { data, error } = await _supabase
         .from('tervek')
         .select('*')
-        .eq('group_code', groupCode) // Csak a csoport tervei[cite: 4]
+        .eq('group_code', groupCode)
         .order('id', { ascending: false });
 
     if (error) {
@@ -35,7 +35,7 @@ async function add() {
         .insert([{ 
             text: text, 
             completed: false,
-            group_code: groupCode // Mentés group_code-dal[cite: 4]
+            group_code: groupCode
         }])
         .select();
 
@@ -45,6 +45,25 @@ async function add() {
     }
 
     inputField.value = '';
+    loadTervek();
+}
+
+// Terv törlése Supabase-ből
+async function deleteTerv(id) {
+    const groupCode = localStorage.getItem('goats_group_code');
+    
+    const { error } = await _supabase
+        .from('tervek')
+        .delete()
+        .eq('id', id)
+        .eq('group_code', groupCode);
+
+    if (error) {
+        console.error('Hiba a törléskor:', error);
+        alert('Hiba történt a törlés során!');
+        return;
+    }
+
     loadTervek();
 }
 
@@ -64,6 +83,16 @@ function renderTervItem(id, text, isCompleted) {
     const span = document.createElement('span');
     span.textContent = text;
 
+    // Törlés gomb (kuka ikon)
+    const deleteSpan = document.createElement('span');
+    deleteSpan.textContent = '🗑️';
+    deleteSpan.className = 'delete-btn';
+    deleteSpan.title = 'Törlés';
+    deleteSpan.addEventListener('click', function(e) {
+        e.stopPropagation();
+        deleteTerv(id);
+    });
+
     checkbox.addEventListener('change', async function () {
         const groupCode = localStorage.getItem('goats_group_code');
         const checked = checkbox.checked;
@@ -72,7 +101,7 @@ function renderTervItem(id, text, isCompleted) {
             .from('tervek')
             .update({ completed: checked })
             .eq('id', id)
-            .eq('group_code', groupCode); // Biztonsági frissítés[cite: 4]
+            .eq('group_code', groupCode);
 
         if (error) {
             console.error('Hiba a frissítéskor:', error);
@@ -84,6 +113,7 @@ function renderTervItem(id, text, isCompleted) {
 
     itemDiv.appendChild(checkbox);
     itemDiv.appendChild(span);
+    itemDiv.appendChild(deleteSpan);
 
     if (isCompleted) {
         container.appendChild(itemDiv);

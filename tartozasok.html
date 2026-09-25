@@ -11,7 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="JS files/main.js"></script>
     <script src="JS files/tartozasok.js"></script>
-
 </head>
 
 <body>
@@ -24,13 +23,21 @@
             <input type="text" id="miertInput" placeholder="Miért">
             <input type="text" id="mennyiertInput" placeholder="Mennyiért">
 
-            <select id="kinekInput">
-                <option value="" disabled selected>Kinek</option>
-            </select>
+            <div class="custom-dropdown" id="kinekDropdown">
+                <div class="dropdown-btn" onclick="toggleKinekDropdown()">
+                    <span id="kinekDropdownLabel">Kinek tartozik?</span>
+                </div>
+                <div class="dropdown-content" id="kinekDropdownContent">
+                </div>
+            </div>
 
-            <select id="kiTartozikInput">
-                <option value="" disabled selected>Ki tartozik</option>
-            </select>
+            <div class="custom-dropdown" id="kiTartozikDropdown">
+                <div class="dropdown-btn" onclick="toggleDropdown()">
+                    <span id="dropdownBtnLabel">Ki tartozik?</span>
+                </div>
+                <div class="dropdown-content" id="dropdownContent">
+                </div>
+            </div>
 
             <input type="button" value="Hozzáad" onclick="addTartozas()">
         </div>

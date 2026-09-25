@@ -13,7 +13,6 @@ async function betoltKepek() {
     
     if (!groupCode) {
         kepekLista = [];
-        frissitGaleria();
         return;
     }
 
@@ -50,10 +49,11 @@ async function betoltKepek() {
 
 function frissitGaleria() {
     const groupCode = localStorage.getItem('goats_group_code');
+    if (!groupCode) return; // Kijelentkezve ne fusson le!
+
     const elemBal = document.getElementById("kepBal");
     const elemKozep = document.getElementById("kepKozep");
     const elemJobb = document.getElementById("kepJobb");
-
     const galeriaDoboz = document.querySelector('.kepek');
 
     let placeholder = document.getElementById('galeria-placeholder');
@@ -76,22 +76,6 @@ function frissitGaleria() {
         });
     };
 
-    // 1. ESET: NINCS BEJELENTKEZVE CSOPORTBA
-    if (!groupCode) {
-        toggleGombok(false);
-
-        if (placeholder) {
-            placeholder.style.display = 'flex';
-            placeholder.innerHTML = `
-                <span style="font-size: 40px; margin-bottom: 12px;">🔒</span>
-                <p style="margin: 0; font-weight: bold; color: #fff; font-size: 18px;">Nincs kiválasztva csoport</p>
-                <span style="font-size: 14px; margin-top: 6px; color: #a1a1aa;">Kattints a ⚙️ beállítások gombra a belépéshez!</span>
-            `;
-        }
-        return;
-    }
-
-    // 2. ESET: BE VAN JELENTKEZVE, DE NINCS KÉP
     if (kepekLista.length === 0) {
         toggleGombok(false);
 
@@ -109,7 +93,6 @@ function frissitGaleria() {
         return;
     }
 
-    // 3. ESET: NORMÁL MŰKÖDÉS
     if (placeholder) placeholder.style.display = 'none';
     toggleGombok(true);
 
@@ -180,9 +163,13 @@ async function feltoltKepek(event) {
     await betoltKepek();
 }
 
-// KEZDŐLAP DYNAMIC LAYOUT IGAZÍTÁS
+// JAVÍTOTT KELANDOZÓ/LAYOUT IGAZÍTÁS
 function frissitsKezdolapElrendezes() {
     const currentGroup = localStorage.getItem('goats_group_code');
+    
+    // Ha nincs bejelentkezve, NEM nyúlunk az elemek stilizálásához!
+    if (!currentGroup) return;
+
     const ytDoboz = document.getElementById('youtube-doboz');
     const naptarDoboz = document.getElementById('naptar-doboz');
     const hatterKontener = document.querySelector('.hatter');

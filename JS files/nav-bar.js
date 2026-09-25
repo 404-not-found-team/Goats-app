@@ -1,35 +1,69 @@
-const htmlNevek = ["index", "tartozasok", "tervek", "ranglista", "goatsgame"];
-const oldalNevek = ["Kezdőlap", "Tartozások", "Tervek", "Ranglista", "Goats Game"];
-const oldalEmojik = ["🏠", "💸", "📋", "🍹", "🎮"];
+document.addEventListener('DOMContentLoaded', async () => {
+    const htmlNevek = ["index", "tartozasok", "tervek", "ranglista", "goatsgame"];
+    const oldalNevek = ["Kezdőlap", "Tartozások", "Tervek", "Ranglista", "Goats Game"];
+    const oldalEmojik = ["🏠", "💸", "📋", "🏆", "🎮"];
 
-const navBar = document.getElementById("navBar");
+    const publicPages = ["index", "ranglista"];
 
-const aktualisUtvonal = window.location.pathname.split('/').pop() || "index.html";
+    const groupCode = localStorage.getItem('goats_group_code');
+    const isLogged = !!groupCode;
+    const navBar = document.getElementById("navBar");
 
-for (let i = 0; i < htmlNevek.length; i++) {
+    if (!navBar) return;
 
-    const oldal = document.createElement('li');
-    const link = document.createElement('a');
-    const teljesNev = document.createElement('span');
-    const emojiNev = document.createElement('span');
+    let allowedPages = publicPages;
 
-    const celFajl = `${htmlNevek[i]}.html`;
+    if (isLogged) {
+        const cachedPages = localStorage.getItem('goats_group_pages');
+        if (cachedPages) {
+            allowedPages = JSON.parse(cachedPages);
+        } else {
+            const { data } = await _supabase
+                .from('groups')
+                .select('enabled_pages')
+                .eq('group_code', groupCode)
+                .maybeSingle();
 
-    if (aktualisUtvonal === celFajl) {
-        oldal.className = "active";
+            if (data && data.enabled_pages) {
+                allowedPages = data.enabled_pages;
+                localStorage.setItem('goats_group_pages', JSON.stringify(allowedPages));
+            } else {
+                allowedPages = htmlNevek; 
+            }
+        }
     }
 
-    teljesNev.textContent = `${oldalNevek[i]}`;
-    teljesNev.className = "teljes-szoveg"
-    link.appendChild(teljesNev)
+    const aktualisUtvonal = window.location.pathname.split('/').pop() || "index.html";
+    navBar.innerHTML = '';
 
-    emojiNev.textContent = `${oldalEmojik[i]}`;
-    emojiNev.className = "rovid-szoveg"
-    link.appendChild(emojiNev)
+    for (let i = 0; i < htmlNevek.length; i++) {
+        const pageKey = htmlNevek[i];
+        const celFajl = `${pageKey}.html`;
 
-    link.href = celFajl;
-    oldal.appendChild(link)
+        if (!allowedPages.includes(pageKey)) {
+            continue;
+        }
 
-    navBar.appendChild(oldal)
-}
+        const oldal = document.createElement('li');
+        const link = document.createElement('a');
+        const teljesNev = document.createElement('span');
+        const emojiNev = document.createElement('span');
 
+        if (aktualisUtvonal === celFajl) {
+            oldal.className = "active";
+        }
+
+        teljesNev.textContent = `${oldalNevek[i]}`;
+        teljesNev.className = "teljes-szoveg";
+        link.appendChild(teljesNev);
+
+        emojiNev.textContent = `${oldalEmojik[i]}`;
+        emojiNev.className = "rovid-szoveg";
+        link.appendChild(emojiNev);
+
+        link.href = celFajl;
+        oldal.appendChild(link);
+
+        navBar.appendChild(oldal);
+    }
+});

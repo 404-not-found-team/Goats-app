@@ -10,17 +10,54 @@
     <link rel="stylesheet" href="Styles/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="JS files/main.js"></script>
+    <script src="JS files/index.js"></script>
+    <script src="JS files/kep-mozgatas.js"></script>
 </head>
 
 <body>
-    <!--9G68dPhZRLRVHDL1-->
     <ul id="navBar"></ul>
 
-    <!-- Rejtett fájlbeviteli mező a kép feltöltéshez. Mobilon kamera/galéria választót nyit, gépen fájlböngészőt. -->
-    <input type="file" id="kepFeltoltesInput" accept="image/*" multiple style="display: none;">
+    <div id="kijelentkezett-nezet" class="index-container" style="display: none;">
+        <header class="hero-section">
+            <h1>Üdvözöl a Goats App-ban! 🐐</h1>
+            <p class="hero-subtitle">
+                A legegyszerűbb alkalmazás közös tartozások, tervek és ranglisták kezelésére baráti társaságoknak.
+            </p>
+        </header>
 
-    <div class="hatter">
-        <div class="videok" id="youtube-doboz">
+        <section class="login-guide-card">
+            <h2>🔒 Hogyan léphetsz be?</h2>
+            <ol class="steps-list">
+                <li>Kattints a jobb felső (vagy mobilan jobb alsó) <strong>⚙️ Beállítások</strong> gombra.</li>
+                <li>Írd be a baráti társaságod <strong>csoportkódját</strong>.</li>
+                <li>Kattints a <strong>Belépés</strong> gombra a csoportod eléréséhez!</li>
+            </ol>
+            <p class="notice-text">
+                💡 <em>Még nincs csoportkódod? Hozz létre egyet a Beállítások menüben egy egyedi kód megadásával!</em>
+            </p>
+        </section>
+
+        <section class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">💸</div>
+                <h3>Tartozások</h3>
+                <p>Vezessétek átláthatóan, hogy ki kinek és mennyivel tartozik.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3>Tervek & Ötletek</h3>
+                <p>Gyűjtsétek egy helyen a közös programötleteket és utazásokat.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏆</div>
+                <h3>Ranglista</h3>
+                <p>Kövessétek nyomon a csoporton belüli állásokat és statisztikákat.</p>
+            </div>
+        </section>
+    </div>
+
+    <div id="bejelentkezett-nezet" class="hatter" style="display: none;">
+         <div class="videok" id="youtube-doboz">
             <i class="fa-solid fa-caret-left nyil video-nyil"></i>
             <iframe width="600" height="600" src="https://www.youtube.com/embed/qGmIoFmBnKs?autoplay=1&mute=1&rel=0"
                 frameborder="0"
@@ -30,6 +67,7 @@
         </div>
 
         <div class="kepek">
+            <input type="file" id="kepFeltoltesInput" accept="image/*" multiple style="display: none;">
             <a href="#" id="kepFeltoltesGomb" onclick="nyisdMegFajlValasztot(); return false;" title="Kép feltöltése">
                 <i class="fa-solid fa-upload"></i>
             </a>
@@ -43,13 +81,9 @@
         </div>
 
         <div class="naptar" id="naptar-doboz">
-            <iframe
-                src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FBudapest&showPrint=0&hl=hu&showTitle=0&showTabs=0&showTz=0&src=YWtvc2hlcmN6ZWcwOEBnbWFpbC5jb20&src=YWIwMDcxNzM4ODg5MTFjNjI3ZDhiNDNlMjY4ZTE4OTVlNmU2NzUzNGVmNTljN2ZmMGM1MmY4YjJjYmViZDQ2NUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=aHUuaHVuZ2FyaWFuI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&color=%238e24aa&color=%239e69af&color=%23e67c73"
-                style="border-width:0" height="350" frameborder="0" scrolling="no"></iframe>
+           <h1>Naptár hamarosan...</h1>
         </div>
     </div>
 </body>
-
-<script src="JS files/kep-mozgatas.js"></script>
 
 </html>
