@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (currentUser && members.includes(currentUser)) {
       userSelectedText.textContent = currentUser;
-      setStatus(` Belépve mint: ${currentUser}`, '#22c55e');
+      setStatus(` Üdvözlünk: ${currentUser}`, '#22c55e');
     } else {
       userSelectedText.textContent = 'Válaszd ki, hogy ki vagy...';
       setStatus('⚠️ Válaszd ki, ki vagy te a csoportból!', '#eab308');
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         localStorage.setItem('goats_current_user', member);
         userSelectedText.textContent = member;
-        
+
         const allOpts = userOptionsContainer.querySelectorAll('.dropdown-option');
         allOpts.forEach(o => o.classList.remove('selected'));
         optionDiv.classList.add('selected');
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loggedWrapper.style.display = isLogged ? 'block' : 'none';
     notice.style.display = isLogged ? 'none' : 'block';
     btnSave.style.display = isLogged ? 'none' : 'block';
-    
+
     // A kijelentkezés gomb mindig látható az alsó láblécben, ha be van jelentkezve!
     btnLogout.style.display = isLogged ? 'block' : 'none';
 
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!rawCode) return;
 
     const membersArray = membersInput.value.split(',').map(n => n.trim()).filter(Boolean);
-    
+
     try {
       const { error } = await supabase.from('groups').upsert(
         { group_code: rawCode, members: membersArray, updated_at: new Date() },
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (confirm('Biztosan ki szeretnél jelentkezni a csoportból?')) {
       localStorage.removeItem('goats_group_code');
       localStorage.removeItem('goats_group_members');
-      localStorage.removeItem('goats_current_user');
+      //localStorage.removeItem('goats_current_user');
       localStorage.removeItem('goats_group_pages');
       setStatus(' Kijelentkezés...', '#ef4444');
       setTimeout(() => location.reload(), 500);
@@ -215,26 +215,38 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   btnSave.addEventListener('click', async () => {
-    const rawCode = codeInput.value.trim().toLowerCase();
-    if (!rawCode) return setStatus('⚠️ Adj meg egy csoportkódot!', '#ef4444');
+  const rawCode = codeInput.value.trim().toLowerCase();
+  if (!rawCode) return setStatus('⚠️ Adj meg egy csoportkódot!', '#ef4444');
 
-    setStatus('Feldolgozás...', 'var(--text-secondary)');
+  setStatus('Feldolgozás...', 'var(--text-secondary)');
 
-    try {
-      const { data, error } = await supabase.from('groups').select('*').eq('group_code', rawCode).maybeSingle();
-      if (error) throw error;
+  try {
+    // Lekérdezzük a csoportot az adott kód alapján
+    const { data, error } = await supabase
+      .from('groups')
+      .select('*')
+      .eq('group_code', rawCode)
+      .maybeSingle();
 
-      const members = data?.members || [];
-      localStorage.setItem('goats_group_code', rawCode);
-      localStorage.setItem('goats_group_members', JSON.stringify(members));
+    if (error) throw error;
 
-      setStatus(' Sikeres belépés!', '#22c55e');
-      setTimeout(() => location.reload(), 800);
-    } catch (err) {
-      console.error(err);
-      setStatus('❌ Hiba történt!', '#ef4444');
+    // ELENŐRZÉS: Ha a 'data' null, akkor a csoportkód nem létezik a táblában
+    if (!data) {
+      return setStatus('❌ Hibás vagy nem létező csoportkód!', '#ef4444');
     }
-  });
+
+    // Ha létezik, elmentjük a tagokat és a kódot a localStore-ba
+    const members = data.members || [];
+    localStorage.setItem('goats_group_code', rawCode);
+    localStorage.setItem('goats_group_members', JSON.stringify(members));
+
+    setStatus(' Sikeres belépés!', '#22c55e');
+    setTimeout(() => location.reload(), 800);
+  } catch (err) {
+    console.error(err);
+    setStatus('❌ Hiba történt a belépés során!', '#ef4444');
+  }
+});
 });
 
 function injectSettingsUI() {
@@ -248,13 +260,13 @@ function injectSettingsUI() {
         </div>
 
         <div class="sm-tabs">
-          <button class="sm-tab-btn active" data-tab="altalanos">🎨 Megjelenés</button>
-          <button class="sm-tab-btn" data-tab="csoport">👥 Csoport</button>
+        <button class="sm-tab-btn active" data-tab="csoport">👥 Csoport</button>
+          <button class="sm-tab-btn " data-tab="altalanos">🎨 Megjelenés</button>
         </div>
 
         <div class="sm-body">
           <!-- TAB 1: MEGJELENÉS -->
-          <div id="tab-altalanos" class="sm-tab-content active">
+          <div id="tab-altalanos" class="sm-tab-content ">
             <label class="sm-label">Téma kiválasztása:</label>
             <div id="custom-theme-dropdown" class="custom-dropdown">
               <div class="dropdown-selected">
@@ -266,10 +278,10 @@ function injectSettingsUI() {
           </div>
 
           <!-- TAB 2: CSOPORT -->
-          <div id="tab-csoport" class="sm-tab-content">
+          <div id="tab-csoport" class="sm-tab-content active">
             <label class="sm-label">Csoport kódja:</label>
             <div style="position: relative; display: flex; align-items: center; margin-bottom: 15px;">
-              <input type="password" id="group-code-input" class="sm-input" style="margin-bottom: 0; padding-right: 40px;" placeholder="Pl. duckies" />
+              <input type="password" id="group-code-input" class="sm-input" style="margin-bottom: 0; padding-right: 40px;"/>
               <button id="toggle-code-visibility" type="button" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; font-size: 16px;">👁️</button>
             </div>
             
@@ -289,13 +301,13 @@ function injectSettingsUI() {
               <input type="text" id="group-members-input" class="sm-input" placeholder="Peti, Géza, Vivi" />
             </div>
 
+            </div>
+            </div>
+            
+            <!-- FIX KÖZÖS LÁBLÉC -->
+            <div class="sm-footer">
+            <p id="settings-status"></p>
             <button id="save-settings-btn" class="sm-btn sm-btn-save">Belépés</button>
-          </div>
-        </div>
-
-        <!-- FIX KÖZÖS LÁBLÉC -->
-        <div class="sm-footer">
-          <p id="settings-status"></p>
           <button id="logout-btn" class="sm-btn sm-btn-logout">Kijelentkezés</button>
         </div>
       </div>
