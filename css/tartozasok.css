@@ -214,17 +214,25 @@
 }
 
 @media (max-width: 600px) {
-    .input-tartozasok {
+    .container-tartozasok {
+        padding: 15px; /* Mobilon több hely marad a mezőknek */
+    }
+
+   .input-tartozasok {
         flex-direction: column;
         gap: 12px;
+        width: 100%;
     }
 
     .input-tartozasok input[type="text"],
     .input-tartozasok input[type="number"],
     .input-tartozasok .custom-dropdown,
     .input-tartozasok input[type="button"] {
-        width: 100%;
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: none !important; 
         height: 52px;
+        box-sizing: border-box !important;
     }
 
     .tartozasok-grid {

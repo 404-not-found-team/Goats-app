@@ -11,6 +11,7 @@
     display: flex;
     gap: 10px;
     margin-bottom: 25px;
+    width: 100%;
 }
 
 .input input[type="text"] {
@@ -22,6 +23,7 @@
     color: var(--text-primary);
     font-size: 1rem;
     outline: none;
+    min-width: 0;
 }
 
 .input input[type="text"]:focus {
@@ -36,6 +38,7 @@
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .input input[type="button"]:hover {
@@ -94,8 +97,17 @@
     opacity: 0.6;
 }
 
-/* Csak a terv szövegét húzzuk át, a kuka ikont ne */
 .terv-item.completed span:not(.delete-btn) {
     text-decoration: line-through;
     color: var(--text-secondary);
+}
+
+@media screen and (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+
+    .input input[type="button"] {
+        padding: 12px 14px;
+    }
 }
