@@ -5,10 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const bejelentkezettDiv = document.getElementById('bejelentkezett-nezet');
 
     if (isLogged) {
-        if (kijelentkezettDiv) kijelentkezettDiv.style.display = 'none';
-        if (bejelentkezettDiv) bejelentkezettDiv.style.display = 'grid'; // vagy 'flex', a régi CSS-edtől függően
+        if (kijelentkezettDiv) kijelentkezettDiv.classList.add('hidden');
+        if (bejelentkezettDiv) bejelentkezettDiv.classList.remove('hidden');
     } else {
-        if (kijelentkezettDiv) kijelentkezettDiv.style.display = 'flex';
-        if (bejelentkezettDiv) bejelentkezettDiv.style.display = 'none';
+        if (kijelentkezettDiv) kijelentkezettDiv.classList.remove('hidden');
+        if (bejelentkezettDiv) bejelentkezettDiv.classList.add('hidden');
     }
 });

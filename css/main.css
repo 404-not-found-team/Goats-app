@@ -476,15 +476,15 @@ h1 {
     display: inline;
 }
 
-/* TELEFON NÉZET - EGYMÁS ALATT, CSS GRID FELÜLÍRÁSSAL */
+
+/* TELEFON NÉZET - EGYMÁS ALATT */
 @media screen and (max-width: 1000px) {
     body {
         padding: 10px;
     }
 
-    /* A !important segítségével kikényszerítjük a Flexbox egymás alatti elrendezést */
-    .hatter,
-    #bejelentkezett-nezet {
+    /* Bejelentkezett nézet függőleges egymás utáni elrendezése */
+    .hatter {
         display: flex !important;
         flex-direction: column !important;
         align-items: center;
@@ -493,6 +493,7 @@ h1 {
         gap: 20px;
     }
 
+    /* A gyerek elemek grid pozicionálásának felülírása és teljes szélessége */
     .videok,
     .kepek,
     .naptar-kontener {
@@ -547,6 +548,7 @@ h1 {
     .naptar-nap {
         min-height: 45px;
     }
+
     #settings-btn {
         top: auto;
         bottom: 20px;
@@ -835,4 +837,8 @@ h1 {
     background: var(--accent-color);
     color: #ffffff;
     font-weight: bold;
+}
+
+.hidden {
+    display: none !important;
 }
