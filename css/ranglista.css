@@ -1,3 +1,7 @@
+/* ==========================================================================
+   1. STRUKTÚRA ÉS KONTÉNEREN BELÜLI ELEMEK
+   ========================================================================== */
+
 :root {
     --legeslegjobb: #ff7f7f;
     --legjobb: #ffdf7f;
@@ -17,10 +21,12 @@
     box-sizing: border-box;
 }
 
+#kategoriak-kontener,
 #forras-dobozok-kontener {
     display: flex;
     flex-direction: column;
-    gap: 15px; 
+    gap: 15px;
+    width: 100%;
 }
 
 .kategoria-kontener,
@@ -36,6 +42,10 @@
     border: 1px solid var(--border-color, transparent);
 }
 
+/* ==========================================================================
+   2. CÍMKÉK ÉS FEJLÉCEK
+   ========================================================================== */
+
 .cimke {
     padding: 10px 15px;
     font-size: 1.1rem;
@@ -43,11 +53,38 @@
     color: #111; 
 }
 
-.cimke.legeslegjobb { background-color: var(--legeslegjobb); }
-.cimke.legjobb { background-color: var(--legjobb); }
-.cimke.elmegy { background-color: var(--elmegy); }
-.cimke.soha { background-color: var(--soha); }
-.cimke.megjobbansoha { background-color: var(--megjobbansoha); }
+.cimke.legeslegjobb, #legeslegjobb { background-color: var(--legeslegjobb); }
+.cimke.legjobb, #legjobb             { background-color: var(--legjobb); }
+.cimke.elmegy, #elmegy               { background-color: var(--elmegy); }
+.cimke.soha, #soha                   { background-color: var(--soha); }
+.cimke.megjobbansoha, #megjobbansoha { background-color: var(--megjobbansoha); }
+
+.forras-fejlec {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.1));
+}
+
+.forras-fejlec h3,
+.forras-doboz h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.ital-szamlalo {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   3. DROPZONE ÉS ITALKÁRTYÁK
+   ========================================================================== */
 
 .ranglista-dropzone,
 .ital-lista {
@@ -62,14 +99,6 @@
     box-sizing: border-box;
     border-bottom-left-radius: var(--border-radius, 12px);
     border-bottom-right-radius: var(--border-radius, 12px);
-}
-
-.forras-doboz h3 {
-    padding: 10px 15px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--text-primary);
-    margin-bottom: 5px;
 }
 
 .ital-kartya {
@@ -104,14 +133,10 @@
 }
 
 .ital-lista img:active,
-.ranglista-dropzone img:active {
-    cursor: grabbing;
-}
+.ranglista-dropzone img:active { cursor: grabbing; }
 
 .ital-lista img:hover,
-.ranglista-dropzone img:hover {
-    transform: scale(1.05);
-}
+.ranglista-dropzone img:hover { transform: scale(1.05); }
 
 .ital-nev {
     font-size: 12px;
@@ -124,72 +149,9 @@
     white-space: nowrap;
 }
 
-.forras-fejlec {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 15px;
-    background-color: var(--card-bg);
-    border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.1));
-}
-
-.forras-fejlec h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    color: var(--text-primary);
-}
-
-.ital-szamlalo {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    font-weight: 600;
-}
-
-#kategoriak-kontener {
-    display: flex;
-    flex-direction: column;
-    gap: 12px; 
-    margin-bottom: 10px;
-}
-
-#modal-hatter {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
-
-#hatter {
-    background: #1e1e1e;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-}
-
-#modal-kep {
-    max-height: 350px;
-    display: block;
-    margin: 0 auto 5px auto;
-}
-
-.gombok {
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.dark {
-    color: black;
-}
+/* ==========================================================================
+   4. GOMBOK ÉS MODAL-OK
+   ========================================================================== */
 
 .gomb-uj-ital {
     background-color: var(--accent-color);
@@ -207,7 +169,19 @@
     transform: scale(1.02);
 }
 
-.modal-hatter-ui {
+.gombok {
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#forras { background: #6c757d; }
+#bezar { background: #343a40; }
+
+.modal-hatter-ui,
+#modal-hatter {
     display: none;
     position: fixed;
     inset: 0;
@@ -218,7 +192,8 @@
     backdrop-filter: blur(4px);
 }
 
-.modal-doboz-ui {
+.modal-doboz-ui,
+#hatter {
     background: var(--card-bg);
     color: var(--text-primary);
     padding: 24px;
@@ -227,34 +202,21 @@
     max-width: 380px;
     border: 1px solid var(--border-color);
     box-shadow: var(--box-shadow);
+    text-align: center;
 }
 
-.modal-doboz-ui h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: var(--text-primary);
-}
-
-.modal-doboz-ui label {
-    font-size: 12px;
-    color: var(--text-secondary);
+#modal-kep {
+    max-height: 350px;
     display: block;
-    margin-top: 8px;
+    margin: 0 auto 15px auto;
 }
 
-#legeslegjobb { background: var(--legeslegjobb); }
-#legjobb { background: var(--legjobb); }
-#elmegy { background: var(--elmegy); }
-#soha { background: var(--soha); }
-#megjobbansoha { background: var(--megjobbansoha); }
-#forras { background: #6c757d; }
-#bezar { background: #343a40; }
+/* ==========================================================================
+   5. RESZPONZIVITÁS
+   ========================================================================== */
 
 @media (max-width: 360px) {
-    .ranglista-fo-tarolo {
-        padding-left: 5px;
-        padding-right: 5px;
-    }
+    .ranglista-fo-tarolo { padding: 0 5px 40px 5px; }
 
     .ranglista-dropzone,
     .ital-lista {
@@ -268,7 +230,5 @@
         max-width: 100px;
     }
 
-    .ital-kartya img {
-        max-height: 90px;
-    }
+    .ital-kartya img { max-height: 90px; }
 }
