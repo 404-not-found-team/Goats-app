@@ -595,7 +595,10 @@
 /* ==========================================================================
    7. RESZPONZIVITÁS
    ========================================================================== */
-
+.modal-image {
+  background-color: #000000; /* Fekete háttér a kép mögé, hogy a stúdióhatást utánozza */
+  border-radius: 8px;
+}
 @media (max-width: 360px) {
     .ranglista-fo-tarolo { padding: 0 5px 40px 5px; }
 
