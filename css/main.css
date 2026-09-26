@@ -98,7 +98,8 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-html, body {
+html,
+body {
     overflow-x: hidden;
     width: 100%;
 }
@@ -206,7 +207,7 @@ ul li.active a {
     border: 2px dashed var(--accent-color, #d97706);
     padding: 25px 30px;
     border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .login-guide-card h2 {
@@ -235,9 +236,11 @@ ul li.active a {
 }
 
 .features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 20px;
+    width: 100%;
 }
 
 .feature-card {
@@ -250,6 +253,9 @@ ul li.active a {
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 1 1 calc(33.333% - 20px); 
+    min-width: 240px;
+    max-width: 280px;
 }
 
 .feature-icon {
@@ -267,6 +273,86 @@ ul li.active a {
     font-size: 0.85rem;
     color: var(--text-secondary, #aaa);
     line-height: 1.4;
+}
+
+/* PWA Telepítő kártya stílusai */
+
+.install-card {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(30, 30, 30, 0.95) 100%);
+    border: 1px solid var(--accent-color);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.install-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.install-icon {
+    font-size: 2.2rem;
+    flex-shrink: 0;
+}
+
+.install-text {
+    flex: 1;
+    min-width: 220px;
+}
+
+.install-text h3 {
+    margin: 0 0 5px 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.install-text p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.install-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+    padding: 10px 20px;
+    background: var(--accent-color) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    transition: all 0.2s ease;
+}
+
+.install-btn:hover {
+    background: var(--accent-hover) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45);
+}
+
+.install-btn:active {
+    transform: translateY(0);
+}
+
+.install-btn i {
+    font-size: 0.95rem;
+}
+
+.ios-notice {
+    margin-top: 8px !important;
+    padding: 8px 12px;
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    border-radius: 8px;
+    color: #eab308 !important;
 }
 
 /* ==========================================================================
@@ -309,10 +395,23 @@ ul li.active a {
     border-radius: 8px;
 }
 
+@media screen and (min-width: 1001px) {
+    .hatter:has(#youtube-doboz[style*="display: none"]) {
+        grid-template-columns: 1fr;
+        max-width: 650px;
+        margin: 0 auto;
+    }
+
+    .hatter:has(#youtube-doboz[style*="display: none"]) .kepek,
+    .hatter:has(#youtube-doboz[style*="display: none"]) .naptar-kontener {
+        grid-column: 1 / -1 !important;
+    }
+}
+
 /* Kép galéria komponens */
 .kepek {
     border: 1px solid var(--border-color);
-    position: relative; 
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -349,18 +448,28 @@ ul li.active a {
 
 #kepFeltoltesGomb {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    z-index: 10;
+    top: 10px;
+    right: 10px;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-secondary);
-    transition: color 0.2s ease;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
 }
 
 #kepFeltoltesGomb:hover {
-    color: var(--text-primary);
+    background: var(--accent-color);
+    transform: scale(1.1);
+}
+
+#kepFeltoltesGomb i {
+    font-size: 14px;
 }
 
 #kepFeltoltesGomb.feltoltes-folyamatban {
@@ -394,8 +503,13 @@ ul li.active a {
     visibility: hidden;
 }
 
-.rovid-szoveg { display: none; }
-.teljes-szoveg { display: inline; }
+.rovid-szoveg {
+    display: none;
+}
+
+.teljes-szoveg {
+    display: inline;
+}
 
 /* Naptár komponens */
 .naptar-kontener {
@@ -761,9 +875,7 @@ ul li.active a {
     text-decoration: underline;
 }
 
-.tos-modal-overlay {
-    z-index: 10001;
-}
+.tos-modal-overlay { z-index: 10001; }
 
 .tos-modal-card {
     height: auto;
@@ -794,29 +906,20 @@ ul li.active a {
     margin-bottom: 5px;
 }
 
-.tos-modal-body p {
-    margin-bottom: 12px;
-}
+.tos-modal-body p { margin-bottom: 12px; }
+.tos-modal-body p:last-child { margin-bottom: 0; }
 
-.tos-modal-body p:last-child {
-    margin-bottom: 0;
-}
-
-.tos-modal-btn {
-    margin-top: auto;
-}
+.tos-modal-btn { margin-top: auto; }
 
 /* ==========================================================================
    8. MOBIL ÉS RESZPONZÍV SZABÁLYOK (MEDIA QUERIES)
    ========================================================================== */
 
 @media screen and (max-width: 1000px) {
-    body {
-        padding: 10px;
-    }
+    body { padding: 10px; }
 
-    /* Bejelentkezett nézet függőleges elrendezése mobilon */
-    .hatter {
+    /* Bejelentkezett nézet függőleges elrendezése mobilon (csak ha NICS ELREJTVE!) */
+    .hatter:not(.hidden):not([style*="display: none"]) {
         display: flex !important;
         flex-direction: column !important;
         align-items: center;
@@ -872,13 +975,8 @@ ul li.active a {
         right: 10px;
     }
 
-    .naptar-kontener {
-        padding: 12px 8px;
-    }
-
-    .naptar-nap {
-        min-height: 45px;
-    }
+    .naptar-kontener { padding: 12px 8px; }
+    .naptar-nap { min-height: 45px; }
 
     #settings-btn {
         top: auto;
@@ -898,14 +996,27 @@ ul li.active a {
     .rovid-szoveg { display: inline; }
 
     .features-grid {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
     }
 
-    .hero-section h1 {
-        font-size: 1.6rem;
+    .feature-card {
+        max-width: 100%;
+        width: 100%;
     }
 
-    .login-guide-card {
-        padding: 20px;
+    .hero-section h1 { font-size: 1.6rem; }
+    .login-guide-card { padding: 20px; }
+
+    .install-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .install-btn {
+        width: 100%;
+        justify-content: center;
     }
 }

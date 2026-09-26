@@ -22,7 +22,8 @@
 <body>
     <ul id="navBar"></ul>
 
-    <div style="width: 100%; max-width: 900px; margin: 0 auto 15px auto; display: flex; justify-content: flex-end;">
+    <div class="fejlec-gombok-tarolo">
+        <button id="szuro-gomb" onclick="nyisdSzuroModal()" class="gomb-szuro">🔍 Szűrők</button>
         <button id="uj-ital-gomb" onclick="nyisdUjItalModal()" class="gomb-uj-ital">➕ Új ital hozzáadása</button>
     </div>
 
@@ -32,18 +33,17 @@
     </div>
 
     <div id="modal-hatter">
-        <div id="hatter" style="max-width: 400px; width: 90%;">
+        <div id="hatter" class="modal-kis-doboz">
             <img id="modal-kep" src="" alt="Kiválasztott ital">
-            <div id="modal-nev" style="color: white; font-size: 20px; margin-bottom: 10px; font-weight: bold;"></div>
+            <div id="modal-nev" class="modal-ital-cim"></div>
             <div id="modal-alkohol-badge" class="alkohol-badge" style="display: none;"></div>
-            <div id="modal-koktel-hozzavalok-doboz"
-                style="display: none; background: var(--inner-bg); padding: 12px; border-radius: 12px; margin-bottom: 15px; text-align: left; border: 1px solid var(--border-color);">
-                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: bold;">🍹
-                    Hozzávalók és Arányok:</div>
-                <div id="modal-koktel-hozzavalok-lista" style="font-size: 0.9rem; color: var(--text-primary);"></div>
+            
+            <div id="modal-koktel-hozzavalok-doboz" class="modal-hozzavalok-box">
+                <div class="modal-hozzavalok-fejlec">🍹 Hozzávalók és Arányok:</div>
+                <div id="modal-koktel-hozzavalok-lista" class="modal-hozzavalok-lista"></div>
             </div>
 
-            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+            <div class="modal-gomb-csoport">
                 <button id="legeslegjobb" class="gombok dark" onclick="kategoriatValaszt('S')">S</button>
                 <button id="legjobb" class="gombok dark" onclick="kategoriatValaszt('A')">A</button>
                 <button id="elmegy" class="gombok dark" onclick="kategoriatValaszt('B')">B</button>
@@ -56,8 +56,8 @@
     </div>
 
     <div id="uj-ital-modal" class="modal-hatter-ui">
-        <div class="modal-doboz-ui" style="max-width: 500px; max-height: 90vh; overflow-y: auto;">
-            <h3 style="margin-bottom: 20px;">Új ital / koktél felvétele</h3>
+        <div class="modal-doboz-ui modal-nagy-doboz">
+            <h3 class="modal-alcim">Új ital / koktél felvétele</h3>
 
             <div class="floating-group">
                 <input type="text" id="uj-ital-nev" class="floating-input" placeholder=" " />
@@ -87,47 +87,44 @@
                 <label class="floating-label">Alkoholfok (%)</label>
             </div>
 
-            <div id="koktel-összeallitas-resz"
-                style="display: none; border-top: 1px dashed var(--border-color); padding-top: 15px; margin-top: 10px; text-align: left;">
-
+            <div id="koktel-összeallitas-resz" class="koktel-resz-kontener">
                 <div class="toggle-mode-container">
-                    <button type="button" id="mode-arany-btn" class="toggle-mode-btn active"
-                        onclick="valtsMódot('arany')">📐 Arányok alapján</button>
-                    <button type="button" id="mode-pontos-btn" class="toggle-mode-btn" onclick="valtsMódot('pontos')">🧪
-                        Pontos mennyiség</button>
+                    <button type="button" id="mode-arany-btn" class="toggle-mode-btn active" onclick="valtsMódot('arany')">📐 Arányok alapján</button>
+                    <button type="button" id="mode-pontos-btn" class="toggle-mode-btn" onclick="valtsMódot('pontos')">🧪 Pontos mennyiség</button>
                 </div>
 
-                <h4
-                    style="color: var(--text-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
-                    ☰ Hozzávalók
-                </h4>
+                <h4 class="hozzavalo-alcim">☰ Hozzávalók</h4>
 
-                <div id="hozzavalok-lista">
-                </div>
+                <div id="hozzavalok-lista"></div>
 
                 <button type="button" class="gomb-uj-hozzavalo" onclick="ujHozzavaloSor()">+ Új hozzávaló</button>
             </div>
 
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button onclick="mentUjItal()" class="sm-btn"
-                    style="background: var(--accent-color); color: #fff;">Hozzáadás</button>
-                <button onclick="zardUjItalModal()" class="sm-btn"
-                    style="background: var(--inner-bg); color: var(--text-primary); border: 1px solid var(--border-color);">Mégse</button>
+            <div class="modal-akcio-gombok">
+                <button onclick="mentUjItal()" class="sm-btn gomb-hozzaadas">Hozzáadás</button>
+                <button onclick="zardUjItalModal()" class="sm-btn gomb-megse">Mégse</button>
             </div>
         </div>
     </div>
 
-    <div id="koktel-recept-modal" class="modal-hatter-ui">
-        <div class="modal-doboz-ui" style="text-align: left; max-width: 450px;">
-            <h3 id="recept-modal-cim" style="color: var(--accent-color);">🍹 Koktél Recept</h3>
-            <label style="font-weight: bold; margin-top: 10px; display: block; color: var(--text-secondary);">Hozzávalók
-                és Arányok:</label>
-            <div id="recept-modal-hozzavalok"
-                style="font-size: 0.9rem; color: var(--text-primary); background: var(--inner-bg); padding: 12px; border-radius: 8px; margin-top: 6px;">
+    <div id="szuro-modal" class="modal-hatter-ui">
+        <div class="modal-doboz-ui szuro-modal-doboz">
+            <h3 class="szuro-modal-cim">🔍 Ranglista Szűrők</h3>
+
+            <label class="sm-label szuro-label">📂 Kategóriák megjelenítése:</label>
+            <div id="kategoria-szuro-list" class="szuro-pill-kontener"></div>
+
+            <label class="sm-label szuro-label szuro-label-top">🚫 Márka / Név kizárása (Enterrel add hozzá):</label>
+            <div class="szuro-input-sor">
+                <input type="text" id="kizart-kulcsszo-input" class="sm-input szuro-input" placeholder="Pl. Royal, Finlandia..." onkeydown="kezeldTagEnter(event)">
+                <button type="button" onclick="hozzaadKizartTag()" class="sm-btn gomb-plusz">+</button>
             </div>
 
-            <button onclick="zardKoktelReceptet()" class="sm-btn"
-                style="margin-top: 18px; background: var(--inner-bg); color: var(--text-primary); border: 1px solid var(--border-color);">Bezárás</button>
+            <div id="kizart-tagek-kontener" class="tag-kontener"></div>
+
+            <div class="szuro-footer">
+                <button onclick="zardSzuroModal()" class="sm-btn gomb-kesz">Kész</button>
+            </div>
         </div>
     </div>
 </body>

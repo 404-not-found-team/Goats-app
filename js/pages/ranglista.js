@@ -1,10 +1,10 @@
 let aktivElemId = null;
 let aktivItalAdat = null;
-let aktualisMod = 'arany'; // 'arany' vagy 'pontos'
+let aktualisMod = 'arany';
+let kizartMarkakTomb = [];
 
 async function inicializalas() {
     const groupCode = localStorage.getItem('goats_group_code');
-
     const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
 
     const { data: katalogus, error: katError } = await client
@@ -117,7 +117,7 @@ function getListaDivByKategoria(kategoria) {
     const kat = kategoria ? kategoria.toLowerCase() : 'egyeb';
     switch (kat) {
         case 'vodka': return document.getElementById('vodkaLista');
-        case 'rum': return document.getElementById('rumLista'); // ÚJ
+        case 'rum': return document.getElementById('rumLista');
         case 'whiskey': return document.getElementById('whiskeyLista');
         case 'likor':
         case 'likőr': return document.getElementById('likorLista');
@@ -136,6 +136,9 @@ function getListaDivByKategoria(kategoria) {
 }
 
 function frissitsSzamlalokat() {
+    const kikapcsoltKategoriak = Array.from(document.querySelectorAll('.szuro-pill:not(.aktiv)'))
+                                     .map(pill => pill.dataset.id.toLowerCase());
+
     const forrasDobozok = document.querySelectorAll('.forras-doboz');
 
     forrasDobozok.forEach(doboz => {
@@ -143,14 +146,20 @@ function frissitsSzamlalokat() {
         const szamlalo = doboz.querySelector('.ital-szamlalo');
 
         if (listaDiv) {
-            const jelenlegiDb = listaDiv.getElementsByClassName('ital-kartya').length;
-            const osszesDb = doboz.getAttribute('data-osszes') || jelenlegiDb;
+            const lathatoKartyak = Array.from(listaDiv.getElementsByClassName('ital-kartya'))
+                                       .filter(k => k.style.display !== 'none');
+            
+            const jelenlegiDb = lathatoKartyak.length;
+            const osszesDb = doboz.getAttribute('data-osszes') || listaDiv.getElementsByClassName('ital-kartya').length;
 
             if (szamlalo) {
                 szamlalo.textContent = `${jelenlegiDb} / ${osszesDb}`;
             }
 
-            if (parseInt(jelenlegiDb) === 0) {
+            const katId = listaDiv.id.replace('Lista', '').toLowerCase();
+            const veglegesKatId = katId === 'ital' ? 'egyeb' : katId;
+
+            if (kikapcsoltKategoriak.includes(veglegesKatId) || jelenlegiDb === 0) {
                 doboz.style.display = 'none';
             } else {
                 doboz.style.display = 'block';
@@ -170,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const italKategoriak = [
         { nev: 'Vodkák', id: 'vodka' },
-        { nev: 'Rumok', id: 'rum' }, // ÚJ KATEGÓRIA
+        { nev: 'Rumok', id: 'rum' },
         { nev: 'Whiskeyk', id: 'whiskey' },
         { nev: 'Likőrök', id: 'likor' },
         { nev: 'Bitterek', id: 'bitter' },
@@ -205,7 +214,147 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
         `).join('');
     }
+
+    epitSzuroUI(italKategoriak);
 });
+
+/* ==========================================================================
+   RANGLISTA SZŰRŐK LOGIKÁJA
+   ========================================================================== */
+
+function nyisdSzuroModal() {
+    document.getElementById('szuro-modal').style.display = 'flex';
+}
+
+function zardSzuroModal() {
+    document.getElementById('szuro-modal').style.display = 'none';
+}
+
+function epitSzuroUI(italKategoriak) {
+    const kontener = document.getElementById('kategoria-szuro-list');
+    if (!kontener) return;
+
+    kontener.innerHTML = italKategoriak.map(k => `
+        <div class="szuro-pill aktiv" data-id="${k.id}" onclick="toggleKategoriaPill(this)">
+            ${k.nev}
+        </div>
+    `).join('');
+
+    betoltSzuroBeallitasokat();
+}
+
+function toggleKategoriaPill(elem) {
+    elem.classList.toggle('aktiv');
+    frissitsSzureseketEsMents();
+}
+
+function kezeldTagEnter(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        hozzaadKizartTag();
+    }
+}
+
+function hozzaadKizartTag() {
+    const input = document.getElementById('kizart-kulcsszo-input');
+    if (!input) return;
+
+    const ertek = input.value.trim().toLowerCase();
+    if (ertek && !kizartMarkakTomb.includes(ertek)) {
+        kizartMarkakTomb.push(ertek);
+        input.value = '';
+        renderKizartTagem();
+        frissitsSzureseketEsMents();
+    }
+}
+
+function torolKizartTag(szoveg) {
+    kizartMarkakTomb = kizartMarkakTomb.filter(t => t !== szoveg);
+    renderKizartTagem();
+    frissitsSzureseketEsMents();
+}
+
+function renderKizartTagem() {
+    const kontener = document.getElementById('kizart-tagek-kontener');
+    if (!kontener) return;
+
+    kontener.innerHTML = kizartMarkakTomb.map(tag => `
+        <span class="kizart-tag" onclick="torolKizartTag('${tag}')">
+            ${tag} <span class="torles-x">✕</span>
+        </span>
+    `).join('');
+}
+
+async function frissitsSzureseketEsMents() {
+    const kikapcsoltKategoriak = Array.from(document.querySelectorAll('.szuro-pill:not(.aktiv)'))
+                                     .map(pill => pill.dataset.id.toLowerCase());
+
+    document.querySelectorAll('.ital-kartya').forEach(kartya => {
+        const nev = kartya.querySelector('.ital-nev')?.textContent.toLowerCase() || '';
+        const kategoria = kartya.dataset.kategoria?.toLowerCase() || '';
+
+        const kategoriaKizarva = kikapcsoltKategoriak.includes(kategoria);
+        const nevKizarva = kizartMarkakTomb.some(szoveg => nev.includes(szoveg));
+
+        if (kategoriaKizarva || nevKizarva) {
+            kartya.style.display = 'none';
+        } else {
+            kartya.style.display = 'inline-flex';
+        }
+    });
+
+    frissitsSzamlalokat();
+
+    const groupCode = localStorage.getItem('goats_group_code');
+    if (groupCode) {
+        const szuroAdat = {
+            kikapcsolt_kategoriak: kikapcsoltKategoriak,
+            kizart_szoveg_tomb: kizartMarkakTomb
+        };
+
+        const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
+        await client.from('groups').upsert({
+            group_code: groupCode,
+            filter_settings: szuroAdat,
+            updated_at: new Date()
+        }, { onConflict: 'group_code' });
+    }
+}
+
+async function betoltSzuroBeallitasokat() {
+    const groupCode = localStorage.getItem('goats_group_code');
+    if (!groupCode) return;
+
+    try {
+        const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
+        const { data, error } = await client
+            .from('groups')
+            .select('filter_settings')
+            .eq('group_code', groupCode)
+            .maybeSingle();
+
+        if (error || !data || !data.filter_settings) return;
+
+        const filterSettings = data.filter_settings;
+        const kikapcsoltKategoriak = filterSettings.kikapcsolt_kategoriak || [];
+        kizartMarkakTomb = filterSettings.kizart_szoveg_tomb || [];
+
+        renderKizartTagem();
+
+        document.querySelectorAll('.szuro-pill').forEach(pill => {
+            const id = pill.dataset.id.toLowerCase();
+            if (kikapcsoltKategoriak.includes(id)) {
+                pill.classList.remove('aktiv');
+            } else {
+                pill.classList.add('aktiv');
+            }
+        });
+
+        frissitsSzureseketEsMents();
+    } catch (err) {
+        console.error('Hiba a szűrő beállítások betöltésekor:', err);
+    }
+}
 
 function toggleForrasDoboz(fejlecElem) {
     const doboz = fejlecElem.closest('.forras-doboz');
@@ -238,7 +387,6 @@ function kategoriaValtozasCheck() {
     const alkoholGroup = document.getElementById('alkoholfok-group');
 
     if (alkoholGroup) {
-        // Energiaitalnál, Koktélnál ÉS Fröccsnél is elrejtjük az alkoholfok mezőt
         const elrejtAlkohol = (kat === 'energiaital' || kat === 'koktel' || kat === 'froccs');
         alkoholGroup.style.display = elrejtAlkohol ? 'none' : 'block';
     }
@@ -248,7 +396,6 @@ function kategoriaValtozasCheck() {
         resz.style.display = kevert ? 'block' : 'none';
         if (kevert && document.getElementById('hozzavalok-lista').children.length === 0) {
             if (kat === 'froccs') {
-                // Fröccs esetén alapértelmezett sorok: Bor és Szóda
                 ujHozzavaloSor('1', 'dl', 'Bor');
                 ujHozzavaloSor('1', 'dl', 'Szóda');
             } else {
@@ -257,10 +404,6 @@ function kategoriaValtozasCheck() {
         }
     }
 }
-
-/* ==========================================================================
-   MODE SWITCH TOGGLE & DINAMIKUS HOZZÁVALÓK
-   ========================================================================== */
 
 function valtsMódot(uMod) {
     if (aktualisMod === uMod) return;
@@ -341,10 +484,6 @@ function frissitsTorlesGombokat() {
     });
 }
 
-/* ==========================================================================
-   MENTÉS ÉS KÁRTYA KEZELÉS
-   ========================================================================== */
-
 async function mentUjItal() {
     const nev = document.getElementById('uj-ital-nev').value.trim();
     const kategoria = document.getElementById('uj-ital-kategoria').value;
@@ -368,7 +507,6 @@ async function mentUjItal() {
         });
     }
 
-    // Ha energiaital, koktél vagy fröccs, az alkoholfokot nem számoljuk be külön inputból
     const mentesiAlkohol = (kategoria === 'energiaital' || kategoria === 'koktel' || kategoria === 'froccs')
         ? 0
         : (szazalek ? parseFloat(szazalek) : null);
@@ -448,24 +586,19 @@ function addItalKartyaToUI(ital) {
         const doboz = document.getElementById('modal-koktel-hozzavalok-doboz');
         const kontener = document.getElementById('modal-koktel-hozzavalok-lista');
 
-        // ranglista.js - A kattintás eseménykezelőn belül:
-        // ranglista.js - A kattintás eseménykezelőn belül:
         const badge = document.getElementById('modal-alkohol-badge');
         const kat = ital.kategoria ? ital.kategoria.toLowerCase() : '';
 
         if (badge) {
             if (kat === 'energiaital') {
-                // Energiaitalnál: Alkoholmentes (zöld jelvény)
                 badge.className = 'alkohol-badge mentes';
                 badge.innerHTML = '<span>Alkoholmentes</span>';
                 badge.style.display = 'inline-flex';
             } else if (kat === 'froccs' || kat === 'fröccs' || kat === 'koktel' || kat === 'koktél') {
-                // Fröccsnél és koktélnál: Változó (sárga jelvény)
                 badge.className = 'alkohol-badge valtozo';
                 badge.innerHTML = 'Alkoholfok: <span>Változó</span>';
                 badge.style.display = 'inline-flex';
             } else if (ital.alkohol_fok !== null && ital.alkohol_fok !== undefined) {
-                // Normál alkoholoknál: Pontos % (lila/akcentus jelvény)
                 badge.className = 'alkohol-badge';
                 badge.innerHTML = `Alkoholfok: <span>${ital.alkohol_fok}%</span>`;
                 badge.style.display = 'inline-flex';
@@ -477,7 +610,6 @@ function addItalKartyaToUI(ital) {
         if (isKevertItal(ital.kategoria) && ital.osszetevok) {
             kontener.innerHTML = '';
             try {
-                // Kezeljük, ha sztringként vagy objektumként jön az adatbázisból
                 const adat = typeof ital.osszetevok === 'string' ? JSON.parse(ital.osszetevok) : ital.osszetevok;
                 const list = Array.isArray(adat) ? adat : (adat?.elemek || []);
 

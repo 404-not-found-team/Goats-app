@@ -20,13 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
       tabContents.forEach(c => c.classList.remove('active'));
 
       tab.classList.add('active');
-      get(`tab-${tab.dataset.tab}`).classList.add('active');
+      const targetContent = get(`tab-${tab.dataset.tab}`);
+      if (targetContent) targetContent.classList.add('active');
     });
   });
 
   const setStatus = (msg, color) => {
-    status.innerText = msg;
-    status.style.color = color;
+    if (status) {
+      status.innerText = msg;
+      status.style.color = color;
+    }
   };
 
   // Csoportkód elrejtése / Megjelenítése
@@ -304,7 +307,7 @@ function injectSettingsUI() {
             </div>
           </div>
 
-          <!-- TAB 2: CSOPORT -->
+          <!-- TAB 3: CSOPORT -->
           <div id="tab-csoport" class="sm-tab-content active">
             <label class="sm-label">Csoport kódja:</label>
             <div style="position: relative; display: flex; align-items: center; margin-bottom: 15px;">
@@ -327,24 +330,22 @@ function injectSettingsUI() {
               <label class="sm-label">Tagok (vesszővel elválasztva):</label>
               <input type="text" id="group-members-input" class="sm-input" placeholder="Peti, Géza, Vivi" />
             </div>
-
-            <!-- HASZNÁLATI FELTÉTELEK ELFOGADÁSA -->
-            </div>
-            </div>
+          </div>
+        </div>
             
-            <!-- FIX KÖZÖS LÁBLÉC -->
-            <div class="sm-footer">
-            <p id="settings-status"></p>
-            <button id="save-settings-btn" class="sm-btn sm-btn-save">Belépés</button>
-            <div id="tos-wrapper" class="tos-wrapper">
-              <label class="tos-label">
-                <input type="checkbox" id="accept-tos-checkbox" class="tos-checkbox" />
-                <span>
-                  A belépéssel elfogadom a <a href="#" id="open-tos-modal" class="tos-link">Használati Feltételeket</a> és a felelősségkizárási nyilatkozatot.
-                </span>
-              </label>
-            </div>
-            <button id="logout-btn" class="sm-btn sm-btn-logout">Kijelentkezés</button>
+        <!-- FIX KÖZÖS LÁBLÉC -->
+        <div class="sm-footer">
+          <p id="settings-status"></p>
+          <button id="save-settings-btn" class="sm-btn sm-btn-save">Belépés</button>
+          <div id="tos-wrapper" class="tos-wrapper">
+            <label class="tos-label">
+              <input type="checkbox" id="accept-tos-checkbox" class="tos-checkbox" />
+              <span>
+                A belépéssel elfogadom a <a href="#" id="open-tos-modal" class="tos-link">Használati Feltételeket</a> és a felelősségkizárási nyilatkozatot.
+              </span>
+            </label>
+          </div>
+          <button id="logout-btn" class="sm-btn sm-btn-logout">Kijelentkezés</button>
         </div>
       </div>
     </div>
@@ -364,7 +365,7 @@ function injectSettingsUI() {
           <p>A Tartozások modul kizárólag a felhasználók közötti tájékoztató jellegű nyilvántartásra szolgál. Az alkalmazás nem végez pénzügyi tranzakciókat, és nem vállal felelősséget az elszámolási vitákért.</p>
 
           <h4>3. Feltöltött tartalmak</h4>
-          <p>A feltöltött képekért, szövegekért és adatokért kizárólag a feltöltő személy vállalja a felelősséget. Jogszabályba ütköző tartalom feltöltése tilos.</p>
+          <p>A feltöltött képekért, szövegekért és adatokért kizárólag a feltöltő személy vállalja megbízóként a felelősséget. Jogszabályba ütköző tartalom feltöltése tilos.</p>
 
           <h4>4. Adatkezelés</h4>
           <p>Az alkalmazás a csoportos működéshez szükséges adatokat felhőalapú (Supabase) adatbázisban tárolja.</p>
