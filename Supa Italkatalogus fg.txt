@@ -1,0 +1,27 @@
+INSERT INTO ital_katalogus (kategoria, nev, alkohol_fok, kep_url, jovahagyva)
+SELECT 
+  'Rum' AS kategoria,
+  replace(
+    regexp_replace(
+      split_part(name, '/', array_length(string_to_array(name, '/'), 1)), 
+      '\.[^.]+$', ''
+    ), 
+    '%20', ' '
+  ) AS nev,
+  0 AS alkohol_fok,
+  'https://bvositlxbeqztnhdembx.supabase.co/storage/v1/object/public/italok/' || name AS kep_url,
+  TRUE AS jovahagyva
+FROM storage.objects s
+WHERE bucket_id = 'italok' 
+  AND name LIKE 'Rum/%'
+  AND name NOT LIKE '%/'
+  AND NOT EXISTS (
+    SELECT 1 FROM ital_katalogus ik 
+    WHERE ik.nev = replace(
+      regexp_replace(
+        split_part(s.name, '/', array_length(string_to_array(s.name, '/'), 1)), 
+        '\.[^.]+$', ''
+      ), 
+      '%20', ' '
+    )
+  );

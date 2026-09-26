@@ -170,16 +170,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const italKategoriak = [
         { nev: 'Vodkák', id: 'vodka' },
-        { nev: 'Rumok 🥃', id: 'rum' }, // ÚJ KATEGÓRIA
+        { nev: 'Rumok', id: 'rum' }, // ÚJ KATEGÓRIA
         { nev: 'Whiskeyk', id: 'whiskey' },
         { nev: 'Likőrök', id: 'likor' },
         { nev: 'Bitterek', id: 'bitter' },
         { nev: 'Ciderek', id: 'cider' },
         { nev: 'Sörök', id: 'sor' },
         { nev: 'Borok', id: 'bor' },
-        { nev: 'Fröccsök 🍷', id: 'froccs' },
-        { nev: 'Energiaitalok ⚡', id: 'energiaital' },
-        { nev: 'Koktélok 🍹', id: 'koktel' },
+        { nev: 'Fröccsök', id: 'froccs' },
+        { nev: 'Energiaitalok', id: 'energiaital' },
+        { nev: 'Koktélok', id: 'koktel' },
         { nev: 'Egyéb', id: 'egyeb' }
     ];
 
@@ -291,8 +291,8 @@ function ujHozzavaloSor(m = '', e = 'dl', n = '') {
 function keszitSorHTML(m, e, n) {
     if (aktualisMod === 'arany') {
         return `
-            <input type="text" class="sm-input hozzavalo-mennyiseg" style="flex: 1;" placeholder="Mennyiség (pl. 1 vagy 2 rész)" value="${m}" />
-            <input type="text" class="sm-input hozzavalo-nev" style="flex: 2;" placeholder="Hozzávaló neve (pl. Bor vagy Szóda)" value="${n}" />
+            <input type="text" class="sm-input hozzavalo-mennyiseg" style="flex: 1;" placeholder="Mennyiség" value="${m}" />
+            <input type="text" class="sm-input hozzavalo-nev" style="flex: 2;" placeholder="Hozzávaló neve" value="${n}" />
             <button type="button" class="hozzavalo-torles-btn" onclick="torolSor(this)">🗑️</button>
         `;
     } else {
@@ -300,8 +300,8 @@ function keszitSorHTML(m, e, n) {
         const opciok = egysegek.map(opt => `<option value="${opt}" ${opt === e ? 'selected' : ''}>${opt}</option>`).join('');
 
         return `
-            <input type="text" class="sm-input hozzavalo-nev" style="flex: 2;" placeholder="Hozzávaló neve (pl. Bor)" value="${n}" />
-            <input type="number" class="sm-input hozzavalo-mennyiseg" style="flex: 1;" placeholder="Mennyiség (pl. 2)" value="${m}" />
+            <input type="text" class="sm-input hozzavalo-nev" style="flex: 2;" placeholder="Hozzávaló neve" value="${n}" />
+            <input type="number" class="sm-input hozzavalo-mennyiseg" style="flex: 1;" placeholder="Mennyiség" value="${m}" />
             <select class="sm-input hozzavalo-egyseg" style="flex: 1;">
                 ${opciok}
             </select>
@@ -369,8 +369,8 @@ async function mentUjItal() {
     }
 
     // Ha energiaital, koktél vagy fröccs, az alkoholfokot nem számoljuk be külön inputból
-    const mentesiAlkohol = (kategoria === 'energiaital' || kategoria === 'koktel' || kategoria === 'froccs') 
-        ? null 
+    const mentesiAlkohol = (kategoria === 'energiaital' || kategoria === 'koktel' || kategoria === 'froccs')
+        ? 0
         : (szazalek ? parseFloat(szazalek) : null);
 
     const ujItalAdat = {
@@ -447,6 +447,32 @@ function addItalKartyaToUI(ital) {
 
         const doboz = document.getElementById('modal-koktel-hozzavalok-doboz');
         const kontener = document.getElementById('modal-koktel-hozzavalok-lista');
+
+        // ranglista.js - A kattintás eseménykezelőn belül:
+        // ranglista.js - A kattintás eseménykezelőn belül:
+        const badge = document.getElementById('modal-alkohol-badge');
+        const kat = ital.kategoria ? ital.kategoria.toLowerCase() : '';
+
+        if (badge) {
+            if (kat === 'energiaital') {
+                // Energiaitalnál: Alkoholmentes (zöld jelvény)
+                badge.className = 'alkohol-badge mentes';
+                badge.innerHTML = '<span>Alkoholmentes</span>';
+                badge.style.display = 'inline-flex';
+            } else if (kat === 'froccs' || kat === 'fröccs' || kat === 'koktel' || kat === 'koktél') {
+                // Fröccsnél és koktélnál: Változó (sárga jelvény)
+                badge.className = 'alkohol-badge valtozo';
+                badge.innerHTML = 'Alkoholfok: <span>Változó</span>';
+                badge.style.display = 'inline-flex';
+            } else if (ital.alkohol_fok !== null && ital.alkohol_fok !== undefined) {
+                // Normál alkoholoknál: Pontos % (lila/akcentus jelvény)
+                badge.className = 'alkohol-badge';
+                badge.innerHTML = `Alkoholfok: <span>${ital.alkohol_fok}%</span>`;
+                badge.style.display = 'inline-flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
 
         if (isKevertItal(ital.kategoria) && ital.osszetevok) {
             kontener.innerHTML = '';

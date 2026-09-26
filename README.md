@@ -13,7 +13,7 @@
 ---
 
 ## 📌 Tartalomjegyzék
-- [Átuttekintés](#-áttekintés)
+- [Áttekintés](#-áttekintés)
 - [Főbb oldalak és funkciók](#-főbb-oldalak-és-funkciók)
 - [Technológiai stack](#-technológiai-stack)
 - [PWA támogatás](#-pwa-támogatás)
@@ -21,7 +21,7 @@
 
 ---
 
-## 📖 Átuttekintés
+## 📖 Áttekintés
 A **Goats App** egy személyre szabott, reszponzív webes alkalmazás, amely segít a baráti események, közös emlékek, programok és kiadások egy helyen történő menedzselésében. Az adatok szinkronizációját és tárolását a **Supabase** biztosítja valós időben.
 
 ---
