@@ -59,13 +59,57 @@
 .cimke.soha, #soha                   { background-color: var(--soha); }
 .cimke.megjobbansoha, #megjobbansoha { background-color: var(--megjobbansoha); }
 
+/* ==========================================================================
+   ÖSSZECSUKHATÓ (ACCORDION) FORRÁS DOBOZOK
+   ========================================================================== */
+
 .forras-fejlec {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 15px;
+    width: 100%;
+    padding: 12px 15px;
     background-color: var(--card-bg);
     border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.1));
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.forras-fejlec:hover {
+    background-color: var(--inner-bg);
+}
+
+.forras-fejlec h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.forras-fejlec .nyil-ikon {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    transition: transform 0.2s ease;
+}
+
+.forras-fejlec .ital-szamlalo {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-left: auto; /* Biztosítja, hogy teljesen a jobb szélre igazodjon */
+}
+
+.forras-doboz.csukva .forras-fejlec .nyil-ikon {
+    transform: rotate(-90deg);
+}
+
+.forras-doboz.csukva .ital-lista {
+    display: none !important;
 }
 
 .forras-fejlec h3,
@@ -209,6 +253,179 @@
     max-height: 350px;
     display: block;
     margin: 0 auto 15px auto;
+}
+
+/* ==========================================================================
+   MODE SWITCH TOGGLE & DINAMIKUS HOZZÁVALÓK
+   ========================================================================== */
+
+/* Toggle Kapcsoló */
+.toggle-mode-container {
+    display: flex;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 15px;
+    gap: 4px;
+}
+
+.toggle-mode-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toggle-mode-btn.active {
+    background: var(--accent-color);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Dinamikus Sorok */
+.hozzavalo-sor {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.hozzavalo-sor .sm-input,
+.hozzavalo-sor .floating-select {
+    margin-bottom: 0 !important;
+}
+
+.hozzavalo-torles-btn {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 38px;
+    height: 42px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+}
+
+.hozzavalo-torles-btn:disabled {
+    background: var(--border-color);
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   FLOATING LABELS & DINAMIKUS HOZZÁVALÓK
+   ========================================================================== */
+
+.floating-group {
+    position: relative;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.floating-input,
+.floating-select {
+    width: 100%;
+    padding: 14px 12px 6px 12px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.floating-input:focus,
+.floating-select:focus {
+    border-color: var(--accent-color);
+}
+
+.floating-label {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+
+.floating-input:focus ~ .floating-label,
+.floating-input:not(:placeholder-shown) ~ .floating-label,
+.floating-select:focus ~ .floating-label,
+.floating-select:has(option:checked) ~ .floating-label {
+    top: 6px;
+    transform: translateY(0);
+    font-size: 0.7rem;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+/* Dinamikus Hozzávalók Sorai */
+.hozzavalo-sor {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.hozzavalo-sor .sm-input {
+    margin-bottom: 0 !important;
+}
+
+.hozzavalo-mennyiseg { flex: 1; }
+.hozzavalo-egyseg { flex: 1; }
+.hozzavalo-nev { flex: 2; }
+
+.hozzavalo-torles-btn {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 38px;
+    height: 42px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+}
+
+.hozzavalo-torles-btn:hover {
+    opacity: 0.85;
+}
+
+.gomb-uj-hozzavalo {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-top: 5px;
+    transition: background-color 0.2s ease;
+}
+
+.gomb-uj-hozzavalo:hover {
+    background: var(--inner-bg);
 }
 
 /* ==========================================================================

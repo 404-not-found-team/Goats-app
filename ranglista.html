@@ -32,9 +32,17 @@
     </div>
 
     <div id="modal-hatter">
-        <div id="hatter">
+        <div id="hatter" style="max-width: 400px; width: 90%;">
             <img id="modal-kep" src="" alt="Kiválasztott ital">
-            <div id="modal-nev" style="color: white; font-size: 20px; margin-bottom: 15px; font-weight: bold;"></div>
+            <div id="modal-nev" style="color: white; font-size: 20px; margin-bottom: 10px; font-weight: bold;"></div>
+
+            <div id="modal-koktel-hozzavalok-doboz"
+                style="display: none; background: var(--inner-bg); padding: 12px; border-radius: 12px; margin-bottom: 15px; text-align: left; border: 1px solid var(--border-color);">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: bold;">🍹
+                    Hozzávalók és Arányok:</div>
+                <div id="modal-koktel-hozzavalok-lista" style="font-size: 0.9rem; color: var(--text-primary);"></div>
+            </div>
+
             <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
                 <button id="legeslegjobb" class="gombok dark" onclick="kategoriatValaszt('S')">S</button>
                 <button id="legjobb" class="gombok dark" onclick="kategoriatValaszt('A')">A</button>
@@ -48,34 +56,78 @@
     </div>
 
     <div id="uj-ital-modal" class="modal-hatter-ui">
-        <div class="modal-doboz-ui">
-            <h3>Új ital felvétele</h3>
+        <div class="modal-doboz-ui" style="max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <h3 style="margin-bottom: 20px;">Új ital / koktél felvétele</h3>
 
-            <label>Ital neve:</label>
-            <input type="text" id="uj-ital-nev" class="sm-input" placeholder="pl. Royal Kaktusz" />
+            <div class="floating-group">
+                <input type="text" id="uj-ital-nev" class="floating-input" placeholder=" " />
+                <label class="floating-label">Ital neve</label>
+            </div>
 
-            <label>Kategória / Fajta:</label>
-            <select id="uj-ital-kategoria" class="sm-input">
-                <option value="vodka">Vodka</option>
-                <option value="whiskey">Whiskey</option>
-                <option value="likor">Likőr</option>
-                <option value="bitter">Bitter</option>
-                <option value="cider">Cider</option>
-                <option value="sor">Sör</option>
-                <option value="bor">Bor</option>
-                <option value="froccs">Fröccs</option>
-                <option value="egyeb">Egyéb</option>
-            </select>
+            <div class="floating-group">
+                <select id="uj-ital-kategoria" class="floating-select" onchange="kategoriaValtozasCheck()">
+                    <option value="vodka">Vodka</option>
+                    <option value="rum">Rum</option>
+                    <option value="whiskey">Whiskey</option>
+                    <option value="likor">Likőr</option>
+                    <option value="bitter">Bitter</option>
+                    <option value="cider">Cider</option>
+                    <option value="sor">Sör</option>
+                    <option value="bor">Bor</option>
+                    <option value="froccs">Fröccs</option>
+                    <option value="energiaital">Energiaital</option>
+                    <option value="koktel">Koktél</option>
+                    <option value="egyeb">Egyéb</option>
+                </select>
+                <label class="floating-label">Ital Fajta</label>
+            </div>
 
-            <label>Alkoholfok (%):</label>
-            <input type="number" id="uj-ital-szazalek" class="sm-input" placeholder="pl. 37.5" step="0.1" />
+            <div id="alkoholfok-group" class="floating-group">
+                <input type="number" id="uj-ital-szazalek" class="floating-input" placeholder=" " step="0.1" />
+                <label class="floating-label">Alkoholfok (%)</label>
+            </div>
 
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <div id="koktel-összeallitas-resz"
+                style="display: none; border-top: 1px dashed var(--border-color); padding-top: 15px; margin-top: 10px; text-align: left;">
+
+                <div class="toggle-mode-container">
+                    <button type="button" id="mode-arany-btn" class="toggle-mode-btn active"
+                        onclick="valtsMódot('arany')">📐 Arányok alapján</button>
+                    <button type="button" id="mode-pontos-btn" class="toggle-mode-btn" onclick="valtsMódot('pontos')">🧪
+                        Pontos mennyiség</button>
+                </div>
+
+                <h4
+                    style="color: var(--text-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                    ☰ Hozzávalók
+                </h4>
+
+                <div id="hozzavalok-lista">
+                </div>
+
+                <button type="button" class="gomb-uj-hozzavalo" onclick="ujHozzavaloSor()">+ Új hozzávaló</button>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button onclick="mentUjItal()" class="sm-btn"
                     style="background: var(--accent-color); color: #fff;">Hozzáadás</button>
                 <button onclick="zardUjItalModal()" class="sm-btn"
                     style="background: var(--inner-bg); color: var(--text-primary); border: 1px solid var(--border-color);">Mégse</button>
             </div>
+        </div>
+    </div>
+
+    <div id="koktel-recept-modal" class="modal-hatter-ui">
+        <div class="modal-doboz-ui" style="text-align: left; max-width: 450px;">
+            <h3 id="recept-modal-cim" style="color: var(--accent-color);">🍹 Koktél Recept</h3>
+            <label style="font-weight: bold; margin-top: 10px; display: block; color: var(--text-secondary);">Hozzávalók
+                és Arányok:</label>
+            <div id="recept-modal-hozzavalok"
+                style="font-size: 0.9rem; color: var(--text-primary); background: var(--inner-bg); padding: 12px; border-radius: 8px; margin-top: 6px;">
+            </div>
+
+            <button onclick="zardKoktelReceptet()" class="sm-btn"
+                style="margin-top: 18px; background: var(--inner-bg); color: var(--text-primary); border: 1px solid var(--border-color);">Bezárás</button>
         </div>
     </div>
 </body>
