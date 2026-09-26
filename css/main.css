@@ -842,3 +842,75 @@ h1 {
 .hidden {
     display: none !important;
 }
+/* ==========================================
+   HASZNÁLATI FELTÉTELEK MODAL ÉS CHECKBOX
+   ========================================== */
+.tos-wrapper {
+    margin-top: 15px;
+    margin-bottom: 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: left;
+}
+
+.tos-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.tos-checkbox {
+    margin-top: 2px;
+    accent-color: var(--accent-color);
+}
+
+.tos-link {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+.tos-modal-overlay {
+    z-index: 10001;
+}
+
+.tos-modal-card {
+    height: auto;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+}
+
+.tos-modal-header {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.tos-modal-body {
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 5px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.tos-modal-body h4 {
+    color: var(--accent-color);
+    margin-bottom: 5px;
+}
+
+.tos-modal-body p {
+    margin-bottom: 12px;
+}
+
+.tos-modal-body p:last-child {
+    margin-bottom: 0;
+}
+
+.tos-modal-btn {
+    margin-top: auto;
+}

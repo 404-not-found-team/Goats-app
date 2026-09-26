@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnLogout = get('logout-btn'), btnSave = get('save-settings-btn');
   const status = get('settings-status');
   const toggleCodeVisibilityBtn = get('toggle-code-visibility');
+  const tosWrapper = get('tos-wrapper');
 
   // Tab váltó elemek
   const tabs = document.querySelectorAll('.sm-tab-btn');
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     status.style.color = color;
   };
 
-  // Csoportkód elrejtése / Megjelenítése (👁️ ikon vagy fókusz)
+  // Csoportkód elrejtése / Megjelenítése
   if (toggleCodeVisibilityBtn && codeInput) {
     toggleCodeVisibilityBtn.addEventListener('click', () => {
       const isPassword = codeInput.type === 'password';
@@ -170,8 +171,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loggedWrapper.style.display = isLogged ? 'block' : 'none';
     notice.style.display = isLogged ? 'none' : 'block';
     btnSave.style.display = isLogged ? 'none' : 'block';
+    if (tosWrapper) tosWrapper.style.display = isLogged ? 'none' : 'block';
 
-    // A kijelentkezés gomb mindig látható az alsó láblécben, ha be van jelentkezve!
     btnLogout.style.display = isLogged ? 'block' : 'none';
 
     if (isLogged) populateUserSelect(members);
@@ -207,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (confirm('Biztosan ki szeretnél jelentkezni a csoportból?')) {
       localStorage.removeItem('goats_group_code');
       localStorage.removeItem('goats_group_members');
-      //localStorage.removeItem('goats_current_user');
       localStorage.removeItem('goats_group_pages');
       setStatus(' Kijelentkezés...', '#ef4444');
       setTimeout(() => location.reload(), 500);
@@ -215,43 +215,70 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   btnSave.addEventListener('click', async () => {
-  const rawCode = codeInput.value.trim().toLowerCase();
-  if (!rawCode) return setStatus('⚠️ Adj meg egy csoportkódot!', '#ef4444');
-
-  setStatus('Feldolgozás...', 'var(--text-secondary)');
-
-  try {
-    // Lekérdezzük a csoportot az adott kód alapján
-    const { data, error } = await supabase
-      .from('groups')
-      .select('*')
-      .eq('group_code', rawCode)
-      .maybeSingle();
-
-    if (error) throw error;
-
-    // ELENŐRZÉS: Ha a 'data' null, akkor a csoportkód nem létezik a táblában
-    if (!data) {
-      return setStatus('❌ Hibás vagy nem létező csoportkód!', '#ef4444');
+    const tosCheckbox = document.getElementById('accept-tos-checkbox');
+    if (tosCheckbox && !tosCheckbox.checked) {
+      return setStatus('⚠️ A belépéshez el kell fogadnod a Használati Feltételeket!', '#ef4444');
     }
 
-    // Ha létezik, elmentjük a tagokat és a kódot a localStore-ba
-    const members = data.members || [];
-    localStorage.setItem('goats_group_code', rawCode);
-    localStorage.setItem('goats_group_members', JSON.stringify(members));
+    const rawCode = codeInput.value.trim().toLowerCase();
+    if (!rawCode) return setStatus('⚠️ Adj meg egy csoportkódot!', '#ef4444');
 
-    setStatus(' Sikeres belépés!', '#22c55e');
-    setTimeout(() => location.reload(), 800);
-  } catch (err) {
-    console.error(err);
-    setStatus('❌ Hiba történt a belépés során!', '#ef4444');
+    setStatus('Feldolgozás...', 'var(--text-secondary)');
+
+    try {
+      const { data, error } = await supabase
+        .from('groups')
+        .select('*')
+        .eq('group_code', rawCode)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!data) {
+        return setStatus('❌ Hibás vagy nem létező csoportkód!', '#ef4444');
+      }
+
+      const members = data.members || [];
+      localStorage.setItem('goats_group_code', rawCode);
+      localStorage.setItem('goats_group_members', JSON.stringify(members));
+
+      setStatus(' Sikeres belépés!', '#22c55e');
+      setTimeout(() => location.reload(), 800);
+    } catch (err) {
+      console.error(err);
+      setStatus('❌ Hiba történt a belépés során!', '#ef4444');
+    }
+  });
+
+  // HASZNÁLATI FELTÉTELEK MODAL MEGNYITÁSA / BEZÁRÁSA
+  const tosModal = get('tos-modal');
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'open-tos-modal') {
+      e.preventDefault();
+      if (tosModal) tosModal.style.display = 'flex';
+    }
+  });
+
+  if (get('close-tos-modal')) {
+    get('close-tos-modal').addEventListener('click', () => {
+      if (tosModal) tosModal.style.display = 'none';
+    });
   }
-});
+
+  if (get('accept-tos-modal-btn')) {
+    get('accept-tos-modal-btn').addEventListener('click', () => {
+      const chk = get('accept-tos-checkbox');
+      if (chk) chk.checked = true;
+      if (tosModal) tosModal.style.display = 'none';
+    });
+  }
 });
 
 function injectSettingsUI() {
   document.body.insertAdjacentHTML('beforeend', `
     <button id="settings-btn">⚙️</button>
+
+    <!-- BEÁLLÍTÁSOK MODAL -->
     <div id="settings-modal" class="sm-overlay">
       <div class="sm-card">
         <div class="sm-header">
@@ -260,13 +287,13 @@ function injectSettingsUI() {
         </div>
 
         <div class="sm-tabs">
-        <button class="sm-tab-btn active" data-tab="csoport">👥 Csoport</button>
-          <button class="sm-tab-btn " data-tab="altalanos">🎨 Megjelenés</button>
+          <button class="sm-tab-btn active" data-tab="csoport">👥 Csoport</button>
+          <button class="sm-tab-btn" data-tab="altalanos">🎨 Megjelenés</button>
         </div>
 
         <div class="sm-body">
           <!-- TAB 1: MEGJELENÉS -->
-          <div id="tab-altalanos" class="sm-tab-content ">
+          <div id="tab-altalanos" class="sm-tab-content">
             <label class="sm-label">Téma kiválasztása:</label>
             <div id="custom-theme-dropdown" class="custom-dropdown">
               <div class="dropdown-selected">
@@ -301,6 +328,7 @@ function injectSettingsUI() {
               <input type="text" id="group-members-input" class="sm-input" placeholder="Peti, Géza, Vivi" />
             </div>
 
+            <!-- HASZNÁLATI FELTÉTELEK ELFOGADÁSA -->
             </div>
             </div>
             
@@ -308,8 +336,40 @@ function injectSettingsUI() {
             <div class="sm-footer">
             <p id="settings-status"></p>
             <button id="save-settings-btn" class="sm-btn sm-btn-save">Belépés</button>
-          <button id="logout-btn" class="sm-btn sm-btn-logout">Kijelentkezés</button>
+            <div id="tos-wrapper" class="tos-wrapper">
+              <label class="tos-label">
+                <input type="checkbox" id="accept-tos-checkbox" class="tos-checkbox" />
+                <span>
+                  A belépéssel elfogadom a <a href="#" id="open-tos-modal" class="tos-link">Használati Feltételeket</a> és a felelősségkizárási nyilatkozatot.
+                </span>
+              </label>
+            </div>
+            <button id="logout-btn" class="sm-btn sm-btn-logout">Kijelentkezés</button>
         </div>
+      </div>
+    </div>
+
+    <!-- EGYEDI HASZNÁLATI FELTÉTELEK MODAL -->
+    <div id="tos-modal" class="sm-overlay tos-modal-overlay" style="display: none;">
+      <div class="sm-card tos-modal-card">
+        <div class="sm-header">
+          <h3 class="tos-modal-header">📜 Használati Feltételek</h3>
+          <button id="close-tos-modal" class="sm-close-btn">&times;</button>
+        </div>
+        <div class="tos-modal-body">
+          <h4>1. Felelősségkizárás</h4>
+          <p>Az alkalmazást az üzemeltető adott állapotában (as-is), garanciavállalás nélkül biztosítja. Az alkalmazás fejlesztője semmilyen felelősséget nem vállal az adatvesztésből, a szolgáltatás esetleges kimagadásából vagy hibáiból eredő károkért.</p>
+
+          <h4>2. Pénzügyi elszámolások</h4>
+          <p>A Tartozások modul kizárólag a felhasználók közötti tájékoztató jellegű nyilvántartásra szolgál. Az alkalmazás nem végez pénzügyi tranzakciókat, és nem vállal felelősséget az elszámolási vitákért.</p>
+
+          <h4>3. Feltöltött tartalmak</h4>
+          <p>A feltöltött képekért, szövegekért és adatokért kizárólag a feltöltő személy vállalja a felelősséget. Jogszabályba ütköző tartalom feltöltése tilos.</p>
+
+          <h4>4. Adatkezelés</h4>
+          <p>Az alkalmazás a csoportos működéshez szükséges adatokat felhőalapú (Supabase) adatbázisban tárolja.</p>
+        </div>
+        <button id="accept-tos-modal-btn" class="sm-btn sm-btn-save tos-modal-btn">Elfogadom</button>
       </div>
     </div>
   `);
