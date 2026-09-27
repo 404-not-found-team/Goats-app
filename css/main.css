@@ -142,8 +142,10 @@ ul {
 }
 
 #navBar {
+
     border-radius: 10px;
     border: 1px solid var(--border-color);
+
 }
 
 ul li a {
@@ -572,7 +574,7 @@ ul li.active a {
     background: var(--inner-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    height: 85px; 
+    height: 85px;
     padding: 4px;
     display: flex;
     flex-direction: column;
@@ -580,7 +582,8 @@ ul li.active a {
     min-width: 0;
     box-sizing: border-box;
     cursor: pointer;
-    overflow: hidden; /* A túllógó tartalmat elrejti, a gomb kattintásra megnyitja a modalt */
+    overflow: hidden;
+    /* A túllógó tartalmat elrejti, a gomb kattintásra megnyitja a modalt */
     transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
@@ -1065,7 +1068,8 @@ ul li.active a {
     display: none !important;
 }
 
-.nav-more-drawer, .nav-drawer-overlay {
+.nav-more-drawer,
+.nav-drawer-overlay {
     display: none;
 }
 
@@ -1152,6 +1156,7 @@ ul li.active a {
 }
 
 @media (max-width: 600px) {
+
     /* Alapértelmezett szöveg/emoji rejtések */
     .teljes-szoveg {
         display: none;
@@ -1223,13 +1228,13 @@ ul li.active a {
 
     ul#navBar {
         position: fixed !important;
-        bottom: 0 !important;
+        bottom: 15px !important;
         left: 0 !important;
         right: 0 !important;
         top: auto !important;
-        margin: 0 !important;
+        margin: 0 auto !important;
         padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) 10px !important;
-        border-radius: 16px 16px 0 0 !important;
+        border-radius: 16px !important;
         border-top: 1px solid var(--border-color) !important;
         border-left: none !important;
         border-right: none !important;
@@ -1242,9 +1247,17 @@ ul li.active a {
         backdrop-filter: blur(8px);
     }
 
+    #navBar {
+        width: 90%;
+        margin: 0 auto 30px auto;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        box-sizing: border-box;
+    }
+
     /* Beállítások (⚙️) Gomb */
     #settings-btn {
-        bottom: 75px !important;
+        bottom: 85px !important;
         top: auto !important;
         right: 15px !important;
         z-index: 9980 !important;
