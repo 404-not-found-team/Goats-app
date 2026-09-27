@@ -12,11 +12,29 @@
 
 .fejlec-gombok-tarolo {
     width: 100%;
-    max-width: 900px;
-    margin: 0 auto 15px auto;
+    max-width: 1100px;
+    margin: 0 auto 25px auto;
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-bg);
+    padding: 18px 24px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
+}
+
+.fejlec-gombok-tarolo h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    text-align: left;
+    color: var(--text-primary);
+}
+
+.fejlec-gombok {
+    display: flex;
+    gap: 12px;
 }
 
 .ranglista-fo-tarolo {
@@ -43,7 +61,7 @@
     background-color: var(--card-bg);
     border-radius: var(--border-radius, 12px);
     box-shadow: var(--box-shadow);
-    overflow: hidden; 
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -59,14 +77,33 @@
     padding: 10px 15px;
     font-size: 1.1rem;
     font-weight: bold;
-    color: #111; 
+    color: #111;
 }
 
-.cimke.legeslegjobb, #legeslegjobb { background-color: var(--legeslegjobb); }
-.cimke.legjobb, #legjobb             { background-color: var(--legjobb); }
-.cimke.elmegy, #elmegy               { background-color: var(--elmegy); }
-.cimke.soha, #soha                   { background-color: var(--soha); }
-.cimke.megjobbansoha, #megjobbansoha { background-color: var(--megjobbansoha); }
+.cimke.legeslegjobb,
+#legeslegjobb {
+    background-color: var(--legeslegjobb);
+}
+
+.cimke.legjobb,
+#legjobb {
+    background-color: var(--legjobb);
+}
+
+.cimke.elmegy,
+#elmegy {
+    background-color: var(--elmegy);
+}
+
+.cimke.soha,
+#soha {
+    background-color: var(--soha);
+}
+
+.cimke.megjobbansoha,
+#megjobbansoha {
+    background-color: var(--megjobbansoha);
+}
 
 .forras-fejlec {
     display: flex;
@@ -75,14 +112,16 @@
     width: 100%;
     padding: 12px 15px;
     background-color: var(--card-bg);
-    border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.1));
+    border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
     cursor: pointer;
     user-select: none;
     transition: background-color 0.2s ease;
     box-sizing: border-box;
 }
 
-.forras-fejlec:hover { background-color: var(--inner-bg); }
+.forras-fejlec:hover {
+    background-color: var(--inner-bg);
+}
 
 .forras-fejlec h3,
 .forras-doboz h3 {
@@ -108,8 +147,13 @@
     margin-left: auto;
 }
 
-.forras-doboz.csukva .forras-fejlec .nyil-ikon { transform: rotate(-90deg); }
-.forras-doboz.csukva .ital-lista { display: none !important; }
+.forras-doboz.csukva .forras-fejlec .nyil-ikon {
+    transform: rotate(-90deg);
+}
+
+.forras-doboz.csukva .ital-lista {
+    display: none !important;
+}
 
 /* ==========================================================================
    3. DROPZONE ÉS ITALKÁRTYÁK
@@ -144,7 +188,9 @@
     transition: background 0.2s ease;
 }
 
-.ital-kartya:hover { background-color: rgba(127, 127, 127, 0.1); }
+.ital-kartya:hover {
+    background-color: rgba(127, 127, 127, 0.1);
+}
 
 .ital-kartya img,
 .ital-lista img,
@@ -160,9 +206,14 @@
 }
 
 .ital-lista img:active,
-.ranglista-dropzone img:active { cursor: grabbing; }
+.ranglista-dropzone img:active {
+    cursor: grabbing;
+}
+
 .ital-lista img:hover,
-.ranglista-dropzone img:hover { transform: scale(1.05); }
+.ranglista-dropzone img:hover {
+    transform: scale(1.05);
+}
 
 .ital-nev {
     font-size: 12px;
@@ -206,7 +257,9 @@
     transition: background-color 0.2s ease;
 }
 
-.gomb-szuro:hover { background: var(--card-bg); }
+.gomb-szuro:hover {
+    background: var(--card-bg);
+}
 
 .gombok {
     color: white;
@@ -216,8 +269,13 @@
     cursor: pointer;
 }
 
-#forras { background: #6c757d; }
-#bezar { background: #343a40; }
+#forras {
+    background: #6c757d;
+}
+
+#bezar {
+    background: #343a40;
+}
 
 .modal-hatter-ui,
 #modal-hatter {
@@ -244,8 +302,16 @@
     text-align: center;
 }
 
-.modal-kis-doboz { max-width: 400px !important; width: 90%; }
-.modal-nagy-doboz { max-width: 500px !important; max-height: 90vh; overflow-y: auto; }
+.modal-kis-doboz {
+    max-width: 400px !important;
+    width: 90%;
+}
+
+.modal-nagy-doboz {
+    max-width: 500px !important;
+    max-height: 90vh;
+    overflow-y: auto;
+}
 
 #modal-kep {
     max-height: 350px;
@@ -289,7 +355,9 @@
     justify-content: center;
 }
 
-.modal-alcim { margin-bottom: 20px; }
+.modal-alcim {
+    margin-bottom: 20px;
+}
 
 .koktel-resz-kontener {
     display: none;
@@ -313,7 +381,11 @@
     margin-top: 20px;
 }
 
-.gomb-hozzaadas { background: var(--accent-color); color: #fff; }
+.gomb-hozzaadas {
+    background: var(--accent-color);
+    color: #fff;
+}
+
 .gomb-megse {
     background: var(--inner-bg);
     color: var(--text-primary);
@@ -341,7 +413,10 @@
     display: block !important;
 }
 
-.szuro-label-top { margin-top: 20px !important; margin-bottom: 8px !important; }
+.szuro-label-top {
+    margin-top: 20px !important;
+    margin-bottom: 8px !important;
+}
 
 .szuro-pill-kontener {
     display: flex;
@@ -376,7 +451,9 @@
     margin-bottom: 10px;
 }
 
-.szuro-input { margin-bottom: 0 !important; }
+.szuro-input {
+    margin-bottom: 0 !important;
+}
 
 .gomb-plusz {
     width: auto !important;
@@ -416,7 +493,10 @@
     transform: scale(1.03);
 }
 
-.kizart-tag .torles-x { font-size: 0.9rem; font-weight: bold; }
+.kizart-tag .torles-x {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
 
 .szuro-footer {
     display: flex;
@@ -505,9 +585,17 @@
     margin-bottom: 0 !important;
 }
 
-.hozzavalo-mennyiseg { flex: 1; }
-.hozzavalo-egyseg { flex: 1; }
-.hozzavalo-nev { flex: 2; }
+.hozzavalo-mennyiseg {
+    flex: 1;
+}
+
+.hozzavalo-egyseg {
+    flex: 1;
+}
+
+.hozzavalo-nev {
+    flex: 2;
+}
 
 .hozzavalo-torles-btn {
     background: #ef4444;
@@ -525,7 +613,10 @@
     transition: opacity 0.2s;
 }
 
-.hozzavalo-torles-btn:hover { opacity: 0.85; }
+.hozzavalo-torles-btn:hover {
+    opacity: 0.85;
+}
+
 .hozzavalo-torles-btn:disabled {
     background: var(--border-color);
     opacity: 0.4;
@@ -545,7 +636,9 @@
     transition: background-color 0.2s ease;
 }
 
-.gomb-uj-hozzavalo:hover { background: var(--inner-bg); }
+.gomb-uj-hozzavalo:hover {
+    background: var(--inner-bg);
+}
 
 .floating-group {
     position: relative;
@@ -568,7 +661,9 @@
 }
 
 .floating-input:focus,
-.floating-select:focus { border-color: var(--accent-color); }
+.floating-select:focus {
+    border-color: var(--accent-color);
+}
 
 .floating-label {
     position: absolute;
@@ -581,10 +676,10 @@
     transition: all 0.2s ease;
 }
 
-.floating-input:focus ~ .floating-label,
-.floating-input:not(:placeholder-shown) ~ .floating-label,
-.floating-select:focus ~ .floating-label,
-.floating-select:has(option:checked) ~ .floating-label {
+.floating-input:focus~.floating-label,
+.floating-input:not(:placeholder-shown)~.floating-label,
+.floating-select:focus~.floating-label,
+.floating-select:has(option:checked)~.floating-label {
     top: 6px;
     transform: translateY(0);
     font-size: 0.7rem;
@@ -596,11 +691,45 @@
    7. RESZPONZIVITÁS
    ========================================================================== */
 .modal-image {
-  background-color: #000000; /* Fekete háttér a kép mögé, hogy a stúdióhatást utánozza */
-  border-radius: 8px;
+    background-color: #000000;
+    /* Fekete háttér a kép mögé, hogy a stúdióhatást utánozza */
+    border-radius: 8px;
 }
+
+@media screen and (max-width: 600px) {
+    .fejlec-gombok-tarolo {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        padding: 16px;
+        text-align: center;
+    }
+
+    .fejlec-gombok-tarolo h1 {
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    .fejlec-gombok {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+    }
+
+    .gomb-szuro,
+    .gomb-uj-ital {
+        flex: 1;
+        font-size: 0.85rem;
+        padding: 10px 8px;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
 @media (max-width: 360px) {
-    .ranglista-fo-tarolo { padding: 0 5px 40px 5px; }
+    .ranglista-fo-tarolo {
+        padding: 0 5px 40px 5px;
+    }
 
     .ranglista-dropzone,
     .ital-lista {
@@ -614,5 +743,7 @@
         max-width: 100px;
     }
 
-    .ital-kartya img { max-height: 90px; }
+    .ital-kartya img {
+        max-height: 90px;
+    }
 }
