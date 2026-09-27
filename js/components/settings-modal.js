@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggleCodeVisibilityBtn = get('toggle-code-visibility');
   const tosWrapper = get('tos-wrapper');
 
-  // Tab váltó elemek
   const tabs = document.querySelectorAll('.sm-tab-btn');
   const tabContents = document.querySelectorAll('.sm-tab-content');
 
@@ -24,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const targetContent = get(`tab-${targetTab}`);
       if (targetContent) targetContent.classList.add('active');
 
-      // Ha a Dev Log fülre kattintanak, automatikusan betöltjük a frissítéseket
       if (targetTab === 'dev') {
         betoltChangelog();
       }
@@ -37,6 +35,41 @@ document.addEventListener('DOMContentLoaded', () => {
       status.style.color = color;
     }
   };
+
+  // Csoport Kép Feltöltés
+  const groupAvatarInput = get('group-avatar-input');
+  if (groupAvatarInput) {
+    groupAvatarInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      const rawCode = localStorage.getItem('goats_group_code');
+      if (!file || !rawCode) return;
+
+      setStatus('Kép feltöltése...', 'var(--text-secondary)');
+      try {
+        const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
+        const ext = file.name.split('.').pop();
+        const filePath = `avatars/${rawCode}.${ext}`;
+
+        const { error: uploadErr } = await client.storage
+          .from('kepek')
+          .upload(filePath, file, { upsert: true });
+
+        if (uploadErr) throw uploadErr;
+
+        const { data: urlData } = client.storage.from('kepek').getPublicUrl(filePath);
+        const avatarUrl = urlData.publicUrl;
+
+        await client.from('groups').update({ avatar_url: avatarUrl }).eq('group_code', rawCode);
+
+        const imgElem = get('group-avatar-preview');
+        if (imgElem) imgElem.src = avatarUrl;
+        setStatus(' Csoportkép frissítve!', '#22c55e');
+      } catch (err) {
+        console.error(err);
+        setStatus('❌ Képfeltöltési hiba!', '#ef4444');
+      }
+    });
+  }
 
   // Csoportkód elrejtése / Megjelenítése
   if (toggleCodeVisibilityBtn && codeInput) {
@@ -57,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 1. TÉMA CUSTOM DROPDOWN
+  // Téma választó dropdown
   const themeDropdown = get('custom-theme-dropdown');
   const themeSelectedText = get('theme-dropdown-selected-text');
   const themeOptionsContainer = get('theme-dropdown-options');
@@ -73,9 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const currentTheme = localStorage.getItem('goats_theme') || 'dark';
   const foundTheme = themes.find(t => t.id === currentTheme);
-  if (themeSelectedText && foundTheme) {
-    themeSelectedText.textContent = foundTheme.name;
-  }
+  if (themeSelectedText && foundTheme) themeSelectedText.textContent = foundTheme.name;
 
   if (themeOptionsContainer) {
     themeOptionsContainer.innerHTML = '';
@@ -93,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const allOpts = themeOptionsContainer.querySelectorAll('.dropdown-option');
         allOpts.forEach(o => o.classList.remove('selected'));
         optionDiv.classList.add('selected');
-
         themeDropdown.classList.remove('open');
       });
 
@@ -104,12 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (themeDropdown) {
     themeDropdown.addEventListener('click', (e) => {
       e.stopPropagation();
-      closeAllCustomDropdowns();
-      themeDropdown.classList.toggle('open');
+      if (themeDropdown) themeDropdown.classList.toggle('open');
     });
   }
 
-  // 2. USER CUSTOM DROPDOWN
+  // User Dropdown
   const userDropdown = get('custom-user-dropdown');
   const userSelectedText = get('user-dropdown-selected-text');
   const userOptionsContainer = get('user-dropdown-options');
@@ -117,17 +146,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (userDropdown) {
     userDropdown.addEventListener('click', (e) => {
       e.stopPropagation();
-      closeAllCustomDropdowns();
       userDropdown.classList.toggle('open');
     });
   }
 
-  function closeAllCustomDropdowns() {
+  document.addEventListener('click', () => {
     if (themeDropdown) themeDropdown.classList.remove('open');
     if (userDropdown) userDropdown.classList.remove('open');
-  }
-
-  document.addEventListener('click', closeAllCustomDropdowns);
+  });
 
   const populateUserSelect = (members) => {
     if (!members || members.length === 0 || !userOptionsContainer) return;
@@ -165,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  btnSettings.addEventListener('click', () => {
+  btnSettings.addEventListener('click', async () => {
     const code = localStorage.getItem('goats_group_code') || '';
     const members = JSON.parse(localStorage.getItem('goats_group_members') || '[]');
     const isLogged = !!code;
@@ -184,7 +210,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnLogout.style.display = isLogged ? 'block' : 'none';
 
-    if (isLogged) populateUserSelect(members);
+    if (isLogged) {
+      populateUserSelect(members);
+
+      try {
+        const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
+        const { data } = await client.from('groups').select('avatar_url').eq('group_code', code).maybeSingle();
+        if (data && data.avatar_url) {
+          const preview = get('group-avatar-preview');
+          if (preview) preview.src = data.avatar_url;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
     modal.style.display = 'flex';
   });
@@ -261,7 +300,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // HASZNÁLATI FELTÉTELEK MODAL MEGNYITÁSA / BEZÁRÁSA
   const tosModal = get('tos-modal');
   document.addEventListener('click', (e) => {
     if (e.target && e.target.id === 'open-tos-modal') {
@@ -285,7 +323,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// DEV LOG LEKÉRDEZÉSE SUPABASE-BŐL
 async function betoltChangelog() {
   const kontener = document.getElementById('changelog-lista');
   if (!kontener) return;
@@ -372,9 +409,20 @@ function injectSettingsUI() {
               <button id="toggle-code-visibility" type="button" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; font-size: 16px;">👁️</button>
             </div>
             
-            <p id="login-notice" class="sm-notice">🔒 A tagok szerkesztéséhez először lépj be a csoport kódjával!</p>
+            <p id="login-notice" class="sm-notice">🔒 A tagok és profilkép szerkesztéséhez először lépj be a csoport kódjával!</p>
             
             <div id="logged-in-wrapper" style="display:none;">
+              <!-- Csoport Profilkép -->
+              <div style="display: none; align-items: center; gap: 12px; margin-bottom: 15px; background: var(--inner-bg); padding: 10px; border-radius: 8px;">
+                <img id="group-avatar-preview" src="https://via.placeholder.com/50?text=Goats" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-color);" />
+                <div>
+                  <label class="sm-label" style="margin: 0; cursor: pointer; color: var(--accent-color); font-weight: bold;">
+                    📸 Csoportkép feltöltése
+                    <input type="file" id="group-avatar-input" accept="image/*" style="display: none;" />
+                  </label>
+                </div>
+              </div>
+
               <label class="sm-label">Én vagyok a csoportból:</label>
               <div id="custom-user-dropdown" class="custom-dropdown">
                 <div class="dropdown-selected">
@@ -409,7 +457,7 @@ function injectSettingsUI() {
               </span>
             </label>
           </div>
-          <button id="logout-btn" class="sm-btn sm-btn-logout">Kijelentkezés</button>
+          <button id="logout-btn" class="sm-btn sm-btn-logout">Kijelentkezés a csoportból</button>
         </div>
       </div>
     </div>
@@ -423,16 +471,7 @@ function injectSettingsUI() {
         </div>
         <div class="tos-modal-body">
           <h4>1. Felelősségkizárás</h4>
-          <p>Az alkalmazást az üzemeltető adott állapotában (as-is), garanciavállalás nélkül biztosítja. Az alkalmazás fejlesztője semmilyen felelősséget nem vállal az adatvesztésből, a szolgáltatás esetleges kimagadásából vagy hibáiból eredő károkért.</p>
-
-          <h4>2. Pénzügyi elszámolások</h4>
-          <p>A Tartozások modul kizárólag a felhasználók közötti tájékoztató jellegű nyilvántartásra szolgál. Az alkalmazás nem végez pénzügyi tranzakciókat, és nem vállal felelősséget az elszámolási vitákért.</p>
-
-          <h4>3. Feltöltött tartalmak</h4>
-          <p>A feltöltött képekért, szövegekért és adatokért kizárólag a feltöltő személy vállalja megbízóként a felelősséget. Jogszabályba ütköző tartalom feltöltése tilos.</p>
-
-          <h4>4. Adatkezelés</h4>
-          <p>Az alkalmazás a csoportos működéshez szükséges adatokat felhőalapú (Supabase) adatbázisban tárolja.</p>
+          <p>Az alkalmazást az üzemeltető adott állapotában (as-is), garanciavállalás nélkül biztosítja.</p>
         </div>
         <button id="accept-tos-modal-btn" class="sm-btn sm-btn-save tos-modal-btn">Elfogadom</button>
       </div>

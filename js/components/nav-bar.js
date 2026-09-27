@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const htmlNevek = ["index", "tartozasok", "tervek", "ranglista", "goatsgame"];
     const oldalNevek = ["Kezdőlap", "Tartozások", "Tervek", "Ranglista", "Goats Game"];
-    const oldalEmojik = ["🏠", "💸", "📋", "🏆", "🎮"];
+    const oldalEmojik = ["🏠", "💸", "📋", "🍹", "🎮"];
 
     const publicPages = ["index", "ranglista"];
 
@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     let allowedPages = publicPages;
 
     if (isLogged) {
-        const { data } = await _supabase
+        const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
+        const { data } = await client
             .from('groups')
             .select('enabled_pages')
             .eq('group_code', groupCode)
