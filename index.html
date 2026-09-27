@@ -145,6 +145,40 @@
                 <button id="ment-esemeny-btn" class="sm-btn sm-btn-save">Mentés</button>
             </div>
         </div>
+        <!-- Esemény Részletek / Módosítás Modal -->
+        <!-- 1. Napi Áttekintő Modal (Adott nap összes eseménye) -->
+        <div id="napi-esemenyek-modal" class="sm-overlay" style="display: none;">
+            <div class="sm-card" style="height: auto; max-height: 80vh;">
+                <div class="sm-header">
+                    <h3 id="napi-modal-cím">Események</h3>
+                    <button id="close-napi-esemenyek-modal" class="sm-close-btn">&times;</button>
+                </div>
+                <div id="napi-esemenyek-lista" style="display: flex; flex-direction: column; gap: 8px; margin: 15px 0; max-height: 300px; overflow-y: auto;">
+                    <!-- JavaScript ide tölti be a napi eseményeket -->
+                </div>
+                <button id="napi-uj-esemeny-btn" class="sm-btn sm-btn-save">+ Új esemény ezen a napon</button>
+            </div>
+        </div>
+
+        <!-- 2. Esemény Részletek / Módosítás / Törlés Modal -->
+        <div id="esemeny-reszletek-modal" class="sm-overlay" style="display: none;">
+            <div class="sm-card">
+                <div class="sm-header">
+                    <h3>Esemény szerkesztése</h3>
+                    <button id="close-esemeny-reszletek-modal" class="sm-close-btn">&times;</button>
+                </div>
+                <label class="sm-label">Esemény neve:</label>
+                <input type="text" id="szerkeszt-esemeny-cim" class="sm-input" />
+
+                <label class="sm-label">Dátum:</label>
+                <input type="date" id="szerkeszt-esemeny-datum" class="sm-input" />
+
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button id="modosit-esemeny-btn" class="sm-btn sm-btn-save" style="flex: 1;">Módosítás</button>
+                    <button id="torol-esemeny-btn" class="sm-btn sm-btn-logout" style="flex: 1; margin-top: 0; display: block;">Törlés</button>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 
