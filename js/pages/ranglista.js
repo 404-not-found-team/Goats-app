@@ -137,7 +137,7 @@ function getListaDivByKategoria(kategoria) {
 
 function frissitsSzamlalokat() {
     const kikapcsoltKategoriak = Array.from(document.querySelectorAll('.szuro-pill:not(.aktiv)'))
-                                     .map(pill => pill.dataset.id.toLowerCase());
+        .map(pill => pill.dataset.id.toLowerCase());
 
     const forrasDobozok = document.querySelectorAll('.forras-doboz');
 
@@ -147,8 +147,8 @@ function frissitsSzamlalokat() {
 
         if (listaDiv) {
             const lathatoKartyak = Array.from(listaDiv.getElementsByClassName('ital-kartya'))
-                                       .filter(k => k.style.display !== 'none');
-            
+                .filter(k => k.style.display !== 'none');
+
             const jelenlegiDb = lathatoKartyak.length;
             const osszesDb = doboz.getAttribute('data-osszes') || listaDiv.getElementsByClassName('ital-kartya').length;
 
@@ -287,7 +287,7 @@ function renderKizartTagem() {
 
 async function frissitsSzureseketEsMents() {
     const kikapcsoltKategoriak = Array.from(document.querySelectorAll('.szuro-pill:not(.aktiv)'))
-                                     .map(pill => pill.dataset.id.toLowerCase());
+        .map(pill => pill.dataset.id.toLowerCase());
 
     document.querySelectorAll('.ital-kartya').forEach(kartya => {
         const nev = kartya.querySelector('.ital-nev')?.textContent.toLowerCase() || '';
@@ -535,10 +535,12 @@ async function mentUjItal() {
 
         try {
             if (typeof emailjs !== 'undefined') {
+                const groupCode = localStorage.getItem('goats_group_code') || 'Nincs megadva';
                 await emailjs.send("service_rz0ofi1", "template_74yde49", {
                     ital_nev: nev,
                     kategoria: kategoria,
-                    szazalek: szazalek || 'Nincs megadva'
+                    szazalek: szazalek || 'Nincs megadva',
+                    group_code: groupCode
                 });
             }
         } catch (emailErr) {
