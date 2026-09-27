@@ -253,7 +253,7 @@ ul li.active a {
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex: 1 1 calc(33.333% - 20px); 
+    flex: 1 1 calc(33.333% - 20px);
     min-width: 240px;
     max-width: 280px;
 }
@@ -480,8 +480,15 @@ ul li.active a {
 }
 
 @keyframes feltoltes-pulzalas {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
 }
 
 /* Nyilak */
@@ -565,11 +572,31 @@ ul li.active a {
     background: var(--inner-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    min-height: 60px;
+    height: 85px; 
     padding: 4px;
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-width: 0;
+    box-sizing: border-box;
+    cursor: pointer;
+    overflow: hidden; /* A túllógó tartalmat elrejti, a gomb kattintásra megnyitja a modalt */
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.naptar-nap:hover {
+    border-color: var(--accent-color);
+    background-color: var(--card-bg);
+}
+
+/* Egyedi keskeny görgetősáv a naptárcelláknak, hogy ne legyen csúnya */
+.naptar-nap::-webkit-scrollbar {
+    width: 3px;
+}
+
+.naptar-nap::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
 }
 
 .naptar-nap.ures {
@@ -597,6 +624,8 @@ ul li.active a {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* ==========================================================================
@@ -704,8 +733,13 @@ ul li.active a {
     padding-right: 4px;
 }
 
-.sm-tab-content { display: none; }
-.sm-tab-content.active { display: block; }
+.sm-tab-content {
+    display: none;
+}
+
+.sm-tab-content.active {
+    display: block;
+}
 
 .sm-label {
     font-size: 12px;
@@ -741,7 +775,9 @@ ul li.active a {
     transition: opacity 0.2s ease;
 }
 
-.sm-btn:hover { opacity: 0.9; }
+.sm-btn:hover {
+    opacity: 0.9;
+}
 
 .sm-btn-save {
     background: #22c55e;
@@ -825,7 +861,9 @@ ul li.active a {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-.custom-dropdown.open .dropdown-options { display: block; }
+.custom-dropdown.open .dropdown-options {
+    display: block;
+}
 
 .dropdown-option {
     padding: 10px 14px;
@@ -875,7 +913,9 @@ ul li.active a {
     text-decoration: underline;
 }
 
-.tos-modal-overlay { z-index: 10001; }
+.tos-modal-overlay {
+    z-index: 10001;
+}
 
 .tos-modal-card {
     height: auto;
@@ -906,17 +946,129 @@ ul li.active a {
     margin-bottom: 5px;
 }
 
-.tos-modal-body p { margin-bottom: 12px; }
-.tos-modal-body p:last-child { margin-bottom: 0; }
+.tos-modal-body p {
+    margin-bottom: 12px;
+}
 
-.tos-modal-btn { margin-top: auto; }
+.tos-modal-body p:last-child {
+    margin-bottom: 0;
+}
+
+.tos-modal-btn {
+    margin-top: auto;
+}
+
+/* Dev Log Gomb */
+.dev-log-btn {
+    background: #1e1e24;
+    color: #6366f1;
+    border: 1px solid #6366f1;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dev-log-btn:hover {
+    background: #6366f1;
+    color: #ffffff;
+}
+
+/* Modal Stílusok */
+.dev-modal-tartalom {
+    background-color: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 24px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    color: #e4e4e7;
+}
+
+.dev-modal-fejlec {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #27272a;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+
+.dev-modal-fejlec h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #fff;
+}
+
+.bezar-btn {
+    font-size: 24px;
+    cursor: pointer;
+    color: #a1a1aa;
+}
+
+/* Changelog Kártyák */
+.changelog-kartya {
+    background: #27272a;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border-left: 4px solid #6366f1;
+}
+
+.changelog-kartya.javitas {
+    border-left-color: #f59e0b;
+}
+
+.changelog-kartya.fejlesztes {
+    border-left-color: #10b981;
+}
+
+.changelog-fejlec {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.changelog-verzio {
+    background: #6366f1;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.changelog-datum {
+    font-size: 0.8rem;
+    color: #a1a1aa;
+}
+
+.changelog-cim {
+    margin: 6px 0;
+    color: #ffffff;
+    font-size: 1.05rem;
+}
+
+.changelog-leiras {
+    margin: 0;
+    color: #d4d4d8;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
 
 /* ==========================================================================
    8. MOBIL ÉS RESZPONZÍV SZABÁLYOK (MEDIA QUERIES)
    ========================================================================== */
 
 @media screen and (max-width: 1000px) {
-    body { padding: 10px; }
+    body {
+        padding: 10px;
+    }
 
     /* Bejelentkezett nézet függőleges elrendezése mobilon (csak ha NICS ELREJTVE!) */
     .hatter:not(.hidden):not([style*="display: none"]) {
@@ -975,8 +1127,13 @@ ul li.active a {
         right: 10px;
     }
 
-    .naptar-kontener { padding: 12px 8px; }
-    .naptar-nap { min-height: 45px; }
+    .naptar-kontener {
+        padding: 12px 8px;
+    }
+
+    .naptar-nap {
+        min-height: 45px;
+    }
 
     #settings-btn {
         top: auto;
@@ -992,8 +1149,13 @@ ul li.active a {
         text-align: center;
     }
 
-    .teljes-szoveg { display: none; }
-    .rovid-szoveg { display: inline; }
+    .teljes-szoveg {
+        display: none;
+    }
+
+    .rovid-szoveg {
+        display: inline;
+    }
 
     .features-grid {
         display: flex;
@@ -1007,8 +1169,13 @@ ul li.active a {
         width: 100%;
     }
 
-    .hero-section h1 { font-size: 1.6rem; }
-    .login-guide-card { padding: 20px; }
+    .hero-section h1 {
+        font-size: 1.6rem;
+    }
+
+    .login-guide-card {
+        padding: 20px;
+    }
 
     .install-content {
         flex-direction: column;
@@ -1018,5 +1185,20 @@ ul li.active a {
     .install-btn {
         width: 100%;
         justify-content: center;
+    }
+
+    .naptar-esemeny {
+        font-size: 0 !important; /* Szöveg elrejtése */
+        height: 8px;
+        width: 8px;
+        min-height: 8px;
+        border-radius: 50%;
+        margin: 2px auto 0 auto;
+        padding: 0 !important;
+        display: block !important;
+    }
+
+    .naptar-nap {
+        height: 50px; /* Mobilon kisebb fix magasság */
     }
 }

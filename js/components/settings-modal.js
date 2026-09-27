@@ -20,8 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
       tabContents.forEach(c => c.classList.remove('active'));
 
       tab.classList.add('active');
-      const targetContent = get(`tab-${tab.dataset.tab}`);
+      const targetTab = tab.dataset.tab;
+      const targetContent = get(`tab-${targetTab}`);
       if (targetContent) targetContent.classList.add('active');
+
+      // Ha a Dev Log fülre kattintanak, automatikusan betöltjük a frissítéseket
+      if (targetTab === 'dev') {
+        betoltChangelog();
+      }
     });
   });
 
@@ -192,7 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const membersArray = membersInput.value.split(',').map(n => n.trim()).filter(Boolean);
 
     try {
-      const { error } = await supabase.from('groups').upsert(
+      const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
+      const { error } = await client.from('groups').upsert(
         { group_code: rawCode, members: membersArray, updated_at: new Date() },
         { onConflict: 'group_code' }
       );
@@ -229,7 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setStatus('Feldolgozás...', 'var(--text-secondary)');
 
     try {
-      const { data, error } = await supabase
+      const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
+      const { data, error } = await client
         .from('groups')
         .select('*')
         .eq('group_code', rawCode)
@@ -277,6 +285,54 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// DEV LOG LEKÉRDEZÉSE SUPABASE-BŐL
+async function betoltChangelog() {
+  const kontener = document.getElementById('changelog-lista');
+  if (!kontener) return;
+
+  try {
+    const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
+    const { data: frissitesek, error } = await client
+      .from('dev_changelog')
+      .select('*')
+      .order('datum', { ascending: false });
+
+    if (error) {
+      console.error('Hiba a changelog betöltésekor:', error);
+      kontener.innerHTML = '<p style="color: #ef4444; text-align: center;">Nem sikerült betölteni a frissítéseket.</p>';
+      return;
+    }
+
+    if (!frissitesek || frissitesek.length === 0) {
+      kontener.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Még nincsenek rögzített frissítések.</p>';
+      return;
+    }
+
+    kontener.innerHTML = frissitesek.map(item => {
+      const datumObj = new Date(item.datum);
+      const formatumDatum = datumObj.toLocaleDateString('hu-HU', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+
+      return `
+        <div class="changelog-kartya ${item.kategoria || 'uj'}">
+          <div class="changelog-fejlec">
+            <span class="changelog-verzio">${item.verzio}</span>
+            <span class="changelog-datum">${formatumDatum}</span>
+          </div>
+          <h4 class="changelog-cim">${item.cim}</h4>
+          <p class="changelog-leiras">${item.leiras}</p>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error('Changelog betöltési hiba:', err);
+    kontener.innerHTML = '<p style="color: #ef4444; text-align: center;">Hiba történt a frissítések lekérése közben.</p>';
+  }
+}
+
 function injectSettingsUI() {
   document.body.insertAdjacentHTML('beforeend', `
     <button id="settings-btn">⚙️</button>
@@ -292,6 +348,7 @@ function injectSettingsUI() {
         <div class="sm-tabs">
           <button class="sm-tab-btn active" data-tab="csoport">👥 Csoport</button>
           <button class="sm-tab-btn" data-tab="altalanos">🎨 Megjelenés</button>
+          <button class="sm-tab-btn" data-tab="dev">🚀 Frissítések</button>
         </div>
 
         <div class="sm-body">
@@ -307,7 +364,7 @@ function injectSettingsUI() {
             </div>
           </div>
 
-          <!-- TAB 3: CSOPORT -->
+          <!-- TAB 2: CSOPORT -->
           <div id="tab-csoport" class="sm-tab-content active">
             <label class="sm-label">Csoport kódja:</label>
             <div style="position: relative; display: flex; align-items: center; margin-bottom: 15px;">
@@ -329,6 +386,13 @@ function injectSettingsUI() {
 
               <label class="sm-label">Tagok (vesszővel elválasztva):</label>
               <input type="text" id="group-members-input" class="sm-input" placeholder="Peti, Géza, Vivi" />
+            </div>
+          </div>
+
+          <!-- TAB 3: DEV LOG (FRISSÍTÉSEK) -->
+          <div id="tab-dev" class="sm-tab-content">
+            <div id="changelog-lista" class="changelog-lista">
+              <p style="text-align: center; color: var(--text-secondary);">Frissítések betöltése...</p>
             </div>
           </div>
         </div>
