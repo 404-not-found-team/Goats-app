@@ -37,39 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Csoport Kép Feltöltés
-  const groupAvatarInput = get('group-avatar-input');
-  if (groupAvatarInput) {
-    groupAvatarInput.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      const rawCode = localStorage.getItem('goats_group_code');
-      if (!file || !rawCode) return;
-
-      setStatus('Kép feltöltése...', 'var(--text-secondary)');
-      try {
-        const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
-        const ext = file.name.split('.').pop();
-        const filePath = `avatars/${rawCode}.${ext}`;
-
-        const { error: uploadErr } = await client.storage
-          .from('kepek')
-          .upload(filePath, file, { upsert: true });
-
-        if (uploadErr) throw uploadErr;
-
-        const { data: urlData } = client.storage.from('kepek').getPublicUrl(filePath);
-        const avatarUrl = urlData.publicUrl;
-
-        await client.from('groups').update({ avatar_url: avatarUrl }).eq('group_code', rawCode);
-
-        const imgElem = get('group-avatar-preview');
-        if (imgElem) imgElem.src = avatarUrl;
-        setStatus(' Csoportkép frissítve!', '#22c55e');
-      } catch (err) {
-        console.error(err);
-        setStatus('❌ Képfeltöltési hiba!', '#ef4444');
-      }
-    });
-  }
+  
 
   // Csoportkód elrejtése / Megjelenítése
   if (toggleCodeVisibilityBtn && codeInput) {
@@ -213,16 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isLogged) {
       populateUserSelect(members);
 
-      try {
-        const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
-        const { data } = await client.from('groups').select('avatar_url').eq('group_code', code).maybeSingle();
-        if (data && data.avatar_url) {
-          const preview = get('group-avatar-preview');
-          if (preview) preview.src = data.avatar_url;
-        }
-      } catch (err) {
-        console.error(err);
-      }
+      
     }
 
     modal.style.display = 'flex';
@@ -412,17 +371,6 @@ function injectSettingsUI() {
             <p id="login-notice" class="sm-notice">🔒 A tagok és profilkép szerkesztéséhez először lépj be a csoport kódjával!</p>
             
             <div id="logged-in-wrapper" style="display:none;">
-              <!-- Csoport Profilkép -->
-              <div style="display: none; align-items: center; gap: 12px; margin-bottom: 15px; background: var(--inner-bg); padding: 10px; border-radius: 8px;">
-                <img id="group-avatar-preview" src="https://via.placeholder.com/50?text=Goats" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-color);" />
-                <div>
-                  <label class="sm-label" style="margin: 0; cursor: pointer; color: var(--accent-color); font-weight: bold;">
-                    📸 Csoportkép feltöltése
-                    <input type="file" id="group-avatar-input" accept="image/*" style="display: none;" />
-                  </label>
-                </div>
-              </div>
-
               <label class="sm-label">Én vagyok a csoportból:</label>
               <div id="custom-user-dropdown" class="custom-dropdown">
                 <div class="dropdown-selected">

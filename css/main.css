@@ -1061,6 +1061,14 @@ ul li.active a {
     line-height: 1.4;
 }
 
+.mobile-more-btn {
+    display: none !important;
+}
+
+.nav-more-drawer, .nav-drawer-overlay {
+    display: none;
+}
+
 /* ==========================================================================
    8. MOBIL ÉS RESZPONZÍV SZABÁLYOK (MEDIA QUERIES)
    ========================================================================== */
@@ -1144,11 +1152,7 @@ ul li.active a {
 }
 
 @media (max-width: 600px) {
-    ul {
-        flex-direction: row;
-        text-align: center;
-    }
-
+    /* Alapértelmezett szöveg/emoji rejtések */
     .teljes-szoveg {
         display: none;
     }
@@ -1157,6 +1161,15 @@ ul li.active a {
         display: inline;
     }
 
+    .desktop-only-item {
+        display: none !important;
+    }
+
+    .mobile-more-btn {
+        display: block !important;
+    }
+
+    /* Kezdőlap elemek reszponzivitása */
     .features-grid {
         display: flex;
         flex-direction: column;
@@ -1187,8 +1200,9 @@ ul li.active a {
         justify-content: center;
     }
 
+    /* Naptár mobil nézet */
     .naptar-esemeny {
-        font-size: 0 !important; /* Szöveg elrejtése */
+        font-size: 0 !important;
         height: 8px;
         width: 8px;
         min-height: 8px;
@@ -1199,40 +1213,14 @@ ul li.active a {
     }
 
     .naptar-nap {
-        height: 50px; /* Mobilon kisebb fix magasság */
+        height: 50px;
     }
 
-    body[data-nav-pos="bottom"] {
-        padding-bottom: 75px; /* Hely elhagyása a lenti menünek */
-    }
-
-    body[data-nav-pos="bottom"] ul#navBar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin: 0;
-        padding: 10px 15px;
-        border-radius: 16px 16px 0 0;
-        border-top: 1px solid var(--border-color);
-        border-left: none;
-        border-right: none;
-        border-bottom: none;
-        background: var(--card-bg);
-        z-index: 9990;
-        justify-content: space-around;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
-    }
-
-    body[data-nav-pos="bottom"] #settings-btn {
-        bottom: 80px; /* A gomb felemelkedik a lenti menü fölé */
-    }
-
+    /* FIX ALSÓ NAVIGÁCIÓS SÁV (NAVBAR) */
     body {
         padding-bottom: 75px !important;
     }
 
-    /* Alsó rögzített NavBar */
     ul#navBar {
         position: fixed !important;
         bottom: 0 !important;
@@ -1240,7 +1228,7 @@ ul li.active a {
         right: 0 !important;
         top: auto !important;
         margin: 0 !important;
-        padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) 10px !important; /* iPhone alsó sáv támogatás */
+        padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) 10px !important;
         border-radius: 16px 16px 0 0 !important;
         border-top: 1px solid var(--border-color) !important;
         border-left: none !important;
@@ -1254,10 +1242,117 @@ ul li.active a {
         backdrop-filter: blur(8px);
     }
 
-    /* A Beállítások gomb elhelyezése a lenti fix menü felett */
+    /* Beállítások (⚙️) Gomb */
     #settings-btn {
         bottom: 75px !important;
         top: auto !important;
         right: 15px !important;
+        z-index: 9980 !important;
+    }
+
+    body.drawer-nyitva #settings-btn {
+        display: none !important;
+    }
+
+    /* FELNYÍLÓ FIÓK (DRAWER) ÉS OVERLAY */
+    .nav-drawer-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 9995 !important;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .nav-drawer-overlay.open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .nav-more-drawer {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        bottom: -100%;
+        left: 0;
+        right: 0;
+        background: var(--card-bg);
+        border-radius: 20px 20px 0 0;
+        border-top: 1px solid var(--border-color);
+        padding: 20px 20px 30px 20px !important;
+        z-index: 9996 !important;
+        transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .nav-more-drawer.open {
+        bottom: 0;
+    }
+
+    .drawer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+        color: var(--text-primary);
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 15px;
+    }
+
+    .drawer-close {
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--text-secondary);
+    }
+
+    .drawer-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 0;
+        margin: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .drawer-list li {
+        width: 100%;
+    }
+
+    .drawer-list li a {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        padding: 14px 18px !important;
+        border-radius: 12px !important;
+        background: var(--inner-bg) !important;
+        color: var(--text-primary) !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        text-decoration: none !important;
+    }
+
+    .drawer-list li a .rovid-szoveg {
+        display: inline-block !important;
+        font-size: 1.3rem !important;
+        width: 28px !important;
+        text-align: center !important;
+    }
+
+    .drawer-list li a .teljes-szoveg {
+        display: inline-block !important;
+        font-size: 1rem !important;
+    }
+
+    .drawer-list li.active a {
+        background: var(--accent-color) !important;
+        color: #fff !important;
     }
 }
