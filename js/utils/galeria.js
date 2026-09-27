@@ -6,15 +6,22 @@ if ('serviceWorker' in navigator) {
 const BUCKET_NEV = 'kepek';
 
 // KORLÁTOZÁSOK SETTINGS
-const MAX_FAJL_MERET_MB = 5; // Maximum 5 MB per kép
-const ENGEDELYEZETT_TIPUSOK = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_FAJL_MERET_MB = 10;
+const ENGEDELYEZETT_TIPUSOK = [
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/gif',
+    'image/heic',
+    'image/heif'
+];
 
 let kepekLista = []; // { name: 'fajlnev.jpg', url: 'https://...' } elemeket tárol
 let currentIndex = 0;
 
 async function betoltKepek() {
     const groupCode = localStorage.getItem('goats_group_code');
-    
+
     if (!groupCode) {
         kepekLista = [];
         frissitGaleria();
@@ -42,7 +49,7 @@ async function betoltKepek() {
             .storage
             .from(BUCKET_NEV)
             .getPublicUrl(`${groupCode}/${fajl.name}`);
-            
+
         return {
             name: fajl.name, // A pontos fájlnév
             url: publicData.publicUrl
@@ -207,23 +214,54 @@ async function feltoltKepek(event) {
         gomb.setAttribute('aria-busy', 'true');
     }
 
-    for (const fajl of fajlok) {
-        // 1. Fájltípus ellenőrzése
+    for (let fajl of fajlok) {
+        let kiterjesztes = fajl.name.split('.').pop().toLowerCase();
+
+        // 1. iPhone HEIC / HEIF konvertálása JPG-vé
+        if (fajl.type === 'image/heic' || fajl.type === 'image/heif' || kiterjesztes === 'heic' || kiterjesztes === 'heif') {
+            try {
+                const konvertaltBlob = await heic2any({
+                    blob: fajl,
+                    toType: 'image/jpeg',
+                    quality: 0.8
+                });
+
+                const veglegesBlob = Array.isArray(konvertaltBlob) ? konvertaltBlob[0] : konvertaltBlob;
+                const ujNev = fajl.name.replace(/\.(heic|heif)$/i, '.jpg');
+                fajl = new File([veglegesBlob], ujNev, { type: 'image/jpeg' });
+                kiterjesztes = 'jpg';
+            } catch (convErr) {
+                console.error('HEIC konvertálási hiba:', convErr);
+                alert(`Sikertelen HEIC konvertálás: ${fajl.name}`);
+                continue;
+            }
+        }
+
+        // 2. Fájltípus ellenőrzése
         if (!ENGEDELYEZETT_TIPUSOK.includes(fajl.type)) {
-            alert(`A(z) "${fajl.name}" nem engedélyezett formátum! (Kizárólag JPG, PNG, WEBP, GIF megengedett)`);
+            alert(`A(z) "${fajl.name}" nem engedélyezett formátum!`);
             continue;
         }
 
-        // 2. Méret ellenőrzése
+        // 3. Méret ellenőrzése
         const maxMeretBajtokban = MAX_FAJL_MERET_MB * 1024 * 1024;
         if (fajl.size > maxMeretBajtokban) {
             alert(`A(z) "${fajl.name}" túl nagy! Maximum ${MAX_FAJL_MERET_MB} MB tölthető fel.`);
             continue;
         }
 
-        // 3. Egyedi név képzés
-        const kiterjesztes = fajl.name.split('.').pop().toLowerCase();
-        const egyediNev = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}.${kiterjesztes}`;
+        // 4. Egyedi név képzés: csoportkód + dátum + idő
+        const most = new Date();
+        const ev = most.getFullYear();
+        const honap = String(most.getMonth() + 1).padStart(2, '0');
+        const nap = String(most.getDate()).padStart(2, '0');
+        const ora = String(most.getHours()).padStart(2, '0');
+        const perc = String(most.getMinutes()).padStart(2, '0');
+        const masodperc = String(most.getSeconds()).padStart(2, '0');
+        const véletlenUtotag = Math.random().toString(36).substring(2, 6);
+
+        const datumIdostring = `${ev}-${honap}-${nap}_${ora}-${perc}-${masodperc}`;
+        const egyediNev = `${groupCode}_${datumIdostring}_${véletlenUtotag}.${kiterjesztes}`;
         const eleresiUt = `${groupCode}/${egyediNev}`;
 
         const { error } = await supabase
