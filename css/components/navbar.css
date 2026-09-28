@@ -1,0 +1,209 @@
+/* Felső menüsor */
+ul {
+    list-style: none;
+    display: flex;
+    background-color: var(--card-bg);
+    padding: 15px 20px;
+    border-radius: var(--border-radius, 10px);
+    margin-bottom: 30px;
+    box-shadow: var(--box-shadow);
+    gap: 15px;
+}
+
+#navBar {
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+ul li a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+ul li a:hover {
+    color: var(--text-primary);
+    background-color: var(--inner-bg);
+}
+
+ul li.active a {
+    color: #ffffff;
+    background-color: var(--accent-color);
+}
+
+/* Jobb felső navigációs gombok / Profilkép */
+.top-user-nav {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    z-index: 9980;
+}
+
+.nav-auth-btn {
+    background: var(--accent-color) !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 10px 20px !important;
+    border-radius: 10px !important;
+    font-weight: bold !important;
+    font-size: 0.9rem !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+    transition: transform 0.2s ease, background-color 0.2s ease !important;
+}
+
+.nav-auth-btn:hover {
+    background: var(--accent-hover) !important;
+    transform: translateY(-2px);
+}
+
+.nav-profile-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Mobil reszponzív navbar & felnyíló fiók (Drawer) */
+.mobile-more-btn {
+    display: none !important;
+}
+
+.nav-more-drawer,
+.nav-drawer-overlay {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding-bottom: 75px !important;
+    }
+
+    .top-user-nav {
+        top: 12px;
+        right: 12px;
+    }
+
+    ul#navBar {
+        position: fixed !important;
+        bottom: 15px !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: auto !important;
+        margin: 0 auto !important;
+        padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) 10px !important;
+        border-radius: 16px !important;
+        border-top: 1px solid var(--border-color) !important;
+        background: var(--card-bg) !important;
+        z-index: 9990 !important;
+        display: flex !important;
+        justify-content: space-around !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5) !important;
+        backdrop-filter: blur(8px);
+        width: 90%;
+    }
+
+    .mobile-more-btn {
+        display: block !important;
+    }
+
+    .desktop-only-item {
+        display: none !important;
+    }
+
+    /* Felnyíló fiók mobilon */
+    .nav-drawer-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 9995 !important;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .nav-drawer-overlay.open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .nav-more-drawer {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        bottom: -100%;
+        left: 0;
+        right: 0;
+        background: var(--card-bg);
+        border-radius: 20px 20px 0 0;
+        border-top: 1px solid var(--border-color);
+        padding: 20px !important;
+        z-index: 9996 !important;
+        transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .nav-more-drawer.open {
+        bottom: 0;
+    }
+
+    .drawer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+        color: var(--text-primary);
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 15px;
+    }
+
+    .drawer-close {
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--text-secondary);
+    }
+
+    .drawer-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 0;
+        margin: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .drawer-list li {
+        width: 100%;
+    }
+
+    .drawer-list li a {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        padding: 14px 18px !important;
+        border-radius: 12px !important;
+        background: var(--inner-bg) !important;
+        color: var(--text-primary) !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        text-decoration: none !important;
+    }
+
+    .drawer-list li.active a {
+        background: var(--accent-color) !important;
+        color: #fff !important;
+    }
+}
