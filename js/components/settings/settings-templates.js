@@ -21,44 +21,44 @@ export function injectUserNavHTML() {
 
   document.body.appendChild(headerContainer);
 
+  // A modalok alapból a .sm-overlay { display: none } miatt rejtettek,
+  // a JS csak megnyitáskor állít rájuk inline display: flex-et.
   document.body.insertAdjacentHTML('beforeend', `
     <!-- SIGN IN MODAL -->
-    <div id="auth-modal" class="sm-overlay" style="display: none;">
-      <div class="sm-card" style="height: auto; min-height: 380px; display: flex; flex-direction: column; justify-content: space-between;">
-        <div>
-          <div class="sm-header">
-            <h3>Sign In / Belépés 🔑</h3>
-            <button id="close-auth-btn" class="sm-close-btn">&times;</button>
-          </div>
-          <div class="sm-body" style="height: auto;">
-            <label class="sm-label">Kód beírása (Csoport kód):</label>
-            <input type="password" id="auth-group-code-input" class="sm-input"/>
-            <button id="toggle-request-code-btn" type="button" class="google-mini-edit-btn" style="color: var(--accent-color); font-weight: bold; margin-bottom: 12px; display: block;">
-              📩 Még nincs kódod? Igényelj egyet!
-            </button>
-            <div id="request-code-section" style="display: none; background: var(--inner-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 15px;">
-              <label class="sm-label" style="margin-bottom: 4px;">E-mail cím a kód igényléséhez:</label>
-              <input type="email" id="auth-email-input" class="sm-input" placeholder="peldas.pisti@gmail.com" style="margin-bottom: 0;" />
-            </div>
+    <div id="auth-modal" class="sm-overlay">
+      <div class="sm-card">
+        <div class="sm-header">
+          <h3>Sign In / Belépés 🔑</h3>
+          <button id="close-auth-btn" class="sm-close-btn">&times;</button>
+        </div>
+        <div class="sm-body">
+          <label class="sm-label">Kód beírása (Csoport kód):</label>
+          <input type="password" id="auth-group-code-input" class="sm-input"/>
+          <button id="toggle-request-code-btn" type="button" class="google-mini-edit-btn request-code-btn">
+            📩 Még nincs kódod? Igényelj egyet!
+          </button>
+          <div id="request-code-section" class="request-code-box hidden">
+            <label class="sm-label">E-mail cím a kód igényléséhez:</label>
+            <input type="email" id="auth-email-input" class="sm-input sm-input-flush" placeholder="peldas.pisti@gmail.com" />
           </div>
         </div>
-        <div style="margin-top: auto; padding-top: 15px; border-top: 1px solid var(--border-color);">
-          <div id="tos-wrapper" class="tos-wrapper" style="margin-bottom: 12px;">
-            <label class="tos-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+        <div class="auth-footer">
+          <div id="tos-wrapper" class="tos-wrapper">
+            <label class="tos-label">
               <input type="checkbox" id="accept-tos-checkbox" class="tos-checkbox" />
-              <span style="font-size: 0.85rem;">
+              <span class="tos-text">
                 Elfogadom a <a href="#" id="open-tos-modal" class="tos-link">Használati Feltételeket</a>.
               </span>
             </label>
           </div>
-          <p id="auth-status" style="font-size: 13px; text-align: center; margin: 8px 0; min-height: 18px;"></p>
-          <button id="auth-submit-btn" class="sm-btn sm-btn-save" style="width: 100%; font-size: 1rem; padding: 12px; border-radius: 12px;">Belépés / Igénylés</button>
+          <p id="auth-status" class="sm-status"></p>
+          <button id="auth-submit-btn" class="sm-btn sm-btn-save sm-btn-lg">Belépés / Igénylés</button>
         </div>
       </div>
     </div>
 
     <!-- GOOGLE PROFIL MODAL -->
-    <div id="profile-modal" class="sm-overlay" style="display: none;">
+    <div id="profile-modal" class="sm-overlay">
       <div class="google-profile-card">
         <button id="close-profile-btn" class="google-close-btn">&times;</button>
         <div class="google-user-header">
@@ -77,52 +77,52 @@ export function injectUserNavHTML() {
           <button id="open-dev-btn" class="google-menu-btn"><span>🚀 Frissítések & Dev Log</span><span class="arrow-icon">›</span></button>
           <button id="logout-btn" class="google-menu-btn danger"><span>🚪 Kijelentkezés</span></button>
         </div>
-        <p id="profile-status" style="font-size: 12px; text-align: center; margin-top: 10px;"></p>
+        <p id="profile-status" class="sm-status sm-status-small"></p>
       </div>
     </div>
 
     <!-- CSOPORT ADATOK MODAL -->
-    <div id="group-details-modal" class="sm-overlay" style="display: none;">
-      <div class="sm-card" style="height: auto; max-height: 90vh;">
+    <div id="group-details-modal" class="sm-overlay">
+      <div class="sm-card">
         <div class="sm-header">
           <h3>👥 Csoport Adatok</h3>
           <button id="close-group-details-btn" class="sm-close-btn">&times;</button>
         </div>
-        <div class="sm-body" style="height: auto; max-height: 75vh;">
+        <div class="sm-body">
           <label class="sm-label">Csoport neve:</label>
           <input type="text" id="group-name-display" class="sm-input" placeholder="GOATS Csoport" />
           <label class="sm-label">Csoport e-mail címe:</label>
-          <div style="display: flex; align-items: center; justify-content: space-between; background: var(--inner-bg); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 15px;">
-            <span id="group-email-display" style="font-size: 0.9rem; font-weight: bold; color: var(--text-primary);">email@goats.app</span>
-            <button id="open-edit-email-btn" class="google-mini-edit-btn" style="background: var(--accent-color); color: #fff; padding: 4px 8px; border-radius: 6px;">✏️ Módosít</button>
+          <div class="info-row">
+            <span id="group-email-display" class="info-row-value">email@goats.app</span>
+            <button id="open-edit-email-btn" class="google-mini-edit-btn mini-btn-accent">✏️ Módosít</button>
           </div>
           <label class="sm-label">Csoport kódja (Group Code):</label>
-          <div style="position: relative; display: flex; align-items: center; margin-bottom: 15px;">
-            <input type="password" id="group-code-display" class="sm-input" readonly style="margin-bottom: 0; padding-right: 40px; opacity: 0.9;" />
-            <button id="toggle-group-code-visibility" type="button" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; font-size: 16px;">👁️</button>
+          <div class="input-with-toggle">
+            <input type="password" id="group-code-display" class="sm-input" readonly />
+            <button id="toggle-group-code-visibility" type="button" class="input-toggle-btn">👁️</button>
           </div>
           <label class="sm-label">Én vagyok a csoportból:</label>
-          <div id="custom-user-dropdown" class="custom-dropdown" style="margin-bottom: 15px;">
+          <div id="custom-user-dropdown" class="custom-dropdown">
             <div class="dropdown-selected"><span id="user-dropdown-selected-text">Válaszd ki, ki vagy...</span><span class="arrow">▼</span></div>
             <div id="user-dropdown-options" class="dropdown-options"></div>
           </div>
           <label class="sm-label">Válassz csoport ikont:</label>
-          <div id="emoji-picker-container" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px;"></div>
+          <div id="emoji-picker-container" class="emoji-picker"></div>
           <label class="sm-label">Tagok (vesszővel elválasztva):</label>
-          <input type="text" id="group-members-input" class="sm-input" placeholder="Peti, Géza, Vivi" style="margin-bottom: 20px;" />
-          <button id="delete-group-btn" class="google-menu-btn danger-dark" style="margin-top: 10px;">🗑️ Csoport törlése</button>
+          <input type="text" id="group-members-input" class="sm-input sm-input-spaced" placeholder="Peti, Géza, Vivi" />
+          <button id="delete-group-btn" class="google-menu-btn danger-dark">🗑️ Csoport törlése</button>
         </div>
       </div>
     </div>
 
     <!-- E-MAIL MÓDOSÍTÁS MODAL -->
-    <div id="email-modal" class="sm-overlay" style="display: none;">
-      <div class="sm-card" style="height: auto;">
+    <div id="email-modal" class="sm-overlay">
+      <div class="sm-card">
         <div class="sm-header">
           <h3>✏️ Új E-mail Cím</h3>
           <button id="close-email-btn" class="sm-close-btn">&times;</button>
         </div>
-        <div class="sm-body" style="height: auto;">
+        <div class="sm-body">
           <label class="sm-label">Adj meg egy új e-mail címet:</label>
           <input type="email" id="new-email-input" class="sm-input" placeholder="ujemail@gmail.com" />
           <button id="request-email-change-btn" class="sm-btn sm-btn-save">Kód igénylése e-mailben 📩</button>
@@ -131,29 +131,29 @@ export function injectUserNavHTML() {
     </div>
 
     <!-- BIZTONSÁGI KÓD ELLENŐRZŐ MODAL -->
-    <div id="verify-code-modal" class="sm-overlay" style="display: none;">
-      <div class="sm-card" style="height: auto;">
+    <div id="verify-code-modal" class="sm-overlay">
+      <div class="sm-card">
         <div class="sm-header">
           <h3>🔒 Biztonsági Ellenőrzés</h3>
           <button id="close-verify-btn" class="sm-close-btn">&times;</button>
         </div>
-        <div class="sm-body" style="height: auto;">
-          <p id="verify-code-status" style="font-size: 13px; text-align: center; margin-bottom: 12px;"></p>
+        <div class="sm-body">
+          <p id="verify-code-status" class="sm-status sm-status-verify"></p>
           <label class="sm-label">Írd be az e-mailben kapott 6-jegyű kódot:</label>
-          <input type="text" id="verify-code-input" class="sm-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 1.2rem; letter-spacing: 4px;" />
+          <input type="text" id="verify-code-input" class="sm-input sm-input-code" placeholder="123456" maxlength="6" />
           <button id="verify-code-btn" class="sm-btn sm-btn-save">Művelet Megerősítése</button>
         </div>
       </div>
     </div>
 
     <!-- SETTINGS MODAL (TÉMA) -->
-    <div id="settings-modal" class="sm-overlay" style="display: none;">
-      <div class="sm-card" style="height: auto;">
+    <div id="settings-modal" class="sm-overlay">
+      <div class="sm-card">
         <div class="sm-header">
           <h3>⚙️ Beállítások</h3>
           <button id="close-settings-btn" class="sm-close-btn">&times;</button>
         </div>
-        <div class="sm-body" style="height: auto;">
+        <div class="sm-body">
           <label class="sm-label">Téma kiválasztása:</label>
           <div id="custom-theme-dropdown" class="custom-dropdown">
             <div class="dropdown-selected"><span id="theme-dropdown-selected-text">🌙 Dark (Alapértelmezett)</span><span class="arrow">▼</span></div>
@@ -164,22 +164,22 @@ export function injectUserNavHTML() {
     </div>
 
     <!-- DEV LOG MODAL -->
-    <div id="dev-modal" class="sm-overlay" style="display: none;">
-      <div class="sm-card" style="height: 450px;">
+    <div id="dev-modal" class="sm-overlay">
+      <div class="sm-card">
         <div class="sm-header">
           <h3>🚀 Frissítések & Dev Log</h3>
           <button id="close-dev-btn" class="sm-close-btn">&times;</button>
         </div>
         <div class="sm-body">
           <div id="changelog-lista" class="changelog-lista">
-            <p style="text-align: center; color: var(--text-secondary);">Frissítések betöltése...</p>
+            <p class="changelog-empty">Frissítések betöltése...</p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- EGYEDI HASZNÁLATI FELTÉTELEK MODAL -->
-    <div id="tos-modal" class="sm-overlay tos-modal-overlay" style="display: none;">
+    <div id="tos-modal" class="sm-overlay tos-modal-overlay">
       <div class="sm-card tos-modal-card">
         <div class="sm-header">
           <h3 class="tos-modal-header">📜 Használati Feltételek</h3>
