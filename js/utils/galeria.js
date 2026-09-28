@@ -215,66 +215,82 @@ async function feltoltKepek(event) {
     }
 
     for (let fajl of fajlok) {
-        let kiterjesztes = fajl.name.split('.').pop().toLowerCase();
+        try {
+            let kiterjesztes = fajl.name.split('.').pop().toLowerCase();
+            const mimeTipus = (fajl.type || '').toLowerCase();
 
-        // 1. iPhone HEIC / HEIF konvertálása JPG-vé
-        if (fajl.type === 'image/heic' || fajl.type === 'image/heif' || kiterjesztes === 'heic' || kiterjesztes === 'heif') {
-            try {
-                const konvertaltBlob = await heic2any({
-                    blob: fajl,
-                    toType: 'image/jpeg',
-                    quality: 0.8
-                });
+            // 1. iPhone HEIC / HEIF / HEIF-JPEG felismerés és konvertálás
+            const isHeic = mimeTipus.includes('heic') || 
+                           mimeTipus.includes('heif') || 
+                           ['heic', 'heif'].includes(kiterjesztes);
 
-                const veglegesBlob = Array.isArray(konvertaltBlob) ? konvertaltBlob[0] : konvertaltBlob;
-                const ujNev = fajl.name.replace(/\.(heic|heif)$/i, '.jpg');
-                fajl = new File([veglegesBlob], ujNev, { type: 'image/jpeg' });
-                kiterjesztes = 'jpg';
-            } catch (convErr) {
-                console.error('HEIC konvertálási hiba:', convErr);
-                alert(`Sikertelen HEIC konvertálás: ${fajl.name}`);
+            if (isHeic) {
+                if (typeof heic2any !== 'undefined') {
+                    try {
+                        console.log('HEIC/HEIF konvertálás indítása:', fajl.name);
+                        const konvertaltBlob = await heic2any({
+                            blob: fajl,
+                            toType: 'image/jpeg',
+                            quality: 0.8
+                        });
+
+                        const veglegesBlob = Array.isArray(konvertaltBlob) ? konvertaltBlob[0] : konvertaltBlob;
+                        const ujNev = fajl.name.replace(/\.(heic|heif|jpeg|jpg)$/i, '.jpg');
+                        fajl = new File([veglegesBlob], ujNev, { type: 'image/jpeg' });
+                        kiterjesztes = 'jpg';
+                    } catch (convErr) {
+                        console.warn('heic2any konvertálási hiba, megpróbáljuk eredetiben:', convErr);
+                    }
+                }
+            }
+
+            // 2. Fájltípus ellenőrzése (iOS Fallback-kel)
+            const engedelyezettKiterjesztesek = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif'];
+            const elfogadva = ENGEDELYEZETT_TIPUSOK.includes(fajl.type) || engedelyezettKiterjesztesek.includes(kiterjesztes);
+
+            if (!elfogadva) {
+                alert(`A(z) "${fajl.name}" nem engedélyezett formátum!`);
                 continue;
             }
-        }
 
-        // 2. Fájltípus ellenőrzése
-        if (!ENGEDELYEZETT_TIPUSOK.includes(fajl.type)) {
-            alert(`A(z) "${fajl.name}" nem engedélyezett formátum!`);
-            continue;
-        }
+            // 3. Méret ellenőrzése
+            const maxMeretBajtokban = MAX_FAJL_MERET_MB * 1024 * 1024;
+            if (fajl.size > maxMeretBajtokban) {
+                alert(`A(z) "${fajl.name}" túl nagy! Maximum ${MAX_FAJL_MERET_MB} MB tölthető fel.`);
+                continue;
+            }
 
-        // 3. Méret ellenőrzése
-        const maxMeretBajtokban = MAX_FAJL_MERET_MB * 1024 * 1024;
-        if (fajl.size > maxMeretBajtokban) {
-            alert(`A(z) "${fajl.name}" túl nagy! Maximum ${MAX_FAJL_MERET_MB} MB tölthető fel.`);
-            continue;
-        }
+            // 4. Egyedi név képzés: csoportkód + dátum + idő
+            const most = new Date();
+            const ev = most.getFullYear();
+            const honap = String(most.getMonth() + 1).padStart(2, '0');
+            const nap = String(most.getDate()).padStart(2, '0');
+            const ora = String(most.getHours()).padStart(2, '0');
+            const perc = String(most.getMinutes()).padStart(2, '0');
+            const masodperc = String(most.getSeconds()).padStart(2, '0');
+            const veletlenUtotag = Math.random().toString(36).substring(2, 6);
 
-        // 4. Egyedi név képzés: csoportkód + dátum + idő
-        const most = new Date();
-        const ev = most.getFullYear();
-        const honap = String(most.getMonth() + 1).padStart(2, '0');
-        const nap = String(most.getDate()).padStart(2, '0');
-        const ora = String(most.getHours()).padStart(2, '0');
-        const perc = String(most.getMinutes()).padStart(2, '0');
-        const masodperc = String(most.getSeconds()).padStart(2, '0');
-        const véletlenUtotag = Math.random().toString(36).substring(2, 6);
+            const datumIdostring = `${ev}-${honap}-${nap}_${ora}-${perc}-${masodperc}`;
+            const egyediNev = `${groupCode}_${datumIdostring}_${veletlenUtotag}.${kiterjesztes === 'heic' || kiterjesztes === 'heif' ? 'jpg' : kiterjesztes}`;
+            const eleresiUt = `${groupCode}/${egyediNev}`;
 
-        const datumIdostring = `${ev}-${honap}-${nap}_${ora}-${perc}-${masodperc}`;
-        const egyediNev = `${groupCode}_${datumIdostring}_${véletlenUtotag}.${kiterjesztes}`;
-        const eleresiUt = `${groupCode}/${egyediNev}`;
+            const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
+            const { error } = await client
+                .storage
+                .from(BUCKET_NEV)
+                .upload(eleresiUt, fajl, {
+                    cacheControl: '3600',
+                    contentType: fajl.type || 'image/jpeg',
+                    upsert: false
+                });
 
-        const { error } = await supabase
-            .storage
-            .from(BUCKET_NEV)
-            .upload(eleresiUt, fajl, {
-                cacheControl: '3600',
-                upsert: false
-            });
-
-        if (error) {
-            console.error('Hiba a feltöltéskor:', error);
-            alert(`Nem sikerült feltölteni: ${fajl.name}`);
+            if (error) {
+                console.error('Hiba a Supabase feltöltéskor:', error);
+                alert(`Nem sikerült feltölteni (${fajl.name}): ${error.message}`);
+            }
+        } catch (err) {
+            console.error('Feltöltési hiba:', err);
+            alert(`Sikertelen feltöltés: ${fajl.name}`);
         }
     }
 
