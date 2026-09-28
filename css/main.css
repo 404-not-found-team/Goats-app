@@ -1352,6 +1352,58 @@ ul li.active a {
     background: var(--accent-color);
 }
 
+/* ==========================================================================
+   EGYSÉGES MODAL MÉRETEK ÉS ELRENDEZÉS
+   ========================================================================== */
+
+/* Minden alapvető modal kártya (Sign In, Csoport Adatok, Beállítások, Dev Log stb.) */
+.sm-card,
+.google-profile-card {
+    width: 380px !important;
+    max-width: 92vw !important;
+    height: 480px !important; /* FIXED EGYSÉGES MAGASSÁG MINDEN MODALNAK */
+    max-height: 85vh !important;
+    padding: 20px 24px !important;
+    border-radius: 24px !important;
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+/* A modal belső törzse (ha hosszabb a tartalom, görgethetővé válik, de a modal mérete nem változik) */
+.sm-body {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding-right: 4px !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+/* Gördítősáv finomítása a modalokon belül */
+.sm-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sm-body::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+/* Mobil nézet igazítás */
+@media screen and (max-width: 600px) {
+    .sm-card,
+    .google-profile-card {
+        width: 95vw !important;
+        height: 460px !important;
+        padding: 16px 20px !important;
+    }
+}
+
 /* Mobil beállítások a felső gombhoz */
 @media screen and (max-width: 600px) {
     .top-user-nav {
