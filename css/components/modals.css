@@ -10,12 +10,12 @@
     backdrop-filter: blur(4px);
 }
 
-/* Egységes kártyaméret minden modal ablaknak */
+/* Egységes kártyaméret minden modal ablaknak (a magasság: --modal-height, alapból 480px) */
 .sm-card,
 .google-profile-card {
     width: 380px;
     max-width: 92vw;
-    height: 480px;
+    height: var(--modal-height, 480px);
     max-height: 85vh;
     padding: 20px 24px;
     border-radius: 24px;
@@ -180,8 +180,6 @@
 #tos-modal .tos-modal-card {
     width: 420px;
     max-width: 90vw;
-    height: 520px;
-    max-height: 85vh;
 }
 
 .tos-modal-header {
@@ -229,7 +227,7 @@
 
 .tos-label {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
     cursor: pointer;
 }
@@ -467,4 +465,138 @@
 .changelog-lista {
     display: flex;
     flex-direction: column;
+}
+
+/* --------------------------------------------------------------------------
+   settings-templates.js sablon-osztályai (korábban inline style-ok voltak)
+   A módosítók az alapszabályok UTÁN állnak, azonos specificitásnál ők nyernek.
+   -------------------------------------------------------------------------- */
+
+/* Beviteli mezők, gombok */
+.sm-input-flush {
+    margin-bottom: 0;
+}
+
+.sm-input-spaced {
+    margin-bottom: 20px;
+}
+
+.sm-input-code {
+    text-align: center;
+    font-size: 1.2rem;
+    letter-spacing: 4px;
+}
+
+.sm-btn-lg {
+    font-size: 1rem;
+    border-radius: 12px;
+}
+
+/* Státusz sorok */
+.sm-status {
+    font-size: 13px;
+    text-align: center;
+    margin: 8px 0;
+    min-height: 18px;
+}
+
+.sm-status-small {
+    font-size: 12px;
+    margin: 10px 0 0 0;
+    min-height: 0;
+}
+
+.sm-status-verify {
+    margin: 0 0 12px 0;
+    min-height: 0;
+}
+
+/* Belépő ablak */
+.request-code-btn {
+    color: var(--accent-color);
+    font-weight: bold;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.request-code-box {
+    background: var(--inner-bg);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 15px;
+}
+
+.auth-footer {
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.tos-text {
+    font-size: 0.85rem;
+}
+
+/* Csoport adatok ablak */
+.info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--inner-bg);
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 15px;
+}
+
+.info-row-value {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.mini-btn-accent {
+    background: var(--accent-color);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.input-with-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.input-with-toggle .sm-input {
+    margin-bottom: 0;
+    padding-right: 40px;
+    opacity: 0.9;
+}
+
+.input-toggle-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.emoji-picker {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.google-menu-btn.danger-dark {
+    margin-top: 10px;
+}
+
+/* Dev Log */
+.changelog-empty {
+    text-align: center;
+    color: var(--text-secondary);
 }

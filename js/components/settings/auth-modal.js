@@ -12,8 +12,8 @@ export function initAuthModal() {
   get('toggle-request-code-btn')?.addEventListener('click', () => {
     const section = get('request-code-section');
     if (section) {
-      const isHidden = section.style.display === 'none';
-      section.style.display = isHidden ? 'block' : 'none';
+      const isHidden = section.classList.contains('hidden');
+      section.classList.toggle('hidden');
       get('toggle-request-code-btn').textContent = isHidden ? '❌ Kód igénylés elrejtése' : '📩 Még nincs kódod? Igényelj egyet!';
     }
   });

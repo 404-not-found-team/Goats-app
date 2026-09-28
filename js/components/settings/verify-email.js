@@ -21,6 +21,7 @@ export function initVerifySystem() {
 
     console.log(`[EmailJS] Kód kiküldése: ${celEmail}, Kód: ${generaltBiztonsagiKod}`);
 
+    let elkuldve = false;
     try {
       if (typeof emailjs !== 'undefined') {
         await emailjs.send("service_default", "template_verification", {
@@ -29,15 +30,26 @@ export function initVerifySystem() {
           verification_code: generaltBiztonsagiKod,
           action_name: muveletNev
         });
+        elkuldve = true;
       }
     } catch (err) {
       console.warn("EmailJS hiba:", err);
     }
 
     get('verify-code-input').value = '';
-    setStatus(get('verify-code-status'), `Kódot elküldtük ide: ${celEmail}`, 'var(--text-secondary)');
+    if (elkuldve) {
+      setStatus(get('verify-code-status'), `Kódot elküldtük ide: ${celEmail}`, 'var(--text-secondary)');
+    } else {
+      setStatus(get('verify-code-status'), '⚠️ Az e-mail küldés nem működik, a kód nem fog megérkezni.', '#eab308');
+    }
     verifyCodeModal.style.display = 'flex';
   };
+
+  get('open-edit-email-btn')?.addEventListener('click', () => {
+    if (groupDetailsModal) groupDetailsModal.style.display = 'none';
+    get('new-email-input').value = '';
+    emailModal.style.display = 'flex';
+  });
 
   get('request-email-change-btn')?.addEventListener('click', () => {
     ideiglenesUjEmail = get('new-email-input').value.trim();
@@ -72,16 +84,27 @@ export function initVerifySystem() {
       if (get('profile-display-email')) get('profile-display-email').textContent = ideiglenesUjEmail;
       if (get('group-email-display')) get('group-email-display').textContent = ideiglenesUjEmail;
       verifyCodeModal.style.display = 'none';
-      alert(' Az e-mail cím módosítva!');
+      alert('✅ Az e-mail cím módosítva!');
     } else if (aktivMuvelet === 'csoport_torles') {
       const code = localStorage.getItem('goats_group_code');
       try {
         const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
-        await client.from('groups').delete().eq('group_code', code);
+        const { data, error } = await client
+          .from('groups')
+          .delete()
+          .eq('group_code', code)
+          .select();
+
+        if (error) throw error;
+        if (!data || data.length === 0) {
+          throw new Error('Nem törlődött egyetlen sor sem (jogosultság / RLS?)');
+        }
+
         localStorage.clear();
-        alert(' A csoport törölve.');
+        alert('✅ A csoport törölve.');
         location.reload();
       } catch (err) {
+        console.error('Csoport törlése sikertelen:', err);
         alert('Hiba történt a törlés során!');
       }
     }
