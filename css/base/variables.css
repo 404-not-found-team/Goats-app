@@ -1,0 +1,78 @@
+:root,
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --bg-gradient: linear-gradient(135deg, #121212 0%, #1a1a24 100%);
+    --card-bg: #1e1e1e;
+    --inner-bg: #242424;
+    --input-bg: #2a2a2a;
+    --border-color: #333333;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --accent-color: #6366f1;
+    --accent-hover: #4f46e5;
+}
+
+[data-theme="discord"] {
+    --bg-color: #313338;
+    --bg-gradient: linear-gradient(135deg, #2b2d31 0%, #1e1f22 100%);
+    --card-bg: rgba(43, 45, 49, 0.85);
+    --inner-bg: #1e1f22;
+    --input-bg: #1e1f22;
+    --border-color: #3f4147;
+    --text-primary: #f2f3f5;
+    --text-secondary: #949ba4;
+    --accent-color: #5865f2;
+    --accent-hover: #4752c4;
+}
+
+[data-theme="discord-brown"] {
+    --bg-color: #1f1b18;
+    --bg-gradient: linear-gradient(135deg, #2e1c14 0%, #120d0a 100%);
+    --card-bg: rgba(43, 37, 34, 0.85);
+    --inner-bg: #181513;
+    --input-bg: #181513;
+    --border-color: #4a3b32;
+    --text-primary: #f0e6df;
+    --text-secondary: #a3958c;
+    --accent-color: #d97706;
+    --accent-hover: #b45309;
+}
+
+[data-theme="discord-purple"] {
+    --bg-color: #181528;
+    --bg-gradient: linear-gradient(135deg, #2d1f47 0%, #0f0c1b 100%);
+    --card-bg: rgba(35, 31, 58, 0.85);
+    --inner-bg: #121020;
+    --input-bg: #121020;
+    --border-color: #3e3363;
+    --text-primary: #ebdfff;
+    --text-secondary: #998eb8;
+    --accent-color: #8b5cf6;
+    --accent-hover: #7c3aed;
+}
+
+[data-theme="cyberpunk"] {
+    --bg-color: #0d0f18;
+    --bg-gradient: linear-gradient(135deg, #1f092b 0%, #081226 100%);
+    --card-bg: rgba(21, 24, 40, 0.85);
+    --inner-bg: #090a10;
+    --input-bg: #090a10;
+    --border-color: #2b3254;
+    --text-primary: #00ffcc;
+    --text-secondary: #708090;
+    --accent-color: #ff0055;
+    --accent-hover: #cc0044;
+}
+
+[data-theme="light"] {
+    --bg-color: #f4f4f5;
+    --bg-gradient: linear-gradient(135deg, #e4e4e7 0%, #ffffff 100%);
+    --card-bg: #ffffff;
+    --inner-bg: #f0f0f2;
+    --input-bg: #ffffff;
+    --border-color: #e4e4e7;
+    --text-primary: #18181b;
+    --text-secondary: #71717a;
+    --accent-color: #4f46e5;
+    --accent-hover: #4338ca;
+}

@@ -1,0 +1,196 @@
+/* Globális modal hátttér overlay */
+.sm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+}
+
+/* Egységes kártyaméret minden modal ablaknak */
+.sm-card,
+.google-profile-card {
+    width: 380px !important;
+    max-width: 92vw !important;
+    height: 480px !important;
+    max-height: 85vh !important;
+    padding: 20px 24px !important;
+    border-radius: 24px !important;
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+.sm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.sm-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.sm-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+}
+
+.sm-body {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding-right: 4px !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+.sm-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sm-body::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+.sm-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.sm-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    box-sizing: border-box;
+}
+
+.sm-btn {
+    width: 100%;
+    padding: 12px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.sm-btn-save {
+    background: #22c55e;
+    color: #fff;
+}
+
+/* Használati feltételek (TOS) Modal kiemelése legfelülre */
+#tos-modal {
+    z-index: 999999 !important;
+    background: rgba(0, 0, 0, 0.85) !important;
+    backdrop-filter: blur(8px);
+}
+
+#tos-modal .tos-modal-card {
+    width: 420px !important;
+    max-width: 90vw !important;
+    height: 520px !important;
+    max-height: 85vh !important;
+}
+
+.tos-modal-body {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding-right: 8px !important;
+    margin: 15px 0 !important;
+    font-size: 0.88rem !important;
+    line-height: 1.6 !important;
+    color: var(--text-primary) !important;
+    text-align: left !important;
+}
+
+.tos-modal-body h4 {
+    color: var(--accent-color) !important;
+    margin: 14px 0 6px 0 !important;
+    font-size: 0.95rem !important;
+}
+
+/* Google-stílusú elemek */
+.google-close-btn {
+    position: absolute !important;
+    top: 18px !important;
+    right: 18px !important;
+    background: var(--inner-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-secondary) !important;
+    font-size: 20px !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
+}
+
+.google-user-header {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    padding-bottom: 15px !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    margin-bottom: 15px !important;
+}
+
+.google-avatar-circle {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 50% !important;
+    background: var(--accent-color) !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.3rem !important;
+    font-weight: bold !important;
+}
+
+.google-menu-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+}
+
+.google-menu-btn {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 12px 16px !important;
+    background: var(--inner-bg) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+}
+
+.google-menu-btn.danger {
+    color: #ef4444 !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+}
