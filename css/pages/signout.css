@@ -58,6 +58,12 @@
     color: var(--accent-color, #d97706);
 }
 
+.notice-text {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: var(--text-secondary, #aaa);
+}
+
 .features-grid {
     display: flex;
     flex-wrap: wrap;
@@ -137,15 +143,25 @@
     line-height: 1.4;
 }
 
+/* (0,2,0) > .install-text p (0,1,1), ezért nem kell !important */
+.install-text .ios-notice {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    border-radius: 8px;
+    color: #eab308;
+}
+
 .install-btn {
     display: inline-flex;
     align-items: center;
     gap: 10px;
     white-space: nowrap;
     padding: 10px 20px;
-    background: var(--accent-color) !important;
-    color: #ffffff !important;
-    border: none !important;
+    background: var(--accent-color);
+    color: #ffffff;
+    border: none;
     border-radius: 10px;
     font-size: 0.9rem;
     font-weight: 600;
@@ -155,6 +171,45 @@
 }
 
 .install-btn:hover {
-    background: var(--accent-hover) !important;
+    background: var(--accent-hover);
     transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45);
+}
+
+.install-btn:active {
+    transform: translateY(0);
+}
+
+.install-btn i {
+    font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+    .features-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .feature-card {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .hero-section h1 {
+        font-size: 1.6rem;
+    }
+
+    .login-guide-card {
+        padding: 20px;
+    }
+
+    .install-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .install-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }

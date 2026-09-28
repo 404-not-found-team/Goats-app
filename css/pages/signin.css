@@ -1,3 +1,10 @@
+/* ==========================================================================
+   BEJELENTKEZETT NÉZET (DASHBOARD)
+   Desktop (>1000px): 2 oszlop – videó bal oldalt (2 sor magas),
+                      képek jobb felül, naptár jobb alul.
+   Mobil (<=1000px):  1 oszlop – videó, képek, naptár egymás alatt.
+   ========================================================================== */
+
 .hatter {
     display: grid;
     padding: 20px;
@@ -8,7 +15,26 @@
     width: 100%;
 }
 
-/* Videó doboz */
+/* Ha a videó doboz el van rejtve: egy oszlopos, középre igazított elrendezés.
+   A :has() specificitása az argumentumából jön (#id + attribútum = 1,1,0),
+   így a teljes szelektor magától felülírja a .kepek / .naptar-kontener
+   grid-column szabályát, !important nélkül. */
+@media screen and (min-width: 1001px) {
+    .hatter:has(#youtube-doboz[style*="display: none"]) {
+        grid-template-columns: 1fr;
+        max-width: 650px;
+        margin: 0 auto;
+    }
+
+    .hatter:has(#youtube-doboz[style*="display: none"]) .kepek,
+    .hatter:has(#youtube-doboz[style*="display: none"]) .naptar-kontener {
+        grid-column: 1 / -1;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   1. VIDEÓ KOMPONENS
+   -------------------------------------------------------------------------- */
 .videok {
     border: 1px solid var(--border-color);
     margin: 0;
@@ -34,7 +60,9 @@
     border-radius: 8px;
 }
 
-/* Kép galéria */
+/* --------------------------------------------------------------------------
+   2. KÉP GALÉRIA KOMPONENS
+   -------------------------------------------------------------------------- */
 .kepek {
     border: 1px solid var(--border-color);
     position: relative;
@@ -59,6 +87,7 @@
     width: 180px;
     height: 180px;
     object-fit: cover;
+    flex-shrink: 1;
 }
 
 .kepek img.hatrebb {
@@ -67,6 +96,11 @@
     height: 120px;
 }
 
+.kepek i:hover {
+    cursor: pointer;
+}
+
+/* Képfeltöltés gomb */
 #kepFeltoltesGomb {
     position: absolute;
     top: 10px;
@@ -89,7 +123,52 @@
     transform: scale(1.1);
 }
 
-/* Naptár modul */
+#kepFeltoltesGomb i {
+    font-size: 14px;
+}
+
+/* (1,1,0) > #kepFeltoltesGomb:hover (1,1,0) – a sorrend miatt ez nyer */
+#kepFeltoltesGomb.feltoltes-folyamatban {
+    pointer-events: none;
+    color: #ffffff;
+    background-color: #333333;
+    animation: feltoltes-pulzalas 1s ease-in-out infinite;
+}
+
+@keyframes feltoltes-pulzalas {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/* Nyilak */
+.nyil {
+    font-size: 1.8rem;
+    margin: 0;
+    color: var(--text-secondary);
+    transition: color 0.2s ease, transform 0.2s ease;
+    flex-shrink: 0;
+    z-index: 5;
+}
+
+.nyil:hover {
+    color: var(--text-primary);
+    transform: scale(1.15);
+}
+
+.video-nyil {
+    visibility: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   3. NAPTÁR KOMPONENS
+   -------------------------------------------------------------------------- */
 .naptar-kontener {
     background-color: var(--card-bg);
     border-radius: 16px;
@@ -118,6 +197,11 @@
     font-weight: bold;
 }
 
+.naptar-fejlec h2 {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+}
+
 .naptar-napok-fejlec {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -125,6 +209,7 @@
     font-weight: bold;
     color: var(--text-secondary);
     margin-bottom: 8px;
+    font-size: 0.9rem;
 }
 
 .naptar-racs {
@@ -142,6 +227,8 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-width: 0;
+    box-sizing: border-box;
     cursor: pointer;
     overflow: hidden;
     transition: border-color 0.2s ease, background-color 0.2s ease;
@@ -152,9 +239,29 @@
     background-color: var(--card-bg);
 }
 
+.naptar-nap::-webkit-scrollbar {
+    width: 3px;
+}
+
+.naptar-nap::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+/* Sorrend számít: az .ures és a .mai-nap a :hover UTÁN van (mind 0,2,0) */
+.naptar-nap.ures {
+    background: transparent;
+    border: none;
+}
+
 .naptar-nap.mai-nap {
     border-color: var(--accent-color);
     background: rgba(99, 102, 241, 0.1);
+}
+
+.nap-szam {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
 }
 
 .naptar-esemeny {
@@ -163,30 +270,100 @@
     font-size: 0.7rem;
     padding: 2px 4px;
     border-radius: 4px;
+    cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
-/* Mobil nézet igazítás a dashboard-ra */
+/* --------------------------------------------------------------------------
+   4. MOBIL / TABLET (<=1000px): EGY OSZLOP
+   A blokk az alapszabályok UTÁN áll, ezért azonos specificitásnál ő nyer.
+   A display-t nem írjuk felül, így az inline style és a .hidden is működik.
+   -------------------------------------------------------------------------- */
 @media screen and (max-width: 1000px) {
-    .hatter:not(.hidden) {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center;
-        padding: 0;
-        width: 100%;
+    /* A .hatter marad grid (a JS inline display:grid-et is állíthat rá, azt
+       úgysem lehet CSS-ből !important nélkül felülírni) – csak 1 oszlopos lesz. */
+    .hatter {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        padding: 10px;
+        padding-bottom: 100px;
         gap: 20px;
     }
 
     .videok,
     .kepek,
     .naptar-kontener {
-        width: 100% !important;
+        grid-column: auto;
+        grid-row: auto;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Videó: fix 250px magas lejátszó, a rejtett nyilak nem foglalnak helyet */
+    .videok {
+        padding: 12px 20px;
+        gap: 8px;
+        min-height: auto;
+    }
+
+    .videok>.fa-solid {
+        display: none;
     }
 
     .videok iframe {
         height: 250px;
         min-height: 250px;
+    }
+
+    /* Képek: nagy középső kép, két kisebb elmosott a szélén */
+    .kepek {
+        padding: 35px 10px 15px 10px;
+        justify-content: space-between;
+        gap: 6px;
+    }
+
+    .kepek img {
+        width: calc(45% - 10px);
+        height: auto;
+        aspect-ratio: 1 / 1;
+        max-width: 140px;
+    }
+
+    .kepek img.hatrebb {
+        width: calc(25% - 10px);
+        height: auto;
+        aspect-ratio: 1 / 1;
+        max-width: 70px;
+    }
+
+    .naptar-kontener {
+        padding: 12px 8px;
+    }
+
+    .naptar-nap {
+        min-height: 45px;
+    }
+}
+
+@media (max-width: 600px) {
+    .naptar-nap {
+        height: 50px;
+    }
+
+    /* Az események kis pöttyök a cellákban */
+    .naptar-esemeny {
+        font-size: 0;
+        height: 8px;
+        width: 8px;
+        min-height: 8px;
+        border-radius: 50%;
+        margin: 2px auto 0 auto;
+        padding: 0;
+        display: block;
     }
 }
