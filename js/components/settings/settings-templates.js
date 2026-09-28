@@ -182,7 +182,7 @@ export function injectUserNavHTML() {
     <div id="tos-modal" class="sm-overlay tos-modal-overlay" style="display: none;">
       <div class="sm-card tos-modal-card">
         <div class="sm-header">
-          <h3 class="tos-modal-header">:scroll: Használati Feltételek</h3>
+          <h3 class="tos-modal-header">📜 Használati Feltételek</h3>
           <button id="close-tos-modal" class="sm-close-btn">&times;</button>
         </div>
         <div class="tos-modal-body">
