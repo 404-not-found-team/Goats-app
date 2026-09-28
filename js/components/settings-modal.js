@@ -1,62 +1,67 @@
 document.addEventListener('DOMContentLoaded', () => {
-  injectSettingsUI();
+  injectUserNavUI();
 
   const get = id => document.getElementById(id);
-  const btnSettings = get('settings-btn'), modal = get('settings-modal');
-  const codeInput = get('group-code-input'), membersInput = get('group-members-input');
-  const loggedWrapper = get('logged-in-wrapper'), notice = get('login-notice');
-  const btnLogout = get('logout-btn'), btnSave = get('save-settings-btn');
-  const status = get('settings-status');
-  const toggleCodeVisibilityBtn = get('toggle-code-visibility');
-  const tosWrapper = get('tos-wrapper');
 
-  const tabs = document.querySelectorAll('.sm-tab-btn');
-  const tabContents = document.querySelectorAll('.sm-tab-content');
+  // Modalok
+  const authModal = get('auth-modal');
+  const profileModal = get('profile-modal');
+  const groupDetailsModal = get('group-details-modal');
+  const settingsModal = get('settings-modal');
+  const devModal = get('dev-modal');
+  const verifyCodeModal = get('verify-code-modal');
+  const emailModal = get('email-modal');
+  const tosModal = get('tos-modal');
 
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tabContents.forEach(c => c.classList.remove('active'));
+  // Globális változók a biztonsági kódhoz
+  let generaltBiztonsagiKod = null;
+  let aktivMuvelet = null; // 'email_modositas' vagy 'csoport_torles'
+  let ideiglenesUjEmail = '';
 
-      tab.classList.add('active');
-      const targetTab = tab.dataset.tab;
-      const targetContent = get(`tab-${targetTab}`);
-      if (targetContent) targetContent.classList.add('active');
-
-      if (targetTab === 'dev') {
-        betoltChangelog();
-      }
-    });
-  });
-
-  const setStatus = (msg, color) => {
-    if (status) {
-      status.innerText = msg;
-      status.style.color = color;
+  const setStatus = (elem, msg, color) => {
+    if (elem) {
+      elem.innerText = msg;
+      elem.style.color = color;
     }
   };
 
-  // Csoport Kép Feltöltés
-  
+  const EMOJIK = ['🐐', '🍺', '🍸', '🔥', '🎉', '👑', '🚀', '⚽', '🎮', '💎'];
 
-  // Csoportkód elrejtése / Megjelenítése
-  if (toggleCodeVisibilityBtn && codeInput) {
-    toggleCodeVisibilityBtn.addEventListener('click', () => {
-      const isPassword = codeInput.type === 'password';
-      codeInput.type = isPassword ? 'text' : 'password';
-      toggleCodeVisibilityBtn.textContent = isPassword ? '🙈' : '👁️';
-    });
+  const frissitsAvatarKezdest = (groupName, emoji) => {
+    const avatarElem = get('group-avatar-badge');
+    const headerAvatarElem = get('header-user-avatar');
+    
+    const jelolas = emoji || (groupName ? groupName.charAt(0).toUpperCase() : '🐐');
 
-    codeInput.addEventListener('focus', () => {
-      codeInput.type = 'text';
-      if (toggleCodeVisibilityBtn) toggleCodeVisibilityBtn.textContent = '🙈';
-    });
+    if (avatarElem) avatarElem.textContent = jelolas;
+    if (headerAvatarElem) headerAvatarElem.textContent = jelolas;
+  };
 
-    codeInput.addEventListener('blur', () => {
-      codeInput.type = 'password';
-      if (toggleCodeVisibilityBtn) toggleCodeVisibilityBtn.textContent = '👁️';
-    });
-  }
+  // 6-jegyű biztonsági kód generálása és kiküldése EmailJS-sel
+  const kuldjBiztonsagiKodot = async (celEmail, muveletNev) => {
+    generaltBiztonsagiKod = Math.floor(100000 + Math.random() * 900000).toString();
+    const groupCode = localStorage.getItem('goats_group_code') || '';
+
+    console.log(`[EmailJS] Kód kiküldése ide: ${celEmail}, Kód: ${generaltBiztonsagiKod}`);
+
+    try {
+      if (typeof emailjs !== 'undefined') {
+        await emailjs.send("service_default", "template_verification", {
+          to_email: celEmail,
+          group_code: groupCode,
+          verification_code: generaltBiztonsagiKod,
+          action_name: muveletNev
+        });
+      }
+    } catch (err) {
+      console.warn("EmailJS küldési hiba, tartalék kód a konzolon:", err);
+    }
+
+    // Megnyitjuk az ellenőrző modalt
+    get('verify-code-input').value = '';
+    setStatus(get('verify-code-status'), `Kódot elküldtük ide: ${celEmail}`, 'var(--text-secondary)');
+    verifyCodeModal.style.display = 'flex';
+  };
 
   // Téma választó dropdown
   const themeDropdown = get('custom-theme-dropdown');
@@ -102,11 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (themeDropdown) {
     themeDropdown.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (themeDropdown) themeDropdown.classList.toggle('open');
+      themeDropdown.classList.toggle('open');
     });
   }
 
-  // User Dropdown
+  // User Dropdown ("Ki vagyok")
   const userDropdown = get('custom-user-dropdown');
   const userSelectedText = get('user-dropdown-selected-text');
   const userOptionsContainer = get('user-dropdown-options');
@@ -130,11 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
     userOptionsContainer.innerHTML = '';
 
     if (currentUser && members.includes(currentUser)) {
-      userSelectedText.textContent = currentUser;
-      setStatus(` Üdvözlünk: ${currentUser}`, '#22c55e');
+      if (userSelectedText) userSelectedText.textContent = currentUser;
+      if (get('profile-display-name')) get('profile-display-name').textContent = currentUser;
     } else {
-      userSelectedText.textContent = 'Válaszd ki, hogy ki vagy...';
-      setStatus('⚠️ Válaszd ki, ki vagy te a csoportból!', '#eab308');
+      if (userSelectedText) userSelectedText.textContent = 'Válaszd ki, ki vagy...';
+      if (get('profile-display-name')) get('profile-display-name').textContent = 'Nincs kiválasztva név';
     }
 
     members.forEach(member => {
@@ -145,93 +150,46 @@ document.addEventListener('DOMContentLoaded', () => {
       optionDiv.addEventListener('click', (e) => {
         e.stopPropagation();
         localStorage.setItem('goats_current_user', member);
-        userSelectedText.textContent = member;
+        if (userSelectedText) userSelectedText.textContent = member;
+        if (get('profile-display-name')) get('profile-display-name').textContent = member;
 
         const allOpts = userOptionsContainer.querySelectorAll('.dropdown-option');
         allOpts.forEach(o => o.classList.remove('selected'));
         optionDiv.classList.add('selected');
 
         userDropdown.classList.remove('open');
-        setStatus(` Mentve: ${member}`, '#22c55e');
       });
 
       userOptionsContainer.appendChild(optionDiv);
     });
   };
 
-  btnSettings.addEventListener('click', async () => {
-    const code = localStorage.getItem('goats_group_code') || '';
-    const members = JSON.parse(localStorage.getItem('goats_group_members') || '[]');
-    const isLogged = !!code;
-
-    codeInput.value = code;
-    codeInput.type = 'password';
-    if (toggleCodeVisibilityBtn) toggleCodeVisibilityBtn.textContent = '👁️';
-
-    membersInput.value = members.join(', ');
-    codeInput.disabled = isLogged;
-
-    loggedWrapper.style.display = isLogged ? 'block' : 'none';
-    notice.style.display = isLogged ? 'none' : 'block';
-    btnSave.style.display = isLogged ? 'none' : 'block';
-    if (tosWrapper) tosWrapper.style.display = isLogged ? 'none' : 'block';
-
-    btnLogout.style.display = isLogged ? 'block' : 'none';
-
-    if (isLogged) {
-      populateUserSelect(members);
-
-      
-    }
-
-    modal.style.display = 'flex';
-  });
-
-  get('close-modal-btn').addEventListener('click', () => modal.style.display = 'none');
-
-  membersInput.addEventListener('change', async () => {
-    const rawCode = localStorage.getItem('goats_group_code');
-    if (!rawCode) return;
-
-    const membersArray = membersInput.value.split(',').map(n => n.trim()).filter(Boolean);
-
-    try {
-      const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
-      const { error } = await client.from('groups').upsert(
-        { group_code: rawCode, members: membersArray, updated_at: new Date() },
-        { onConflict: 'group_code' }
-      );
-      if (error) throw error;
-
-      localStorage.setItem('goats_group_members', JSON.stringify(membersArray));
-      populateUserSelect(membersArray);
-      setStatus(' Tagok frissítve!', '#22c55e');
-    } catch (err) {
-      console.error(err);
-      setStatus('❌ Hiba a mentéskor!', '#ef4444');
+  // "Még nincs kódod?" felnyitó gomb
+  get('toggle-request-code-btn')?.addEventListener('click', () => {
+    const section = get('request-code-section');
+    if (section) {
+      const isHidden = section.style.display === 'none';
+      section.style.display = isHidden ? 'block' : 'none';
+      get('toggle-request-code-btn').textContent = isHidden ? '❌ Kód igénylés elrejtése' : '📩 Még nincs kódod? Igényelj egyet!';
     }
   });
 
-  btnLogout.addEventListener('click', () => {
-    if (confirm('Biztosan ki szeretnél jelentkezni a csoportból?')) {
-      localStorage.removeItem('goats_group_code');
-      localStorage.removeItem('goats_group_members');
-      localStorage.removeItem('goats_group_pages');
-      setStatus(' Kijelentkezés...', '#ef4444');
-      setTimeout(() => location.reload(), 500);
-    }
-  });
-
-  btnSave.addEventListener('click', async () => {
-    const tosCheckbox = document.getElementById('accept-tos-checkbox');
+  // Belépés submit
+  get('auth-submit-btn')?.addEventListener('click', async () => {
+    const tosCheckbox = get('accept-tos-checkbox');
     if (tosCheckbox && !tosCheckbox.checked) {
-      return setStatus('⚠️ A belépéshez el kell fogadnod a Használati Feltételeket!', '#ef4444');
+      return setStatus(get('auth-status'), '⚠️ Fogadd el a Feltételeket!', '#ef4444');
     }
 
-    const rawCode = codeInput.value.trim().toLowerCase();
-    if (!rawCode) return setStatus('⚠️ Adj meg egy csoportkódot!', '#ef4444');
+    const rawCode = get('auth-group-code-input') ? get('auth-group-code-input').value.trim().toLowerCase() : '';
+    if (!rawCode) return setStatus(get('auth-status'), '⚠️ Adj meg egy csoportkódot!', '#ef4444');
 
-    setStatus('Feldolgozás...', 'var(--text-secondary)');
+    const userEmail = get('auth-email-input') ? get('auth-email-input').value.trim() : '';
+    if (userEmail) {
+      localStorage.setItem('goats_user_email', userEmail);
+    }
+
+    setStatus(get('auth-status'), 'Belépés...', 'var(--text-secondary)');
 
     try {
       const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
@@ -244,22 +202,186 @@ document.addEventListener('DOMContentLoaded', () => {
       if (error) throw error;
 
       if (!data) {
-        return setStatus('❌ Hibás vagy nem létező csoportkód!', '#ef4444');
+        return setStatus(get('auth-status'), '❌ Hibás csoportkód!', '#ef4444');
       }
 
       const members = data.members || [];
       localStorage.setItem('goats_group_code', rawCode);
       localStorage.setItem('goats_group_members', JSON.stringify(members));
 
-      setStatus(' Sikeres belépés!', '#22c55e');
+      setStatus(get('auth-status'), ' Sikeres belépés!', '#22c55e');
       setTimeout(() => location.reload(), 800);
     } catch (err) {
       console.error(err);
-      setStatus('❌ Hiba történt a belépés során!', '#ef4444');
+      setStatus(get('auth-status'), '❌ Hiba a belépésnél!', '#ef4444');
     }
   });
 
-  const tosModal = get('tos-modal');
+  // 1. LÉPÉS: E-mail Módosítás Indítása (Kód igénylése)
+  get('request-email-change-btn')?.addEventListener('click', () => {
+    ideiglenesUjEmail = get('new-email-input').value.trim();
+    if (!ideiglenesUjEmail) {
+      return alert('Adj meg egy érvényes új e-mail címet!');
+    }
+
+    const jelenlegiEmail = localStorage.getItem('goats_user_email') || ideiglenesUjEmail;
+    aktivMuvelet = 'email_modositas';
+    emailModal.style.display = 'none';
+
+    kuldjBiztonsagiKodot(jelenlegiEmail, 'E-mail cím módosítása');
+  });
+
+  // 1. LÉPÉS: Csoport Törlés Indítása (Kód igénylése)
+  get('delete-group-btn')?.addEventListener('click', () => {
+    const jelenlegiEmail = localStorage.getItem('goats_user_email');
+    if (!jelenlegiEmail) {
+      return alert('Nincs megadva e-mail cím a csoporthoz! Előbb adj meg egy e-mail címet.');
+    }
+
+    aktivMuvelet = 'csoport_torles';
+    groupDetailsModal.style.display = 'none';
+
+    kuldjBiztonsagiKodot(jelenlegiEmail, 'Csoport törlése');
+  });
+
+  // 2. LÉPÉS: Biztonsági Kód Ellenőrzése
+  get('verify-code-btn')?.addEventListener('click', async () => {
+    const beirtKod = get('verify-code-input').value.trim();
+
+    if (beirtKod !== generaltBiztonsagiKod) {
+      return setStatus(get('verify-code-status'), '❌ Hibás biztonsági kód!', '#ef4444');
+    }
+
+    // Ha a kód helyes:
+    if (aktivMuvelet === 'email_modositas') {
+      localStorage.setItem('goats_user_email', ideiglenesUjEmail);
+      if (get('profile-display-email')) get('profile-display-email').textContent = ideiglenesUjEmail;
+      if (get('group-email-display')) get('group-email-display').textContent = ideiglenesUjEmail;
+      verifyCodeModal.style.display = 'none';
+      alert(' Az e-mail cím sikeresen módosítva lett!');
+    } else if (aktivMuvelet === 'csoport_torles') {
+      const code = localStorage.getItem('goats_group_code');
+      try {
+        const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
+        await client.from('groups').delete().eq('group_code', code);
+        
+        localStorage.clear();
+        alert(' A csoport sikeresen törölve lett.');
+        location.reload();
+      } catch (err) {
+        alert('Hiba történt a törlés során!');
+      }
+    }
+  });
+
+  // Kijelentkezés
+  get('logout-btn')?.addEventListener('click', () => {
+    if (confirm('Biztosan ki szeretnél jelentkezni?')) {
+      localStorage.clear();
+      setTimeout(() => location.reload(), 300);
+    }
+  });
+
+  // Emoji választó gombok generálása
+  const emojiPickerContainer = get('emoji-picker-container');
+  if (emojiPickerContainer) {
+    emojiPickerContainer.innerHTML = '';
+    EMOJIK.forEach(e => {
+      const btn = document.createElement('button');
+      btn.className = 'emoji-select-btn';
+      btn.textContent = e;
+      btn.addEventListener('click', () => {
+        localStorage.setItem('goats_group_emoji', e);
+        frissitsAvatarKezdest(null, e);
+        groupDetailsModal.style.display = 'none';
+      });
+      emojiPickerContainer.appendChild(btn);
+    });
+  }
+
+  // Modal Navigációs Gombok
+  get('open-group-details-btn')?.addEventListener('click', () => {
+    const code = localStorage.getItem('goats_group_code') || '';
+    const members = JSON.parse(localStorage.getItem('goats_group_members') || '[]');
+    const email = localStorage.getItem('goats_user_email') || 'nincs_email@goats.app';
+
+    const groupCodeDisplay = get('group-code-display');
+    const toggleBtn = get('toggle-group-code-visibility');
+
+    if (groupCodeDisplay) {
+        groupCodeDisplay.value = code;
+        groupCodeDisplay.type = 'password';
+    }
+    if (toggleBtn) {
+        toggleBtn.textContent = '👁️';
+    }
+
+    if (get('group-name-display')) get('group-name-display').value = localStorage.getItem('goats_group_name') || code.toUpperCase();
+    if (get('group-email-display')) get('group-email-display').textContent = email;
+    if (get('group-members-input')) get('group-members-input').value = members.join(', ');
+
+    profileModal.style.display = 'none';
+    groupDetailsModal.style.display = 'flex';
+  });
+
+  // Csoport kód elrejtése / megjelenítése toggle
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'toggle-group-code-visibility') {
+      const codeInput = get('group-code-display');
+      if (codeInput) {
+        const isPassword = codeInput.type === 'password';
+        codeInput.type = isPassword ? 'text' : 'password';
+        e.target.textContent = isPassword ? '🙈' : '👁️';
+      }
+    }
+  });
+
+  get('open-settings-btn')?.addEventListener('click', () => {
+    profileModal.style.display = 'none';
+    settingsModal.style.display = 'flex';
+  });
+
+  get('open-dev-btn')?.addEventListener('click', () => {
+    profileModal.style.display = 'none';
+    devModal.style.display = 'flex';
+    betoltChangelog();
+  });
+
+  get('open-edit-email-btn')?.addEventListener('click', () => {
+    if (get('new-email-input')) get('new-email-input').value = localStorage.getItem('goats_user_email') || '';
+    groupDetailsModal.style.display = 'none';
+    emailModal.style.display = 'flex';
+  });
+
+  // Bezáró gombok
+  get('close-auth-btn')?.addEventListener('click', () => authModal.style.display = 'none');
+  get('close-profile-btn')?.addEventListener('click', () => profileModal.style.display = 'none');
+  get('close-group-details-btn')?.addEventListener('click', () => groupDetailsModal.style.display = 'none');
+  get('close-settings-btn')?.addEventListener('click', () => settingsModal.style.display = 'none');
+  get('close-dev-btn')?.addEventListener('click', () => devModal.style.display = 'none');
+  get('close-email-btn')?.addEventListener('click', () => emailModal.style.display = 'none');
+  get('close-verify-btn')?.addEventListener('click', () => verifyCodeModal.style.display = 'none');
+
+  // Gombok megnyitása
+  document.addEventListener('click', async (e) => {
+    if (e.target && e.target.id === 'open-auth-modal-btn') {
+      authModal.style.display = 'flex';
+    }
+    if (e.target && (e.target.id === 'open-profile-modal-btn' || e.target.closest('#open-profile-modal-btn'))) {
+      const code = localStorage.getItem('goats_group_code') || '';
+      const members = JSON.parse(localStorage.getItem('goats_group_members') || '[]');
+      const savedEmail = localStorage.getItem('goats_user_email') || 'nincs_email@goats.app';
+      const savedEmoji = localStorage.getItem('goats_group_emoji');
+
+      if (get('profile-display-email')) get('profile-display-email').textContent = savedEmail;
+      populateUserSelect(members);
+      frissitsAvatarKezdest(code, savedEmoji);
+
+      profileModal.style.display = 'flex';
+    }
+  });
+
+  // TOS Modal
   document.addEventListener('click', (e) => {
     if (e.target && e.target.id === 'open-tos-modal') {
       e.preventDefault();
@@ -267,19 +389,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  if (get('close-tos-modal')) {
-    get('close-tos-modal').addEventListener('click', () => {
-      if (tosModal) tosModal.style.display = 'none';
-    });
-  }
+  get('close-tos-modal')?.addEventListener('click', () => {
+    if (tosModal) tosModal.style.display = 'none';
+  });
 
-  if (get('accept-tos-modal-btn')) {
-    get('accept-tos-modal-btn').addEventListener('click', () => {
-      const chk = get('accept-tos-checkbox');
-      if (chk) chk.checked = true;
-      if (tosModal) tosModal.style.display = 'none';
-    });
-  }
+  get('accept-tos-modal-btn')?.addEventListener('click', () => {
+    const chk = get('accept-tos-checkbox');
+    if (chk) chk.checked = true;
+    if (tosModal) tosModal.style.display = 'none';
+  });
 });
 
 async function betoltChangelog() {
@@ -293,14 +411,8 @@ async function betoltChangelog() {
       .select('*')
       .order('datum', { ascending: false });
 
-    if (error) {
-      console.error('Hiba a changelog betöltésekor:', error);
+    if (error || !frissitesek) {
       kontener.innerHTML = '<p style="color: #ef4444; text-align: center;">Nem sikerült betölteni a frissítéseket.</p>';
-      return;
-    }
-
-    if (!frissitesek || frissitesek.length === 0) {
-      kontener.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Még nincsenek rögzített frissítések.</p>';
       return;
     }
 
@@ -324,93 +436,235 @@ async function betoltChangelog() {
       `;
     }).join('');
   } catch (err) {
-    console.error('Changelog betöltési hiba:', err);
-    kontener.innerHTML = '<p style="color: #ef4444; text-align: center;">Hiba történt a frissítések lekérése közben.</p>';
+    console.error('Changelog hiba:', err);
   }
 }
 
-function injectSettingsUI() {
+function injectUserNavUI() {
+  const code = localStorage.getItem('goats_group_code');
+  const savedEmoji = localStorage.getItem('goats_group_emoji');
+  const isLogged = !!code;
+
+  const headerContainer = document.createElement('div');
+  headerContainer.className = 'top-user-nav';
+
+  if (!isLogged) {
+    headerContainer.innerHTML = `
+      <button id="open-auth-modal-btn" class="nav-auth-btn">
+        SIGN IN
+      </button>
+    `;
+  } else {
+    const kezdoJel = savedEmoji || (code ? code.charAt(0).toUpperCase() : '🐐');
+    headerContainer.innerHTML = `
+      <button id="open-profile-modal-btn" class="nav-profile-btn" title="Profil">
+        <div id="header-user-avatar" class="google-avatar-circle">${kezdoJel}</div>
+      </button>
+    `;
+  }
+
+  document.body.appendChild(headerContainer);
+
   document.body.insertAdjacentHTML('beforeend', `
-    <button id="settings-btn">⚙️</button>
-
-    <!-- BEÁLLÍTÁSOK MODAL -->
-    <div id="settings-modal" class="sm-overlay">
-      <div class="sm-card">
-        <div class="sm-header">
-          <h3>Beállítások V1.0.2</h3>
-          <button id="close-modal-btn" class="sm-close-btn">&times;</button>
-        </div>
-
-        <div class="sm-tabs">
-          <button class="sm-tab-btn active" data-tab="csoport">👥 Csoport</button>
-          <button class="sm-tab-btn" data-tab="altalanos">🎨 Megjelenés</button>
-          <button class="sm-tab-btn" data-tab="dev">🚀 Frissítések</button>
-        </div>
-
-        <div class="sm-body">
-          <!-- TAB 1: MEGJELENÉS -->
-          <div id="tab-altalanos" class="sm-tab-content">
-            <label class="sm-label">Téma kiválasztása:</label>
-            <div id="custom-theme-dropdown" class="custom-dropdown">
-              <div class="dropdown-selected">
-                <span id="theme-dropdown-selected-text">🌙 Dark (Alapértelmezett)</span>
-                <span class="arrow">▼</span>
-              </div>
-              <div id="theme-dropdown-options" class="dropdown-options"></div>
-            </div>
+    <!-- 1. SIGN IN MODAL -->
+    <div id="auth-modal" class="sm-overlay" style="display: none;">
+      <div class="sm-card" style="height: auto; min-height: 380px; display: flex; flex-direction: column; justify-content: space-between;">
+        
+        <div>
+          <div class="sm-header">
+            <h3>Sign In / Belépés 🔑</h3>
+            <button id="close-auth-btn" class="sm-close-btn">&times;</button>
           </div>
 
-          <!-- TAB 2: CSOPORT -->
-          <div id="tab-csoport" class="sm-tab-content active">
-            <label class="sm-label">Csoport kódja:</label>
-            <div style="position: relative; display: flex; align-items: center; margin-bottom: 15px;">
-              <input type="password" id="group-code-input" class="sm-input" style="margin-bottom: 0; padding-right: 40px;"/>
-              <button id="toggle-code-visibility" type="button" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; font-size: 16px;">👁️</button>
-            </div>
-            
-            <p id="login-notice" class="sm-notice">🔒 A tagok és profilkép szerkesztéséhez először lépj be a csoport kódjával!</p>
-            
-            <div id="logged-in-wrapper" style="display:none;">
-              <label class="sm-label">Én vagyok a csoportból:</label>
-              <div id="custom-user-dropdown" class="custom-dropdown">
-                <div class="dropdown-selected">
-                  <span id="user-dropdown-selected-text">Válaszd ki, hogy ki vagy...</span>
-                  <span class="arrow">▼</span>
-                </div>
-                <div id="user-dropdown-options" class="dropdown-options"></div>
-              </div>
+          <div class="sm-body" style="height: auto;">
+            <label class="sm-label">Kód beírása (Csoport kód):</label>
+            <input type="password" id="auth-group-code-input" class="sm-input"/>
 
-              <label class="sm-label">Tagok (vesszővel elválasztva):</label>
-              <input type="text" id="group-members-input" class="sm-input" placeholder="Peti, Géza, Vivi" />
-            </div>
-          </div>
+            <!-- Gomb az e-mail mező megnyitásához -->
+            <button id="toggle-request-code-btn" type="button" class="google-mini-edit-btn" style="color: var(--accent-color); font-weight: bold; margin-bottom: 12px; display: block;">
+              📩 Még nincs kódod? Igényelj egyet!
+            </button>
 
-          <!-- TAB 3: DEV LOG (FRISSÍTÉSEK) -->
-          <div id="tab-dev" class="sm-tab-content">
-            <div id="changelog-lista" class="changelog-lista">
-              <p style="text-align: center; color: var(--text-secondary);">Frissítések betöltése...</p>
+            <!-- Rejtett E-mail mező szekció -->
+            <div id="request-code-section" style="display: none; background: var(--inner-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 15px;">
+              <label class="sm-label" style="margin-bottom: 4px;">E-mail cím a kód igényléséhez:</label>
+              <input type="email" id="auth-email-input" class="sm-input" placeholder="peldas.pisti@gmail.com" style="margin-bottom: 0;" />
             </div>
           </div>
         </div>
-            
-        <!-- FIX KÖZÖS LÁBLÉC -->
-        <div class="sm-footer">
-          <p id="settings-status"></p>
-          <button id="save-settings-btn" class="sm-btn sm-btn-save">Belépés</button>
-          <div id="tos-wrapper" class="tos-wrapper">
-            <label class="tos-label">
+
+        <!-- Alsó fix szekció: Status + Checkbox + Zöld Gomb -->
+        <div style="margin-top: auto; padding-top: 15px; border-top: 1px solid var(--border-color);">
+          <div id="tos-wrapper" class="tos-wrapper" style="margin-bottom: 12px;">
+            <label class="tos-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
               <input type="checkbox" id="accept-tos-checkbox" class="tos-checkbox" />
-              <span>
-                A belépéssel elfogadom a <a href="#" id="open-tos-modal" class="tos-link">Használati Feltételeket</a> és a felelősségkizárási nyilatkozatot.
+              <span style="font-size: 0.85rem;">
+                Elfogadom a <a href="#" id="open-tos-modal" class="tos-link">Használati Feltételeket</a>.
               </span>
             </label>
           </div>
-          <button id="logout-btn" class="sm-btn sm-btn-logout">Kijelentkezés a csoportból</button>
+
+          <p id="auth-status" style="font-size: 13px; text-align: center; margin: 8px 0; min-height: 18px;"></p>
+          <button id="auth-submit-btn" class="sm-btn sm-btn-save" style="width: 100%; font-size: 1rem; padding: 12px; border-radius: 12px;">Belépés / Igénylés</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 2. GOOGLE STÍLUSÚ PROFIL POPOVER / MODAL -->
+    <div id="profile-modal" class="sm-overlay" style="display: none;">
+      <div class="google-profile-card">
+        <button id="close-profile-btn" class="google-close-btn">&times;</button>
+        
+        <div class="google-user-header">
+          <div id="group-avatar-badge" class="google-avatar-circle large">🐐</div>
+          
+          <div class="google-user-info">
+            <h4 id="profile-display-name">Nincs kiválasztva név</h4>
+            <div class="google-email-row">
+              <span id="profile-display-email">email@goats.app</span>
+            </div>
+            <span class="google-plus-badge">V1.0.3</span>
+          </div>
+        </div>
+
+        <div class="google-menu-list">
+          <button id="open-group-details-btn" class="google-menu-btn">
+            <span>👥 Csoport Adatok</span>
+            <span class="arrow-icon">›</span>
+          </button>
+
+          <button id="open-settings-btn" class="google-menu-btn">
+            <span>⚙️ Beállítások</span>
+            <span class="arrow-icon">›</span>
+          </button>
+
+          <button id="open-dev-btn" class="google-menu-btn">
+            <span>🚀 Frissítések & Dev Log</span>
+            <span class="arrow-icon">›</span>
+          </button>
+
+          <button id="logout-btn" class="google-menu-btn danger">
+            <span>🚪 Kijelentkezés</span>
+          </button>
+        </div>
+
+        <p id="profile-status" style="font-size: 12px; text-align: center; margin-top: 10px;"></p>
+      </div>
+    </div>
+
+    <!-- 3. CSOPORT ADATOK MODAL -->
+    <div id="group-details-modal" class="sm-overlay" style="display: none;">
+      <div class="sm-card" style="height: auto; max-height: 90vh;">
+        <div class="sm-header">
+          <h3>👥 Csoport Adatok</h3>
+          <button id="close-group-details-btn" class="sm-close-btn">&times;</button>
+        </div>
+        <div class="sm-body" style="height: auto; max-height: 75vh;">
+          <label class="sm-label">Csoport neve:</label>
+          <input type="text" id="group-name-display" class="sm-input" placeholder="GOATS Csoport" />
+          
+          <label class="sm-label">Csoport e-mail címe:</label>
+          <div style="display: flex; align-items: center; justify-content: space-between; background: var(--inner-bg); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 15px;">
+            <span id="group-email-display" style="font-size: 0.9rem; font-weight: bold; color: var(--text-primary);">email@goats.app</span>
+            <button id="open-edit-email-btn" class="google-mini-edit-btn" style="background: var(--accent-color); color: #fff; padding: 4px 8px; border-radius: 6px;" title="E-mail módosítása">✏️ Módosít</button>
+          </div>
+          
+          <label class="sm-label">Csoport kódja (Group Code):</label>
+          <div style="position: relative; display: flex; align-items: center; margin-bottom: 15px;">
+            <input type="password" id="group-code-display" class="sm-input" readonly style="margin-bottom: 0; padding-right: 40px; opacity: 0.9;" />
+            <button id="toggle-group-code-visibility" type="button" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; font-size: 16px;">👁️</button>
+          </div>
+
+          <label class="sm-label">Én vagyok a csoportból:</label>
+          <div id="custom-user-dropdown" class="custom-dropdown" style="margin-bottom: 15px;">
+            <div class="dropdown-selected">
+              <span id="user-dropdown-selected-text">Válaszd ki, ki vagy...</span>
+              <span class="arrow">▼</span>
+            </div>
+            <div id="user-dropdown-options" class="dropdown-options"></div>
+          </div>
+
+          <label class="sm-label">Válassz csoport ikont:</label>
+          <div id="emoji-picker-container" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px;"></div>
+
+          <label class="sm-label">Tagok (vesszővel elválasztva):</label>
+          <input type="text" id="group-members-input" class="sm-input" placeholder="Peti, Géza, Vivi" style="margin-bottom: 20px;" />
+
+          <button id="delete-group-btn" class="google-menu-btn danger-dark" style="margin-top: 10px;">
+            🗑️ Csoport törlése
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- EGYEDI HASZNÁLATI FELTÉTELEK MODAL -->
+    <!-- 4. E-MAIL MÓDOSÍTÁS MODAL -->
+    <div id="email-modal" class="sm-overlay" style="display: none;">
+      <div class="sm-card" style="height: auto;">
+        <div class="sm-header">
+          <h3>✏️ Új E-mail Cím</h3>
+          <button id="close-email-btn" class="sm-close-btn">&times;</button>
+        </div>
+        <div class="sm-body" style="height: auto;">
+          <label class="sm-label">Adj meg egy új e-mail címet:</label>
+          <input type="email" id="new-email-input" class="sm-input" placeholder="ujemail@gmail.com" />
+          <button id="request-email-change-btn" class="sm-btn sm-btn-save">Kód igénylése e-mailben 📩</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. BIZTONSÁGI KÓD ELLENŐRZŐ MODAL -->
+    <div id="verify-code-modal" class="sm-overlay" style="display: none;">
+      <div class="sm-card" style="height: auto;">
+        <div class="sm-header">
+          <h3>🔒 Biztonsági Ellenőrzés</h3>
+          <button id="close-verify-btn" class="sm-close-btn">&times;</button>
+        </div>
+        <div class="sm-body" style="height: auto;">
+          <p id="verify-code-status" style="font-size: 13px; text-align: center; margin-bottom: 12px;"></p>
+          <label class="sm-label">Írd be az e-mailben kapott 6-jegyű kódot:</label>
+          <input type="text" id="verify-code-input" class="sm-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 1.2rem; letter-spacing: 4px;" />
+          <button id="verify-code-btn" class="sm-btn sm-btn-save">Művelet Megerősítése</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. SETTINGS MODAL (TÉMA) -->
+    <div id="settings-modal" class="sm-overlay" style="display: none;">
+      <div class="sm-card" style="height: auto;">
+        <div class="sm-header">
+          <h3>⚙️ Beállítások</h3>
+          <button id="close-settings-btn" class="sm-close-btn">&times;</button>
+        </div>
+        <div class="sm-body" style="height: auto;">
+          <label class="sm-label">Téma kiválasztása:</label>
+          <div id="custom-theme-dropdown" class="custom-dropdown">
+            <div class="dropdown-selected">
+              <span id="theme-dropdown-selected-text">🌙 Dark (Alapértelmezett)</span>
+              <span class="arrow">▼</span>
+            </div>
+            <div id="theme-dropdown-options" class="dropdown-options"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. DEV LOG MODAL -->
+    <div id="dev-modal" class="sm-overlay" style="display: none;">
+      <div class="sm-card" style="height: 450px;">
+        <div class="sm-header">
+          <h3>🚀 Frissítések & Dev Log</h3>
+          <button id="close-dev-btn" class="sm-close-btn">&times;</button>
+        </div>
+        <div class="sm-body">
+          <div id="changelog-lista" class="changelog-lista">
+            <p style="text-align: center; color: var(--text-secondary);">Frissítések betöltése...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HASZNÁLATI FELTÉTELEK MODAL -->
     <div id="tos-modal" class="sm-overlay tos-modal-overlay" style="display: none;">
       <div class="sm-card tos-modal-card">
         <div class="sm-header">
@@ -419,16 +673,11 @@ function injectSettingsUI() {
         </div>
         <div class="tos-modal-body">
           <h4>1. Felelősségkizárás</h4>
-          <p>Az alkalmazást az üzemeltető adott állapotában (as-is), garanciavállalás nélkül biztosítja. Az alkalmazás fejlesztője semmilyen felelősséget nem vállal az adatvesztésből, a szolgáltatás esetleges kimagadásából vagy hibáiból eredő károkért.</p>
-
+          <p>Az alkalmazást az üzemeltető adott állapotában (as-is), garanciavállalás nélkül biztosítja.</p>
           <h4>2. Pénzügyi elszámolások</h4>
-          <p>A Tartozások modul kizárólag a felhasználók közötti tájékoztató jellegű nyilvántartásra szolgál. Az alkalmazás nem végez pénzügyi tranzakciókat, és nem vállal felelősséget az elszámolási vitákért.</p>
-
+          <p>A Tartozások modul kizárólag a felhasználók közötti tájékoztató jellegű nyilvántartásra szolgál.</p>
           <h4>3. Feltöltött tartalmak</h4>
-          <p>A feltöltött képekért, szövegekért és adatokért kizárólag a feltöltő személy vállalja a felelősséget. Jogszabályba ütköző tartalom feltöltése tilos.</p>
-
-          <h4>4. Adatkezelés</h4>
-          <p>Az alkalmazás a csoportos működéshez szükséges adatokat felhőalapú (Supabase) adatbázisban tárolja.</p>
+          <p>A feltöltött képekért és adatokért kizárólag a feltöltő személy vállalja a felelősséget.</p>
         </div>
         <button id="accept-tos-modal-btn" class="sm-btn sm-btn-save tos-modal-btn">Elfogadom</button>
       </div>

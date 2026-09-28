@@ -1073,6 +1073,298 @@ ul li.active a {
     display: none;
 }
 
+/* Jobb felső navigációs gombok / Profilkép */
+.top-user-nav {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    z-index: 9980;
+}
+
+.nav-auth-btn {
+    background: var(--card-bg);
+    color: var(--accent-color);
+    border: 1px solid var(--accent-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+}
+
+.nav-auth-btn:hover {
+    background: var(--accent-color);
+    color: #ffffff;
+}
+
+.nav-profile-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-profile-btn img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.nav-profile-btn img:hover {
+    transform: scale(1.08);
+    border-color: #ffffff;
+}
+
+.nav-auth-btn {
+    background: var(--accent-color) !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 10px 20px !important;
+    border-radius: 10px !important;
+    font-weight: bold !important;
+    font-size: 0.9rem !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+    transition: transform 0.2s ease, background-color 0.2s ease !important;
+}
+
+.nav-auth-btn:hover {
+    background: var(--accent-hover) !important;
+    transform: translateY(-2px);
+}
+
+/* Kör alakú Emoji / Betű Avatar Jelvény */
+.google-avatar-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease;
+}
+
+/* ==========================================================================
+   GOOGLE STÍLUSÚ PROFIL POPOVER ÉS ELEMEK (LETISZTULT DESIGN)
+   ========================================================================== */
+
+.google-profile-card {
+    width: 380px !important;
+    max-width: 90vw !important;
+    height: auto !important;
+    padding: 24px !important;
+    border-radius: 24px !important;
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6) !important;
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+}
+
+.google-close-btn {
+    position: absolute !important;
+    top: 18px !important;
+    right: 18px !important;
+    background: var(--inner-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-secondary) !important;
+    font-size: 20px !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+}
+
+.google-close-btn:hover {
+    color: var(--text-primary) !important;
+    border-color: var(--accent-color) !important;
+}
+
+.google-user-header {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    padding-bottom: 20px !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    margin-bottom: 20px !important;
+    margin-top: 10px !important;
+}
+
+.google-avatar-circle {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 50% !important;
+    background: var(--accent-color) !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.3rem !important;
+    font-weight: bold !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    flex-shrink: 0 !important;
+}
+
+.google-avatar-circle.large {
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 1.8rem !important;
+}
+
+.google-user-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    overflow: hidden !important;
+}
+
+.google-user-info h4 {
+    margin: 0 !important;
+    font-size: 1.2rem !important;
+    color: var(--text-primary) !important;
+    font-weight: 700 !important;
+}
+
+.google-email-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.google-email-row span {
+    font-size: 0.85rem !important;
+    color: var(--text-secondary) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 180px !important;
+}
+
+.google-mini-edit-btn {
+    background: none !important;
+    border: none !important;
+    font-size: 13px !important;
+    cursor: pointer !important;
+    opacity: 0.7 !important;
+    padding: 0 !important;
+}
+
+.google-mini-edit-btn:hover {
+    opacity: 1 !important;
+}
+
+.google-plus-badge {
+    display: inline-block !important;
+    align-self: flex-start !important;
+    margin-top: 4px !important;
+    font-size: 11px !important;
+    font-weight: bold !important;
+    background: rgba(99, 102, 241, 0.15) !important;
+    color: var(--accent-color) !important;
+    border: 1px solid var(--accent-color) !important;
+    padding: 2px 10px !important;
+    border-radius: 12px !important;
+}
+
+.google-menu-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+}
+
+.google-menu-btn {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 14px 18px !important;
+    background: var(--inner-bg) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 14px !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    transition: all 0.2s ease !important;
+}
+
+.google-menu-btn:hover {
+    background: var(--input-bg) !important;
+    border-color: var(--accent-color) !important;
+    transform: translateY(-1px) !important;
+}
+
+.google-menu-btn .arrow-icon {
+    color: var(--text-secondary) !important;
+    font-size: 1.2rem !important;
+}
+
+.google-menu-btn.danger {
+    color: #ef4444 !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    margin-top: 6px !important;
+}
+
+.google-menu-btn.danger:hover {
+    background: rgba(239, 68, 68, 0.15) !important;
+}
+
+.google-avatar-circle.large {
+    width: 58px;
+    height: 58px;
+    font-size: 1.7rem;
+}
+
+.emoji-select-btn {
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    font-size: 1.3rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.emoji-select-btn:hover {
+    transform: scale(1.15);
+    background: var(--accent-color);
+}
+
+/* Mobil beállítások a felső gombhoz */
+@media screen and (max-width: 600px) {
+    .top-user-nav {
+        top: 12px;
+        right: 12px;
+    }
+
+    .nav-profile-btn img {
+        width: 36px;
+        height: 36px;
+    }
+}
+
 /* ==========================================================================
    8. MOBIL ÉS RESZPONZÍV SZABÁLYOK (MEDIA QUERIES)
    ========================================================================== */
