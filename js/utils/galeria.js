@@ -214,8 +214,9 @@ async function feltoltKepek(event) {
         gomb.setAttribute('aria-busy', 'true');
     }
 
-    for (let fajl of fajlok) {
+    for (let eredetiFajl of fajlok) {
         try {
+            let fajl = eredetiFajl;
             let kiterjesztes = fajl.name.split('.').pop().toLowerCase();
             const mimeTipus = (fajl.type || '').toLowerCase();
 
@@ -224,32 +225,36 @@ async function feltoltKepek(event) {
                            mimeTipus.includes('heif') || 
                            ['heic', 'heif'].includes(kiterjesztes);
 
-            if (isHeic) {
-                if (typeof heic2any !== 'undefined') {
-                    try {
-                        console.log('HEIC/HEIF konvertálás indítása:', fajl.name);
-                        const konvertaltBlob = await heic2any({
-                            blob: fajl,
-                            toType: 'image/jpeg',
-                            quality: 0.8
-                        });
+            if (isHeic && typeof heic2any !== 'undefined') {
+                try {
+                    console.log('HEIC konvertálás indítása...');
+                    
+                    // iOS kompatibilis ArrayBuffer konverzió (nem üres blob generálás)
+                    const buffer = await fajl.arrayBuffer();
+                    const heicBlob = new Blob([buffer], { type: 'image/heic' });
 
-                        const veglegesBlob = Array.isArray(konvertaltBlob) ? konvertaltBlob[0] : konvertaltBlob;
+                    const konvertaltResult = await heic2any({
+                        blob: heicBlob,
+                        toType: 'image/jpeg',
+                        quality: 0.8
+                    });
+
+                    const veglegesBlob = Array.isArray(konvertaltResult) ? konvertaltResult[0] : konvertaltResult;
+                    
+                    // Ellenőrizzük, hogy a konvertált blob nem üres-e!
+                    if (veglegesBlob && veglegesBlob.size > 0) {
                         const ujNev = fajl.name.replace(/\.(heic|heif|jpeg|jpg)$/i, '.jpg');
                         fajl = new File([veglegesBlob], ujNev, { type: 'image/jpeg' });
                         kiterjesztes = 'jpg';
-                    } catch (convErr) {
-                        console.warn('heic2any konvertálási hiba, megpróbáljuk eredetiben:', convErr);
                     }
+                } catch (convErr) {
+                    console.warn('heic2any konvertálás elhasalt, próbálkozás az eredeti fájllal:', convErr);
                 }
             }
 
-            // 2. Fájltípus ellenőrzése (iOS Fallback-kel)
-            const engedelyezettKiterjesztesek = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif'];
-            const elfogadva = ENGEDELYEZETT_TIPUSOK.includes(fajl.type) || engedelyezettKiterjesztesek.includes(kiterjesztes);
-
-            if (!elfogadva) {
-                alert(`A(z) "${fajl.name}" nem engedélyezett formátum!`);
+            // 2. Biztonsági ellenőrzés: Ne küldjünk üres fájlt!
+            if (!fajl || fajl.size === 0) {
+                alert(`A(z) "${eredetiFajl.name}" fájl üres vagy sérült, nem tölthető fel!`);
                 continue;
             }
 
@@ -260,7 +265,7 @@ async function feltoltKepek(event) {
                 continue;
             }
 
-            // 4. Egyedi név képzés: csoportkód + dátum + idő
+            // 4. Egyedi név képzés (Dátum + Idő + Csoportkód)
             const most = new Date();
             const ev = most.getFullYear();
             const honap = String(most.getMonth() + 1).padStart(2, '0');
@@ -271,10 +276,12 @@ async function feltoltKepek(event) {
             const veletlenUtotag = Math.random().toString(36).substring(2, 6);
 
             const datumIdostring = `${ev}-${honap}-${nap}_${ora}-${perc}-${masodperc}`;
-            const egyediNev = `${groupCode}_${datumIdostring}_${veletlenUtotag}.${kiterjesztes === 'heic' || kiterjesztes === 'heif' ? 'jpg' : kiterjesztes}`;
+            const veglegesKiterjesztes = (kiterjesztes === 'heic' || kiterjesztes === 'heif') ? 'jpg' : kiterjesztes;
+            const egyediNev = `${groupCode}_${datumIdostring}_${veletlenUtotag}.${veglegesKiterjesztes}`;
             const eleresiUt = `${groupCode}/${egyediNev}`;
 
             const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
+            
             const { error } = await client
                 .storage
                 .from(BUCKET_NEV)
@@ -290,7 +297,7 @@ async function feltoltKepek(event) {
             }
         } catch (err) {
             console.error('Feltöltési hiba:', err);
-            alert(`Sikertelen feltöltés: ${fajl.name}`);
+            alert(`Sikertelen feltöltés: ${eredetiFajl.name}`);
         }
     }
 
