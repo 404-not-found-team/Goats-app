@@ -18,6 +18,24 @@ export function initAuthModal() {
     }
   });
 
+  // Használati feltételek modal (megnyitás, bezárás, elfogadás)
+  const tosModal = get('tos-modal');
+
+  get('open-tos-modal')?.addEventListener('click', (e) => {
+    e.preventDefault(); // különben a href="#" felugrik az oldal tetejére
+    if (tosModal) tosModal.style.display = 'flex';
+  });
+
+  get('close-tos-modal')?.addEventListener('click', () => {
+    if (tosModal) tosModal.style.display = 'none';
+  });
+
+  get('accept-tos-modal-btn')?.addEventListener('click', () => {
+    const cb = get('accept-tos-checkbox');
+    if (cb) cb.checked = true;
+    if (tosModal) tosModal.style.display = 'none';
+  });
+
   // Belépés submit
   get('auth-submit-btn')?.addEventListener('click', async () => {
     const tosCheckbox = get('accept-tos-checkbox');

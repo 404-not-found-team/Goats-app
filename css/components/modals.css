@@ -406,3 +406,65 @@
     font-size: 0.9rem;
     line-height: 1.4;
 }
+
+/* --------------------------------------------------------------------------
+   A settings-templates.js által használt, de eddig stílus nélküli osztályok
+   -------------------------------------------------------------------------- */
+
+/* Gomb, ami szövegként/linkként viselkedik (a böngésző alap gombkinézete nélkül).
+   A színt, vastagságot, hátteret az inline style adja meg, az felülírja ezt. */
+.google-mini-edit-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: 0.85rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.google-avatar-circle.large {
+    width: 56px;
+    height: 56px;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+.google-user-info h4 {
+    margin: 0 0 2px 0;
+    color: var(--text-primary);
+}
+
+.google-email-row {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    word-break: break-all;
+}
+
+.google-plus-badge {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    color: var(--accent-color);
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+}
+
+.arrow-icon {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+.google-menu-btn.danger-dark {
+    justify-content: center;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.changelog-lista {
+    display: flex;
+    flex-direction: column;
+}
