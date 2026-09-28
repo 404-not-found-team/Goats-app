@@ -337,7 +337,7 @@ function injectSettingsUI() {
     <div id="settings-modal" class="sm-overlay">
       <div class="sm-card">
         <div class="sm-header">
-          <h3>Beállítások</h3>
+          <h3>Beállítások V1.0.2</h3>
           <button id="close-modal-btn" class="sm-close-btn">&times;</button>
         </div>
 
@@ -419,7 +419,16 @@ function injectSettingsUI() {
         </div>
         <div class="tos-modal-body">
           <h4>1. Felelősségkizárás</h4>
-          <p>Az alkalmazást az üzemeltető adott állapotában (as-is), garanciavállalás nélkül biztosítja.</p>
+          <p>Az alkalmazást az üzemeltető adott állapotában (as-is), garanciavállalás nélkül biztosítja. Az alkalmazás fejlesztője semmilyen felelősséget nem vállal az adatvesztésből, a szolgáltatás esetleges kimagadásából vagy hibáiból eredő károkért.</p>
+
+          <h4>2. Pénzügyi elszámolások</h4>
+          <p>A Tartozások modul kizárólag a felhasználók közötti tájékoztató jellegű nyilvántartásra szolgál. Az alkalmazás nem végez pénzügyi tranzakciókat, és nem vállal felelősséget az elszámolási vitákért.</p>
+
+          <h4>3. Feltöltött tartalmak</h4>
+          <p>A feltöltött képekért, szövegekért és adatokért kizárólag a feltöltő személy vállalja a felelősséget. Jogszabályba ütköző tartalom feltöltése tilos.</p>
+
+          <h4>4. Adatkezelés</h4>
+          <p>Az alkalmazás a csoportos működéshez szükséges adatokat felhőalapú (Supabase) adatbázisban tárolja.</p>
         </div>
         <button id="accept-tos-modal-btn" class="sm-btn sm-btn-save tos-modal-btn">Elfogadom</button>
       </div>
