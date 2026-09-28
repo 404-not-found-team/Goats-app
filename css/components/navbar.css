@@ -80,6 +80,14 @@ ul li.active a {
     display: none;
 }
 
+.teljes-szoveg {
+    display: inline-block;
+}
+
+.rovid-szoveg {
+    display: none;
+}
+
 @media (max-width: 600px) {
     body {
         padding-bottom: 75px !important;
@@ -205,5 +213,18 @@ ul li.active a {
     .drawer-list li.active a {
         background: var(--accent-color) !important;
         color: #fff !important;
+    }
+
+    .teljes-szoveg {
+        display: none ;
+    }
+
+    .rovid-szoveg {
+        display: inline-block ;
+        font-size: 1.3rem;
+    }
+
+    .drawer-list .teljes-szoveg {
+        display: inline-block ;
     }
 }
