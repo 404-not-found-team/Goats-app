@@ -185,8 +185,18 @@ function nyisdNapiEsemenyeket(dString, napiEsemenyek) {
                     align-items: center;
                     font-weight: 600;
                 `;
-                elem.innerHTML = `<span>${es.cim}</span> <span style="font-size: 12px; color: var(--accent-color);">Szerkesztés ✏️</span>`;
-                
+                elem.innerHTML = '';
+
+                const cimSpan = document.createElement('span');
+                cimSpan.textContent = es.cim;
+
+                const szerkesztesSpan = document.createElement('span');
+                szerkesztesSpan.style.cssText = 'font-size: 12px; color: var(--accent-color);';
+                szerkesztesSpan.textContent = 'Szerkesztés ✏️';
+
+                elem.appendChild(cimSpan);
+                elem.appendChild(szerkesztesSpan);
+
                 // Kattintásra megnyílik a módosítás/törlés modal
                 elem.addEventListener('click', () => {
                     modal.style.display = 'none';

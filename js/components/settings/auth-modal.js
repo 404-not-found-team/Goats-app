@@ -1,87 +1,226 @@
 export function initAuthModal() {
   const get = id => document.getElementById(id);
 
-  const setStatus = (elem, msg, color) => {
-    if (elem) {
-      elem.innerText = msg;
-      elem.style.color = color;
+  const authModal = get('auth-modal');
+  const toggleRequestBtn = get('toggle-request-code-btn');
+  const requestCodeSection = get('request-code-section');
+  const authSubmitBtn = get('auth-submit-btn');
+  const authStatus = get('auth-status');
+  const authGroupCodeInput = get('auth-group-code-input');
+  const authEmailInput = get('auth-email-input');
+  const acceptTosCheckbox = get('accept-tos-checkbox');
+  const openTosModalBtn = get('open-tos-modal');
+  const tosModal = get('tos-modal');
+  const closeTosModalBtn = get('close-tos-modal');
+  const acceptTosModalBtn = get('accept-tos-modal-btn');
+
+  const setStatus = (msg, color) => {
+    if (authStatus) {
+      authStatus.textContent = msg;
+      authStatus.style.color = color;
     }
   };
 
-  // "Még nincs kódod?" gomb
-  get('toggle-request-code-btn')?.addEventListener('click', () => {
-    const section = get('request-code-section');
-    if (section) {
-      const isHidden = section.classList.contains('hidden');
-      section.classList.toggle('hidden');
-      get('toggle-request-code-btn').textContent = isHidden ? '❌ Kód igénylés elrejtése' : '📩 Még nincs kódod? Igényelj egyet!';
-    }
-  });
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
-  // Használati feltételek modal (megnyitás, bezárás, elfogadás)
-  const tosModal = get('tos-modal');
-
-  get('open-tos-modal')?.addEventListener('click', (e) => {
-    e.preventDefault(); // különben a href="#" felugrik az oldal tetejére
+  openTosModalBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
     if (tosModal) tosModal.style.display = 'flex';
   });
 
-  get('close-tos-modal')?.addEventListener('click', () => {
+  closeTosModalBtn?.addEventListener('click', () => {
     if (tosModal) tosModal.style.display = 'none';
   });
 
-  get('accept-tos-modal-btn')?.addEventListener('click', () => {
-    const cb = get('accept-tos-checkbox');
-    if (cb) cb.checked = true;
+  acceptTosModalBtn?.addEventListener('click', () => {
+    if (acceptTosCheckbox) acceptTosCheckbox.checked = true;
     if (tosModal) tosModal.style.display = 'none';
   });
 
-  // Belépés submit
-  get('auth-submit-btn')?.addEventListener('click', async () => {
-    const tosCheckbox = get('accept-tos-checkbox');
-    if (tosCheckbox && !tosCheckbox.checked) {
-      return setStatus(get('auth-status'), '⚠️ Fogadd el a Feltételeket!', '#ef4444');
+  toggleRequestBtn?.addEventListener('click', () => {
+    if (requestCodeSection) {
+      requestCodeSection.classList.toggle('hidden');
+      const isRequesting = !requestCodeSection.classList.contains('hidden');
+
+      if (isRequesting) {
+        toggleRequestBtn.textContent = '🔒 Már van kódod? Lépj be!';
+        if (authSubmitBtn) authSubmitBtn.textContent = 'Kód Igénylése 📩';
+        if (authGroupCodeInput) authGroupCodeInput.value = '';
+      } else {
+        toggleRequestBtn.textContent = '📩 Még nincs kódod? Igényelj egyet!';
+        if (authSubmitBtn) authSubmitBtn.textContent = 'Belépés 🔑';
+        if (authEmailInput) authEmailInput.value = '';
+      }
+      setStatus('', '');
+    }
+  });
+
+  authSubmitBtn?.addEventListener('click', async () => {
+    if (acceptTosCheckbox && !acceptTosCheckbox.checked) {
+      return setStatus('⚠️ A továbblépéshez el kell fogadnod a Használati Feltételeket!', '#ef4444');
     }
 
-    const rawCode = get('auth-group-code-input') ? get('auth-group-code-input').value.trim().toLowerCase() : '';
-    if (!rawCode) return setStatus(get('auth-status'), '⚠️ Adj meg egy csoportkódot!', '#ef4444');
+    const isRequesting = requestCodeSection && !requestCodeSection.classList.contains('hidden');
+    const client = typeof _supabase !== 'undefined' ? _supabase : (window._supabase || window.supabase);
 
-    const userEmail = get('auth-email-input') ? get('auth-email-input').value.trim() : '';
-    if (userEmail) {
-      localStorage.setItem('goats_user_email', userEmail);
+    if (!client) {
+      return setStatus('⚠️ Adatbázis kapcsolódási hiba!', '#ef4444');
     }
 
-    setStatus(get('auth-status'), 'Belépés...', 'var(--text-secondary)');
+    // -------------------------------------------------------------
+    // A) CSOPORTKÓD IGÉNYLÉSE (CASE-INSENSITIVE E-MAIL ELLENŐRZÉS)
+    // -------------------------------------------------------------
+    if (isRequesting) {
+      // Normatizáljuk a beírt e-mailt: levágjuk a szóközöket és csupa kisbetűssé alakítjuk
+      const rawEmail = authEmailInput?.value.trim() || '';
+      const email = rawEmail.toLowerCase();
 
-    try {
-      const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
-      const { data, error } = await client
-        .from('groups')
-        .select('*')
-        .eq('group_code', rawCode)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      if (!data) {
-        return setStatus(get('auth-status'), '❌ Hibás csoportkód!', '#ef4444');
+      if (!email || !isValidEmail(email)) {
+        return setStatus('⚠️ Kérjük, adj meg egy érvényes e-mail címet!', '#ef4444');
       }
 
-      const members = data.members || [];
-      localStorage.setItem('goats_group_code', rawCode);
-      localStorage.setItem('goats_group_members', JSON.stringify(members));
+      setStatus('⏳ Ellenőrzés az adatbázisban...', '#3b82f6');
 
-      // Ha van elmentett utolsó név, azt visszaállítjuk az aktív felhasználónak
-      const lastUser = localStorage.getItem('goats_last_user');
-      if (lastUser && members.includes(lastUser)) {
-        localStorage.setItem('goats_current_user', lastUser);
+      try {
+        // 1. ELLENŐRZÉS: ilike használatával keresünk, így teljesen mindegy a kis/nagybetű az adatbázisban is
+        const { data: meglevoKod, error: checkErr } = await client
+          .from('groups_code')
+          .select('*')
+          .ilike('email', email)
+          .eq('taken', true)
+          .maybeSingle();
+
+        let kikuldendoCode = '';
+        let ujLefoglalas = false;
+        let azonositoId = null;
+
+        if (meglevoKod) {
+          // Ha már létezik ehhez az e-mailhez kód (bármilyen kis/nagybetűs formában), újraküldjük!
+          kikuldendoCode = meglevoKod.group_code;
+          setStatus('ℹ️ Ehhez az e-mailhez már tartozik kód. Újraküldés...', '#3b82f6');
+        } else {
+          // 2. Ha MÉG NINCS: Megkeressük az első szabad csoportkódot (taken = false)
+          const { data: szabadKod, error: fetchError } = await client
+            .from('groups_code')
+            .select('*')
+            .eq('taken', false)
+            .limit(1)
+            .maybeSingle();
+
+          if (fetchError || !szabadKod) {
+            console.error('Lekérdezési hiba:', fetchError);
+            return setStatus('⚠️ Sajnos jelenleg nincs elérhető szabad csoportkód!', '#ef4444');
+          }
+
+          kikuldendoCode = szabadKod.group_code;
+          azonositoId = szabadKod.id;
+          ujLefoglalas = true;
+          setStatus('📩 Új kód lefoglalása és kiküldése...', '#3b82f6');
+        }
+
+        // 3. Kiküldjük az e-mailt EmailJS-sel
+        let elkuldve = false;
+        if (typeof emailjs !== 'undefined') {
+          await emailjs.send("service_rz0ofi1", "template_38xjioq", {
+            to_email: email,
+            group_code: kikuldendoCode,
+            verification_code: kikuldendoCode,
+            action_name: ujLefoglalas ? 'Új Csoportkód Igénylése' : 'Meglévő Csoportkód Emlékeztető'
+          });
+          elkuldve = true;
+        }
+
+        if (!elkuldve) {
+          return setStatus('❌ Hiba történt az e-mail kiküldése során!', '#ef4444');
+        }
+
+        // 4. Ha teljesen új lefoglalás volt, átállítjuk taken = true-ra és elmentjük a kisbetűsített e-mailt!
+        if (ujLefoglalas && azonositoId) {
+          const { error: updateError } = await client
+            .from('groups_code')
+            .update({
+              taken: true,
+              email: email
+            })
+            .eq('id', azonositoId);
+
+          if (updateError) {
+            console.error('Hiba a kód lefoglalásakor:', updateError);
+          }
+        }
+
+        const uzenet = ujLefoglalas 
+          ? `✅ Az új csoportkódot elküldtük a(z) ${email} e-mail címre!` 
+          : `ℹ️ Ehhez az e-mailhez már létezik csoportkód! Elküldtük a(z) ${email} címre.`;
+
+        setStatus(uzenet, '#10b981');
+        alert(uzenet);
+
+        // Visszaállítjuk a felületet belépési módra és beírjuk a kódot
+        requestCodeSection.classList.add('hidden');
+        if (toggleRequestBtn) toggleRequestBtn.textContent = '📩 Még nincs kódod? Igényelj egyet!';
+        if (authSubmitBtn) authSubmitBtn.textContent = 'Belépés 🔑';
+        if (authGroupCodeInput) authGroupCodeInput.value = kikuldendoCode;
+
+      } catch (err) {
+        console.error('Hiba az igénylés során:', err);
+        setStatus('❌ Hiba történt a kód igénylése közben!', '#ef4444');
       }
 
-      setStatus(get('auth-status'), ' Sikeres belépés!', '#22c55e');
-      setTimeout(() => location.reload(), 800);
-    } catch (err) {
-      console.error(err);
-      setStatus(get('auth-status'), '❌ Hiba a belépésnél!', '#ef4444');
+    } 
+    // -------------------------------------------------------------
+    // B) BELÉPÉS MEGLÉVŐ CSOPORTKÓDDAL
+    // -------------------------------------------------------------
+    else {
+      const groupCode = (authGroupCodeInput?.value || '').trim();
+
+      if (!groupCode) {
+        return setStatus('⚠️ Kérjük, írd be a csoportkódot!', '#ef4444');
+      }
+
+      setStatus('⏳ Ellenőrzés...', '#3b82f6');
+
+      try {
+        const { data: codeDataArray, error: codeErr } = await client
+          .from('groups_code')
+          .select('*')
+          .ilike('group_code', groupCode);
+
+        if (codeErr || !codeDataArray || codeDataArray.length === 0) {
+          return setStatus('❌ Érvénytelen csoportkód!', '#ef4444');
+        }
+
+        const codeData = codeDataArray[0];
+
+        localStorage.setItem('goats_group_code', codeData.group_code);
+        if (codeData.email) {
+          localStorage.setItem('goats_user_email', codeData.email);
+        }
+
+        const { data: groupDataArray } = await client
+          .from('groups')
+          .select('members, group_name')
+          .ilike('group_code', codeData.group_code);
+
+        if (groupDataArray && groupDataArray.length > 0) {
+          const groupData = groupDataArray[0];
+          if (groupData.members) {
+            localStorage.setItem('goats_group_members', JSON.stringify(groupData.members));
+          }
+          if (groupData.group_name) {
+            localStorage.setItem('goats_group_name', groupData.group_name);
+          }
+        }
+
+        setStatus('✅ Sikeres belépés!', '#10b981');
+        setTimeout(() => location.reload(), 500);
+
+      } catch (err) {
+        console.error('Belépési hiba:', err);
+        setStatus('❌ Hiba történt a belépés során!', '#ef4444');
+      }
     }
   });
 }

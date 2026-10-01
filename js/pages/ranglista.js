@@ -95,7 +95,7 @@ async function kategoriatValaszt(kategoriaNev) {
                     id: aktivElemId,
                     kategoria: kategoriaNev,
                     group_code: groupCode
-                });
+                }, { onConflict: 'id,group_code' });
 
             if (error) {
                 console.error('Hiba a mentés során:', error);
@@ -278,12 +278,24 @@ function renderKizartTagem() {
     const kontener = document.getElementById('kizart-tagek-kontener');
     if (!kontener) return;
 
-    kontener.innerHTML = kizartMarkakTomb.map(tag => `
-        <span class="kizart-tag" onclick="torolKizartTag('${tag}')">
-            ${tag} <span class="torles-x">✕</span>
-        </span>
-    `).join('');
-}
+    kontener.innerHTML = '';
+    kizartMarkakTomb.forEach(tag => {
+        const spanTag = document.createElement('span');
+        spanTag.className = 'kizart-tag';
+        spanTag.textContent = tag + ' ';
+
+        const xSpan = document.createElement('span');
+        xSpan.className = 'torles-x';
+        xSpan.textContent = '✕';
+
+        spanTag.appendChild(xSpan);
+
+        // Biztonságos eseménykezelő inline string helyett
+        spanTag.addEventListener('click', () => torolKizartTag(tag));
+
+        kontener.appendChild(spanTag);
+    })
+};
 
 async function frissitsSzureseketEsMents() {
     const kikapcsoltKategoriak = Array.from(document.querySelectorAll('.szuro-pill:not(.aktiv)'))
@@ -620,8 +632,18 @@ function addItalKartyaToUI(ital) {
                         const p = document.createElement('div');
                         const borderStyle = index < list.length - 1 ? 'border-bottom: 1px solid var(--border-color);' : '';
                         p.style.cssText = `display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.9rem; ${borderStyle}`;
-                        p.innerHTML = `<span style="font-weight: 600; color: var(--text-primary);">${item.nev}</span> <span style="color: var(--text-secondary);">${item.mennyiseg} ${item.egyseg || ''}</span>`;
-                        kontener.appendChild(p);
+                        p.innerHTML = '';
+
+                        const nevSpan = document.createElement('span');
+                        nevSpan.style.cssText = 'font-weight: 600; color: var(--text-primary);';
+                        nevSpan.textContent = item.nev; // Biztonságos textContent
+
+                        const mennyisegSpan = document.createElement('span');
+                        mennyisegSpan.style.cssText = 'color: var(--text-secondary);';
+                        mennyisegSpan.textContent = `${item.mennyiseg} ${item.egyseg || ''}`;
+
+                        p.appendChild(nevSpan);
+                        p.appendChild(mennyisegSpan); kontener.appendChild(p);
                     });
                     if (doboz) doboz.style.display = 'block';
                 } else {

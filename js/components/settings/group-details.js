@@ -1,3 +1,5 @@
+import { frissitsProfilEmail } from './profile-modal.js';
+
 export function initGroupDetails() {
   const get = id => document.getElementById(id);
   const EMOJIK = ['🐐', '🍺', '🍸', '🔥', '🎉', '👑', '🚀', '⚽', '🎮', '💎'];
@@ -35,7 +37,7 @@ export function initGroupDetails() {
       if (codeInput) {
         const isPassword = codeInput.type === 'password';
         codeInput.type = isPassword ? 'text' : 'password';
-        e.target.textContent = isPassword ? '🙈' : '👁️';
+        e.target.textContent = isPassword ? '🙈' : '👁️️';
       }
     }
   });
@@ -53,10 +55,9 @@ export function initGroupDetails() {
   document.addEventListener('click', () => userDropdown?.classList.remove('open'));
 
   // Amikor megnyitják a csoport adatokat, betöltjük az értékeket
-  get('open-group-details-btn')?.addEventListener('click', () => {
+  get('open-group-details-btn')?.addEventListener('click', async () => {
     const code = localStorage.getItem('goats_group_code') || '';
     const members = JSON.parse(localStorage.getItem('goats_group_members') || '[]');
-    const email = localStorage.getItem('goats_user_email') || 'nincs_email@goats.app';
 
     const groupCodeDisplay = get('group-code-display');
     const toggleBtn = get('toggle-group-code-visibility');
@@ -68,12 +69,13 @@ export function initGroupDetails() {
     if (toggleBtn) toggleBtn.textContent = '👁️';
 
     if (get('group-name-display')) get('group-name-display').value = localStorage.getItem('goats_group_name') || code.toUpperCase();
-    if (get('group-email-display')) get('group-email-display').textContent = email;
     if (get('group-members-input')) get('group-members-input').value = members.join(', ');
+
+    // Valós e-mail lekérése Supabase-ből és a DOM elemek frissítése
+    await frissitsCsoportEmail();
 
     // Dropdown feltöltése tagokkal és a mentett név kiválasztása
     if (userOptionsContainer) {
-      // Vagy az aktuális nevet, vagy az utoljára elmentett nevet keressük
       const currentUser = localStorage.getItem('goats_current_user') || localStorage.getItem('goats_last_user');
       userOptionsContainer.innerHTML = '';
 
@@ -89,7 +91,6 @@ export function initGroupDetails() {
 
         optionDiv.addEventListener('click', (e) => {
           e.stopPropagation();
-          // Eltároljuk az aktuális és az utolsó nevet is!
           localStorage.setItem('goats_current_user', member);
           localStorage.setItem('goats_last_user', member);
 
@@ -102,4 +103,37 @@ export function initGroupDetails() {
       });
     }
   });
+}
+
+export async function frissitsCsoportEmail() {
+  const code = localStorage.getItem('goats_group_code');
+  if (!code) return;
+
+  try {
+    const client = typeof _supabase !== 'undefined' ? _supabase : (window._supabase || window.supabase);
+    if (!client) return console.warn('Supabase client nem érhető el!');
+
+    const { data, error } = await client
+      .from('groups_code')
+      .select('email')
+      .ilike('group_code', code)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Hiba az e-mail lekérésekor (groups_code):', error);
+      return;
+    }
+
+    if (data && data.email) {
+      localStorage.setItem('goats_user_email', data.email);
+      
+      const profileElem = document.getElementById('profile-display-email');
+      const groupElem = document.getElementById('group-email-display');
+
+      if (profileElem) profileElem.textContent = data.email;
+      if (groupElem) groupElem.textContent = data.email;
+    }
+  } catch (err) {
+    console.error('Lekérdezési hiba:', err);
+  }
 }

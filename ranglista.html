@@ -14,8 +14,8 @@
     <script type="module" src="js/main.js"></script>
 
     <script src="js/pages/ranglista.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
         (function () {
             emailjs.init("2wdZeM2a3phUPdOaT");
         })();
@@ -48,7 +48,7 @@
             <img id="modal-kep" src="" alt="Kiválasztott ital">
             <div id="modal-nev" class="modal-ital-cim"></div>
             <div id="modal-alkohol-badge" class="alkohol-badge" style="display: none;"></div>
-            
+
             <div id="modal-koktel-hozzavalok-doboz" class="modal-hozzavalok-box">
                 <div class="modal-hozzavalok-fejlec">🍹 Hozzávalók és Arányok:</div>
                 <div id="modal-koktel-hozzavalok-lista" class="modal-hozzavalok-lista"></div>
@@ -100,8 +100,10 @@
 
             <div id="koktel-összeallitas-resz" class="koktel-resz-kontener">
                 <div class="toggle-mode-container">
-                    <button type="button" id="mode-arany-btn" class="toggle-mode-btn active" onclick="valtsMódot('arany')">📐 Arányok alapján</button>
-                    <button type="button" id="mode-pontos-btn" class="toggle-mode-btn" onclick="valtsMódot('pontos')">🧪 Pontos mennyiség</button>
+                    <button type="button" id="mode-arany-btn" class="toggle-mode-btn active"
+                        onclick="valtsMódot('arany')">📐 Arányok alapján</button>
+                    <button type="button" id="mode-pontos-btn" class="toggle-mode-btn" onclick="valtsMódot('pontos')">🧪
+                        Pontos mennyiség</button>
                 </div>
 
                 <h4 class="hozzavalo-alcim">☰ Hozzávalók</h4>
@@ -127,7 +129,8 @@
 
             <label class="sm-label szuro-label szuro-label-top">🚫 Márka / Név kizárása (Enterrel add hozzá):</label>
             <div class="szuro-input-sor">
-                <input type="text" id="kizart-kulcsszo-input" class="sm-input szuro-input" placeholder="Pl. Royal, Finlandia..." onkeydown="kezeldTagEnter(event)">
+                <input type="text" id="kizart-kulcsszo-input" class="sm-input szuro-input"
+                    placeholder="Pl. Royal, Finlandia..." onkeydown="kezeldTagEnter(event)">
                 <button type="button" onclick="hozzaadKizartTag()" class="sm-btn gomb-plusz">+</button>
             </div>
 
