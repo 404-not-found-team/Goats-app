@@ -166,7 +166,6 @@ async function initMembersAndContainers() {
     if (gridContainer) {
         gridContainer.innerHTML = '';
         members.forEach((member, index) => {
-            const normalizedName = member.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
             const boxDiv = document.createElement('div');
             boxDiv.className = 'box';
             const color = getMemberColor(index);
@@ -176,7 +175,7 @@ async function initMembersAndContainers() {
             h3.textContent = member;
 
             const listDiv = document.createElement('div');
-            listDiv.className = normalizedName;
+            listDiv.dataset.memberName = member; 
 
             boxDiv.appendChild(h3);
             boxDiv.appendChild(listDiv);
@@ -202,8 +201,7 @@ async function loadTartozasok() {
     const members = JSON.parse(localStorage.getItem('goats_group_members') || '[]');
 
     members.forEach(member => {
-        const normalizedName = member.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-        const targetDiv = document.querySelector(`.${normalizedName}`);
+        const targetDiv = document.querySelector(`[data-member-name="${CSS.escape(member)}"]`);
         if (targetDiv) targetDiv.innerHTML = '';
     });
 
@@ -211,8 +209,7 @@ async function loadTartozasok() {
         data.forEach(item => {
             if (!item.kitartozik) return;
 
-            const normalizedName = item.kitartozik.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-            const targetDiv = document.querySelector(`.${normalizedName}`);
+            const targetDiv = document.querySelector(`[data-member-name="${CSS.escape(item.kitartozik)}"]`);
 
             if (targetDiv) {
                 const card = document.createElement('div');
@@ -249,9 +246,9 @@ async function loadTartozasok() {
         });
     }
 
+    // 3. Üres üzenetek kirakása, ha nincs tartozás
     members.forEach(member => {
-        const normalizedName = member.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-        const targetDiv = document.querySelector(`.${normalizedName}`);
+        const targetDiv = document.querySelector(`[data-member-name="${CSS.escape(member)}"]`);
         if (targetDiv && targetDiv.children.length === 0) {
             const emptyMsg = document.createElement('p');
             emptyMsg.className = 'empty-msg';

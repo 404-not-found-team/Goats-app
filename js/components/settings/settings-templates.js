@@ -21,8 +21,6 @@ export function injectUserNavHTML() {
 
   document.body.appendChild(headerContainer);
 
-  // A modalok alapból a .sm-overlay { display: none } miatt rejtettek,
-  // a JS csak megnyitáskor állít rájuk inline display: flex-et.
   document.body.insertAdjacentHTML('beforeend', `
     <!-- SIGN IN MODAL -->
     <div id="auth-modal" class="sm-overlay">
@@ -119,13 +117,19 @@ export function injectUserNavHTML() {
     <div id="email-modal" class="sm-overlay">
       <div class="sm-card">
         <div class="sm-header">
-          <h3>✏️ Új E-mail Cím</h3>
+          <h3>✏️ E-mail Cím Módosítása</h3>
           <button id="close-email-btn" class="sm-close-btn">&times;</button>
         </div>
         <div class="sm-body">
+          <div style="background-color: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; line-height: 1.4; color: #d4d4d8;">
+            ✉️ <strong>Jelenlegi e-mail cím:</strong><br>
+            <span id="current-email-display-label" style="color: #5850ec; font-weight: 600;">betöltés...</span><br><br>
+            ℹ️ <em>A biztonsági megerősítő kód a jelenlegi e-mail címedre fog megérkezni az új cím jóváhagyásához.</em>
+          </div>
+
           <label class="sm-label">Adj meg egy új e-mail címet:</label>
           <input type="email" id="new-email-input" class="sm-input" placeholder="ujemail@gmail.com" />
-          <button id="request-email-change-btn" class="sm-btn sm-btn-save">Kód igénylése e-mailben 📩</button>
+          <button id="request-email-change-btn" class="sm-btn sm-btn-save">Megerősítő Kód Küldése 📩</button>
         </div>
       </div>
     </div>
@@ -138,7 +142,9 @@ export function injectUserNavHTML() {
           <button id="close-verify-btn" class="sm-close-btn">&times;</button>
         </div>
         <div class="sm-body">
+          <p id="verify-code-info" style="font-size: 13px; color: #d4d4d8; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 12px; text-align: center;"></p>
           <p id="verify-code-status" class="sm-status sm-status-verify"></p>
+          
           <label class="sm-label">Írd be az e-mailben kapott 6-jegyű kódot:</label>
           <input type="text" id="verify-code-input" class="sm-input sm-input-code" placeholder="123456" maxlength="6" />
           <button id="verify-code-btn" class="sm-btn sm-btn-save">Művelet Megerősítése</button>
