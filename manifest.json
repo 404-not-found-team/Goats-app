@@ -1,21 +1,30 @@
 {
+  "id": "hu.goatsapp.app",
   "name": "Goats App",
   "short_name": "Goats",
+  "description": "Közös elszámolások, ranglisták és feladatok egy helyen a haveri társaságnak.",
   "start_url": "/Goats-app/",
   "scope": "/Goats-app/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
+  "orientation": "portrait",
+  "categories": [
+    "social",
+    "entertainment"
+  ],
   "icons": [
     {
       "src": "Images/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "Images/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
