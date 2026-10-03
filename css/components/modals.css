@@ -31,6 +31,35 @@
     position: relative;
 }
 
+#teszt {
+    justify-content: start;
+}
+
+#ment-esemeny-btn {
+    margin-top: auto;
+}
+
+#napi-esemenyek-modal .sm-card {
+    justify-content: flex-start;
+}
+
+#napi-esemenyek-lista {
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+#napi-uj-esemeny-btn {
+    margin-top: auto;
+}
+
+#esemeny-reszletek-modal .sm-card {
+    justify-content: flex-start;
+}
+
+#esemeny-reszletek-modal .sm-card > div[style*="display: flex"] {
+    margin-top: auto !important;
+}
+
 .sm-header {
     display: flex;
     justify-content: space-between;
@@ -218,8 +247,8 @@
 
 /* TOS checkbox */
 .tos-wrapper {
-    margin-top: 15px;
-    margin-bottom: 12px;
+    margin-top: 10px;
+    margin-bottom: 20px;
     font-size: 11px;
     color: var(--text-secondary);
     text-align: left;
@@ -283,6 +312,11 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    height: 100%;
+}
+
+.google-menu-list .google-menu-btn:last-child {
+    margin-top: auto;
 }
 
 .google-menu-btn {

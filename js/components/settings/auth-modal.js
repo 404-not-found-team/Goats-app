@@ -1,9 +1,11 @@
 export function initAuthModal() {
   const get = id => document.getElementById(id);
 
+  const title = get('title');
   const authModal = get('auth-modal');
   const toggleRequestBtn = get('toggle-request-code-btn');
   const requestCodeSection = get('request-code-section');
+  const signinCodeSection = get('sign-in-code-section');
   const authSubmitBtn = get('auth-submit-btn');
   const authStatus = get('auth-status');
   const authGroupCodeInput = get('auth-group-code-input');
@@ -43,14 +45,17 @@ export function initAuthModal() {
     if (requestCodeSection) {
       requestCodeSection.classList.toggle('hidden');
       const isRequesting = !requestCodeSection.classList.contains('hidden');
+      signinCodeSection.classList.toggle('hidden');
 
       if (isRequesting) {
-        toggleRequestBtn.textContent = '🔒 Már van kódod? Lépj be!';
-        if (authSubmitBtn) authSubmitBtn.textContent = 'Kód Igénylése 📩';
+        title.textContent='Kód igénylés'
+        toggleRequestBtn.textContent = 'Már van kódod? Lépj be!';
+        if (authSubmitBtn) authSubmitBtn.textContent = 'Kód Igénylése';
         if (authGroupCodeInput) authGroupCodeInput.value = '';
       } else {
-        toggleRequestBtn.textContent = '📩 Még nincs kódod? Igényelj egyet!';
-        if (authSubmitBtn) authSubmitBtn.textContent = 'Belépés 🔑';
+        title.textContent='Belépés'
+        toggleRequestBtn.textContent = 'Még nincs kódod? Igényelj egyet!';
+        if (authSubmitBtn) authSubmitBtn.textContent = 'Belépés';
         if (authEmailInput) authEmailInput.value = '';
       }
       setStatus('', '');
@@ -59,14 +64,14 @@ export function initAuthModal() {
 
   authSubmitBtn?.addEventListener('click', async () => {
     if (acceptTosCheckbox && !acceptTosCheckbox.checked) {
-      return setStatus('⚠️ A továbblépéshez el kell fogadnod a Használati Feltételeket!', '#ef4444');
+      return setStatus('A továbblépéshez el kell fogadnod a Használati Feltételeket!', '#ef4444');
     }
 
     const isRequesting = requestCodeSection && !requestCodeSection.classList.contains('hidden');
     const client = typeof _supabase !== 'undefined' ? _supabase : (window._supabase || window.supabase);
 
     if (!client) {
-      return setStatus('⚠️ Adatbázis kapcsolódási hiba!', '#ef4444');
+      return setStatus('Adatbázis kapcsolódási hiba!', '#ef4444');
     }
 
     // -------------------------------------------------------------
@@ -78,10 +83,10 @@ export function initAuthModal() {
       const email = rawEmail.toLowerCase();
 
       if (!email || !isValidEmail(email)) {
-        return setStatus('⚠️ Kérjük, adj meg egy érvényes e-mail címet!', '#ef4444');
+        return setStatus('Kérjük, adj meg egy érvényes e-mail címet!', '#ef4444');
       }
 
-      setStatus('⏳ Ellenőrzés az adatbázisban...', '#3b82f6');
+      setStatus('Ellenőrzés az adatbázisban...', '#3b82f6');
 
       try {
         // 1. ELLENŐRZÉS: ilike használatával keresünk, így teljesen mindegy a kis/nagybetű az adatbázisban is
@@ -99,7 +104,7 @@ export function initAuthModal() {
         if (meglevoKod) {
           // Ha már létezik ehhez az e-mailhez kód (bármilyen kis/nagybetűs formában), újraküldjük!
           kikuldendoCode = meglevoKod.group_code;
-          setStatus('ℹ️ Ehhez az e-mailhez már tartozik kód. Újraküldés...', '#3b82f6');
+          setStatus('Ehhez az e-mailhez már tartozik kód. Újraküldés...', '#3b82f6');
         } else {
           // 2. Ha MÉG NINCS: Megkeressük az első szabad csoportkódot (taken = false)
           const { data: szabadKod, error: fetchError } = await client
@@ -111,13 +116,13 @@ export function initAuthModal() {
 
           if (fetchError || !szabadKod) {
             console.error('Lekérdezési hiba:', fetchError);
-            return setStatus('⚠️ Sajnos jelenleg nincs elérhető szabad csoportkód!', '#ef4444');
+            return setStatus('Sajnos jelenleg nincs elérhető szabad csoportkód!', '#ef4444');
           }
 
           kikuldendoCode = szabadKod.group_code;
           azonositoId = szabadKod.id;
           ujLefoglalas = true;
-          setStatus('📩 Új kód lefoglalása és kiküldése...', '#3b82f6');
+          setStatus('Új kód lefoglalása és kiküldése...', '#3b82f6');
         }
 
         // 3. Kiküldjük az e-mailt EmailJS-sel
@@ -133,7 +138,7 @@ export function initAuthModal() {
         }
 
         if (!elkuldve) {
-          return setStatus('❌ Hiba történt az e-mail kiküldése során!', '#ef4444');
+          return setStatus('Hiba történt az e-mail kiküldése során!', '#ef4444');
         }
 
         // 4. Ha teljesen új lefoglalás volt, átállítjuk taken = true-ra és elmentjük a kisbetűsített e-mailt!
@@ -151,25 +156,25 @@ export function initAuthModal() {
           }
         }
 
-        const uzenet = ujLefoglalas 
-          ? `✅ Az új csoportkódot elküldtük a(z) ${email} e-mail címre!` 
-          : `ℹ️ Ehhez az e-mailhez már létezik csoportkód! Elküldtük a(z) ${email} címre.`;
+        const uzenet = ujLefoglalas
+          ? `Az új csoportkódot elküldtük a(z) ${email} e-mail címre!`
+          : `Ehhez az e-mailhez már létezik csoportkód! Elküldtük a(z) ${email} címre.`;
 
         setStatus(uzenet, '#10b981');
         alert(uzenet);
 
         // Visszaállítjuk a felületet belépési módra és beírjuk a kódot
         requestCodeSection.classList.add('hidden');
-        if (toggleRequestBtn) toggleRequestBtn.textContent = '📩 Még nincs kódod? Igényelj egyet!';
-        if (authSubmitBtn) authSubmitBtn.textContent = 'Belépés 🔑';
+        if (toggleRequestBtn) toggleRequestBtn.textContent = 'Még nincs kódod? Igényelj egyet!';
+        if (authSubmitBtn) authSubmitBtn.textContent = 'Belépés';
         if (authGroupCodeInput) authGroupCodeInput.value = kikuldendoCode;
 
       } catch (err) {
         console.error('Hiba az igénylés során:', err);
-        setStatus('❌ Hiba történt a kód igénylése közben!', '#ef4444');
+        setStatus('Hiba történt a kód igénylése közben!', '#ef4444');
       }
 
-    } 
+    }
     // -------------------------------------------------------------
     // B) BELÉPÉS MEGLÉVŐ CSOPORTKÓDDAL
     // -------------------------------------------------------------
@@ -177,10 +182,10 @@ export function initAuthModal() {
       const groupCode = (authGroupCodeInput?.value || '').trim();
 
       if (!groupCode) {
-        return setStatus('⚠️ Kérjük, írd be a csoportkódot!', '#ef4444');
+        return setStatus('Kérjük, írd be a csoportkódot!', '#ef4444');
       }
 
-      setStatus('⏳ Ellenőrzés...', '#3b82f6');
+      setStatus('Ellenőrzés...', '#3b82f6');
 
       try {
         const { data: codeDataArray, error: codeErr } = await client
@@ -189,7 +194,7 @@ export function initAuthModal() {
           .ilike('group_code', groupCode);
 
         if (codeErr || !codeDataArray || codeDataArray.length === 0) {
-          return setStatus('❌ Érvénytelen csoportkód!', '#ef4444');
+          return setStatus('Érvénytelen csoportkód!', '#ef4444');
         }
 
         const codeData = codeDataArray[0];
@@ -214,12 +219,12 @@ export function initAuthModal() {
           }
         }
 
-        setStatus('✅ Sikeres belépés!', '#10b981');
+        setStatus('Sikeres belépés!', '#10b981');
         setTimeout(() => location.reload(), 500);
 
       } catch (err) {
         console.error('Belépési hiba:', err);
-        setStatus('❌ Hiba történt a belépés során!', '#ef4444');
+        setStatus('Hiba történt a belépés során!', '#ef4444');
       }
     }
   });

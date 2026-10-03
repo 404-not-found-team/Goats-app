@@ -54,8 +54,14 @@
     color: var(--text-primary);
 }
 
-.tartozas-kartya span { display: block; }
-.tartozas-kartya strong { color: white; font-weight: 600; }
+.tartozas-kartya span {
+    display: block;
+}
+
+.tartozas-kartya strong {
+    color: white;
+    font-weight: 600;
+}
 
 .tartozas-kartya span[title="Törlés"]:hover {
     opacity: 0.7;
@@ -69,10 +75,26 @@
 
 .input-tartozasok {
     display: flex;
+    flex-wrap: nowrap;
     gap: 12px;
-    margin-bottom: 25px;
-    align-items: center; 
+    align-items: center;
     width: 100%;
+    margin-bottom: 25px;
+}
+
+.input-tartozasok>.floating-group,
+.input-tartozasok>.custom-dropdown,
+.input-tartozasok>input[type="button"] {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.input-tartozasok>input[type="button"] {
+    height: 48px;
+    padding: 0 10px;
+    box-sizing: border-box;
 }
 
 .input-tartozasok input[type="text"],
@@ -108,15 +130,48 @@
     transition: background-color 0.3s, transform 0.1s;
     padding: 0 24px;
     border-radius: 10px;
-    height: 52px; 
+    height: 52px;
     line-height: 52px;
     box-sizing: border-box;
     margin: 0;
     flex-shrink: 0;
 }
 
-.input-tartozasok input[type="button"]:hover { background-color: var(--accent-hover); }
-.input-tartozasok input[type="button"]:active { transform: scale(0.98); }
+.input-tartozasok input[type="button"]:hover {
+    background-color: var(--accent-hover);
+}
+
+.input-tartozasok input[type="button"]:active {
+    transform: scale(0.98);
+}
+
+.input-tartozasok .custom-dropdown {
+    position: relative;
+    height: 52px;
+}
+
+.input-tartozasok .custom-dropdown .dropdown-btn {
+    padding: 22px 12px 6px 12px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    height: 52px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.input-tartozasok .custom-dropdown .floating-label {
+    top: 6px;
+    transform: translateY(0);
+    font-size: 0.7rem;
+    color: var(--accent-color);
+    font-weight: bold;
+}
 
 /* ==========================================================================
    4. CUSTOM DROPDOWNS (LENYÍLÓ MENÜK)
@@ -148,7 +203,9 @@
     transition: border-color 0.2s;
 }
 
-.dropdown-btn:hover { border-color: var(--text-secondary); }
+.dropdown-btn:hover {
+    border-color: var(--text-secondary);
+}
 
 .dropdown-btn::after {
     content: '▼';
@@ -169,10 +226,12 @@
     border: 1px solid var(--border-color);
     border-radius: 10px;
     z-index: 100;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
-.dropdown-content.show { display: block; }
+.dropdown-content.show {
+    display: block;
+}
 
 .dropdown-item {
     padding: 12px 16px;
@@ -185,7 +244,9 @@
     font-size: 0.95rem;
 }
 
-.dropdown-item:hover { background-color: rgba(255, 255, 255, 0.08); }
+.dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
 
 .dropdown-item input[type="checkbox"] {
     cursor: pointer;
@@ -210,11 +271,15 @@
         gap: 12px;
     }
 
-    .tartozasok-grid { grid-template-columns: repeat(2, 1fr); }
+    .tartozasok-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 600px) {
-    .container-tartozasok { padding: 15px; }
+    .container-tartozasok {
+        padding: 15px;
+    }
 
     .input-tartozasok {
         flex-direction: column;
@@ -228,10 +293,12 @@
     .input-tartozasok input[type="button"] {
         width: 100% !important;
         max-width: 100% !important;
-        flex: none !important; 
+        flex: none !important;
         height: 52px;
         box-sizing: border-box !important;
     }
 
-    .tartozasok-grid { grid-template-columns: 1fr; }
+    .tartozasok-grid {
+        grid-template-columns: 1fr;
+    }
 }

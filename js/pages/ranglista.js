@@ -7,9 +7,11 @@ async function inicializalas() {
     const groupCode = localStorage.getItem('goats_group_code');
     const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
 
+    // Supabase rendezés név (A-Z) szerint
     const { data: katalogus, error: katError } = await client
         .from('ital_katalogus')
         .select('*')
+        .order('nev', { ascending: true })
         .range(0, 999);
 
     if (katError) {
@@ -57,6 +59,7 @@ async function inicializalas() {
 
                     if (celZona) {
                         celZona.appendChild(kartyaElem);
+                        rendezKartyakatContainerben(celZona);
                     }
                 }
             });
@@ -64,6 +67,22 @@ async function inicializalas() {
     }
 
     frissitsSzamlalokat();
+}
+
+/**
+ * Segédfüggvény: Egy adott konténerben lévő kártyákat ábécésorrendbe rendezi a nevük alapján
+ */
+function rendezKartyakatContainerben(container) {
+    if (!container) return;
+    const kartyak = Array.from(container.querySelectorAll(':scope > .ital-kartya'));
+    
+    kartyak.sort((a, b) => {
+        const nevA = a.querySelector('.ital-nev')?.textContent.trim() || '';
+        const nevB = b.querySelector('.ital-nev')?.textContent.trim() || '';
+        return nevA.localeCompare(nevB, 'hu', { sensitivity: 'base' });
+    });
+
+    kartyak.forEach(kartya => container.appendChild(kartya));
 }
 
 async function kategoriatValaszt(kategoriaNev) {
@@ -86,6 +105,7 @@ async function kategoriatValaszt(kategoriaNev) {
 
     if (kartyaElem && celZona) {
         celZona.appendChild(kartyaElem);
+        rendezKartyakatContainerben(celZona);
 
         if (groupCode) {
             const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
@@ -290,12 +310,11 @@ function renderKizartTagem() {
 
         spanTag.appendChild(xSpan);
 
-        // Biztonságos eseménykezelő inline string helyett
         spanTag.addEventListener('click', () => torolKizartTag(tag));
 
         kontener.appendChild(spanTag);
-    })
-};
+    });
+}
 
 async function frissitsSzureseketEsMents() {
     const kikapcsoltKategoriak = Array.from(document.querySelectorAll('.szuro-pill:not(.aktiv)'))
@@ -636,14 +655,15 @@ function addItalKartyaToUI(ital) {
 
                         const nevSpan = document.createElement('span');
                         nevSpan.style.cssText = 'font-weight: 600; color: var(--text-primary);';
-                        nevSpan.textContent = item.nev; // Biztonságos textContent
+                        nevSpan.textContent = item.nev;
 
                         const mennyisegSpan = document.createElement('span');
                         mennyisegSpan.style.cssText = 'color: var(--text-secondary);';
                         mennyisegSpan.textContent = `${item.mennyiseg} ${item.egyseg || ''}`;
 
                         p.appendChild(nevSpan);
-                        p.appendChild(mennyisegSpan); kontener.appendChild(p);
+                        p.appendChild(mennyisegSpan); 
+                        kontener.appendChild(p);
                     });
                     if (doboz) doboz.style.display = 'block';
                 } else {
@@ -662,6 +682,7 @@ function addItalKartyaToUI(ital) {
     });
 
     celListaDiv.appendChild(kartya);
+    rendezKartyakatContainerben(celListaDiv);
     frissitsSzamlalokat();
 }
 

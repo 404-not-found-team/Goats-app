@@ -28,23 +28,29 @@
         <h1>Tartozások</h1>
 
         <div class="input-tartozasok">
-            <input type="text" id="miertInput" placeholder="Miért">
-            <input type="text" id="mennyiertInput" placeholder="Mennyiért">
-
-            <div class="custom-dropdown" id="kinekDropdown">
-                <div class="dropdown-btn" onclick="toggleKinekDropdown()">
-                    <span id="kinekDropdownLabel">Kinek tartozik?</span>
-                </div>
-                <div class="dropdown-content" id="kinekDropdownContent">
-                </div>
+            <div class="floating-group">
+                <input type="text" id="miertInput" class="floating-input" placeholder=" " />
+                <label class="floating-label">Miért?</label>
+            </div>
+            <div class="floating-group">
+                <input type="number" min="1" id="mennyiertInput" class="floating-input" placeholder=" " />
+                <label class="floating-label">Mennyiért?</label>
             </div>
 
-            <div class="custom-dropdown" id="kiTartozikDropdown">
+            <div class="floating-group custom-dropdown" id="kinekDropdown">
+                <div class="dropdown-btn" onclick="toggleKinekDropdown()">
+                    <span id="kinekDropdownLabel">&nbsp;</span>
+                </div>
+                <label class="floating-label active">Kinek tartozik?</label>
+                <div class="dropdown-content" id="kinekDropdownContent"></div>
+            </div>
+
+            <div class="floating-group custom-dropdown" id="kiTartozikDropdown">
                 <div class="dropdown-btn" onclick="toggleDropdown()">
-                    <span id="dropdownBtnLabel">Ki tartozik?</span>
+                    <span id="dropdownBtnLabel">&nbsp;</span>
                 </div>
-                <div class="dropdown-content" id="dropdownContent">
-                </div>
+                <label class="floating-label active">Ki tartozik?</label>
+                <div class="dropdown-content" id="dropdownContent"></div>
             </div>
 
             <input type="button" value="Hozzáad" onclick="addTartozas()">

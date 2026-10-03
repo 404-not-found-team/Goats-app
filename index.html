@@ -52,20 +52,6 @@
                 </button>
             </div>
         </section>
-        <section class="login-guide-card">
-            <h2>🔒 Hogyan léphetsz be?</h2>
-            <ol class="steps-list">
-                <li>Kattints a jobb felső (vagy mobilon a jobb alsó) <strong>⚙️ Beállítások</strong> gombra.</li>
-                <li>Írd be a baráti társaságod <strong>csoportkódját</strong>.</li>
-                <li>Kattints a <strong>Belépés</strong> gombra a csoportod eléréséhez!</li>
-            </ol>
-            <p class="notice-text">
-                💡 <em>Még nincs csoportkódod? Keress meg Instagramon egy saját kódért: <a
-                        href="https://www.instagram.com/https.zolikka/" target="_blank"
-                        class="tos-link">@https.zolikka</a>!</em>
-            </p>
-        </section>
-
         <section class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">💸</div>
@@ -138,24 +124,26 @@
 
         <!-- Új Esemény Modal -->
         <div id="esemeny-modal" class="sm-overlay">
-            <div class="sm-card">
+            <div id="teszt" class="sm-card">
                 <div class="sm-header">
                     <h3>Esemény hozzáadása</h3>
                     <button id="close-esemeny-modal" class="sm-close-btn">&times;</button>
                 </div>
-                <label class="sm-label">Esemény neve:</label>
-                <input type="text" id="esemeny-cim-input" class="sm-input" placeholder="Pl. Buli, Mozi, Sörözés" />
-
-                <label class="sm-label">Dátum:</label>
-                <input type="date" id="esemeny-datum-input" class="sm-input" />
+                <div class="floating-group">
+                    <input type="text" id="esemeny-cim-input" class="floating-input" placeholder=" " />
+                    <label class="floating-label">Esemény neve:</label>
+                </div>
+                <div class="floating-group">
+                    <input type="date" id="esemeny-datum-input" class="floating-input" placeholder=" " />
+                    <label class="floating-label">Dátum:</label>
+                </div>
 
                 <button id="ment-esemeny-btn" class="sm-btn sm-btn-save">Mentés</button>
             </div>
         </div>
-        <!-- Esemény Részletek / Módosítás Modal -->
-        <!-- 1. Napi Áttekintő Modal (Adott nap összes eseménye) -->
+
         <div id="napi-esemenyek-modal" class="sm-overlay" style="display: none;">
-            <div class="sm-card" style="height: auto; max-height: 80vh;">
+            <div class="sm-card" style=" max-height: 80vh;">
                 <div class="sm-header">
                     <h3 id="napi-modal-cím">Események</h3>
                     <button id="close-napi-esemenyek-modal" class="sm-close-btn">&times;</button>
@@ -164,7 +152,7 @@
                     style="display: flex; flex-direction: column; gap: 8px; margin: 15px 0; max-height: 300px; overflow-y: auto;">
                     <!-- JavaScript ide tölti be a napi eseményeket -->
                 </div>
-                <button id="napi-uj-esemeny-btn" class="sm-btn sm-btn-save">+ Új esemény ezen a napon</button>
+                <button id="napi-uj-esemeny-btn" class="sm-btn sm-btn-save">Új esemény ezen a napon</button>
             </div>
         </div>
 
@@ -175,11 +163,14 @@
                     <h3>Esemény szerkesztése</h3>
                     <button id="close-esemeny-reszletek-modal" class="sm-close-btn">&times;</button>
                 </div>
-                <label class="sm-label">Esemény neve:</label>
-                <input type="text" id="szerkeszt-esemeny-cim" class="sm-input" />
-
-                <label class="sm-label">Dátum:</label>
-                <input type="date" id="szerkeszt-esemeny-datum" class="sm-input" />
+                <div class="floating-group">
+                    <input type="text" id="szerkeszt-esemeny-cim" class="floating-input" placeholder=" " />
+                    <label class="floating-label">Esemény neve:</label>
+                </div>
+                <div class="floating-group">
+                    <input type="date" id="szerkeszt-esemeny-datum" class="floating-input" placeholder=" " />
+                    <label class="floating-label">Dátum:</label>
+                </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
                     <button id="modosit-esemeny-btn" class="sm-btn sm-btn-save" style="flex: 1;">Módosítás</button>
@@ -189,7 +180,7 @@
             </div>
         </div>
     </div>
-<script>
+    <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')

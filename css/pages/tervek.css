@@ -31,7 +31,9 @@
     min-width: 0;
 }
 
-.input input[type="text"]:focus { border-color: var(--accent-color); }
+.input input[type="text"]:focus {
+    border-color: var(--accent-color);
+}
 
 .input input[type="button"] {
     background-color: var(--accent-color);
@@ -44,7 +46,9 @@
     white-space: nowrap;
 }
 
-.input input[type="button"]:hover { background-color: var(--accent-hover); }
+.input input[type="button"]:hover {
+    background-color: var(--accent-hover);
+}
 
 /* ==========================================================================
    2. TERVEK LISTÁJA (ITEMS)
@@ -106,11 +110,60 @@
     color: var(--text-secondary);
 }
 
+/* Egy sorba rendező konténer */
+.terv-input-sor {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* Az input mező kitölti a rendelkezésre álló helyet */
+.terv-input-sor .floating-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* A Hozzáad gomb témafüggő háttérrel és átmenettel */
+.terv-input-sor button,
+.terv-input-sor .terv-add-btn {
+    width: auto;
+    height: 48px;
+    padding: 0 24px;
+    white-space: nowrap;
+    margin: 0;
+    flex-shrink: 0;
+    background-color: var(--accent-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.terv-input-sor button:hover,
+.terv-input-sor .terv-add-btn:hover {
+    background-color: var(--accent-hover);
+}
+
+.terv-input-sor button:active,
+.terv-input-sor .terv-add-btn:active {
+    transform: scale(0.98);
+}
+
 /* ==========================================================================
    3. RESZPONZÍV SZABÁLYOK
    ========================================================================== */
 
 @media screen and (max-width: 600px) {
-    .container { padding: 15px; }
-    .input input[type="button"] { padding: 12px 14px; }
+    .container {
+        padding: 15px;
+    }
+
+    .input input[type="button"] {
+        padding: 12px 14px;
+    }
 }

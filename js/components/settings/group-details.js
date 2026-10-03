@@ -2,7 +2,6 @@ import { frissitsProfilEmail } from './profile-modal.js';
 
 export function initGroupDetails() {
   const get = id => document.getElementById(id);
-  const EMOJIK = ['🐐', '🍺', '🍸', '🔥', '🎉', '👑', '🚀', '⚽', '🎮', '💎'];
 
   const frissitsAvatarKezdest = (groupName, emoji) => {
     const avatarElem = get('group-avatar-badge');
