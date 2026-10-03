@@ -106,8 +106,8 @@
 
 /* PWA Telepítő kártya */
 .install-card {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(30, 30, 30, 0.95) 100%);
-    border: 1px solid var(--accent-color);
+    background: var(--install-card-bg);
+    border: 1px solid var(--install-card-border);
     border-radius: 16px;
     padding: 20px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
@@ -143,7 +143,6 @@
     line-height: 1.4;
 }
 
-/* (0,2,0) > .install-text p (0,1,1), ezért nem kell !important */
 .install-text .ios-notice {
     margin-top: 8px;
     padding: 8px 12px;
@@ -166,14 +165,14 @@
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow: var(--install-btn-shadow);
     transition: all 0.2s ease;
 }
 
 .install-btn:hover {
     background: var(--accent-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45);
+    box-shadow: var(--install-btn-shadow-hover);
 }
 
 .install-btn:active {

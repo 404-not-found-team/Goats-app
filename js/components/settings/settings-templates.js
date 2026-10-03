@@ -8,10 +8,10 @@ export function injectUserNavHTML() {
 
   if (!isLogged) {
     headerContainer.innerHTML = `
-      <button id="open-auth-modal-btn" class="nav-auth-btn">SIGN IN</button>
+      <button id="open-auth-modal-btn" class="nav-auth-btn">Belépés</button>
     `;
   } else {
-    const kezdoJel = savedEmoji || (code ? code.charAt(0).toUpperCase() : '🐐');
+    const kezdoJel = code.charAt(0).toUpperCase();
     headerContainer.innerHTML = `
       <button id="open-profile-modal-btn" class="nav-profile-btn" title="Profil">
         <div id="header-user-avatar" class="google-avatar-circle">${kezdoJel}</div>
@@ -26,20 +26,23 @@ export function injectUserNavHTML() {
     <div id="auth-modal" class="sm-overlay">
       <div class="sm-card">
         <div class="sm-header">
-          <h3>Sign In / Belépés 🔑</h3>
+          <h3 id="title">Bejelentkezés</h3>
           <button id="close-auth-btn" class="sm-close-btn">&times;</button>
         </div>
         <div class="sm-body">
-          <label class="sm-label">Kód beírása (Csoport kód):</label>
-          <input type="password" id="auth-group-code-input" class="sm-input"/>
+          <div class="floating-group" id="sign-in-code-section">
+                <input type="password" id="auth-group-code-input" class="floating-input" placeholder=" " />
+                <label class="floating-label">Csoport kód:</label>
+            </div>
+            <div id="request-code-section" class="floating-group hidden">
+            <input type="email" id="auth-email-input" class="floating-input" placeholder=" " />
+            <label class="floating-label">E-mail cím a kód igényléséhez:</label>
+            </div>
           <button id="toggle-request-code-btn" type="button" class="google-mini-edit-btn request-code-btn">
-            📩 Még nincs kódod? Igényelj egyet!
+            Még nincs kódod? Igényelj egyet!
           </button>
-          <div id="request-code-section" class="request-code-box hidden">
-            <label class="sm-label">E-mail cím a kód igényléséhez:</label>
-            <input type="email" id="auth-email-input" class="sm-input sm-input-flush" placeholder="peldas.pisti@gmail.com" />
-          </div>
         </div>
+        <p id="auth-status" class="sm-status"></p>
         <div class="auth-footer">
           <div id="tos-wrapper" class="tos-wrapper">
             <label class="tos-label">
@@ -49,8 +52,7 @@ export function injectUserNavHTML() {
               </span>
             </label>
           </div>
-          <p id="auth-status" class="sm-status"></p>
-          <button id="auth-submit-btn" class="sm-btn sm-btn-save sm-btn-lg">Belépés / Igénylés</button>
+          <button id="auth-submit-btn" class="sm-btn sm-btn-save sm-btn-lg">Belépés</button>
         </div>
       </div>
     </div>
@@ -60,20 +62,17 @@ export function injectUserNavHTML() {
       <div class="google-profile-card">
         <button id="close-profile-btn" class="google-close-btn">&times;</button>
         <div class="google-user-header">
-          <div id="group-avatar-badge" class="google-avatar-circle large">🐐</div>
+          <div id="group-avatar-badge" class="google-avatar-circle large"></div>
           <div class="google-user-info">
-            <h4 id="profile-display-name">Nincs kiválasztva név</h4>
-            <div class="google-email-row">
-              <span id="profile-display-email">email@goats.app</span>
-            </div>
+            <h3 id="profile-display-name">Nincs kiválasztva név</h3>
             <span class="google-plus-badge">V1.0.3</span>
           </div>
         </div>
         <div class="google-menu-list">
-          <button id="open-group-details-btn" class="google-menu-btn"><span>👥 Csoport Adatok</span><span class="arrow-icon">›</span></button>
-          <button id="open-settings-btn" class="google-menu-btn"><span>⚙️ Beállítások</span><span class="arrow-icon">›</span></button>
-          <button id="open-dev-btn" class="google-menu-btn"><span>🚀 Frissítések & Dev Log</span><span class="arrow-icon">›</span></button>
-          <button id="logout-btn" class="google-menu-btn danger"><span>🚪 Kijelentkezés</span></button>
+          <button id="open-group-details-btn" class="google-menu-btn"><span> Csoport Adatok</span><span class="arrow-icon">›</span></button>
+          <button id="open-settings-btn" class="google-menu-btn"><span> Beállítások</span><span class="arrow-icon">›</span></button>
+          <button id="open-dev-btn" class="google-menu-btn"><span> Frissítések & Dev Log</span><span class="arrow-icon">›</span></button>
+          <button id="logout-btn" class="google-menu-btn danger"><span> Kijelentkezés</span></button>
         </div>
         <p id="profile-status" class="sm-status sm-status-small"></p>
       </div>
@@ -83,32 +82,43 @@ export function injectUserNavHTML() {
     <div id="group-details-modal" class="sm-overlay">
       <div class="sm-card">
         <div class="sm-header">
-          <h3>👥 Csoport Adatok</h3>
+          <h3> Csoport Adatok</h3>
           <button id="close-group-details-btn" class="sm-close-btn">&times;</button>
         </div>
         <div class="sm-body">
-          <label class="sm-label">Csoport neve:</label>
-          <input type="text" id="group-name-display" class="sm-input" placeholder="GOATS Csoport" />
-          <label class="sm-label">Csoport e-mail címe:</label>
-          <div class="info-row">
-            <span id="group-email-display" class="info-row-value">email@goats.app</span>
-            <button id="open-edit-email-btn" class="google-mini-edit-btn mini-btn-accent">✏️ Módosít</button>
-          </div>
-          <label class="sm-label">Csoport kódja (Group Code):</label>
-          <div class="input-with-toggle">
-            <input type="password" id="group-code-display" class="sm-input" readonly />
-            <button id="toggle-group-code-visibility" type="button" class="input-toggle-btn">👁️</button>
-          </div>
-          <label class="sm-label">Én vagyok a csoportból:</label>
-          <div id="custom-user-dropdown" class="custom-dropdown">
-            <div class="dropdown-selected"><span id="user-dropdown-selected-text">Válaszd ki, ki vagy...</span><span class="arrow">▼</span></div>
-            <div id="user-dropdown-options" class="dropdown-options"></div>
-          </div>
-          <label class="sm-label">Válassz csoport ikont:</label>
-          <div id="emoji-picker-container" class="emoji-picker"></div>
-          <label class="sm-label">Tagok (vesszővel elválasztva):</label>
-          <input type="text" id="group-members-input" class="sm-input sm-input-spaced" placeholder="Peti, Géza, Vivi" />
-          <button id="delete-group-btn" class="google-menu-btn danger-dark">🗑️ Csoport törlése</button>
+            <div class="floating-group">
+                <input type="text" id="group-name-display" class="floating-input" placeholder=" " />
+                <label class="floating-label">Csoport neve:</label>
+            </div>
+            <div class="floating-group floating-info-row">
+              <span id="group-email-display" class="floating-info-value">email@goats.app</span>
+              <label class="floating-label active">Csoport e-mail címe:</label>
+              <button id="open-edit-email-btn" type="button" class="google-mini-edit-btn mini-btn-accent">✏️ Módosít</button>
+             </div>
+
+            <div class="floating-group input-with-toggle">
+              <input type="password" id="group-code-display" class="floating-input" placeholder=" " readonly />
+              <label class="floating-label">Csoport kódja</label>
+              <button id="toggle-group-code-visibility" type="button" class="input-toggle-btn">👁️</button>
+            </div>
+
+            <div class="floating-group floating-dropdown-group">
+              <div id="custom-user-dropdown" class="custom-dropdown">
+                <div class="dropdown-selected">
+                  <span id="user-dropdown-selected-text">Válaszd ki, ki vagy...</span>
+                  <span class="arrow">▼</span>
+                </div>
+                <div id="user-dropdown-options" class="dropdown-options"></div>
+              </div>
+              <label class="floating-label active">Én vagyok a csoportból:</label>
+            </div>
+
+            <div class="floating-group">
+              <input type="text" id="group-members-input" class="floating-input" placeholder=" " />
+              <label class="floating-label">Tagok (vesszővel elválasztva)</label>
+            </div>
+          
+          <button id="delete-group-btn" class="google-menu-btn danger-dark">Csoport törlése</button>
         </div>
       </div>
     </div>
@@ -117,19 +127,19 @@ export function injectUserNavHTML() {
     <div id="email-modal" class="sm-overlay">
       <div class="sm-card">
         <div class="sm-header">
-          <h3>✏️ E-mail Cím Módosítása</h3>
+          <h3> E-mail Cím Módosítása</h3>
           <button id="close-email-btn" class="sm-close-btn">&times;</button>
         </div>
         <div class="sm-body">
           <div style="background-color: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; line-height: 1.4; color: #d4d4d8;">
-            ✉️ <strong>Jelenlegi e-mail cím:</strong><br>
+             <strong>Jelenlegi e-mail cím:</strong><br>
             <span id="current-email-display-label" style="color: #5850ec; font-weight: 600;">betöltés...</span><br><br>
-            ℹ️ <em>A biztonsági megerősítő kód a jelenlegi e-mail címedre fog megérkezni az új cím jóváhagyásához.</em>
+             <em>A biztonsági megerősítő kód a jelenlegi e-mail címedre fog megérkezni az új cím jóváhagyásához.</em>
           </div>
 
           <label class="sm-label">Adj meg egy új e-mail címet:</label>
           <input type="email" id="new-email-input" class="sm-input" placeholder="ujemail@gmail.com" />
-          <button id="request-email-change-btn" class="sm-btn sm-btn-save">Megerősítő Kód Küldése 📩</button>
+          <button id="request-email-change-btn" class="sm-btn sm-btn-save">Megerősítő Kód Küldése </button>
         </div>
       </div>
     </div>
@@ -138,7 +148,7 @@ export function injectUserNavHTML() {
     <div id="verify-code-modal" class="sm-overlay">
       <div class="sm-card">
         <div class="sm-header">
-          <h3>🔒 Biztonsági Ellenőrzés</h3>
+          <h3> Biztonsági Ellenőrzés</h3>
           <button id="close-verify-btn" class="sm-close-btn">&times;</button>
         </div>
         <div class="sm-body">
@@ -156,13 +166,13 @@ export function injectUserNavHTML() {
     <div id="settings-modal" class="sm-overlay">
       <div class="sm-card">
         <div class="sm-header">
-          <h3>⚙️ Beállítások</h3>
+          <h3> Beállítások</h3>
           <button id="close-settings-btn" class="sm-close-btn">&times;</button>
         </div>
         <div class="sm-body">
           <label class="sm-label">Téma kiválasztása:</label>
           <div id="custom-theme-dropdown" class="custom-dropdown">
-            <div class="dropdown-selected"><span id="theme-dropdown-selected-text">🌙 Dark (Alapértelmezett)</span><span class="arrow">▼</span></div>
+            <div class="dropdown-selected"><span id="theme-dropdown-selected-text"> Sötét</span><span class="arrow">▼</span></div>
             <div id="theme-dropdown-options" class="dropdown-options"></div>
           </div>
         </div>
@@ -173,7 +183,7 @@ export function injectUserNavHTML() {
     <div id="dev-modal" class="sm-overlay">
       <div class="sm-card">
         <div class="sm-header">
-          <h3>🚀 Frissítések & Dev Log</h3>
+          <h3> Frissítések & Dev Log</h3>
           <button id="close-dev-btn" class="sm-close-btn">&times;</button>
         </div>
         <div class="sm-body">
@@ -188,7 +198,7 @@ export function injectUserNavHTML() {
     <div id="tos-modal" class="sm-overlay tos-modal-overlay">
       <div class="sm-card tos-modal-card">
         <div class="sm-header">
-          <h3 class="tos-modal-header">📜 Használati Feltételek</h3>
+          <h3 class="tos-modal-header"> Használati Feltételek</h3>
           <button id="close-tos-modal" class="sm-close-btn">&times;</button>
         </div>
         <div class="tos-modal-body">

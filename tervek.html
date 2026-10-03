@@ -27,9 +27,12 @@
 
     <div class="container">
         <h1>Tervek / Ötletek</h1>
-        <div class="input">
-            <input type="text" id="tervInput" placeholder="Írd be a tervet...">
-            <input type="button" value="Hozzáad" onclick="add()">
+        <div class="terv-input-sor">
+            <div class="floating-group">
+                <input type="text" id="tervInput" class="floating-input" placeholder=" " />
+                <label class="floating-label">Írd be a tervet...</label>
+            </div>
+            <button type="button" id="hozzaadTervBtn" class="terv-add-btn" onclick="add()">Hozzáad</button>
         </div>
         <div class="tervek">
         </div>

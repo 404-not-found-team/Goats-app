@@ -5,12 +5,11 @@ export function initThemePicker() {
   const themeOptionsContainer = get('theme-dropdown-options');
 
   const themes = [
-    { id: 'dark', name: '🌙 Dark (Alapértelmezett)' },
-    { id: 'light', name: '☀️ Light' },
-    { id: 'discord', name: '🎮 Discord Classic' },
-    { id: 'discord-brown', name: '🪵 Discord Meleg Barna' },
-    { id: 'discord-purple', name: '🔮 Discord Mélylila' },
-    { id: 'cyberpunk', name: '🤖 Cyberpunk Neon' }
+    { id: 'dark', name: 'Sötét' },
+    { id: 'light', name: 'Világos' },
+    { id: 'discord-brown', name: 'Barna' },
+    { id: 'discord-purple', name: 'Mélylila' },
+    { id: 'cyberpunk', name: 'Neon' }
   ];
 
   const currentTheme = localStorage.getItem('goats_theme') || 'dark';

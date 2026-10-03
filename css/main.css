@@ -6,6 +6,7 @@
 @import url('components/navbar.css');
 @import url('components/modals.css');
 @import url('components/custom-dropdown.css');
+@import url('components/floating-label.css');
 
 /* PAGES */
 @import url('pages/signin.css');

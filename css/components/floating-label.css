@@ -1,0 +1,125 @@
+.floating-group {
+    position: relative;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.floating-input,
+.floating-select {
+    width: 100%;
+    padding: 14px 12px 6px 12px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.floating-input:focus,
+.floating-select:focus {
+    border-color: var(--accent-color);
+}
+
+.floating-label {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+
+.floating-input:focus~.floating-label,
+.floating-input:not(:placeholder-shown)~.floating-label,
+.floating-select:focus~.floating-label,
+.floating-select:has(option:checked)~.floating-label {
+    top: 6px;
+    transform: translateY(0);
+    font-size: 0.7rem;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.floating-info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 18px 12px 6px 12px;
+    min-height: 48px;
+    box-sizing: border-box;
+}
+
+.floating-info-row .floating-label {
+    top: 6px;
+    transform: translateY(0);
+    font-size: 0.7rem;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.floating-info-value {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    word-break: break-all;
+}
+
+.floating-emoji-group {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 18px 12px 10px 12px;
+    box-sizing: border-box;
+}
+
+.floating-emoji-group .floating-label {
+    top: 6px;
+    transform: translateY(0);
+    font-size: 0.7rem;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.floating-emoji-group .emoji-picker {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+    margin-bottom: 0;
+}
+
+.floating-dropdown-group {
+    position: relative;
+}
+
+.floating-dropdown-group .custom-dropdown {
+    width: 100%;
+}
+
+.floating-dropdown-group .dropdown-selected {
+    padding: 18px 12px 6px 12px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    min-height: 48px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.floating-dropdown-group .floating-label {
+    top: 6px;
+    transform: translateY(0);
+    font-size: 0.7rem;
+    color: var(--accent-color);
+    font-weight: bold;
+}
