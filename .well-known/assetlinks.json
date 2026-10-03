@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "hu.goatsapp.app",
+        "sha256_cert_fingerprints": ["A3:EF:4C:B8:85:11:F9:1A:26:20:C5:9E:2E:7E:72:C1:37:7B:8A:45:12:8A:2A:29:03:62:AB:8F:4D:19:08:DB"]
+      }
+    }]
