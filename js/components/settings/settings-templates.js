@@ -193,7 +193,7 @@ export function injectUserNavHTML(state) {
           <p>A feltöltött képekért, szövegekért és adatokért kizárólag a feltöltő személy vállalja a felelősséget. Jogszabályba ütköző tartalom feltöltése tilos.</p>
 
           <h4>4. Adatkezelés</h4>
-          <p>A bejelentkezéshez a Google-fiókod nevét és e-mail címét, a csoportos működéshez a csoport adatait felhőalapú (Supabase) adatbázisban tároljuk. A fiókodat a Profil menüben bármikor véglegesen törölheted.</p>
+          <p>A bejelentkezéshez a Google-fiókod nevét és e-mail címét, a csoportos működéshez a csoport adatait felhőalapú (Supabase) adatbázisban tároljuk. A fiókodat a Profil menüben bármikor véglegesen törölheted. Részletek: <a href="privacy.html" target="_blank" rel="noopener" style="color: #3b82f6; text-decoration: underline;">Adatvédelmi nyilatkozat</a>.</p>
         </div>
         <button id="accept-tos-modal-btn" class="sm-btn sm-btn-save tos-modal-btn">Elfogadom</button>
       </div>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goats - Fiók törlése</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/main.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="js/main.js"></script>
+
+    <style>
+        .jogi-oldal {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 24px 20px 60px;
+        }
+
+        .jogi-oldal h1 {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+
+        .jogi-oldal .utolso-frissites {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+        }
+
+        .jogi-oldal .tos-modal-body {
+            font-size: 0.95rem;
+        }
+
+        .jogi-oldal .tos-modal-body h4 {
+            font-size: 1.05rem;
+            margin-top: 22px;
+        }
+
+        .jogi-oldal ol {
+            margin: 0 0 12px 0;
+            padding-left: 20px;
+        }
+
+        .jogi-oldal li {
+            margin-bottom: 8px;
+        }
+
+        .jogi-oldal a {
+            color: var(--accent-color);
+        }
+
+        .figyelmeztetes-doboz {
+            background: var(--inner-bg);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid #ef4444;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 16px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <ul id="navBar"></ul>
+
+    <div class="jogi-oldal">
+        <h1>Fiók törlése</h1>
+        <p class="utolso-frissites">Utolsó frissítés: 2026. október 5.</p>
+
+        <div class="tos-modal-body">
+            <h4>1. Törlés az alkalmazásban (ajánlott)</h4>
+            <ol>
+                <li>Jelentkezz be a Goats App-ba.</li>
+                <li>Nyisd meg a <strong>Profil</strong> menüt (a jobb felső avatarra kattintva).</li>
+                <li>Válaszd a <strong>Fiók törlése</strong> gombot a menü alján.</li>
+                <li>Erősítsd meg a törlést a megjelenő ablakban.</li>
+            </ol>
+            <p>
+                A törlés azonnali és végleges: a Google-fiókodhoz tartozó profilod, a
+                megjelenítendő neved és a csoporttagságod törlődik az adatbázisból. Ha te vagy az
+                egyetlen tagja a csoportodnak, a csoport minden adata (tartozások, tervek,
+                események, italok/ranglista, feltöltött képek) is véglegesen törlődik.
+            </p>
+
+            <div class="figyelmeztetes-doboz">
+                <strong>Ha a csoportod admin(isztrátor)a vagy, és más tagok is vannak benne:</strong>
+                a fiók törlése előtt előbb add át az admin jogot egy másik tagnak a
+                <strong>Profil &rarr; Csoport adatok</strong> menüben, különben a törlés
+                sikertelen lesz (a csoport admin nélkül maradna).
+            </div>
+
+            <h4>2. Törlés kérése, ha nem férsz hozzá az alkalmazáshoz</h4>
+            <p>
+                Ha valamiért nem tudsz bejelentkezni (pl. törölted a Google-fiókodat, vagy
+                technikai hiba miatt nem éred el az appot), kérheted a fiókod és az ahhoz
+                tartozó adatok törlését e-mailben:
+            </p>
+            <ol>
+                <li>
+                    Küldj e-mailt a <a href="mailto:aranyzoli11@gmail.com?subject=Fi%C3%B3k%20t%C3%B6rl%C3%A9se%20-%20Goats%20App">aranyzoli11@gmail.com</a>
+                    címre "Fiók törlése - Goats App" tárggyal.
+                </li>
+                <li>Add meg, hogy melyik Google-fiók (e-mail cím) tartozik a törlendő profilhoz.</li>
+                <li>A kérést 14 napon belül feldolgozzuk, és e-mailben visszaigazoljuk a törlést.</li>
+            </ol>
+
+            <h4>3. Mi történik a törléssel</h4>
+            <p>
+                A törlés során eltávolítjuk a Google-fiókodhoz tartozó profilt (megjelenítendő
+                név), a csoporttagságodat, és - ha az utolsó tag voltál - a csoportod összes
+                adatát. A törlés végleges, nem vonható vissza, és nem igényel külön lépést a
+                Google-fiókod oldalán (a Goats App hozzáférését a Google-fiókod
+                <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">
+                    Harmadik féltől származó alkalmazások hozzáférése</a> oldalán is bármikor
+                visszavonhatod).
+            </p>
+
+            <p>Kérdés esetén: <a href="mailto:aranyzoli11@gmail.com">aranyzoli11@gmail.com</a></p>
+        </div>
+    </div>
+</body>
+
+</html>
