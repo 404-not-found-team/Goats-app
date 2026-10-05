@@ -59,11 +59,15 @@ create unique index if not exists groups_group_code_lower_uidx on public.groups 
 -- user_id) összetett kulcsú verzióra. Adatvesztés ellen védve: csak akkor dobja el,
 -- ha tényleg nincs benne sor; ha van, szól, és érintetlenül hagyja (ekkor kézzel kell
 -- eldönteni, mi legyen - ne fuss neki újra automatikusan).
+-- CASCADE: a nálad már meglévő "Csoportok olvasása" policy a groups táblán a
+-- group_members-re hivatkozik, emiatt tartja a függőséget - ezt a policyt a lenti
+-- 4. lépés úgyis lecseréli, a cascade csak ezt a policyt viszi magával, a groups
+-- táblát és annak adatait NEM érinti.
 do $$
 begin
   if to_regclass('public.group_members') is not null then
     if (select count(*) from public.group_members) = 0 then
-      drop table public.group_members;
+      drop table public.group_members cascade;
     else
       raise notice 'public.group_members nem üres (% sor) - NEM nyúltam hozzá, kézi egyeztetés kell!',
         (select count(*) from public.group_members);
