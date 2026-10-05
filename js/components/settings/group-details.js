@@ -1,138 +1,171 @@
-import { frissitsProfilEmail } from './profile-modal.js';
+import { getState, refresh, onChange, leaveGroup } from '../../auth-service.js';
+import {
+  removeMember, transferOwnership, renameGroup, regenerateGroupCode, deleteCurrentGroup,
+} from '../../admin.js';
 
 export function initGroupDetails() {
   const get = id => document.getElementById(id);
 
-  const frissitsAvatarKezdest = (groupName, emoji) => {
-    const avatarElem = get('group-avatar-badge');
-    const headerAvatarElem = get('header-user-avatar');
-    const jelolas = emoji || (groupName ? groupName.charAt(0).toUpperCase() : '🐐');
-
-    if (avatarElem) avatarElem.textContent = jelolas;
-    if (headerAvatarElem) headerAvatarElem.textContent = jelolas;
+  const setStatus = (msg, color = '') => {
+    const s = get('group-details-status');
+    if (s) { s.textContent = msg || ''; s.style.color = color; }
   };
 
-  // Emoji választó gombok generálása
-  const emojiPickerContainer = get('emoji-picker-container');
-  if (emojiPickerContainer) {
-    emojiPickerContainer.innerHTML = '';
-    EMOJIK.forEach(e => {
-      const btn = document.createElement('button');
-      btn.className = 'emoji-select-btn';
-      btn.textContent = e;
-      btn.addEventListener('click', () => {
-        localStorage.setItem('goats_group_emoji', e);
-        frissitsAvatarKezdest(null, e);
-        get('group-details-modal').style.display = 'none';
+  const updateAvatars = () => {
+    const { group, displayName } = getState();
+    const emoji = localStorage.getItem('goats_group_emoji');
+    const sign = emoji || (group?.group_name || displayName || '🐐').charAt(0).toUpperCase();
+    if (get('group-avatar-badge')) get('group-avatar-badge').textContent = sign;
+    if (get('header-user-avatar')) get('header-user-avatar').textContent = sign;
+  };
+
+  // Tag sor felépítése (csak textContent, nincs innerHTML)
+  function memberRow(m, me, isAdmin, groupId) {
+    const row = document.createElement('div');
+    row.style.cssText =
+      'display:flex;align-items:center;gap:8px;padding:8px 10px;margin-bottom:6px;' +
+      'border:1px solid var(--border-color);background:var(--inner-bg);border-radius:8px;' +
+      'color:var(--text-primary);';
+
+    const name = document.createElement('span');
+    name.style.flex = '1';
+    name.textContent = m.display_name + (m.user_id === me ? ' (te)' : '');
+    row.appendChild(name);
+
+    if (m.group_role === 'admin') {
+      const badge = document.createElement('span');
+      badge.style.cssText = 'font-size:12px;color:var(--accent-color);';
+      badge.textContent = '👑 admin';
+      row.appendChild(badge);
+    }
+
+    if (isAdmin && m.user_id !== me) {
+      const give = document.createElement('button');
+      give.type = 'button';
+      give.className = 'google-mini-edit-btn';
+      give.textContent = 'Admin jog átadása';
+      give.addEventListener('click', async () => {
+        if (!confirm(`Átadod az admin jogot neki: ${m.display_name}? Utána te sima tag leszel.`)) return;
+        setStatus('Mentés...', '#3b82f6');
+        const ok = await transferOwnership(m.user_id, groupId);
+        setStatus(ok ? 'Az admin jog átadva.' : '', '#10b981');
       });
-      emojiPickerContainer.appendChild(btn);
-    });
+
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'google-mini-edit-btn';
+      del.textContent = 'Eltávolít';
+      del.addEventListener('click', async () => {
+        if (!confirm(`Eltávolítod a csoportból: ${m.display_name}?`)) return;
+        setStatus('Mentés...', '#3b82f6');
+        const ok = await removeMember(m.user_id, groupId);
+        setStatus(ok ? 'A tag eltávolítva.' : '', '#10b981');
+      });
+
+      row.appendChild(give);
+      row.appendChild(del);
+    }
+    return row;
   }
 
-  // Csoport kód elrejtése / megjelenítése toggle
-  document.addEventListener('click', (e) => {
-    if (e.target && e.target.id === 'toggle-group-code-visibility') {
-      const codeInput = get('group-code-display');
-      if (codeInput) {
-        const isPassword = codeInput.type === 'password';
-        codeInput.type = isPassword ? 'text' : 'password';
-        e.target.textContent = isPassword ? '🙈' : '👁️️';
-      }
+  function render() {
+    const { group, groupRole, user, members } = getState();
+    const isAdmin = groupRole === 'admin';
+
+    const noGroup = get('group-no-group');
+    const content = get('group-content');
+    if (noGroup) noGroup.style.display = group ? 'none' : 'block';
+    if (content) content.style.display = group ? 'block' : 'none';
+    updateAvatars();
+    if (!group) return;
+
+    const nameInput = get('group-name-display');
+    if (nameInput) { nameInput.value = group.group_name || ''; nameInput.readOnly = !isAdmin; }
+    const saveName = get('save-group-name-btn');
+    if (saveName) saveName.style.display = isAdmin ? '' : 'none';
+
+    const codeInput = get('group-code-display');
+    if (codeInput) { codeInput.value = group.group_code; codeInput.type = 'password'; }
+    if (get('toggle-group-code-visibility')) get('toggle-group-code-visibility').textContent = '👁️';
+
+    const regen = get('regenerate-code-btn');
+    if (regen) regen.style.display = isAdmin ? '' : 'none';
+    const del = get('delete-group-btn');
+    if (del) del.style.display = isAdmin ? '' : 'none';
+
+    const list = get('group-members-list');
+    if (list) {
+      list.replaceChildren(...members.map(m => memberRow(m, user?.id, isAdmin, group.id)));
     }
-  });
+  }
 
-  // User Dropdown ("Ki vagyok")
-  const userDropdown = get('custom-user-dropdown');
-  const userSelectedText = get('user-dropdown-selected-text');
-  const userOptionsContainer = get('user-dropdown-options');
+  onChange(render);
+  updateAvatars();
 
-  userDropdown?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    userDropdown.classList.toggle('open');
-  });
-
-  document.addEventListener('click', () => userDropdown?.classList.remove('open'));
-
-  // Amikor megnyitják a csoport adatokat, betöltjük az értékeket
+  // Megnyitáskor friss adat a szerverről
   get('open-group-details-btn')?.addEventListener('click', async () => {
-    const code = localStorage.getItem('goats_group_code') || '';
-    const members = JSON.parse(localStorage.getItem('goats_group_members') || '[]');
+    setStatus('');
+    render();
+    await refresh();
+  });
 
-    const groupCodeDisplay = get('group-code-display');
-    const toggleBtn = get('toggle-group-code-visibility');
-
-    if (groupCodeDisplay) {
-      groupCodeDisplay.value = code;
-      groupCodeDisplay.type = 'password';
+  // Kód mutatása/elrejtése, másolása
+  document.addEventListener('click', async (e) => {
+    if (e.target.id === 'toggle-group-code-visibility') {
+      const input = get('group-code-display');
+      if (!input) return;
+      const hidden = input.type === 'password';
+      input.type = hidden ? 'text' : 'password';
+      e.target.textContent = hidden ? '🙈' : '👁️';
     }
-    if (toggleBtn) toggleBtn.textContent = '👁️';
-
-    if (get('group-name-display')) get('group-name-display').value = localStorage.getItem('goats_group_name') || code.toUpperCase();
-    if (get('group-members-input')) get('group-members-input').value = members.join(', ');
-
-    // Valós e-mail lekérése Supabase-ből és a DOM elemek frissítése
-    await frissitsCsoportEmail();
-
-    // Dropdown feltöltése tagokkal és a mentett név kiválasztása
-    if (userOptionsContainer) {
-      const currentUser = localStorage.getItem('goats_current_user') || localStorage.getItem('goats_last_user');
-      userOptionsContainer.innerHTML = '';
-
-      if (currentUser && members.includes(currentUser)) {
-        if (userSelectedText) userSelectedText.textContent = currentUser;
-        if (get('profile-display-name')) get('profile-display-name').textContent = currentUser;
+    if (e.target.id === 'copy-group-code-btn') {
+      const code = getState().group?.group_code;
+      if (!code) return;
+      try {
+        await navigator.clipboard.writeText(code);
+        setStatus('A csoportkód a vágólapra másolva.', '#10b981');
+      } catch {
+        setStatus('A másolás nem sikerült, jelöld ki kézzel.', '#ef4444');
       }
-
-      members.forEach(member => {
-        const optionDiv = document.createElement('div');
-        optionDiv.className = `dropdown-option ${member === currentUser ? 'selected' : ''}`;
-        optionDiv.textContent = member;
-
-        optionDiv.addEventListener('click', (e) => {
-          e.stopPropagation();
-          localStorage.setItem('goats_current_user', member);
-          localStorage.setItem('goats_last_user', member);
-
-          if (userSelectedText) userSelectedText.textContent = member;
-          if (get('profile-display-name')) get('profile-display-name').textContent = member;
-          userDropdown.classList.remove('open');
-        });
-
-        userOptionsContainer.appendChild(optionDiv);
-      });
     }
   });
-}
 
-export async function frissitsCsoportEmail() {
-  const code = localStorage.getItem('goats_group_code');
-  if (!code) return;
+  // Átnevezés (admin)
+  get('save-group-name-btn')?.addEventListener('click', async () => {
+    const { group } = getState();
+    const name = (get('group-name-display')?.value || '').trim();
+    if (name.length < 2 || name.length > 40) return setStatus('A név 2–40 karakter legyen.', '#ef4444');
+    const ok = await renameGroup(group.id, name);
+    setStatus(ok ? 'A csoport neve elmentve.' : '', '#10b981');
+  });
 
-  try {
-    const client = typeof _supabase !== 'undefined' ? _supabase : (window._supabase || window.supabase);
-    if (!client) return console.warn('Supabase client nem érhető el!');
+  // Új kód (admin)
+  get('regenerate-code-btn')?.addEventListener('click', async () => {
+    if (!confirm('Új csoportkódot generálsz. A régi kód azonnal érvénytelen lesz, a meglévő tagok bent maradnak. Folytatod?')) return;
+    const code = await regenerateGroupCode(getState().group.id);
+    if (code) setStatus(`Új csoportkód: ${code}`, '#10b981');
+  });
 
-    const { data, error } = await client
-      .from('groups_code')
-      .select('email')
-      .ilike('group_code', code)
-      .maybeSingle();
-
-    if (error) {
-      console.error('Hiba az e-mail lekérésekor (groups_code):', error);
-      return;
+  // Kilépés
+  get('leave-group-btn')?.addEventListener('click', async () => {
+    if (!confirm('Biztosan kilépsz a csoportból?')) return;
+    try {
+      await leaveGroup();
+      location.reload();
+    } catch (err) {
+      setStatus(err.message, '#ef4444');
     }
+  });
 
-    if (data && data.email) {
-      localStorage.setItem('goats_user_email', data.email);
-      
-      const profileElem = document.getElementById('profile-display-email');
-      const groupElem = document.getElementById('group-email-display');
-
-      if (profileElem) profileElem.textContent = data.email;
-      if (groupElem) groupElem.textContent = data.email;
-    }
-  } catch (err) {
-    console.error('Lekérdezési hiba:', err);
-  }
+  // Csoport törlése (admin) – a csoport nevét kell begépelni
+  get('delete-group-btn')?.addEventListener('click', async () => {
+    const { group } = getState();
+    const typed = prompt(
+      `A csoport és MINDEN adata (tartozások, tervek, események...) véglegesen törlődik.\n\nA megerősítéshez írd be a csoport nevét: ${group.group_name}`
+    );
+    if (typed === null) return;
+    if (typed.trim() !== group.group_name) return setStatus('A név nem egyezik, a csoport nem lett törölve.', '#ef4444');
+    const ok = await deleteCurrentGroup(group.id);
+    if (ok) location.reload();
+  });
 }
