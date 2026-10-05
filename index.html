@@ -17,12 +17,6 @@
     <script defer src="js/pages/index.js"></script>
     <script defer src="js/utils/galeria.js"></script>
     <script defer src="js/components/naptar.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function () {
-            emailjs.init("2wdZeM2a3phUPdOaT");
-        })();
-    </script>
 </head>
 
 <body>
@@ -35,6 +29,7 @@
                 A legegyszerűbb alkalmazás közös tartozások, tervek és ital ranglisták kezelésére baráti társaságoknak.
             </p>
         </header>
+
         <section id="pwa-install-card" class="install-card">
             <div class="install-content">
                 <div class="install-icon">📲</div>
@@ -52,6 +47,7 @@
                 </button>
             </div>
         </section>
+
         <section class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">💸</div>
@@ -81,12 +77,61 @@
         </section>
     </div>
 
+    <!-- FELUGRÓ BELÉPÉSI MODAL (A jobb felső Belépés gomb nyitja) -->
+    <div id="auth-modal" class="sm-overlay" style="display: none;">
+        <div class="sm-card" style="max-width: 420px; text-align: center; padding: 25px;">
+            <div class="sm-header" style="justify-content: space-between; display: flex; align-items: center; margin-bottom: 15px;">
+                <h3 id="title">Belépés & Csoportkezelés</h3>
+                <button id="close-auth-modal" class="sm-close-btn" style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            
+            <!-- 1. Google Bejelentkezés -->
+            <div style="margin-bottom: 15px;">
+                <button id="google-login-btn" class="gomb-uj-ital" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: #ffffff; color: #333; font-weight: bold; padding: 12px; border-radius: 8px; border: none; cursor: pointer;">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" style="width:20px; height:20px;">
+                    Bejelentkezés Google-fiókkal
+                </button>
+            </div>
+
+            <div style="margin: 15px 0; color: #aaa; font-size: 0.85rem;">--- HA MÁR BE VAGY LÉPVE ---</div>
+
+            <!-- 2. Csatlakozás meglévőhöz -->
+            <div id="sign-in-code-section" style="margin-bottom: 20px;">
+                <div class="floating-group" style="margin-bottom: 8px;">
+                    <input type="text" id="auth-group-code-input" class="floating-input" placeholder=" " />
+                    <label class="floating-label">Meglévő csoportkód</label>
+                </div>
+                <button id="auth-submit-btn" class="gomb-uj-ital" style="width: 100%; padding: 10px;">Csatlakozás Csoporthoz</button>
+            </div>
+
+            <div style="margin: 15px 0; color: #aaa; font-size: 0.85rem;">vagy hozz létre egy újat:</div>
+
+            <!-- 3. Új csoport létrehozása -->
+            <div id="create-group-section">
+                <div class="floating-group" style="margin-bottom: 8px;">
+                    <input type="text" id="new-group-name-input" class="floating-input" placeholder=" " />
+                    <label class="floating-label">Új csoport neve (pl. "Buli Csapat")</label>
+                </div>
+                <button id="create-group-btn" class="gomb-uj-ital" style="width: 100%; padding: 10px; background: #10b981;">➕ Új Csoport Létrehozása</button>
+            </div>
+
+            <div style="margin-top: 15px; font-size: 0.85rem;">
+                <label style="cursor: pointer;">
+                    <input type="checkbox" id="accept-tos-checkbox">
+                    Elfogadom a <a href="#" id="open-tos-modal" style="color: #3b82f6; text-decoration: underline;">Használati Feltételeket</a>
+                </label>
+            </div>
+
+            <div id="auth-status" style="margin-top: 12px; font-size: 0.9rem; font-weight: bold;"></div>
+        </div>
+    </div>
+
     <div id="bejelentkezett-nezet" class="hatter">
 
         <div class="videok" id="youtube-doboz">
             <i class="fa-solid fa-caret-left nyil video-nyil"></i>
             <iframe width="600" height="600" src="https://www.youtube.com/embed/qGmIoFmBnKs?autoplay=1&mute=1&rel=0"
-                frameborder="0"
+                title="Goats YouTube videó" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen></iframe>
             <i class="fa-solid fa-caret-right nyil video-nyil"></i>
@@ -124,7 +169,7 @@
 
         <!-- Új Esemény Modal -->
         <div id="esemeny-modal" class="sm-overlay">
-            <div id="teszt" class="sm-card">
+            <div class="sm-card">
                 <div class="sm-header">
                     <h3>Esemény hozzáadása</h3>
                     <button id="close-esemeny-modal" class="sm-close-btn">&times;</button>
@@ -150,7 +195,6 @@
                 </div>
                 <div id="napi-esemenyek-lista"
                     style="display: flex; flex-direction: column; gap: 8px; margin: 15px 0; max-height: 300px; overflow-y: auto;">
-                    <!-- JavaScript ide tölti be a napi eseményeket -->
                 </div>
                 <button id="napi-uj-esemeny-btn" class="sm-btn sm-btn-save">Új esemény ezen a napon</button>
             </div>

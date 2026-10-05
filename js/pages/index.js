@@ -1,42 +1,65 @@
-document.addEventListener('DOMContentLoaded', () => {
-    frissitsNezetet();
-    ellenorizVideokLathatosagát();
+document.addEventListener('DOMContentLoaded', async () => {
+    await frissitsNezetet();
     kezelPWATelepitest();
 });
 
-function frissitsNezetet() {
-    const isLogged = !!localStorage.getItem('goats_group_code');
-
+async function frissitsNezetet() {
+    const client = typeof _supabase !== 'undefined' ? _supabase : (window._supabase || window.supabase || window.supabaseClient);
+    
     const kijelentkezettDiv = document.getElementById('kijelentkezett-nezet');
     const bejelentkezettDiv = document.getElementById('bejelentkezett-nezet');
 
-    if (isLogged) {
-        if (kijelentkezettDiv) {
-            kijelentkezettDiv.classList.add('hidden');
-            kijelentkezettDiv.style.display = 'none';
-        }
-        if (bejelentkezettDiv) {
-            bejelentkezettDiv.classList.remove('hidden');
-            bejelentkezettDiv.style.display = 'grid';
+    if (!client) return;
+
+    // 1. Munkamenet lekérése
+    const { data: { session } } = await client.auth.getSession();
+
+    if (session && session.user) {
+        // 2. Felhasználói profil és csoporttagság lekérése
+        const { data: profile } = await client
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .maybeSingle();
+
+        const { data: memberData } = await client
+            .from('group_members')
+            .select('group_id, group_role, groups(group_code, group_name, enabled_pages)')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+
+        if (memberData && memberData.groups) {
+            // Elmentjük a felületnek szükséges adatokat
+            const group = memberData.groups;
+            localStorage.setItem('goats_group_code', group.group_code);
+            localStorage.setItem('goats_group_role', memberData.group_role); // 'group_admin' vagy 'member'
+            if (profile) localStorage.setItem('goats_user_role', profile.system_role); // 'superadmin' vagy 'user'
+
+            if (kijelentkezettDiv) kijelentkezettDiv.style.display = 'none';
+            if (bejelentkezettDiv) bejelentkezettDiv.style.display = 'grid';
+
+            ellenorizVideokLathatosagát(group.group_code);
+        } else {
+            // Be van lépve Google-lal, de még nincsen csoportja
+            if (kijelentkezettDiv) kijelentkezettDiv.style.display = 'flex';
+            if (bejelentkezettDiv) bejelentkezettDiv.style.display = 'none';
+
+            const authStatus = document.getElementById('auth-status');
+            if (authStatus) {
+                authStatus.textContent = 'Be vagy lépve! Csatlakozz egy meglévő csoporthoz vagy hozz létre egy újat.';
+                authStatus.style.color = '#10b981';
+            }
         }
     } else {
-        if (kijelentkezettDiv) {
-            kijelentkezettDiv.classList.remove('hidden');
-            kijelentkezettDiv.style.display = 'flex';
-        }
-        if (bejelentkezettDiv) {
-            bejelentkezettDiv.classList.add('hidden');
-            bejelentkezettDiv.style.display = 'none';
-        }
+        localStorage.clear();
+        if (kijelentkezettDiv) kijelentkezettDiv.style.display = 'flex';
+        if (bejelentkezettDiv) bejelentkezettDiv.style.display = 'none';
     }
 }
 
-function ellenorizVideokLathatosagát() {
-    const groupCode = localStorage.getItem('goats_group_code');
+function ellenorizVideokLathatosagát(groupCode) {
     const youtubeDoboz = document.getElementById('youtube-doboz');
-
     if (youtubeDoboz) {
-        // Csak akkor jelenik meg, ha a csoportkód pontosan 'duckies'
         if (groupCode && groupCode.toLowerCase() === 'duckies') {
             youtubeDoboz.style.display = 'flex';
         } else {
@@ -45,55 +68,39 @@ function ellenorizVideokLathatosagát() {
     }
 }
 
-// PWA Telepítési logika
+// PWA Kezelés
 let deferredPrompt;
-
 function kezelPWATelepitest() {
     const installBtn = document.getElementById('pwa-install-btn');
     const installCard = document.getElementById('pwa-install-card');
     const iosNotice = document.getElementById('ios-notice');
 
-    // 1. Ha már appként van megnyitva (standalone mód), elrejtjük a kártyát
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
         if (installCard) installCard.style.display = 'none';
     }
 
-    // 2. iOS felismerés
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
     if (isIOS) {
         if (installBtn) installBtn.style.display = 'none';
         if (iosNotice) iosNotice.classList.remove('hidden');
     }
 
-    // 3. Android / Chrome prompt elkapása
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-
-        if (installBtn) {
-            installBtn.style.display = 'inline-flex';
-        }
+        if (installBtn) installBtn.style.display = 'inline-flex';
     });
 
-    // 4. Kattintás a Telepítés gombra
     if (installBtn) {
         installBtn.addEventListener('click', async () => {
             if (!deferredPrompt) return;
-
             deferredPrompt.prompt();
-
             const { outcome } = await deferredPrompt.userChoice;
-            console.log(`Telepítési döntés: ${outcome}`);
-
             deferredPrompt = null;
-            if (outcome === 'accepted' && installCard) {
-                installCard.style.display = 'none';
-            }
+            if (outcome === 'accepted' && installCard) installCard.style.display = 'none';
         });
     }
 
-    // 5. Ha sikeresen telepítette
     window.addEventListener('appinstalled', () => {
         if (installCard) installCard.style.display = 'none';
         deferredPrompt = null;
