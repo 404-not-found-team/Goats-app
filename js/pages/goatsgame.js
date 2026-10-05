@@ -1,29 +1,17 @@
 let jatekosok = [];
 let osszPontok = [];
 
-window.onload = function () {
+window.onload = async function () {
+    if (window.goatsAuth) await window.goatsAuth.ready;
     initGoatsGame();
 };
 
 async function initGoatsGame() {
-    const groupCode = localStorage.getItem('goats_group_code');
-
-    if (typeof _supabase !== 'undefined' && groupCode) {
-        const { data } = await _supabase
-            .from('groups')
-            .select('members')
-            .eq('group_code', groupCode)
-            .single();
-
-        if (data && data.members && data.members.length > 0) {
-            jatekosok = data.members;
-            localStorage.setItem('goats_group_members', JSON.stringify(jatekosok));
-        } else {
-            jatekosok = JSON.parse(localStorage.getItem('goats_group_members') || '[]');
-        }
-    } else {
-        jatekosok = JSON.parse(localStorage.getItem('goats_group_members') || '[]');
-    }
+    // A tagok forrása az auth-service élő állapota (RPC-ből töltve), nem a nyers localStorage.
+    const allapot = window.goatsAuth ? window.goatsAuth.getState() : null;
+    jatekosok = allapot?.group
+        ? allapot.members.map(m => m.display_name)
+        : JSON.parse(localStorage.getItem('goats_group_members') || '[]');
 
     osszPontok = new Array(jatekosok.length).fill(0);
     renderTabellaHeaders();

@@ -19,8 +19,12 @@ const ENGEDELYEZETT_TIPUSOK = [
 let kepekLista = []; // { name: 'fajlnev.jpg', url: 'https://...' } elemeket tárol
 let currentIndex = 0;
 
+function aktualisGroupCode() {
+    return window.goatsAuth?.getState()?.group?.group_code || localStorage.getItem('goats_group_code');
+}
+
 async function betoltKepek() {
-    const groupCode = localStorage.getItem('goats_group_code');
+    const groupCode = aktualisGroupCode();
 
     if (!groupCode) {
         kepekLista = [];
@@ -64,7 +68,7 @@ async function betoltKepek() {
 }
 
 function frissitGaleria() {
-    const groupCode = localStorage.getItem('goats_group_code');
+    const groupCode = aktualisGroupCode();
     if (!groupCode) return;
 
     const elemBal = document.getElementById("kepBal");
@@ -166,7 +170,7 @@ function nyisdMegFajlValasztot() {
 
 // KÉP TÖRLESE SUPABASE STORAGE-BÓL
 async function torolAktualisKep() {
-    const groupCode = localStorage.getItem('goats_group_code');
+    const groupCode = aktualisGroupCode();
     if (!groupCode || kepekLista.length === 0) return;
 
     const torlendoKep = kepekLista[currentIndex];
@@ -199,7 +203,7 @@ async function torolAktualisKep() {
 
 // FELTÖLTÉS MEGSZORÍTÁSOKKAL ÉS EGYEDI NÉVVEL
 async function feltoltKepek(event) {
-    const groupCode = localStorage.getItem('goats_group_code');
+    const groupCode = aktualisGroupCode();
     if (!groupCode) {
         alert('Előbb lépj be egy csoportba a beállításoknál!');
         return;
@@ -312,7 +316,7 @@ async function feltoltKepek(event) {
 }
 
 function frissitsKezdolapElrendezes() {
-    const currentGroup = localStorage.getItem('goats_group_code');
+    const currentGroup = aktualisGroupCode();
     if (!currentGroup) return;
 
     const ytDoboz = document.getElementById('youtube-doboz');
@@ -324,7 +328,8 @@ function frissitsKezdolapElrendezes() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+    if (window.goatsAuth) await window.goatsAuth.ready;
     betoltKepek();
     frissitsKezdolapElrendezes();
 

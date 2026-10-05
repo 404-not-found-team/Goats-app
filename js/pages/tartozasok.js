@@ -1,7 +1,21 @@
-window.onload = function () {
+window.onload = async function () {
+    if (window.goatsAuth) await window.goatsAuth.ready;
     initMembersAndContainers();
     loadTartozasok();
 };
+
+// A csoportkód/taglista forrása az élő auth-állapot; localStorage csak akkor,
+// ha az auth-service valamiért még nem futott le (sosem kéne előfordulnia).
+function aktualisGroupCode() {
+    return window.goatsAuth?.getState()?.group?.group_code || localStorage.getItem('goats_group_code');
+}
+
+function aktualisTagnevek() {
+    const allapot = window.goatsAuth?.getState();
+    return allapot?.group
+        ? allapot.members.map(m => m.display_name)
+        : JSON.parse(localStorage.getItem('goats_group_members') || '[]');
+}
 
 function getNakNek(name) {
     if (!name) return '';
@@ -109,21 +123,7 @@ function updateDropdownLabel() {
 }
 
 async function initMembersAndContainers() {
-    const groupCode = localStorage.getItem('goats_group_code');
-    let members = [];
-
-    const { data } = await _supabase
-        .from('groups')
-        .select('members')
-        .eq('group_code', groupCode)
-        .single();
-
-    if (data && data.members && data.members.length > 0) {
-        members = data.members;
-        localStorage.setItem('goats_group_members', JSON.stringify(members));
-    } else {
-        members = JSON.parse(localStorage.getItem('goats_group_members') || '[]');
-    }
+    const members = aktualisTagnevek();
 
     const kinekContent = document.getElementById('kinekDropdownContent');
     const dropdownContent = document.getElementById('dropdownContent');
@@ -185,7 +185,7 @@ async function initMembersAndContainers() {
 }
 
 async function loadTartozasok() {
-    const groupCode = localStorage.getItem('goats_group_code');
+    const groupCode = aktualisGroupCode();
 
     const { data, error } = await _supabase
         .from('tartozasok')
@@ -198,7 +198,7 @@ async function loadTartozasok() {
         return;
     }
 
-    const members = JSON.parse(localStorage.getItem('goats_group_members') || '[]');
+    const members = aktualisTagnevek();
 
     members.forEach(member => {
         const targetDiv = document.querySelector(`[data-member-name="${CSS.escape(member)}"]`);
@@ -263,7 +263,7 @@ async function loadTartozasok() {
 }
 
 async function deleteTartozas(id) {
-    const groupCode = localStorage.getItem('goats_group_code');
+    const groupCode = aktualisGroupCode();
     const { error } = await _supabase
         .from('tartozasok')
         .delete()
@@ -279,7 +279,7 @@ async function deleteTartozas(id) {
 }
 
 async function addTartozas() {
-    const groupCode = localStorage.getItem('goats_group_code');
+    const groupCode = aktualisGroupCode();
     const miert = document.getElementById('miertInput').value.trim();
     const mennyiert = document.getElementById('mennyiertInput').value.trim();
     const kinek = selectedKinek;
