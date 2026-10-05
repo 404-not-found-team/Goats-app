@@ -52,6 +52,25 @@ alter table public.groups add column if not exists created_by uuid references au
 alter table public.groups add column if not exists filter_settings jsonb;
 create unique index if not exists groups_group_code_lower_uidx on public.groups (lower(group_code));
 
+-- A group_members tábla nálad már létezett, de más alakban (saját "id" surrogate PK,
+-- nullable group_id/user_id, nincs idegen kulcs) - feltehetően egy korábbi, ehhez a
+-- migrációhoz kapcsolódó előkészítésből. Mivel egyetlen RPC sem támaszkodik az "id"
+-- oszlopra, és üres a tábla, a legtisztább, ha itt lecseréljük a tervezett (group_id,
+-- user_id) összetett kulcsú verzióra. Adatvesztés ellen védve: csak akkor dobja el,
+-- ha tényleg nincs benne sor; ha van, szól, és érintetlenül hagyja (ekkor kézzel kell
+-- eldönteni, mi legyen - ne fuss neki újra automatikusan).
+do $$
+begin
+  if to_regclass('public.group_members') is not null then
+    if (select count(*) from public.group_members) = 0 then
+      drop table public.group_members;
+    else
+      raise notice 'public.group_members nem üres (% sor) - NEM nyúltam hozzá, kézi egyeztetés kell!',
+        (select count(*) from public.group_members);
+    end if;
+  end if;
+end $$;
+
 create table if not exists public.group_members (
   group_id uuid not null references public.groups(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete cascade,
