@@ -7,7 +7,7 @@
 --
 -- FELTÉTELEZÉSEK (ha eltér, szólj és igazítom):
 --   * groups.id és group_members.group_id típusa: uuid
---   * groups.enabled_pages típusa: text[]
+--   * groups.enabled_pages típusa: jsonb (tömb, pl. ["index","tartozasok"])
 --   * a csoportok adatai a többi táblában `group_code` (text) oszlop alapján kötődnek
 --   * a csoporttagság szerepe: 'admin' vagy 'member'
 --   * egy felhasználó egyszerre egy csoport tagja
@@ -42,7 +42,7 @@ create table if not exists public.groups (
   id uuid primary key default gen_random_uuid(),
   group_code text not null,
   group_name text not null,
-  enabled_pages text[],
+  enabled_pages jsonb,
   created_by uuid references auth.users(id) on delete set null,
   created_at timestamptz not null default now()
 );
@@ -493,7 +493,8 @@ create function public.set_enabled_pages(group_id_input uuid, pages text[])
 returns void language plpgsql security definer set search_path = public as $$
 begin
   if not public.is_superadmin() then raise exception 'Ehhez nincs jogosultságod.'; end if;
-  update public.groups set enabled_pages = pages where id = group_id_input;
+  -- az enabled_pages oszlop jsonb, a text[] paramétert explicit jsonb tömbbé kell alakítani
+  update public.groups set enabled_pages = to_jsonb(pages) where id = group_id_input;
 end $$;
 
 create function public.delete_my_account()
