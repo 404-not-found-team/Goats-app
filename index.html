@@ -12,19 +12,15 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 
-    <!--<script type="module" src="js/main.js"></script>-->
+    <script type="module" src="js/main.js"></script>
 
-    <!--<script defer src="js/pages/index.js"></script>-->
+    <script defer src="js/pages/index.js"></script>
     <script defer src="js/utils/galeria.js"></script>
     <script defer src="js/components/naptar.js"></script>
 </head>
 
 <body>
-    <ul id="navBar" class="hidden"></ul>
-    <div style="justify-content: center; align-items: center;">
-        <div class="feature-icon">🥺</div>
-        <h1>Frissítés alatt</h1>
-    </div>
+    <ul id="navBar"></ul>
     <div id="kijelentkezett-nezet" class="hidden index-container">
         <header class="hero-section">
             <h1>Üdvözöl a Goats App-ban! 🐐</h1>
@@ -79,62 +75,6 @@
                 <p>Közös naptár, galéria és folyamatosan érkező új funkciók!</p>
             </div>
         </section>
-    </div>
-
-    <!-- FELUGRÓ BELÉPÉSI MODAL (A jobb felső Belépés gomb nyitja) -->
-    <div id="auth-modal" class="sm-overlay" style="display: none;">
-        <div class="sm-card" style="max-width: 420px; text-align: center; padding: 25px;">
-            <div class="sm-header"
-                style="justify-content: space-between; display: flex; align-items: center; margin-bottom: 15px;">
-                <h3 id="title">Belépés & Csoportkezelés</h3>
-                <button id="close-auth-modal" class="sm-close-btn"
-                    style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
-            </div>
-
-            <!-- 1. Google Bejelentkezés -->
-            <div style="margin-bottom: 15px;">
-                <button id="google-login-btn" class="gomb-uj-ital"
-                    style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: #ffffff; color: #333; font-weight: bold; padding: 12px; border-radius: 8px; border: none; cursor: pointer;">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo"
-                        style="width:20px; height:20px;">
-                    Bejelentkezés Google-fiókkal
-                </button>
-            </div>
-
-            <div style="margin: 15px 0; color: #aaa; font-size: 0.85rem;">--- HA MÁR BE VAGY LÉPVE ---</div>
-
-            <!-- 2. Csatlakozás meglévőhöz -->
-            <div id="sign-in-code-section" style="margin-bottom: 20px;">
-                <div class="floating-group" style="margin-bottom: 8px;">
-                    <input type="text" id="auth-group-code-input" class="floating-input" placeholder=" " />
-                    <label class="floating-label">Meglévő csoportkód</label>
-                </div>
-                <button id="auth-submit-btn" class="gomb-uj-ital" style="width: 100%; padding: 10px;">Csatlakozás
-                    Csoporthoz</button>
-            </div>
-
-            <div style="margin: 15px 0; color: #aaa; font-size: 0.85rem;">vagy hozz létre egy újat:</div>
-
-            <!-- 3. Új csoport létrehozása -->
-            <div id="create-group-section">
-                <div class="floating-group" style="margin-bottom: 8px;">
-                    <input type="text" id="new-group-name-input" class="floating-input" placeholder=" " />
-                    <label class="floating-label">Új csoport neve (pl. "Buli Csapat")</label>
-                </div>
-                <button id="create-group-btn" class="gomb-uj-ital"
-                    style="width: 100%; padding: 10px; background: #10b981;">➕ Új Csoport Létrehozása</button>
-            </div>
-
-            <div style="margin-top: 15px; font-size: 0.85rem;">
-                <label style="cursor: pointer;">
-                    <input type="checkbox" id="accept-tos-checkbox">
-                    Elfogadom a <a href="#" id="open-tos-modal"
-                        style="color: #3b82f6; text-decoration: underline;">Használati Feltételeket</a>
-                </label>
-            </div>
-
-            <div id="auth-status" style="margin-top: 12px; font-size: 0.9rem; font-weight: bold;"></div>
-        </div>
     </div>
 
     <div id="bejelentkezett-nezet" class="hatter hidden">
