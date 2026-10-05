@@ -564,20 +564,6 @@ async function mentUjItal() {
             return;
         }
 
-        try {
-            if (typeof emailjs !== 'undefined') {
-                const groupCode = localStorage.getItem('goats_group_code') || 'Nincs megadva';
-                await emailjs.send("service_rz0ofi1", "template_74yde49", {
-                    ital_nev: nev,
-                    kategoria: kategoria,
-                    szazalek: szazalek || 'Nincs megadva',
-                    group_code: groupCode
-                });
-            }
-        } catch (emailErr) {
-            console.warn('Email küldési hiba:', emailErr);
-        }
-
         const beszurtItal = data && data[0] ? data[0] : ujItalAdat;
         addItalKartyaToUI(beszurtItal);
 
