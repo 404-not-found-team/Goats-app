@@ -1,130 +1,390 @@
+.goatsgame-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+    padding: 0 10px;
+}
+
 .tabella {
-    width: 900px;
-    height: 400px;
     display: flex;
     justify-content: space-between; 
-    align-items: center;
+    align-items: stretch;
     background-color: var(--card-bg);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    border-radius: 15px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    border-radius: 16px;
     padding: 20px;
+    border: 1px solid var(--border-color);
     box-sizing: border-box;
+    width: 100%;
+    gap: 15px;
 }
 
 .bal-oldal {
     display: flex;
     gap: 15px;
-    align-items: center;
+    align-items: flex-start;
+    flex: 1;
+    overflow: hidden;
 }
 
-/* Dinamikusan beszúródó oszlopok konténere */
-#pontJatekOszlopok {
+.tablazat-pontok {
     display: flex;
     gap: 10px;
     border: none;
-    width: auto;
-    max-width: 450px;
+    width: 100%;
     overflow-x: auto;
     height: 350px;
+    padding-bottom: 8px;
+    box-sizing: border-box;
+}
+
+.tablazat-pontok::-webkit-scrollbar {
+    height: 6px;
+}
+
+.tablazat-pontok::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
 }
 
 .tablazat {
     border: 1px solid var(--border-color);
-    width: 100px;
-    min-width: 100px;
+    width: 110px;
+    min-width: 110px;
     height: 350px;
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: flex-start;
     box-sizing: border-box;
-    border-radius: 8px;
+    border-radius: 10px;
     color: var(--text-primary);
     background-color: var(--inner-bg);
-}
-
-.fejlec {
-    font-weight: bold;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-    padding: 4px 2px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9rem;
-}
-
-.fejlec span {
-    white-space: nowrap;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
-    text-overflow: ellipsis;
+}
+
+.tablazat.nevek, 
+.tablazat.ossz {
+    min-width: 120px;
+}
+
+.tablazat:hover {
+    border-color: var(--accent-color);
+}
+
+.tablazat div,
+.tablazat .fejlec {
+    padding: 10px 6px;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.95rem;
+}
+
+.tablazat .fejlec {
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.15);
+    justify-content: space-between;
 }
 
 .torles-gomb {
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: transform 0.1s ease;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    transition: transform 0.15s ease, color 0.15s ease;
 }
 
 .torles-gomb:hover {
     transform: scale(1.2);
+    color: #ef4444;
 }
 
 .jatekok {
-    margin: auto;
-    width: 500px;
-    height: 700px;
+    margin: 0 auto;
+    width: 100%;
+    min-height: 300px;
+    max-height: 600px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    gap: 10px;
-    align-items: center;
+    gap: 15px;
     background-color: var(--card-bg);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    border-radius: 15px;
-    grid-column: 2 / 4;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
     padding: 20px;
+    box-sizing: border-box;
 }
 
-.szabalyok {
-    width: 900px;
-    height: 300px;
+.jatek-fejlec {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    background-color: var(--card-bg);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    border-radius: 15px;
-    grid-column: 1 / 2;
-    grid-row: 2 / 4;
-    padding: 20px;
+    width: 100%;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.jatek-fejlec h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.3rem;
+}
+
+.jatek-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    overflow-y: auto;
+}
+
+.jatek-lista::-webkit-scrollbar {
+    width: 6px;
+}
+
+.jatek-lista::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
 }
 
 .jatek-elem {
     display: flex;
-    width: 450px;
-    height: 35px;
-    padding: 5px 10px;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 16px;
     border: 1px solid var(--border-color);   
     justify-content: space-between;
     align-items: center;
     box-sizing: border-box;
-    border-radius: 6px;
+    border-radius: 10px;
     color: var(--text-primary);
     background-color: var(--inner-bg);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.jatek-elem:hover {
+    border-color: var(--accent-color);
+}
+
+.jatek-elem span {
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 .teljesit-gomb {
+    margin-right: 10px;
     cursor: pointer;
-    padding: 4px 10px;
-    border-radius: 4px;
+    padding: 8px 16px;
+    border-radius: 6px;
     border: none;
-    background-color: #4CAF50;
-    color: white;
+    background-color: #22c55e;
+    color: #ffffff;
     font-weight: bold;
+    font-size: 0.85rem;
+    transition: opacity 0.2s ease, transform 0.1s ease, background-color 0.2s ease;
+}
+
+.teljesit-gomb:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: scale(1.03);
 }
 
 .teljesit-gomb:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background-color: #888;
+    background-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+.gomb-uj-jatek {
+    background-color: var(--accent-color);
+    color: #ffffff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.gomb-uj-jatek:hover {
+    background-color: var(--accent-hover);
+    transform: scale(1.02);
+}
+
+.gomb-uj-jatek:active {
+    transform: scale(0.98);
+}
+
+.goatsgame-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+}
+
+.goatsgame-modal-card {
+    width: 380px;
+    max-width: 92vw;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    padding: 24px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.goatsgame-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+.goatsgame-modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+}
+
+.goatsgame-modal-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+    transition: color 0.2s ease;
+}
+
+.goatsgame-modal-close:hover {
+    color: var(--text-primary);
+}
+
+.goatsgame-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.goats-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--inner-bg);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.goats-input:focus {
+    border-color: var(--accent-color);
+}
+
+.goats-color-input {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--inner-bg);
+    cursor: pointer;
+    padding: 2px 4px;
+    box-sizing: border-box;
+}
+
+.goatsgame-modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    border-top: 1px solid var(--border-color);
+    padding-top: 15px;
+}
+
+.goatsgame-btn-cancel {
+    background: var(--inner-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.goatsgame-btn-cancel:hover {
+    background: var(--card-bg);
+}
+
+.goatsgame-btn-save {
+    background: var(--accent-color);
+    color: #ffffff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.goatsgame-btn-save:hover {
+    background: var(--accent-hover);
+    transform: scale(1.02);
+}
+
+@media screen and (max-width: 600px) {
+    .tabella {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .bal-oldal {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .tablazat-pontok {
+        max-width: 100%;
+    }
+
+    .jatekok {
+        padding: 15px;
+    }
+
+    .jatek-elem {
+        max-width: 100%;
+    }
 }

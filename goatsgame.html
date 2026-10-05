@@ -24,48 +24,54 @@
 
 <body>
     <ul id="navBar"></ul>
-
-    <div class="hatter">
+    <div class="goatsgame-container">
         <div class="tabella">
             <div class="bal-oldal">
-                <div class="tablazat nevek">
-                    <div>Név</div>
-                    <div class="nev">Ákos</div>
-                    <div class="nev">Feri</div>
-                    <div class="nev">Zalán</div>
-                    <div class="nev">Zoli</div>
+                <div class="tablazat nevek" id="nevekOszlop">
+                    <div class="fejlec">Név</div>
                 </div>
 
-                <div class="tablazat pont" id="pontJatekOszlopok">
-
+                <div class="tablazat-pontok" id="pontJatekOszlopok">
                 </div>
             </div>
 
-            <div class="tablazat ossz">
-                <div>Összpont</div>
-                <div class="pontOssz">0</div>
-                <div class="pontOssz">0</div>
-                <div class="pontOssz">0</div>
-                <div class="pontOssz">0</div>
+            <div class="tablazat ossz" id="osszOszlop">
+                <div class="fejlec">Összpont</div>
             </div>
         </div>
 
-        <div class="szabalyok">
+        <div class="jatekok" id="jatekokKontener">
+            <div class="jatek-fejlec">
+                <h2>Játékok</h2>
+                <button class="gomb-uj-jatek" onclick="openUjJatekModal()">+ Új játék felvétele</button>
+            </div>
 
-        </div>
-
-        <div class="jatekok">
-            <div class="jatek-elem">
-                <span>SÖR PONG</span>
-                <button class="teljesit-gomb" onclick="ujJatekHozzaadasa('Beer pong', '#fb000080')">Kész</button>
+            <div class="jatek-lista" id="jatekLista">
             </div>
         </div>
-
     </div>
 
-
+    <div id="ujJatekModal" class="goatsgame-modal-overlay">
+        <div class="goatsgame-modal-card">
+            <div class="goatsgame-modal-header">
+                <h3>Új játék hozzáadása</h3>
+                <button class="goatsgame-modal-close" onclick="closeUjJatekModal()">&times;</button>
+            </div>
+            <div class="goatsgame-modal-body">
+                <div class="input-group">
+                    <label for="ujJatekNevInput">Játék neve:</label>
+                    <input type="text" id="ujJatekNevInput" class="goats-input" placeholder="Pl.: Csocsó, Darts..." />
+                </div>
+                <div class="input-group">
+                    <label for="ujJatekSzinInput">Oszlop színe:</label>
+                    <input type="color" id="ujJatekSzinInput" class="goats-color-input" value="#4CAF50" />
+                </div>
+            </div>
+            <div class="goatsgame-modal-footer">
+                <button class="goatsgame-btn-cancel" onclick="closeUjJatekModal()">Mégse</button>
+                <button class="goatsgame-btn-save" onclick="mentUjJatek()">Hozzáadás</button>
+            </div>
+        </div>
     </div>
-
 </body>
-
 </html>
