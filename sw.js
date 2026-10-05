@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v3'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v2';
+const CACHE_NEV = 'goats-v3';
 
 self.addEventListener('install', (event) => {
     // Azonnal aktiváljuk az új Service Workert, ne várakozzon
@@ -18,13 +18,23 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
-    // A Supabase (auth, adatbázis, storage) kéréseket SOHA ne cache-eljük:
-    // a válaszuk felhasználónként/pillanatonként eltér, egy elcache-elt session
-    // vagy csoportadat komoly hibákhoz vezetne.
-    const supabaseKeres = url.hostname.endsWith('.supabase.co');
-    if (supabaseKeres || event.request.method !== 'GET') {
+    // Az auth/adatbázis (REST/RPC) hívásokat SOHA ne cache-eljük: a válaszuk
+    // felhasználónként/pillanatonként eltér, egy elcache-elt session vagy
+    // csoportadat komoly hibákhoz vezetne.
+    const supabaseApiKeres = url.hostname.endsWith('.supabase.co')
+        && (url.pathname.startsWith('/auth/') || url.pathname.startsWith('/rest/'));
+    if (supabaseApiKeres || event.request.method !== 'GET') {
         event.respondWith(fetch(event.request, { cache: 'no-cache' }));
         return;
+    }
+
+    // A Supabase Storage fájlok (galéria képek) egyedi, soha nem újrahasznált
+    // fájlnévvel kerülnek fel - ezeket a böngésző normál HTTP cache-ére bízzuk
+    // (nem avatkozunk bele), különben minden oldalbetöltéskor újra letöltődnének
+    // a Supabase CDN-jéről (ez hajtotta fel a "Cached Egress" kvótát).
+    const supabaseStorageKeres = url.hostname.endsWith('.supabase.co') && url.pathname.startsWith('/storage/');
+    if (supabaseStorageKeres) {
+        return; // nincs event.respondWith hívás -> a böngésző a sima, SW nélküli utat követi
     }
 
     // Egyéb (saját domain + CDN) kérések: hálózat elsőként, offline/hibás
