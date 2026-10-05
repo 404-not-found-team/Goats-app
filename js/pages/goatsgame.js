@@ -117,6 +117,8 @@ function renderJatekKartya(jatekNev, szin) {
     const jatekElem = document.createElement('div');
     jatekElem.className = 'jatek-elem';
 
+    jatekElem.aktivOszlopok = [];
+
     const span = document.createElement('span');
     span.textContent = jatekNev.toUpperCase();
 
@@ -126,15 +128,18 @@ function renderJatekKartya(jatekNev, szin) {
     const pontGomb = document.createElement('button');
     pontGomb.className = 'teljesit-gomb';
     pontGomb.textContent = 'Kész';
-    pontGomb.addEventListener('click', function () {
-        ujJatekHozzaadasa(jatekNev, szin);
+    pontGomb.addEventListener('click', function (e) {
+        ujJatekHozzaadasa(jatekNev, szin, e.currentTarget, jatekElem);
     });
 
     const torlesGomb = document.createElement('span');
     torlesGomb.className = 'torles-gomb';
     torlesGomb.textContent = '🗑️';
     torlesGomb.addEventListener('click', function () {
-        if (confirm('Biztosan törölni szeretnéd ezt a játékot a listából?')) {
+        if (confirm('Biztosan törölni szeretnéd ezt a játékot és a hozzá tartozó pontokat a tabellából?')) {
+            [...jatekElem.aktivOszlopok].forEach(obj => {
+                jatekTorlese(obj.oszlopElem, obj.pontok, pontGomb, jatekElem);
+            });
             jatekElem.remove();
         }
     });
@@ -148,7 +153,7 @@ function renderJatekKartya(jatekNev, szin) {
     jatekLista.appendChild(jatekElem);
 }
 
-function ujJatekHozzaadasa(jatekNev, szin) {
+function ujJatekHozzaadasa(jatekNev, szin, gombElem, jatekElem) {
     if (jatekosok.length === 0) {
         alert('Nincsenek betöltve játékosok!');
         return;
@@ -171,11 +176,16 @@ function ujJatekHozzaadasa(jatekNev, szin) {
         pontokTombja.push(pont);
     }
 
-    renderOszlop(jatekNev, szin, pontokTombja);
+    renderOszlop(jatekNev, szin, pontokTombja, gombElem, jatekElem);
     frissitOsszpontszamot(pontokTombja, 'hozzaadas');
+
+    if (gombElem) {
+        gombElem.disabled = true;
+        gombElem.innerText = "Kész ✓";
+    }
 }
 
-function renderOszlop(jatekNev, szin, pontokTombja) {
+function renderOszlop(jatekNev, szin, pontokTombja, gombElem, jatekElem) {
     const kontener = document.getElementById('pontJatekOszlopok');
     const ujOszlop = document.createElement('div');
     ujOszlop.className = 'tablazat szines-jatek-oszlop';
@@ -192,17 +202,30 @@ function renderOszlop(jatekNev, szin, pontokTombja) {
         ${pontSorok}
     `;
 
+    if (jatekElem && jatekElem.aktivOszlopok) {
+        jatekElem.aktivOszlopok.push({ oszlopElem: ujOszlop, pontok: pontokTombja });
+    }
+
     const deleteBtn = ujOszlop.querySelector('.torles-gomb');
     deleteBtn.addEventListener('click', () => {
-        jatekTorlese(ujOszlop, pontokTombja);
+        jatekTorlese(ujOszlop, pontokTombja, gombElem, jatekElem);
     });
 
     kontener.appendChild(ujOszlop);
 }
 
-function jatekTorlese(oszlopElem, pontokTombja) {
+function jatekTorlese(oszlopElem, pontokTombja, gombElem, jatekElem) {
     oszlopElem.remove();
     frissitOsszpontszamot(pontokTombja, 'kivonas');
+
+    if (jatekElem && jatekElem.aktivOszlopok) {
+        jatekElem.aktivOszlopok = jatekElem.aktivOszlopok.filter(item => item.oszlopElem !== oszlopElem);
+    }
+
+    if (gombElem) {
+        gombElem.disabled = false;
+        gombElem.innerText = "Kész";
+    }
 }
 
 function frissitOsszpontszamot(pontokTombja, muvelet) {
