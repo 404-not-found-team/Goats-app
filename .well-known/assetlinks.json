@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "hu.goatsapp.app",
+      "sha256_cert_fingerprints": [
+        "IDE_JÖN_A_SHA256_UJJLENYOMAT_VESSZŐVEL_ELVÁLASZTVA_TÖBB_IS_LEHET"
+      ]
+    }
+  }
+]
