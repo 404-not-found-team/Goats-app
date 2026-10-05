@@ -14,8 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initNaptar();
 });
 
+function aktualisGroupCode() {
+    return window.goatsAuth?.getState()?.group?.group_code || localStorage.getItem('goats_group_code');
+}
+
 async function initNaptar() {
     setupGombok();
+    if (window.goatsAuth) await window.goatsAuth.ready;
     await betoltEsemenyek();
     kirajzolNaptar();
 }
@@ -78,7 +83,7 @@ function setupGombok() {
 }
 
 async function betoltEsemenyek() {
-    const groupCode = localStorage.getItem('goats_group_code');
+    const groupCode = aktualisGroupCode();
     if (!groupCode) return;
 
     const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
@@ -268,7 +273,7 @@ async function modositEsemeny() {
 }
 
 async function mentUjEsemeny() {
-    const groupCode = localStorage.getItem('goats_group_code');
+    const groupCode = aktualisGroupCode();
     const cimInput = document.getElementById('esemeny-cim-input');
     const datumInput = document.getElementById('esemeny-datum-input');
 
