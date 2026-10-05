@@ -52,6 +52,21 @@ alter table public.groups add column if not exists created_by uuid references au
 alter table public.groups add column if not exists filter_settings jsonb;
 create unique index if not exists groups_group_code_lower_uidx on public.groups (lower(group_code));
 
+-- Egy idegen kulcs (lásd lent, tartozasok/tervek/ital_ranglista) csak sima UNIQUE
+-- megkötésre hivatkozhat, a fenti kis-nagybetű-független INDEX nem elég - nálad ez
+-- már megvan (groups_group_code_key), vadonatúj projekten viszont nem lenne, ezért
+-- itt pótoljuk, ha hiányzik.
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.groups'::regclass and contype = 'u'
+      and pg_get_constraintdef(oid) = 'UNIQUE (group_code)'
+  ) then
+    alter table public.groups add constraint groups_group_code_key unique (group_code);
+  end if;
+end $$;
+
 -- A group_members tábla nálad már létezett, de más alakban (saját "id" surrogate PK,
 -- nullable group_id/user_id, nincs idegen kulcs) - feltehetően egy korábbi, ehhez a
 -- migrációhoz kapcsolódó előkészítésből. Mivel egyetlen RPC sem támaszkodik az "id"
@@ -77,12 +92,65 @@ end $$;
 
 create table if not exists public.group_members (
   group_id uuid not null references public.groups(id) on delete cascade,
-  user_id uuid not null references auth.users(id) on delete cascade,
-  group_role text not null default 'member',
+  -- profiles(id)-re hivatkozik (nem közvetlenül auth.users(id)-re): ez volt a nálad már
+  -- meglévő tervezet is, és mivel a handle_new_user trigger minden auth.users sorhoz
+  -- szinkronban profiles sort is létrehoz, a kettő gyakorlatilag ekvivalens.
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  group_role text not null default 'member' check (group_role in ('admin', 'member')),
   joined_at timestamptz not null default now(),
   primary key (group_id, user_id)
 );
 create unique index if not exists group_members_one_group_per_user on public.group_members (user_id);
+
+-- ---------------------------------------------------------------------
+-- 1b) A régi "groups" tábla (most groups_origin néven) valódi csoportjainak
+--     átmásolása az új groups táblába - UGYANAZZAL a group_code-dal, hogy a
+--     tartozasok/tervek/ital_ranglista meglévő sorai érvényesek maradjanak.
+--     A group_members NEM töltődik fel automatikusan (a "members" tömb csak
+--     neveket tartalmaz, nem auth user id-kat) - a valódi tagoknak be kell
+--     jelentkezniük Google-lal és a MEGLÉVŐ csoportkóddal csatlakozniuk
+--     (join_group_with_code), utána kézzel admin-ná kell tenni az elsőt
+--     (lásd a fájl végén lévő kézi lépéseket).
+-- ---------------------------------------------------------------------
+do $$
+begin
+  if to_regclass('public.groups_origin') is not null then
+    insert into public.groups (group_code, group_name, enabled_pages, filter_settings, created_at)
+    select go.group_code, coalesce(go.group_name, go.group_code), go.enabled_pages, go.filter_settings,
+           coalesce(go.updated_at, now())
+    from public.groups_origin go
+    on conflict (group_code) do nothing;
+  end if;
+end $$;
+
+-- A tartozasok/tervek/ital_ranglista eddig a groups_origin táblára hivatkoztak idegen
+-- kulccsal - ezt most átirányítjuk az új groups táblára (ugyanarra a group_code
+-- oszlopra), hogy az új rendszerben létrehozott csoportok is tudjanak bennük sort
+-- rögzíteni. A meglévő adatok nem sérülnek, mert a group_code értékek változatlanok,
+-- és minden meglévő group_code most már az új groups táblában is megvan (lásd fent).
+do $$
+declare
+  r record;
+  fk record;
+begin
+  for r in select unnest(array['tartozasok', 'tervek', 'ital_ranglista']) as tbl
+  loop
+    if to_regclass('public.' || r.tbl) is null then continue; end if;
+    for fk in
+      select con.conname
+      from pg_constraint con
+      join pg_class cl on cl.oid = con.conrelid
+      where cl.relname = r.tbl and cl.relnamespace = 'public'::regnamespace
+        and con.contype = 'f' and pg_get_constraintdef(con.oid) like '%groups_origin%'
+    loop
+      execute format('alter table public.%I drop constraint %I', r.tbl, fk.conname);
+    end loop;
+    execute format(
+      'alter table public.%I add constraint %I_group_code_fkey '
+      'foreign key (group_code) references public.groups(group_code) '
+      'on update cascade on delete cascade', r.tbl, r.tbl);
+  end loop;
+end $$;
 
 -- Csatlakozási próbálkozások naplója (brute force ellen). Policy nélkül: kliens nem éri el.
 create table if not exists public.join_attempts (
@@ -237,6 +305,7 @@ end $$;
 revoke execute on function public._lock_group_table(regclass) from public, anon, authenticated;
 
 do $$
+declare pol record;
 begin
   if to_regclass('public.esemenyek') is not null then
     perform public._lock_group_table('public.esemenyek');
@@ -245,7 +314,15 @@ begin
   -- Fejlesztői changelog: bejelentkezett felhasználók olvashatják, írni senki nem
   if to_regclass('public.dev_changelog') is not null then
     execute 'alter table public.dev_changelog enable row level security';
-    execute 'drop policy if exists changelog_read on public.dev_changelog';
+    -- Nálad már volt rajta egy másik nevű ("Mindenki olvashatja a changelogot") policy,
+    -- ami anon szerepkörnek is engedte az olvasást - az összeset eldobjuk a névtől
+    -- függetlenül, hogy ne maradjon kettő egymás mellett, és a jogosultság tényleg
+    -- authenticated-re szűküljön.
+    for pol in select policyname from pg_policies
+               where schemaname = 'public' and tablename = 'dev_changelog'
+    loop
+      execute format('drop policy %I on public.dev_changelog', pol.policyname);
+    end loop;
     execute 'create policy changelog_read on public.dev_changelog for select to authenticated using (true)';
     execute 'revoke all on public.dev_changelog from anon, authenticated';
     execute 'grant select on public.dev_changelog to authenticated';
@@ -440,6 +517,15 @@ begin
     if tries > 10 then raise exception 'Nem sikerült kódot generálni, próbáld újra.'; end if;
   end loop;
 
+  -- FONTOS a sorrend: a groups.group_code-ot ELŐBB írjuk át, különben a tartozasok/
+  -- tervek/ital_ranglista táblák (amik idegen kulccsal groups(group_code)-ra mutatnak,
+  -- ON UPDATE CASCADE-del) alatta elszállnának, ha a lenti ciklus előbb próbálná őket
+  -- átírni egy olyan kódra, ami a groups táblában még nem létezik. A CASCADE miatt
+  -- ezeket a táblákat már a groups-update automatikusan átírja - a ciklus innentől csak
+  -- a kulcs nélküli táblákra (pl. esemenyek) fejt ki tényleges hatást, a már átírt
+  -- (FK-s) táblákon egyszerűen nem talál `old_code`-dal egyező sort, nem csinál semmit.
+  update public.groups set group_code = new_code where id = group_id_input;
+
   for r in
     select c.table_name
     from information_schema.columns c
@@ -452,7 +538,6 @@ begin
       using new_code, old_code;
   end loop;
 
-  update public.groups set group_code = new_code where id = group_id_input;
   return new_code;
 end $$;
 
@@ -570,17 +655,29 @@ commit;
 -- Superadmin kijelölése:
 --   update public.profiles set system_role = 'superadmin' where id = '<A-TE-USER-UUID>';
 --
--- Régi csoportok (amiknek még nincs admin tagjuk): az első belépő tag legyen admin:
+-- A "duckies" és "gót" csoportok (groups_origin-ből átmásolva) most már léteznek az
+-- új groups táblában, de group_members-ük üres - a valódi tagoknak be kell
+-- jelentkezniük Google-lal, és a MEGLÉVŐ csoportkóddal csatlakozniuk
+-- (Profil -> Csatlakozás / új csoport -> a régi kód beírása). Amint az első tag
+-- csatlakozott egy csoporthoz, tedd admin-ná:
 --   update public.group_members set group_role = 'admin'
 --   where user_id = '<UUID>' and group_id = (select id from public.groups where lower(group_code) = 'duckies');
+--   -- ugyanígy a 'gót' csoportra is, a megfelelő UUID-val
 --
--- Többi, group_code oszlopot használó tábla zárolása (táblánként):
+-- FONTOS, MIELŐTT bárki csatlakozna: zárold a group_code-os adattáblákat, mert ezek
+-- jelenleg TELJESEN NYITOTTAK (bárki, bejelentkezés nélkül is olvashatja/írhatja/
+-- törölheti az összes csoport összes adatát - "Anonim elérés" / "using (true)" policy-k):
 --   select public._lock_group_table('public.tartozasok');
 --   select public._lock_group_table('public.tervek');
---   ...
+--   select public._lock_group_table('public.ital_ranglista');
 -- Ha egy tábla kijelentkezve is olvasható kell legyen (pl. publikus ranglista),
 -- arra NE futtasd, hanem külön policy kell hozzá.
 --
 -- A régi groups_code tábla törlése, ha már nincs rá szükség (e-mail címeket tartalmaz):
 --   drop table public.groups_code;
+--
+-- A groups_origin tábla (a régi "groups") egyelőre NE töröld - ez a tartalék, ha
+-- valami félresikerülne az átállásban. Csak azután töröld, ha már minden csoport
+-- tagjai átköltöztek az új group_members-be, és mindent leteszteltél:
+--   drop table public.groups_origin;
 -- ---------------------------------------------------------------------
