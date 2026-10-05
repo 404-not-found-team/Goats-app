@@ -20,6 +20,7 @@ begin;
 -- ---------------------------------------------------------------------
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
+  email text,
   display_name text,
   system_role text not null default 'user',
   tos_version text,
@@ -28,6 +29,9 @@ create table if not exists public.profiles (
 );
 alter table public.profiles add column if not exists tos_version text;
 alter table public.profiles add column if not exists tos_accepted_at timestamptz;
+-- A te meglévő profiles táblád email oszlopa NOT NULL volt, ezt itt nem kényszerítjük rá
+-- újonnan létrehozott táblán (hogy ne legyen kötelező, ha valaha email nélkül kéne beszúrni),
+-- de a lenti INSERT-ek minden esetben kitöltik auth.users.email-ből.
 
 alter table public.profiles drop constraint if exists profiles_display_name_len;
 alter table public.profiles
@@ -73,9 +77,10 @@ revoke all on public.join_attempts from anon, authenticated;
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  insert into public.profiles (id, display_name)
+  insert into public.profiles (id, email, display_name)
   values (
     new.id,
+    new.email,
     left(coalesce(
       nullif(trim(new.raw_user_meta_data->>'full_name'), ''),
       nullif(trim(new.raw_user_meta_data->>'name'), ''),
@@ -92,8 +97,8 @@ create trigger on_auth_user_created
   for each row execute function public.handle_new_user();
 
 -- Meglévő felhasználókhoz hiányzó profilok pótlása
-insert into public.profiles (id, display_name)
-select u.id, left(coalesce(nullif(trim(u.raw_user_meta_data->>'full_name'), ''), split_part(u.email, '@', 1)), 40)
+insert into public.profiles (id, email, display_name)
+select u.id, u.email, left(coalesce(nullif(trim(u.raw_user_meta_data->>'full_name'), ''), split_part(u.email, '@', 1)), 40)
 from auth.users u
 on conflict (id) do nothing;
 
