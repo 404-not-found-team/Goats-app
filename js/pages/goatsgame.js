@@ -179,7 +179,7 @@ function renderOszlop(jatekNev, szin, pontokTombja) {
     const kontener = document.getElementById('pontJatekOszlopok');
     const ujOszlop = document.createElement('div');
     ujOszlop.className = 'tablazat szines-jatek-oszlop';
-    
+
     ujOszlop.style.backgroundColor = hexToRgba(szin, 0.75);
 
     const pontSorok = pontokTombja.map(p => `<div>${p}</div>`).join('');

@@ -11,7 +11,7 @@
 
 .tabella {
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: stretch;
     background-color: var(--card-bg);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
@@ -68,7 +68,7 @@
     overflow: hidden;
 }
 
-.tablazat.nevek, 
+.tablazat.nevek,
 .tablazat.ossz {
     min-width: 120px;
 }
@@ -159,7 +159,7 @@
     width: 100%;
     min-height: 48px;
     padding: 10px 16px;
-    border: 1px solid var(--border-color);   
+    border: 1px solid var(--border-color);
     justify-content: space-between;
     align-items: center;
     box-sizing: border-box;
@@ -372,12 +372,33 @@
     }
 
     .bal-oldal {
+        display: contents;
+    }
+
+    .tablazat {
+        height: auto;
+        min-height: fit-content;
+    }
+
+    .tablazat.nevek {
         width: 100%;
-        justify-content: space-between;
+        min-width: 100%;
     }
 
     .tablazat-pontok {
+        width: 100%;
         max-width: 100%;
+        overflow-x: auto;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        height: auto;
+        align-items: flex-start;
+    }
+
+    .tablazat.ossz {
+        width: 100%;
+        min-width: 100%;
     }
 
     .jatekok {
@@ -387,4 +408,5 @@
     .jatek-elem {
         max-width: 100%;
     }
+
 }
