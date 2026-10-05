@@ -1,70 +1,110 @@
+import { signInWithGoogle, joinGroup, createGroup, getState, onChange } from '../../auth-service.js';
+
 export function initAuthModal() {
   const get = id => document.getElementById(id);
 
-  const googleLoginBtn = get('google-login-btn');
-  const authStatus = get('auth-status');
-  const authGroupCodeInput = get('auth-group-code-input');
-  const newGroupNameInput = get('new-group-name-input');
-  const authSubmitBtn = get('auth-submit-btn');
-  const createGroupBtn = get('create-group-btn');
-  const acceptTosCheckbox = get('accept-tos-checkbox');
-
-  const setStatus = (msg, color) => {
-    if (authStatus) {
-      authStatus.textContent = msg;
-      authStatus.style.color = color;
-    }
+  const el = {
+    title: get('auth-title'),
+    stepLogin: get('auth-step-login'),
+    stepGroup: get('auth-step-group'),
+    userLine: get('auth-user-line'),
+    status: get('auth-status'),
+    googleBtn: get('google-login-btn'),
+    tos: get('accept-tos-checkbox'),
+    codeInput: get('auth-group-code-input'),
+    joinBtn: get('auth-submit-btn'),
+    nameInput: get('new-group-name-input'),
+    createBtn: get('create-group-btn'),
+    tosModal: get('tos-modal'),
   };
 
-  const getClient = () => typeof _supabase !== 'undefined' ? _supabase : (window._supabase || window.supabase || window.supabaseClient);
+  const COLORS = { error: '#ef4444', info: '#3b82f6', ok: '#10b981' };
+  const setStatus = (msg, kind) => {
+    if (!el.status) return;
+    el.status.textContent = msg || '';
+    el.status.style.color = COLORS[kind] || '';
+  };
+  const setBusy = (btn, on) => { if (btn) btn.disabled = on; };
 
-  // 1. Google Bejelentkezés
-  googleLoginBtn?.addEventListener('click', async () => {
-    if (acceptTosCheckbox && !acceptTosCheckbox.checked) {
-      return setStatus('A belépéshez el kell fogadnod a Használati Feltételeket!', '#ef4444');
+  // A felület a valós állapotot tükrözi: nincs session -> belépés, van session -> csoport lépés
+  function renderStep() {
+    const { user } = getState();
+    if (el.stepLogin) el.stepLogin.style.display = user ? 'none' : 'block';
+    if (el.stepGroup) el.stepGroup.style.display = user ? 'block' : 'none';
+    if (el.title) el.title.textContent = user ? 'Csoport' : 'Belépés';
+    if (el.userLine) el.userLine.textContent = user ? `Bejelentkezve: ${user.email}` : '';
+  }
+  renderStep();
+  onChange(renderStep);
+
+  // ---- Használati feltételek ablak ----
+  document.addEventListener('click', (e) => {
+    if (e.target.closest?.('#open-tos-modal')) {
+      e.preventDefault();
+      if (el.tosModal) el.tosModal.style.display = 'flex';
     }
-
-    const client = getClient();
-    if (!client) return setStatus('Adatbázis kapcsolódási hiba!', '#ef4444');
-
-    setStatus('Átirányítás a Google bejelentkezéshez...', '#3b82f6');
-    await client.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.origin + window.location.pathname }
-    });
+  });
+  get('close-tos-modal')?.addEventListener('click', () => {
+    if (el.tosModal) el.tosModal.style.display = 'none';
+  });
+  get('accept-tos-modal-btn')?.addEventListener('click', () => {
+    if (el.tos) el.tos.checked = true;
+    if (el.tosModal) el.tosModal.style.display = 'none';
   });
 
-  // 2. Csatlakozás meglévő csoporthoz
-  authSubmitBtn?.addEventListener('click', async () => {
-    const client = getClient();
-    const groupCode = (authGroupCodeInput?.value || '').trim();
-    if (!groupCode) return setStatus('Kérjük, írd be a csoportkódot!', '#ef4444');
-
-    setStatus('Csatlakozás...', '#3b82f6');
+  // ---- 1. Google bejelentkezés ----
+  el.googleBtn?.addEventListener('click', async () => {
+    if (el.tos && !el.tos.checked) {
+      return setStatus('A belépéshez el kell fogadnod a Használati Feltételeket!', 'error');
+    }
+    setBusy(el.googleBtn, true);
+    setStatus('Átirányítás a Google bejelentkezéshez...', 'info');
     try {
-      const { error } = await client.rpc('join_group_with_code', { code_input: groupCode });
-      if (error) throw error;
-      setStatus('Sikeresen csatlakoztál!', '#10b981');
-      setTimeout(() => location.reload(), 500);
+      await signInWithGoogle(); // az oldal elnavigál, ha sikeres
     } catch (err) {
-      setStatus(err.message || 'Érvénytelen csoportkód!', '#ef4444');
+      setStatus(err.message || 'Nem sikerült elindítani a bejelentkezést.', 'error');
+      setBusy(el.googleBtn, false);
     }
   });
 
-  // 3. Új csoport létrehozása
-  createGroupBtn?.addEventListener('click', async () => {
-    const client = getClient();
-    const groupName = (newGroupNameInput?.value || '').trim();
-    if (!groupName) return setStatus('Kérjük, adj meg egy csoportnevet!', '#ef4444');
+  // ---- 2. Csatlakozás meglévő csoporthoz ----
+  async function doJoin() {
+    const code = (el.codeInput?.value || '').trim();
+    if (!code) return setStatus('Írd be a csoportkódot!', 'error');
 
-    setStatus('Új csoport létrehozása...', '#3b82f6');
+    setBusy(el.joinBtn, true);
+    setStatus('Csatlakozás...', 'info');
     try {
-      const { data, error } = await client.rpc('create_new_group', { group_name_input: groupName });
-      if (error) throw error;
-      setStatus(`Csoport létrehozva! Kódod: ${data.join_code}`, '#10b981');
-      setTimeout(() => location.reload(), 800);
+      await joinGroup(code);
+      setStatus('Sikeresen csatlakoztál!', 'ok');
+      setTimeout(() => location.reload(), 600);
     } catch (err) {
-      setStatus(err.message || 'Hiba a csoport létrehozásakor!', '#ef4444');
+      setStatus(err.message || 'Érvénytelen csoportkód!', 'error');
+      setBusy(el.joinBtn, false);
     }
-  });
+  }
+  el.joinBtn?.addEventListener('click', doJoin);
+  el.codeInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doJoin(); });
+
+  // ---- 3. Új csoport létrehozása ----
+  async function doCreate() {
+    const name = (el.nameInput?.value || '').trim();
+    if (name.length < 2 || name.length > 40) {
+      return setStatus('A csoport neve 2–40 karakter legyen!', 'error');
+    }
+
+    setBusy(el.createBtn, true);
+    setStatus('Új csoport létrehozása...', 'info');
+    try {
+      const data = await createGroup(name);
+      try { await navigator.clipboard?.writeText(data.join_code); } catch { /* nem kritikus */ }
+      setStatus(`Csoport létrehozva! Csoportkódod: ${data.join_code} (a vágólapra másoltuk, később a Csoport adatoknál is megtalálod)`, 'ok');
+      setTimeout(() => location.reload(), 3500);
+    } catch (err) {
+      setStatus(err.message || 'Hiba a csoport létrehozásakor!', 'error');
+      setBusy(el.createBtn, false);
+    }
+  }
+  el.createBtn?.addEventListener('click', doCreate);
+  el.nameInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doCreate(); });
 }

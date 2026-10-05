@@ -1,9 +1,14 @@
-window.onload = function () {
+window.onload = async function () {
+    if (window.goatsAuth) await window.goatsAuth.ready;
     loadTervek();
 };
 
+function aktualisGroupCode() {
+    return window.goatsAuth?.getState()?.group?.group_code || localStorage.getItem('goats_group_code');
+}
+
 async function loadTervek() {
-    const groupCode = localStorage.getItem('goats_group_code');
+    const groupCode = aktualisGroupCode();
 
     const { data, error } = await _supabase
         .from('tervek')
@@ -24,7 +29,7 @@ async function loadTervek() {
 }
 
 async function add() {
-    const groupCode = localStorage.getItem('goats_group_code');
+    const groupCode = aktualisGroupCode();
     const inputField = document.getElementById('tervInput');
     const text = inputField.value.trim();
 
@@ -50,8 +55,8 @@ async function add() {
 
 // Terv törlése Supabase-ből
 async function deleteTerv(id) {
-    const groupCode = localStorage.getItem('goats_group_code');
-    
+    const groupCode = aktualisGroupCode();
+
     const { error } = await _supabase
         .from('tervek')
         .delete()
@@ -94,7 +99,7 @@ function renderTervItem(id, text, isCompleted) {
     });
 
     checkbox.addEventListener('change', async function () {
-        const groupCode = localStorage.getItem('goats_group_code');
+        const groupCode = aktualisGroupCode();
         const checked = checkbox.checked;
 
         const { error } = await _supabase

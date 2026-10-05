@@ -3,8 +3,13 @@ let aktivItalAdat = null;
 let aktualisMod = 'arany';
 let kizartMarkakTomb = [];
 
+function aktualisGroupCode() {
+    return window.goatsAuth?.getState()?.group?.group_code || localStorage.getItem('goats_group_code');
+}
+
 async function inicializalas() {
-    const groupCode = localStorage.getItem('goats_group_code');
+    if (window.goatsAuth) await window.goatsAuth.ready;
+    const groupCode = aktualisGroupCode();
     const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
 
     // Supabase rendezés név (A-Z) szerint
@@ -88,7 +93,7 @@ function rendezKartyakatContainerben(container) {
 async function kategoriatValaszt(kategoriaNev) {
     if (!aktivElemId) return;
 
-    const groupCode = localStorage.getItem('goats_group_code');
+    const groupCode = aktualisGroupCode();
     const kartyaElem = document.getElementById(aktivElemId);
     let celZona;
 
@@ -336,24 +341,28 @@ async function frissitsSzureseketEsMents() {
 
     frissitsSzamlalokat();
 
-    const groupCode = localStorage.getItem('goats_group_code');
-    if (groupCode) {
+    const groupId = window.goatsAuth?.getState()?.group?.id;
+    if (groupId && window.goatsAuth) {
         const szuroAdat = {
             kikapcsolt_kategoriak: kikapcsoltKategoriak,
             kizart_szoveg_tomb: kizartMarkakTomb
         };
 
-        const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
-        await client.from('groups').upsert({
-            group_code: groupCode,
-            filter_settings: szuroAdat,
-            updated_at: new Date()
-        }, { onConflict: 'group_code' });
+        try {
+            // A groups tábla kliens felől csak olvasható (RLS), az írás RPC-n megy.
+            await window.goatsAuth.callRpc('save_filter_settings', {
+                group_id_input: groupId,
+                settings: szuroAdat
+            });
+        } catch (err) {
+            console.error('Hiba a szűrő beállítások mentésekor:', err);
+        }
     }
 }
 
 async function betoltSzuroBeallitasokat() {
-    const groupCode = localStorage.getItem('goats_group_code');
+    if (window.goatsAuth) await window.goatsAuth.ready;
+    const groupCode = aktualisGroupCode();
     if (!groupCode) return;
 
     try {
@@ -564,20 +573,6 @@ async function mentUjItal() {
             return;
         }
 
-        try {
-            if (typeof emailjs !== 'undefined') {
-                const groupCode = localStorage.getItem('goats_group_code') || 'Nincs megadva';
-                await emailjs.send("service_rz0ofi1", "template_74yde49", {
-                    ital_nev: nev,
-                    kategoria: kategoria,
-                    szazalek: szazalek || 'Nincs megadva',
-                    group_code: groupCode
-                });
-            }
-        } catch (emailErr) {
-            console.warn('Email küldési hiba:', emailErr);
-        }
-
         const beszurtItal = data && data[0] ? data[0] : ujItalAdat;
         addItalKartyaToUI(beszurtItal);
 
@@ -597,6 +592,8 @@ function addItalKartyaToUI(ital) {
     kartya.dataset.kategoria = ital.kategoria;
 
     const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.decoding = 'async';
     img.src = ital.kep_url || ital.kep || 'https://bvositlxbeqztnhdembx.supabase.co/storage/v1/object/public/italok/feltoltesAlatt.png';
     img.alt = ital.nev;
 

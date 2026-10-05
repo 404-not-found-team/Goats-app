@@ -1,66 +1,42 @@
+// Kezdőlap. Nem modul: a window.goatsAuth-ot használja (az auth-service.js állítja be).
 document.addEventListener('DOMContentLoaded', async () => {
     await frissitsNezetet();
     kezelPWATelepitest();
 });
 
 async function frissitsNezetet() {
-    const client = typeof _supabase !== 'undefined' ? _supabase : (window._supabase || window.supabase || window.supabaseClient);
-    
     const kijelentkezettDiv = document.getElementById('kijelentkezett-nezet');
     const bejelentkezettDiv = document.getElementById('bejelentkezett-nezet');
 
-    if (!client) return;
+    if (!window.goatsAuth) return;
+    await window.goatsAuth.ready;
+    const { user, group } = window.goatsAuth.getState();
 
-    const { data: { session } } = await client.auth.getSession();
+    if (user && group) {
+        if (kijelentkezettDiv) kijelentkezettDiv.classList.add('hidden');
+        if (bejelentkezettDiv) bejelentkezettDiv.classList.remove('hidden');
+        ellenorizVideokLathatosagat(group.group_code);
+        return;
+    }
 
-    if (session && session.user) {
-        const { data: profile } = await client
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .maybeSingle();
+    if (kijelentkezettDiv) kijelentkezettDiv.classList.remove('hidden');
+    if (bejelentkezettDiv) bejelentkezettDiv.classList.add('hidden');
 
-        const { data: memberData } = await client
-            .from('group_members')
-            .select('group_id, group_role, groups(group_code, group_name, enabled_pages)')
-            .eq('user_id', session.user.id)
-            .maybeSingle();
-
-        if (memberData && memberData.groups) {
-            const group = memberData.groups;
-            localStorage.setItem('goats_group_code', group.group_code);
-            localStorage.setItem('goats_group_role', memberData.group_role);
-            if (profile) localStorage.setItem('goats_user_role', profile.system_role);
-
-            if (kijelentkezettDiv) kijelentkezettDiv.style.display = 'none';
-            if (bejelentkezettDiv) bejelentkezettDiv.style.display = 'grid';
-
-            ellenorizVideokLathatosagát(group.group_code);
-        } else {
-            if (kijelentkezettDiv) kijelentkezettDiv.style.display = 'flex';
-            if (bejelentkezettDiv) bejelentkezettDiv.style.display = 'none';
-
-            const authStatus = document.getElementById('auth-status');
-            if (authStatus) {
-                authStatus.textContent = 'Be vagy lépve! Csatlakozz egy meglévő csoporthoz vagy hozz létre egy újat.';
-                authStatus.style.color = '#10b981';
-            }
+    // Be van lépve, de még nincs csoportja
+    if (user && !group) {
+        const authStatus = document.getElementById('auth-status');
+        if (authStatus) {
+            authStatus.textContent = 'Be vagy lépve! Csatlakozz egy meglévő csoporthoz vagy hozz létre egy újat.';
+            authStatus.style.color = '#10b981';
         }
-    } else {
-        localStorage.clear();
-        if (kijelentkezettDiv) kijelentkezettDiv.style.display = 'flex';
-        if (bejelentkezettDiv) bejelentkezettDiv.style.display = 'none';
     }
 }
 
-function ellenorizVideokLathatosagát(groupCode) {
+function ellenorizVideokLathatosagat(groupCode) {
     const youtubeDoboz = document.getElementById('youtube-doboz');
     if (youtubeDoboz) {
-        if (groupCode && groupCode.toLowerCase() === 'duckies') {
-            youtubeDoboz.style.display = 'flex';
-        } else {
-            youtubeDoboz.style.display = 'none';
-        }
+        const lathato = !!groupCode && groupCode.toLowerCase() === 'duckies';
+        youtubeDoboz.style.display = lathato ? 'flex' : 'none';
     }
 }
 

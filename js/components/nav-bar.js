@@ -1,3 +1,5 @@
+import { ready, getState } from '../auth-service.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
     const htmlNevek = ["index", "tartozasok", "ranglista", "tervek", "goatsgame"];
     const oldalNevek = ["Kezdőlap", "Tartozások", "Ranglista", "Tervek", "Goats Game"];
@@ -5,36 +7,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // A 3 kiemelt oldal, ami mindig látszik az alsó sávban mobilon
     const FO_OLDALAK = ["index", "tartozasok", "ranglista"];
-
     const publicPages = ["index", "ranglista"];
 
-    const groupCode = localStorage.getItem('goats_group_code');
-    const isLogged = !!groupCode;
     const navBar = document.getElementById("navBar");
-
     if (!navBar) return;
 
+    // Megvárjuk a session + csoport betöltését (nincs külön lekérdezés, nincs villogás)
+    await ready;
+    const { group } = getState();
+
+    // Csoport nélkül (kijelentkezve vagy még nincs csoport) csak a publikus oldalak
     let allowedPages = publicPages;
-
-    if (isLogged) {
-        const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
-        const { data } = await client
-            .from('groups')
-            .select('enabled_pages')
-            .eq('group_code', groupCode)
-            .maybeSingle();
-
-        if (data && data.enabled_pages) {
-            allowedPages = data.enabled_pages;
-        } else {
-            allowedPages = htmlNevek; 
-        }
+    if (group) {
+        allowedPages = Array.isArray(group.enabled_pages) ? group.enabled_pages : htmlNevek;
     }
 
     const aktualisUtvonal = window.location.pathname.split('/').pop() || "index.html";
     navBar.innerHTML = '';
 
-    // Létrehozzuk a felnyíló fiókot (More Drawer) mobilon a háttérben
+    // Felnyíló fiók (More Drawer) mobilon
     let drawer = document.getElementById('nav-more-drawer');
     if (!drawer) {
         drawer = document.createElement('div');
@@ -43,17 +34,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         drawer.innerHTML = `
             <div class="drawer-header">
                 <span>További menüpontok</span>
-                <span class="drawer-close" onclick="toggleNavDrawer()">&times;</span>
+                <span class="drawer-close">&times;</span>
             </div>
             <ul id="drawer-list" class="drawer-list"></ul>
         `;
         document.body.appendChild(drawer);
+        drawer.querySelector('.drawer-close').addEventListener('click', () => window.toggleNavDrawer());
 
-        // Háttér homályosító overlay
         const overlay = document.createElement('div');
         overlay.id = 'nav-drawer-overlay';
         overlay.className = 'nav-drawer-overlay';
-        overlay.onclick = toggleNavDrawer;
+        overlay.addEventListener('click', () => window.toggleNavDrawer());
         document.body.appendChild(overlay);
     }
 
@@ -66,9 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const pageKey = htmlNevek[i];
         const celFajl = `${pageKey}.html`;
 
-        if (!allowedPages.includes(pageKey)) {
-            continue;
-        }
+        if (!allowedPages.includes(pageKey)) continue;
 
         const isMainTab = FO_OLDALAK.includes(pageKey);
 
@@ -77,62 +66,54 @@ document.addEventListener('DOMContentLoaded', async () => {
         const teljesNev = document.createElement('span');
         const emojiNev = document.createElement('span');
 
-        if (aktualisUtvonal === celFajl) {
-            oldal.className = "active";
-        }
+        if (aktualisUtvonal === celFajl) oldal.className = "active";
 
-        teljesNev.textContent = `${oldalNevek[i]}`;
+        teljesNev.textContent = oldalNevek[i];
         teljesNev.className = "teljes-szoveg";
         link.appendChild(teljesNev);
 
-        emojiNev.textContent = `${oldalEmojik[i]}`;
+        emojiNev.textContent = oldalEmojik[i];
         emojiNev.className = "rovid-szoveg";
         link.appendChild(emojiNev);
 
         link.href = celFajl;
         oldal.appendChild(link);
 
-        // Asztali nézetben vagy ha fő oldal -> bemegy a navBar-ba
         if (isMainTab) {
             navBar.appendChild(oldal);
         } else {
-            // Ha másodlagos oldal -> bemegy a mobil fiókba (és asztali nézetben is a navBarba)
+            // Másodlagos oldal: mobilon a fiókba, asztali nézetben a sávba
             vanExtraOldal = true;
             if (drawerList) drawerList.appendChild(oldal.cloneNode(true));
-            
-            // Asztali nézethez is hozzáadjuk a sima navBar-hoz:
             oldal.classList.add('desktop-only-item');
             navBar.appendChild(oldal);
         }
     }
 
-    // Mobilon hozzáadjuk a "Több ☰" gombot, ha van extra oldal
+    // Mobilon a "Több ☰" gomb, ha van extra oldal
     if (vanExtraOldal) {
         const moreLi = document.createElement('li');
         moreLi.className = 'mobile-more-btn';
         moreLi.innerHTML = `
-            <a href="#" onclick="toggleNavDrawer(); return false;">
+            <a href="#">
                 <span class="rovid-szoveg">☰</span>
                 <span class="teljes-szoveg">Több</span>
             </a>
         `;
+        moreLi.querySelector('a').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.toggleNavDrawer();
+        });
         navBar.appendChild(moreLi);
     }
 });
 
-// A nav-bar.js fájl aljára vagy a függvény definiálásához írd be:
-window.toggleNavDrawer = function() {
+window.toggleNavDrawer = function () {
     const drawer = document.getElementById('nav-more-drawer');
     const overlay = document.getElementById('nav-drawer-overlay');
     if (drawer && overlay) {
         const nyitva = drawer.classList.toggle('open');
         overlay.classList.toggle('open');
-        
-        // Elrejtjük/megjelenítjük a settings gombot a body osztályán keresztül
-        if (nyitva) {
-            document.body.classList.add('drawer-nyitva');
-        } else {
-            document.body.classList.remove('drawer-nyitva');
-        }
+        document.body.classList.toggle('drawer-nyitva', nyitva);
     }
 };
