@@ -40,7 +40,7 @@ export function initAuthModal() {
     const groupCode = (authGroupCodeInput?.value || '').trim();
     if (!groupCode) return setStatus('Kérjük, írd be a csoportkódot!', '#ef4444');
 
-    setStatus('Csatlakozás a csoporthoz...', '#3b82f6');
+    setStatus('Csatlakozás...', '#3b82f6');
     try {
       const { error } = await client.rpc('join_group_with_code', { code_input: groupCode });
       if (error) throw error;
