@@ -592,6 +592,8 @@ function addItalKartyaToUI(ital) {
     kartya.dataset.kategoria = ital.kategoria;
 
     const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.decoding = 'async';
     img.src = ital.kep_url || ital.kep || 'https://bvositlxbeqztnhdembx.supabase.co/storage/v1/object/public/italok/feltoltesAlatt.png';
     img.alt = ital.nev;
 
