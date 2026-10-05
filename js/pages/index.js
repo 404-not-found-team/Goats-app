@@ -13,14 +13,14 @@ async function frissitsNezetet() {
     const { user, group } = window.goatsAuth.getState();
 
     if (user && group) {
-        if (kijelentkezettDiv) kijelentkezettDiv.style.display = 'none';
-        if (bejelentkezettDiv) bejelentkezettDiv.style.display = 'grid';
+        if (kijelentkezettDiv) kijelentkezettDiv.classList.add('hidden');
+        if (bejelentkezettDiv) bejelentkezettDiv.classList.remove('hidden');
         ellenorizVideokLathatosagat(group.group_code);
         return;
     }
 
-    if (kijelentkezettDiv) kijelentkezettDiv.style.display = 'flex';
-    if (bejelentkezettDiv) bejelentkezettDiv.style.display = 'none';
+    if (kijelentkezettDiv) kijelentkezettDiv.classList.remove('hidden');
+    if (bejelentkezettDiv) bejelentkezettDiv.classList.add('hidden');
 
     // Be van lépve, de még nincs csoportja
     if (user && !group) {
