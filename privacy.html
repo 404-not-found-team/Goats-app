@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goats - Adatvédelmi nyilatkozat</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/main.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="js/main.js"></script>
+
+    <style>
+        .jogi-oldal {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 24px 20px 60px;
+        }
+
+        .jogi-oldal h1 {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+
+        .jogi-oldal .utolso-frissites {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+        }
+
+        .jogi-oldal .tos-modal-body {
+            font-size: 0.95rem;
+        }
+
+        .jogi-oldal .tos-modal-body h4 {
+            font-size: 1.05rem;
+            margin-top: 22px;
+        }
+
+        .jogi-oldal ul {
+            margin: 0 0 12px 0;
+            padding-left: 20px;
+        }
+
+        .jogi-oldal li {
+            margin-bottom: 6px;
+        }
+
+        .jogi-oldal a {
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+
+<body>
+    <ul id="navBar"></ul>
+
+    <div class="jogi-oldal">
+        <h1>Adatvédelmi nyilatkozat</h1>
+        <p class="utolso-frissites">Utolsó frissítés: 2026. október 5.</p>
+
+        <div class="tos-modal-body">
+            <h4>1. Kik vagyunk</h4>
+            <p>
+                A Goats App egy nem-kereskedelmi, baráti társaságoknak készült alkalmazás
+                (közös tartozások, tervek és ital-ranglisták kezelésére). Az alkalmazást
+                egyetlen magánszemély fejleszti és üzemelteti. Adatvédelemmel kapcsolatos
+                kérdés esetén a <a href="mailto:aranyzoli11@gmail.com">aranyzoli11@gmail.com</a>
+                címen érhetsz el.
+            </p>
+
+            <h4>2. Milyen adatokat kezelünk</h4>
+            <p>Bejelentkezéskor (Google-fiókkal, OAuth-on keresztül) a következő adatokat kapjuk meg és tároljuk:</p>
+            <ul>
+                <li>Google-fiókod neve és e-mail címe (ez alapján jön létre a profilod)</li>
+                <li>az általad megadható, módosítható megjelenítendő név</li>
+            </ul>
+            <p>A csoportos funkciók használatához az alábbi, Ön által létrehozott adatokat tároljuk:</p>
+            <ul>
+                <li>a csoport neve és csoportkódja, valamint a csoport tagjainak listája</li>
+                <li>a csoporton belül rögzített tartozások, tervek, naptári események és italok/ranglisták</li>
+                <li>a galériába feltöltött képek</li>
+            </ul>
+            <p>
+                Az eszközödön (localStorage) kizárólag a fenti adatok egy részének gyorsítótárazott
+                másolatát tároljuk (pl. a csoport neve, a tagok neve), hogy az oldalak gyorsabban
+                töltsenek be. Ez a gyorsítótár soha nem jogosultsági forrás: a hozzáférést minden
+                esetben a szerveroldali adatbázis dönti el a bejelentkezésed alapján, nem az, hogy mi
+                van a böngésződben eltárolva.
+            </p>
+
+            <h4>3. Hol és hogyan tároljuk az adatokat</h4>
+            <p>
+                Az adatokat a Supabase nevű, harmadik fél felhőalapú adatbázis- és
+                hitelesítés-szolgáltatón keresztül tároljuk. A bejelentkezés Google OAuth-on
+                keresztül történik - a jelszavadat sosem látjuk és nem is tároljuk. A csoportos
+                adatokhoz csak az adott csoport tagjai férhetnek hozzá, ezt adatbázis szintű
+                hozzáférés-vezérlés (Row Level Security) kényszeríti ki.
+            </p>
+
+            <h4>4. Mire használjuk az adatokat</h4>
+            <p>
+                Az adatokat kizárólag az alkalmazás funkcióinak működtetésére használjuk: a
+                bejelentkezésre, a csoportod tagjainak megjelenítésére, valamint a csoportod által
+                rögzített tartozások, tervek, események és italok megjelenítésére. Harmadik félnek
+                reklám vagy egyéb kereskedelmi célból nem adjuk tovább az adataidat.
+            </p>
+
+            <h4>5. Az adatok törlése</h4>
+            <p>
+                A fiókodat és a hozzá tartozó adatokat bármikor, véglegesen törölheted az
+                alkalmazásban: <strong>Profil &rarr; Fiók törlése</strong>. Ha a törléshez a
+                webes felületen nem férsz hozzá, kövesd a
+                <a href="fiok-torles.html">Fiók törlése</a> oldalon leírt lépéseket. A törlés
+                végleges és nem vonható vissza.
+            </p>
+
+            <h4>6. Sütik és nyomkövetés</h4>
+            <p>
+                Az alkalmazás nem használ hirdetési vagy elemző (analitikai) sütiket, és nem követi
+                nyomon a böngészési szokásaidat más oldalakon. A localStorage-ban tárolt adatok
+                kizárólag a saját funkcionalitásunkat (bejelentkezési állapot gyorsítótárazása,
+                téma-beállítás) szolgálják.
+            </p>
+
+            <h4>7. Kapcsolat</h4>
+            <p>
+                Adatvédelemmel kapcsolatos kérdés, észrevétel vagy adattörlési kérelem esetén írj a
+                <a href="mailto:aranyzoli11@gmail.com">aranyzoli11@gmail.com</a> címre.
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>
