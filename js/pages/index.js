@@ -11,11 +11,9 @@ async function frissitsNezetet() {
 
     if (!client) return;
 
-    // 1. Munkamenet lekérése
     const { data: { session } } = await client.auth.getSession();
 
     if (session && session.user) {
-        // 2. Felhasználói profil és csoporttagság lekérése
         const { data: profile } = await client
             .from('profiles')
             .select('*')
@@ -29,18 +27,16 @@ async function frissitsNezetet() {
             .maybeSingle();
 
         if (memberData && memberData.groups) {
-            // Elmentjük a felületnek szükséges adatokat
             const group = memberData.groups;
             localStorage.setItem('goats_group_code', group.group_code);
-            localStorage.setItem('goats_group_role', memberData.group_role); // 'group_admin' vagy 'member'
-            if (profile) localStorage.setItem('goats_user_role', profile.system_role); // 'superadmin' vagy 'user'
+            localStorage.setItem('goats_group_role', memberData.group_role);
+            if (profile) localStorage.setItem('goats_user_role', profile.system_role);
 
             if (kijelentkezettDiv) kijelentkezettDiv.style.display = 'none';
             if (bejelentkezettDiv) bejelentkezettDiv.style.display = 'grid';
 
             ellenorizVideokLathatosagát(group.group_code);
         } else {
-            // Be van lépve Google-lal, de még nincsen csoportja
             if (kijelentkezettDiv) kijelentkezettDiv.style.display = 'flex';
             if (bejelentkezettDiv) bejelentkezettDiv.style.display = 'none';
 
@@ -68,7 +64,6 @@ function ellenorizVideokLathatosagát(groupCode) {
     }
 }
 
-// PWA Kezelés
 let deferredPrompt;
 function kezelPWATelepitest() {
     const installBtn = document.getElementById('pwa-install-btn');
