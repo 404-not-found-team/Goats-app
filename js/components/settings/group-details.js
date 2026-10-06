@@ -1,6 +1,7 @@
 import { getState, refresh, onChange, leaveGroup } from '../../auth-service.js';
 import {
   removeMember, transferOwnership, renameGroup, regenerateGroupCode, deleteCurrentGroup,
+  updateMyDisplayName,
 } from '../../admin.js';
 
 export function initGroupDetails() {
@@ -69,8 +70,12 @@ export function initGroupDetails() {
   }
 
   function render() {
-    const { group, groupRole, user, members } = getState();
+    const { group, groupRole, user, members, displayName } = getState();
     const isAdmin = groupRole === 'admin';
+
+    // A saját név mezőt csak akkor írjuk felül, ha épp nem gépelünk bele
+    const ownName = get('own-name-input');
+    if (ownName && document.activeElement !== ownName) ownName.value = displayName || '';
 
     const noGroup = get('group-no-group');
     const content = get('group-content');
@@ -127,6 +132,19 @@ export function initGroupDetails() {
       } catch {
         setStatus('A másolás nem sikerült, jelöld ki kézzel.', '#ef4444');
       }
+    }
+  });
+
+  // Saját megjelenített név mentése (minden bejelentkezett felhasználó)
+  get('save-own-name-btn')?.addEventListener('click', async () => {
+    const btn = get('save-own-name-btn');
+    btn.disabled = true;
+    const ok = await updateMyDisplayName(get('own-name-input')?.value);
+    btn.disabled = false;
+    const status = get('own-name-status');
+    if (status) {
+      status.textContent = ok ? 'A neved elmentve.' : '';
+      status.style.color = '#10b981';
     }
   });
 

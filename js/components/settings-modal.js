@@ -5,9 +5,6 @@ import { initProfileModal } from './settings/profile-modal.js';
 import { initGroupDetails } from './settings/group-details.js';
 import { initThemePicker } from './settings/theme-picker.js';
 
-// Kompatibilitás: más fájlok innen importálhatták
-export { betoltChangelog } from './settings/changelog.js';
-
 document.addEventListener('DOMContentLoaded', async () => {
   // Megvárjuk a session betöltését, hogy a felület már a valós állapotot mutassa
   await ready;
@@ -27,7 +24,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     { btn: 'close-profile-btn', modal: 'profile-modal' },
     { btn: 'close-group-details-btn', modal: 'group-details-modal' },
     { btn: 'close-settings-btn', modal: 'settings-modal' },
-    { btn: 'close-dev-btn', modal: 'dev-modal' },
   ];
   closeBtns.forEach(({ btn, modal }) => {
     get(btn)?.addEventListener('click', () => {
