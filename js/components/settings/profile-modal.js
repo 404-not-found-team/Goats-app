@@ -1,6 +1,4 @@
-import { betoltChangelog } from './changelog.js';
 import { getState, signOut, deleteMyAccount } from '../../auth-service.js';
-import { updateMyDisplayName } from '../../admin.js';
 
 export function initProfileModal() {
   const get = id => document.getElementById(id);
@@ -8,7 +6,6 @@ export function initProfileModal() {
   const profileModal = get('profile-modal');
   const groupDetailsModal = get('group-details-modal');
   const settingsModal = get('settings-modal');
-  const devModal = get('dev-modal');
   const authModal = get('auth-modal');
 
   const setStatus = (msg, color = '') => {
@@ -19,7 +16,6 @@ export function initProfileModal() {
   function fill() {
     const s = getState();
     if (get('profile-display-name')) get('profile-display-name').textContent = s.displayName || 'Nincs név';
-    if (get('profile-name-input')) get('profile-name-input').value = s.displayName || '';
     if (get('profile-display-email')) get('profile-display-email').textContent = s.user?.email || '';
 
     // Csoportfüggő menüpontok
@@ -50,24 +46,6 @@ export function initProfileModal() {
     profileModal.style.display = 'none';
     settingsModal.style.display = 'flex';
   });
-  get('open-dev-btn')?.addEventListener('click', () => {
-    profileModal.style.display = 'none';
-    devModal.style.display = 'flex';
-    betoltChangelog();
-  });
-
-  // Becenév mentése
-  get('save-profile-name-btn')?.addEventListener('click', async () => {
-    const btn = get('save-profile-name-btn');
-    btn.disabled = true;
-    const ok = await updateMyDisplayName(get('profile-name-input')?.value);
-    btn.disabled = false;
-    if (ok) {
-      fill();
-      setStatus('A neved elmentve.', '#10b981');
-    }
-  });
-
   // Kijelentkezés
   get('logout-btn')?.addEventListener('click', async () => {
     if (!confirm('Biztosan ki szeretnél jelentkezni?')) return;

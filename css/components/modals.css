@@ -338,107 +338,6 @@
     border-color: rgba(239, 68, 68, 0.3);
 }
 
-/* Dev Log gomb + modal + changelog (main.css-ből átvéve) */
-.dev-log-btn {
-    background: #1e1e24;
-    color: #6366f1;
-    border: 1px solid #6366f1;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.dev-log-btn:hover {
-    background: #6366f1;
-    color: #ffffff;
-}
-
-.dev-modal-tartalom {
-    background-color: #18181b;
-    border: 1px solid #27272a;
-    border-radius: 16px;
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-    padding: 24px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    color: #e4e4e7;
-}
-
-.dev-modal-fejlec {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #27272a;
-    padding-bottom: 12px;
-    margin-bottom: 20px;
-}
-
-.dev-modal-fejlec h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    color: #fff;
-}
-
-.bezar-btn {
-    font-size: 24px;
-    cursor: pointer;
-    color: #a1a1aa;
-}
-
-.changelog-kartya {
-    background: #27272a;
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 16px;
-    border-left: 4px solid #6366f1;
-}
-
-.changelog-kartya.javitas {
-    border-left-color: #f59e0b;
-}
-
-.changelog-kartya.fejlesztes {
-    border-left-color: #10b981;
-}
-
-.changelog-fejlec {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.changelog-verzio {
-    background: #6366f1;
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: bold;
-}
-
-.changelog-datum {
-    font-size: 0.8rem;
-    color: #a1a1aa;
-}
-
-.changelog-cim {
-    margin: 6px 0;
-    color: #ffffff;
-    font-size: 1.05rem;
-}
-
-.changelog-leiras {
-    margin: 0;
-    color: #d4d4d8;
-    font-size: 0.9rem;
-    line-height: 1.4;
-}
-
 /* --------------------------------------------------------------------------
    A settings-templates.js által használt, de eddig stílus nélküli osztályok
    -------------------------------------------------------------------------- */
@@ -494,11 +393,6 @@
     color: #ef4444;
     background: rgba(239, 68, 68, 0.1);
     border-color: rgba(239, 68, 68, 0.3);
-}
-
-.changelog-lista {
-    display: flex;
-    flex-direction: column;
 }
 
 /* --------------------------------------------------------------------------
@@ -629,8 +523,3 @@
     margin-top: 10px;
 }
 
-/* Dev Log */
-.changelog-empty {
-    text-align: center;
-    color: var(--text-secondary);
-}
