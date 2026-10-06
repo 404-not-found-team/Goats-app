@@ -157,6 +157,13 @@ export function injectUserNavHTML(state) {
             <div class="dropdown-selected"><span id="theme-dropdown-selected-text"> Sötét</span><span class="arrow">▼</span></div>
             <div id="theme-dropdown-options" class="dropdown-options"></div>
           </div>
+
+          <!-- Superadmin: jóváhagyásra váró italok (a szerepkört az RPC ellenőrzi, nem a felület) -->
+          <div id="drink-moderation" class="moderalas-blokk" hidden>
+            <label class="sm-label">Jóváhagyásra váró italok</label>
+            <div id="pending-drinks-list" class="moderalas-lista"></div>
+            <p id="pending-drinks-status" class="sm-status sm-status-small"></p>
+          </div>
         </div>
       </div>
     </div>

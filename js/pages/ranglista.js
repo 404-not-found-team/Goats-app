@@ -658,6 +658,14 @@ function addItalKartyaToUI(ital) {
     kartya.appendChild(kep);
     kartya.appendChild(felirat);
 
+    // A saját, még jóváhagyatlan italon jelvény (mást a szerver nem is ad vissza jóváhagyatlanul)
+    const sajatJavaslat = !ital.jovahagyva && !!ital.javasolta_id
+        && ital.javasolta_id === window.goatsAuth?.getState()?.user?.id;
+    if (sajatJavaslat) {
+        kartya.classList.add('sajat-javaslat');
+        kartya.appendChild(ujElem('span', 'jovahagyasra-var', 'Jóváhagyásra vár'));
+    }
+
     kartya.addEventListener('click', () => {
         aktivElemId = kartya.id;
         aktivItalAdat = ital;
