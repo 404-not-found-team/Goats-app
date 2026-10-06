@@ -1,8 +1,9 @@
 import { callRpc, isSuperadmin, onChange } from '../../auth-service.js';
 
-// Superadmin: a beérkezett jelentések listája és állapotváltása.
+// Superadmin: a beérkezett jelentések listája, állapotváltás, zárolás és hatósági továbbítás jelölése.
 // A jogosultságot minden hívásnál az adatbázis (RPC) ellenőrzi; ez a felület csak
 // a superadmin számára mutatja a blokkot. A csoport nevét nem mutatjuk, csak az azonosítóját.
+// A zárolt vagy továbbított jelentést a tisztítás (cleanup_old_reports) nem törli.
 const CEL_CIMKE = { kep: 'Kép', ital: 'Ital', tag: 'Csoporttag', egyeb: 'Egyéb' };
 const OK_CIMKE = {
   gyermekbiztonsag: 'Gyermekbiztonsági aggály (CSAE/CSAM)',
@@ -24,9 +25,23 @@ export function initReportModeration() {
     statusz.classList.toggle('hiba', hiba);
   };
 
+  function gomb(szoveg, onClick, { letiltva = false, primer = true } = {}) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = primer ? 'sm-btn sm-btn-save' : 'sm-btn sm-btn-logout';
+    b.textContent = szoveg;
+    b.disabled = letiltva;
+    b.addEventListener('click', onClick);
+    return b;
+  }
+
   function sor(jelentes) {
+    const zarolt = !!jelentes.megorzes_zarolva;
+    const tovabbitva = !!jelentes.hatosagnak_tovabbitva;
+
     const elem = document.createElement('div');
     elem.className = 'moderalas-sor';
+    if (zarolt || tovabbitva) elem.classList.add('jelentes-megorzott');
 
     const leiras = document.createElement('div');
     leiras.className = 'moderalas-leiras';
@@ -39,6 +54,17 @@ export function initReportModeration() {
     reszlet.textContent = `${idopont} · ${csoport} · ${cel} · állapot: ${STATUSZ_CIMKE[jelentes.statusz] || jelentes.statusz}`;
     leiras.append(cim, reszlet);
 
+    if (zarolt || tovabbitva) {
+      const jelzes = document.createElement('span');
+      const reszek = [];
+      if (zarolt) reszek.push('zárolva (nem törlődik tisztításkor)');
+      if (tovabbitva) {
+        reszek.push(`hatóságnak továbbítva: ${new Date(jelentes.hatosagnak_tovabbitva).toLocaleString('hu-HU')}`);
+      }
+      jelzes.textContent = reszek.join(' · ');
+      leiras.appendChild(jelzes);
+    }
+
     if (jelentes.leiras) {
       const szoveg = document.createElement('span');
       szoveg.textContent = `"${jelentes.leiras}"`;
@@ -48,14 +74,14 @@ export function initReportModeration() {
     const gombok = document.createElement('div');
     gombok.className = 'moderalas-gombok';
     ['folyamatban', 'lezarva'].forEach((allapot) => {
-      const gomb = document.createElement('button');
-      gomb.type = 'button';
-      gomb.className = 'sm-btn sm-btn-save';
-      gomb.textContent = STATUSZ_CIMKE[allapot];
-      gomb.disabled = jelentes.statusz === allapot;
-      gomb.addEventListener('click', () => allapotValt(jelentes.id, allapot));
-      gombok.appendChild(gomb);
+      gombok.appendChild(gomb(STATUSZ_CIMKE[allapot], () => allapotValt(jelentes.id, allapot), {
+        letiltva: jelentes.statusz === allapot,
+      }));
     });
+    gombok.appendChild(gomb(zarolt ? 'Feloldás' : 'Zárolás',
+      () => zarolValt(jelentes, !zarolt), { primer: false }));
+    gombok.appendChild(gomb(tovabbitva ? 'Továbbítás visszavonása' : 'Hatóságnak továbbítva',
+      () => tovabbitValt(jelentes, !tovabbitva), { primer: false }));
 
     elem.append(leiras, gombok);
     return elem;
@@ -68,6 +94,37 @@ export function initReportModeration() {
       await betolt();
     } catch (err) {
       setStatus(err.message || 'Hiba az állapot mentésekor.', true);
+    }
+  }
+
+  // Zárolás/feloldás: a továbbítás jelölése megmarad
+  async function zarolValt(jelentes, zarol) {
+    try {
+      await callRpc('set_report_hold', {
+        report_id: jelentes.id,
+        hold: zarol,
+        forwarded: !!jelentes.hatosagnak_tovabbitva,
+      });
+      setStatus(zarol ? 'Jelentés zárolva.' : 'Zárolás feloldva.');
+      await betolt();
+    } catch (err) {
+      setStatus(err.message || 'Hiba a zárolás mentésekor.', true);
+    }
+  }
+
+  // Hatósági továbbítás jelölése/visszavonása: a zárolás állapota megmarad
+  async function tovabbitValt(jelentes, tovabbit) {
+    if (!tovabbit && !confirm('Biztosan visszavonod a "hatóságnak továbbítva" jelölést?')) return;
+    try {
+      await callRpc('set_report_hold', {
+        report_id: jelentes.id,
+        hold: !!jelentes.megorzes_zarolva,
+        forwarded: tovabbit,
+      });
+      setStatus(tovabbit ? 'Megjelölve: hatóságnak továbbítva.' : 'A továbbítási jelölés visszavonva.');
+      await betolt();
+    } catch (err) {
+      setStatus(err.message || 'Hiba a jelölés mentésekor.', true);
     }
   }
 

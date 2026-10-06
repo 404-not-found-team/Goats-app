@@ -54,3 +54,14 @@
   opacity: 0.7;
   margin: 4px 0 12px;
 }
+
+/* Zárolt vagy hatóságnak továbbított jelentés: a superadmin listában kiemelve */
+.moderalas-sor.jelentes-megorzott {
+  border-left: 4px solid currentColor;
+  padding-left: 8px;
+  font-weight: 600;
+}
+
+.jelentes-megorzes-megjegyzes {
+  opacity: 0.8;
+}

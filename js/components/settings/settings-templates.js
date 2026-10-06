@@ -169,6 +169,7 @@ export function injectUserNavHTML(state) {
           <!-- Superadmin: beérkezett jelentések (a szerepkört az RPC ellenőrzi, nem a felület) -->
           <div id="report-moderation" class="moderalas-blokk" hidden>
             <label class="sm-label">Jelentések</label>
+            <p class="jelentes-megorzes-megjegyzes szoveg-kicsi">A zárolt és a hatóságnak továbbított jelentéseket a tisztítás nem törli.</p>
             <div id="reports-list" class="moderalas-lista"></div>
             <p id="reports-status" class="sm-status sm-status-small"></p>
           </div>
