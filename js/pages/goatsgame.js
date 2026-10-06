@@ -180,15 +180,27 @@ function renderOszlop(jatekNev, szin, pontokTombja, gombElem, jatekElem) {
 
     ujOszlop.style.backgroundColor = hexToRgba(szin, 0.75);
 
-    const pontSorok = pontokTombja.map(p => `<div>${p}</div>`).join('');
+    // A játék neve felhasználói bevitel: textContent-tel kerül be, nem innerHTML-lel (XSS)
+    const fejlec = document.createElement('div');
+    fejlec.className = 'fejlec';
+    fejlec.title = jatekNev;
 
-    ujOszlop.innerHTML = `
-        <div class="fejlec" title="${jatekNev}">
-            <span>${jatekNev}</span>
-            <span class="torles-gomb" title="Törlés">🗑️</span>
-        </div>
-        ${pontSorok}
-    `;
+    const nevSpan = document.createElement('span');
+    nevSpan.textContent = jatekNev;
+
+    const torlesSpan = document.createElement('span');
+    torlesSpan.className = 'torles-gomb';
+    torlesSpan.title = 'Törlés';
+    torlesSpan.textContent = '🗑️';
+
+    fejlec.append(nevSpan, torlesSpan);
+    ujOszlop.appendChild(fejlec);
+
+    pontokTombja.forEach(p => {
+        const sor = document.createElement('div');
+        sor.textContent = String(p);
+        ujOszlop.appendChild(sor);
+    });
 
     if (jatekElem && jatekElem.aktivOszlopok) {
         jatekElem.aktivOszlopok.push({ oszlopElem: ujOszlop, pontok: pontokTombja });
