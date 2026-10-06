@@ -83,11 +83,29 @@ Az alkalmazás az alábbi modulokból áll:
 
 ## 🚩 Jelentés kezelése
 
-- **Hol látszik:** a Profil → Beállítások ablak alján a superadminnak megjelenik a „Jelentések" blokk. A lista a beállítások megnyitásakor töltődik, a csoportnév helyett csak a csoport azonosítója látszik.
-- **Állapot:** „Folyamatban" vagy „Lezárva" gombbal változtatható (`set_report_status` RPC).
-- **Kép törlése (kézzel):** a jelentés „célazonosító" mezője a kép elérési útja (`csoport_azonosito/fajlnev.jpg`). A Supabase Storage felületén a `kepek` bucketben ezt a fájlt kell törölni, mert a storage-szabály csak a csoport tagjainak engedi a törlést.
-- **Fiók törlése (kézzel):** a jelentés „célazonosító" mezője a felhasználó azonosítója. A fiókot a Supabase Auth felületén, vagy a csoport admin/superadmin műveletekkel kell eltávolítani.
-- **Hatóságok:** a hatóságoknak szóló jelentést a csapat teszi meg kézzel. Az alkalmazás ezt nem automatizálja.
-- **Megőrzés:** a jelentések addig maradnak meg, amíg a csapat törölni nem dönti. A csoport törlésekor a jelentés megmarad (a csoport azonosítója üres lesz), a jelentő fiók törlésekor a jelentő azonosítója üres lesz.
+Ez belső folyamat, nem jogi tanács. A jogilag nem tisztázott pontok listáját a szakasz végén találod.
+
+1. **Hol látszik, hogyan állítható „folyamatban"-ra:** a Profil → Beállítások ablak alján a superadminnak megjelenik a „Jelentések" blokk. A lista a beállítások megnyitásakor töltődik, a csoportnév helyett csak a csoport azonosítója látszik. Az állapot „Folyamatban" vagy „Lezárva" gombbal változtatható (`set_report_status` RPC).
+
+2. **Gyermekbiztonsági (CSAE/CSAM) jelentés esetén:**
+   - Az anyagot **ne töltsd le, ne másold, ne küldd tovább**. Csak a jelentés azonosítóit és adatait jegyezd fel.
+   - Zárold a jelentést („Zárolás" gomb).
+   - Miután a csapat a hatóságnak továbbította (rendőrség, illetve a hivatalos bejelentő csatornák), jelöld „Hatóságnak továbbítva"-nak.
+   - A pontos teendőket jogásszal kell egyeztetni. Ez a leírás nem jogi tanács.
+
+3. **A tartalom eltávolítása:**
+   - a kép törlése a Supabase Storage felületén (`kepek` bucket). A jelentés „célazonosító" mezője a kép elérési útja (`csoport_azonosito/fajlnev.jpg`),
+   - a fiók törlése a Supabase Auth felületén (a „célazonosító" a felhasználó azonosítója),
+   - a jelentés zárolása vagy lezárása.
+
+4. **Évente egyszer:** a `cleanup_old_reports()` függvény futtatása (kézzel, az SQL Editorban), és ellenőrzés, hogy a zárolt jelentések indokoltak-e még. Automatikus ütemezés nincs.
+
+5. **Megőrzés:** a jelentések legfeljebb 1 évig maradnak meg. A zárolt és a hatóságnak továbbított jelentéseket a tisztítás nem törli. A csoport törlésekor a jelentés megmarad, a csoport azonosítója üres lesz. A jelentő fiók törlésekor a jelentő azonosítója üres lesz.
+
+**Jogilag nem tisztázott pontok (jogásznak átnézendő):**
+- a megőrzési idő és a hatósági továbbítás viszonya,
+- a bizonyíték megőrzése csoporttörlésnél: ha a csoport törlésekor a képek törlődnek a tárolóból, a zárolt jelentéshez tartozó bizonyíték elveszik. Ezt a csoport törlése előtt kézzel kell kezelni,
+- az üzemeltető kötelezettségei: mikor és hová kell jelenteni,
+- az adatvédelmi tájékoztató jogalapjai.
 
 ---
