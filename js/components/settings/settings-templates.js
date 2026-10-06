@@ -92,6 +92,7 @@ export function injectUserNavHTML(state) {
           <button id="open-group-details-btn" class="google-menu-btn"><span> Csoport adatok</span><span class="arrow-icon">›</span></button>
           <button id="open-join-group-btn" class="google-menu-btn" hidden><span> Csatlakozás / új csoport</span><span class="arrow-icon">›</span></button>
           <button id="open-settings-btn" class="google-menu-btn"><span> Beállítások</span><span class="arrow-icon">›</span></button>
+          <a href="gyermekvedelem.html" class="google-menu-btn"><span> Gyermekvédelmi normák</span><span class="arrow-icon">›</span></a>
           <button id="logout-btn" class="google-menu-btn danger"><span> Kijelentkezés</span></button>
           <button id="delete-account-btn" class="google-menu-btn danger-dark"><span> Fiók törlése</span></button>
         </div>
