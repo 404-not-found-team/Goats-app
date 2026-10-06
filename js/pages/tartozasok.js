@@ -10,11 +10,15 @@ function aktualisGroupCode() {
     return window.goatsAuth?.getState()?.group?.group_code || localStorage.getItem('goats_group_code');
 }
 
-function aktualisTagnevek() {
+// Tagok: [{ user_id, display_name }] – az azonosító a kulcs, a név csak megjelenítés.
+function aktualisTagok() {
     const allapot = window.goatsAuth?.getState();
-    return allapot?.group
-        ? allapot.members.map(m => m.display_name)
-        : JSON.parse(localStorage.getItem('goats_group_members') || '[]');
+    return (allapot?.members || []).map(m => ({ user_id: m.user_id, display_name: m.display_name }));
+}
+
+function tagNev(userId, tartalekNev) {
+    const tag = aktualisTagok().find(m => m.user_id === userId);
+    return tag ? tag.display_name : (tartalekNev || 'Törölt tag');
 }
 
 function getNakNek(name) {
@@ -57,7 +61,7 @@ function getMemberColor(index) {
     return `hsl(${(extraIndex * 137.5) % 360}, 70%, 50%)`;
 }
 
-let selectedKinek = '';
+let selectedKinek = '';      // user_id
 
 function toggleDropdown() {
     const content = document.getElementById('dropdownContent');
@@ -116,14 +120,14 @@ function updateDropdownLabel() {
     if (checkedBoxes.length === 0) {
         label.textContent = 'Ki tartozik?';
     } else if (checkedBoxes.length === 1) {
-        label.textContent = checkedBoxes[0].value;
+        label.textContent = checkedBoxes[0].parentElement.querySelector('span')?.textContent || 'Ki tartozik?';
     } else {
         label.textContent = `${checkedBoxes.length} ember kiválasztva`;
     }
 }
 
 async function initMembersAndContainers() {
-    const members = aktualisTagnevek();
+    const members = aktualisTagok();
 
     const kinekContent = document.getElementById('kinekDropdownContent');
     const dropdownContent = document.getElementById('dropdownContent');
@@ -131,13 +135,13 @@ async function initMembersAndContainers() {
     if (kinekContent) {
         kinekContent.innerHTML = '';
         members.forEach(member => {
-            const ragozottNev = getNakNek(member);
+            const ragozottNev = getNakNek(member.display_name);
             const itemDiv = document.createElement('div');
             itemDiv.className = 'dropdown-item';
-            itemDiv.dataset.value = member;
+            itemDiv.dataset.value = member.user_id;
             itemDiv.textContent = ragozottNev;
 
-            itemDiv.addEventListener('click', () => selectKinek(member, ragozottNev));
+            itemDiv.addEventListener('click', () => selectKinek(member.user_id, ragozottNev));
             kinekContent.appendChild(itemDiv);
         });
     }
@@ -150,11 +154,11 @@ async function initMembersAndContainers() {
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.value = member;
+            checkbox.value = member.user_id;
             checkbox.addEventListener('change', updateDropdownLabel);
 
             const span = document.createElement('span');
-            span.textContent = member;
+            span.textContent = member.display_name;
 
             itemDiv.appendChild(checkbox);
             itemDiv.appendChild(span);
@@ -172,10 +176,10 @@ async function initMembersAndContainers() {
             boxDiv.style.borderTopColor = color;
 
             const h3 = document.createElement('h3');
-            h3.textContent = member;
+            h3.textContent = member.display_name;
 
             const listDiv = document.createElement('div');
-            listDiv.dataset.memberName = member; 
+            listDiv.dataset.memberId = member.user_id;
 
             boxDiv.appendChild(h3);
             boxDiv.appendChild(listDiv);
@@ -198,57 +202,72 @@ async function loadTartozasok() {
         return;
     }
 
-    const members = aktualisTagnevek();
+    const members = aktualisTagok();
+    const tagById = id => members.find(m => m.user_id === id);
+    // A migráció előtti, nem párosított sorokhoz: név alapú tartalék
+    const tagByName = nev => members.find(m => m.display_name === nev);
 
     members.forEach(member => {
-        const targetDiv = document.querySelector(`[data-member-name="${CSS.escape(member)}"]`);
+        const targetDiv = document.querySelector(`[data-member-id="${CSS.escape(member.user_id)}"]`);
         if (targetDiv) targetDiv.innerHTML = '';
     });
 
-    if (data && data.length > 0) {
-        data.forEach(item => {
-            if (!item.kitartozik) return;
+    (data || []).forEach(item => {
+        const ados = tagById(item.ados_id) || tagByName(item.kitartozik);
+        if (!ados) return; // törölt vagy ismeretlen adós – nincs doboza
 
-            const targetDiv = document.querySelector(`[data-member-name="${CSS.escape(item.kitartozik)}"]`);
+        const targetDiv = document.querySelector(`[data-member-id="${CSS.escape(ados.user_id)}"]`);
+        if (!targetDiv) return;
 
-            if (targetDiv) {
-                const card = document.createElement('div');
-                card.className = 'tartozas-kartya';
+        const hitelezo = tagById(item.hitelezo_id) || tagByName(item.kinek);
+        const hitelezoNev = hitelezo ? hitelezo.display_name : (item.kinek || 'Törölt tag');
+        const felvette = tagById(item.felvette_id);
 
-                const memberIndex = members.indexOf(item.kitartozik);
-                if (memberIndex !== -1) {
-                    const color = getMemberColor(memberIndex);
-                    card.style.borderLeftColor = color;
-                }
+        const card = document.createElement('div');
+        card.className = 'tartozas-kartya';
 
-                const row = document.createElement('div');
-                row.style.display = 'flex';
-                row.style.justifyContent = 'space-between';
-                row.style.alignItems = 'center';
+        const memberIndex = members.indexOf(ados);
+        if (memberIndex !== -1) {
+            card.style.borderLeftColor = getMemberColor(memberIndex);
+        }
 
-                const ragozottNev = getNakNek(item.kinek);
-                const textSpan = document.createElement('span');
-                textSpan.textContent = `${ragozottNev} ${item.mennyiert} Ft-tal - ${item.miert}`;
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.justifyContent = 'space-between';
+        row.style.alignItems = 'center';
 
-                const deleteSpan = document.createElement('span');
-                deleteSpan.textContent = '🗑️';
-                deleteSpan.title = 'Törlés';
-                deleteSpan.style.cursor = 'pointer';
-                deleteSpan.style.paddingLeft = '8px';
-                deleteSpan.addEventListener('click', () => deleteTartozas(item.id));
+        const textSpan = document.createElement('span');
+        textSpan.textContent = `${getNakNek(hitelezoNev)} ${item.mennyiert} Ft-tal - ${item.miert}`;
 
-                row.appendChild(textSpan);
-                row.appendChild(deleteSpan);
-                card.appendChild(row);
+        const deleteSpan = document.createElement('span');
+        deleteSpan.textContent = '🗑️';
+        deleteSpan.title = 'Törlés';
+        deleteSpan.style.cursor = 'pointer';
+        deleteSpan.style.paddingLeft = '8px';
+        deleteSpan.addEventListener('click', () => deleteTartozas(item.id));
 
-                targetDiv.appendChild(card);
-            }
-        });
-    }
+        row.appendChild(textSpan);
+        row.appendChild(deleteSpan);
+        card.appendChild(row);
 
-    // 3. Üres üzenetek kirakása, ha nincs tartozás
+        if (item.felvette_id) {
+            const meta = document.createElement('div');
+            meta.style.fontSize = '0.75rem';
+            meta.style.opacity = '0.6';
+            meta.style.marginTop = '4px';
+            const mikor = item.felvetel_ideje
+                ? ' · ' + new Date(item.felvetel_ideje).toLocaleDateString('hu-HU')
+                : '';
+            meta.textContent = `Felvette: ${felvette ? felvette.display_name : 'Törölt tag'}${mikor}`;
+            card.appendChild(meta);
+        }
+
+        targetDiv.appendChild(card);
+    });
+
+    // Üres üzenetek kirakása, ha nincs tartozás
     members.forEach(member => {
-        const targetDiv = document.querySelector(`[data-member-name="${CSS.escape(member)}"]`);
+        const targetDiv = document.querySelector(`[data-member-id="${CSS.escape(member.user_id)}"]`);
         if (targetDiv && targetDiv.children.length === 0) {
             const emptyMsg = document.createElement('p');
             emptyMsg.className = 'empty-msg';
@@ -292,11 +311,24 @@ async function addTartozas() {
         return;
     }
 
-    const ujTartozasok = kijeloltKik.map(ki => ({
+    const felvevoId = window.goatsAuth?.getState()?.user?.id;
+    if (!felvevoId) {
+        alert('A tartozás felvételéhez be kell jelentkezned!');
+        return;
+    }
+
+    const tagok = aktualisTagok();
+    const nevek = id => tagok.find(m => m.user_id === id)?.display_name || null;
+
+    const ujTartozasok = kijeloltKik.map(adosId => ({
         miert: miert,
         mennyiert: mennyiert,
-        kinek: kinek,
-        kitartozik: ki,
+        hitelezo_id: kinek,
+        ados_id: adosId,
+        felvette_id: felvevoId,
+        // régi, szöveges oszlopok: csak pillanatkép, a megjelenítés az azonosítókból megy
+        kinek: nevek(kinek),
+        kitartozik: nevek(adosId),
         group_code: groupCode
     }));
 
