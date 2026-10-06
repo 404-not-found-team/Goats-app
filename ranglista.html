@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goats - Ranglista</title>
     <link rel="manifest" href="manifest.json">
@@ -38,13 +39,13 @@
         <div id="forras-dobozok-kontener"></div>
     </div>
 
-    <div id="modal-hatter">
+    <div id="modal-hatter" hidden>
         <div id="hatter" class="modal-kis-doboz">
             <img id="modal-kep" src="" alt="Kiválasztott ital">
             <div id="modal-nev" class="modal-ital-cim"></div>
-            <div id="modal-alkohol-badge" class="alkohol-badge" style="display: none;"></div>
+            <div id="modal-alkohol-badge" class="alkohol-badge" hidden></div>
 
-            <div id="modal-koktel-hozzavalok-doboz" class="modal-hozzavalok-box">
+            <div id="modal-koktel-hozzavalok-doboz" class="modal-hozzavalok-box" hidden>
                 <div class="modal-hozzavalok-fejlec">🍹 Hozzávalók és Arányok:</div>
                 <div id="modal-koktel-hozzavalok-lista" class="modal-hozzavalok-lista"></div>
             </div>
@@ -61,7 +62,7 @@
         </div>
     </div>
 
-    <div id="uj-ital-modal" class="modal-hatter-ui">
+    <div id="uj-ital-modal" class="modal-hatter-ui" hidden>
         <div class="modal-doboz-ui modal-nagy-doboz">
             <h3 class="modal-alcim">Új ital / koktél felvétele</h3>
 
@@ -93,7 +94,7 @@
                 <label class="floating-label">Alkoholfok (%)</label>
             </div>
 
-            <div id="koktel-összeallitas-resz" class="koktel-resz-kontener">
+            <div id="koktel-összeallitas-resz" class="koktel-resz-kontener" hidden>
                 <div class="toggle-mode-container">
                     <button type="button" id="mode-arany-btn" class="toggle-mode-btn active"
                         onclick="valtsMódot('arany')">📐 Arányok alapján</button>
@@ -115,7 +116,7 @@
         </div>
     </div>
 
-    <div id="szuro-modal" class="modal-hatter-ui">
+    <div id="szuro-modal" class="modal-hatter-ui" hidden>
         <div class="modal-doboz-ui szuro-modal-doboz">
             <h3 class="szuro-modal-cim">🔍 Ranglista Szűrők</h3>
 

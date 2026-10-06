@@ -20,14 +20,14 @@
    így a teljes szelektor magától felülírja a .kepek / .naptar-kontener
    grid-column szabályát, !important nélkül. */
 @media screen and (min-width: 1001px) {
-    .hatter:has(#youtube-doboz[style*="display: none"]) {
+    .hatter:has(#youtube-doboz[hidden]) {
         grid-template-columns: 1fr;
         max-width: 650px;
         margin: 0 auto;
     }
 
-    .hatter:has(#youtube-doboz[style*="display: none"]) .kepek,
-    .hatter:has(#youtube-doboz[style*="display: none"]) .naptar-kontener {
+    .hatter:has(#youtube-doboz[hidden]) .kepek,
+    .hatter:has(#youtube-doboz[hidden]) .naptar-kontener {
         grid-column: 1 / -1;
     }
 }

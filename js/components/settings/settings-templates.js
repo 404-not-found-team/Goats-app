@@ -23,59 +23,59 @@ export function injectUserNavHTML(state) {
 
   document.body.insertAdjacentHTML('beforeend', `
     <!-- BELÉPÉS / CSOPORT MODAL -->
-    <div id="auth-modal" class="sm-overlay" style="display: none;">
-      <div class="sm-card" style="max-width: 420px; text-align: center; padding: 25px;">
-        <div class="sm-header" style="justify-content: space-between; display: flex; align-items: center; margin-bottom: 15px;">
+    <div id="auth-modal" class="sm-overlay" hidden>
+      <div class="sm-card auth-kartya">
+        <div class="sm-header sm-fejlec-sor">
           <h3 id="auth-title">Belépés</h3>
           <button id="close-auth-btn" class="sm-close-btn">&times;</button>
         </div>
 
         <!-- 1. lépés: Google bejelentkezés (ha nincs session) -->
         <div id="auth-step-login">
-          <p style="font-size: 0.9rem; color: var(--text-secondary, #aaa); margin-bottom: 15px;">
+          <p class="auth-leiras">
             Jelentkezz be Google-fiókkal, utána csatlakozhatsz egy csoporthoz vagy létrehozhatsz egy újat.
           </p>
-          <button id="google-login-btn" class="gomb-uj-ital" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: #ffffff; color: #333; font-weight: bold; padding: 12px; border-radius: 8px; border: none; cursor: pointer;">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" style="width:20px; height:20px;">
+          <button id="google-login-btn" class="gomb-uj-ital gomb-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" class="ikon-20">
             Bejelentkezés Google-fiókkal
           </button>
-          <div style="margin-top: 15px; font-size: 0.85rem;">
-            <label style="cursor: pointer;">
+          <div class="mt-15 szoveg-kicsi">
+            <label class="kurzor-mutato">
               <input type="checkbox" id="accept-tos-checkbox">
-              Elfogadom a <a href="#" id="open-tos-modal" style="color: var(--accent-text); text-decoration: underline;">Használati Feltételeket</a>
+              Elfogadom a <a href="#" id="open-tos-modal" class="link-akcent">Használati Feltételeket</a>
             </label>
           </div>
         </div>
 
         <!-- 2. lépés: csoport (ha van session, de nincs csoport) -->
-        <div id="auth-step-group" style="display: none;">
-          <p id="auth-user-line" style="font-size: 0.85rem; color: var(--text-secondary, #aaa); margin-bottom: 15px;"></p>
+        <div id="auth-step-group" hidden>
+          <p id="auth-user-line" class="auth-user-line"></p>
 
-          <div id="sign-in-code-section" style="margin-bottom: 20px;">
-            <div class="floating-group" style="margin-bottom: 8px;">
+          <div id="sign-in-code-section" class="mb-20">
+            <div class="floating-group mb-8">
               <input type="text" id="auth-group-code-input" class="floating-input" placeholder=" " autocomplete="off" />
               <label class="floating-label">Meglévő csoportkód</label>
             </div>
-            <button id="auth-submit-btn" class="gomb-uj-ital" style="width: 100%; padding: 10px;">Csatlakozás a csoporthoz</button>
+            <button id="auth-submit-btn" class="gomb-uj-ital gomb-teljes">Csatlakozás a csoporthoz</button>
           </div>
 
-          <div style="margin: 15px 0; color: #aaa; font-size: 0.85rem;">vagy hozz létre egy újat:</div>
+          <div class="elvalaszto-szoveg">vagy hozz létre egy újat:</div>
 
           <div id="create-group-section">
-            <div class="floating-group" style="margin-bottom: 8px;">
+            <div class="floating-group mb-8">
               <input type="text" id="new-group-name-input" class="floating-input" placeholder=" " maxlength="40" autocomplete="off" />
               <label class="floating-label">Új csoport neve (pl. "Buli Csapat")</label>
             </div>
-            <button id="create-group-btn" class="gomb-uj-ital" style="width: 100%; padding: 10px; background: #10b981; border: none; color: white; border-radius: 6px; cursor: pointer;">➕ Új csoport létrehozása</button>
+            <button id="create-group-btn" class="gomb-uj-ital gomb-siker">➕ Új csoport létrehozása</button>
           </div>
         </div>
 
-        <div id="auth-status" style="margin-top: 12px; font-size: 0.9rem; font-weight: bold;"></div>
+        <div id="auth-status" class="status-blokk"></div>
       </div>
     </div>
 
     <!-- PROFIL MODAL -->
-    <div id="profile-modal" class="sm-overlay">
+    <div id="profile-modal" class="sm-overlay" hidden>
       <div class="google-profile-card">
         <button id="close-profile-btn" class="google-close-btn">&times;</button>
         <div class="google-user-header">
@@ -86,11 +86,11 @@ export function injectUserNavHTML(state) {
           </div>
         </div>
 
-        <p id="profile-display-email" style="font-size: 0.85rem; color: var(--text-secondary, #aaa); margin: 4px 0 12px;"></p>
+        <p id="profile-display-email" class="profil-email"></p>
 
         <div class="google-menu-list">
           <button id="open-group-details-btn" class="google-menu-btn"><span> Csoport adatok</span><span class="arrow-icon">›</span></button>
-          <button id="open-join-group-btn" class="google-menu-btn" style="display: none;"><span> Csatlakozás / új csoport</span><span class="arrow-icon">›</span></button>
+          <button id="open-join-group-btn" class="google-menu-btn" hidden><span> Csatlakozás / új csoport</span><span class="arrow-icon">›</span></button>
           <button id="open-settings-btn" class="google-menu-btn"><span> Beállítások</span><span class="arrow-icon">›</span></button>
           <button id="logout-btn" class="google-menu-btn danger"><span> Kijelentkezés</span></button>
           <button id="delete-account-btn" class="google-menu-btn danger-dark"><span> Fiók törlése</span></button>
@@ -100,52 +100,52 @@ export function injectUserNavHTML(state) {
     </div>
 
     <!-- CSOPORT ADATOK MODAL -->
-    <div id="group-details-modal" class="sm-overlay">
+    <div id="group-details-modal" class="sm-overlay" hidden>
       <div class="sm-card">
         <div class="sm-header">
           <h3> Csoport adatok</h3>
           <button id="close-group-details-btn" class="sm-close-btn">&times;</button>
         </div>
         <div class="sm-body">
-          <p id="group-no-group" style="display: none; text-align: center; color: var(--text-secondary, #aaa);">Még nem tartozol csoporthoz.</p>
+          <p id="group-no-group" class="csoport-nelkul" hidden>Még nem tartozol csoporthoz.</p>
 
           <!-- Saját megjelenített név: csoporton kívül is elérhető -->
-          <div class="floating-group" style="margin-bottom: 8px;">
+          <div class="floating-group mb-8">
             <input type="text" id="own-name-input" class="floating-input" placeholder=" " maxlength="40" />
             <label class="floating-label">A te megjelenített neved</label>
           </div>
-          <button id="save-own-name-btn" class="sm-btn sm-btn-save" style="margin-bottom: 6px;">Név mentése</button>
-          <p id="own-name-status" class="sm-status sm-status-small" style="margin-bottom: 14px;"></p>
+          <button id="save-own-name-btn" class="sm-btn sm-btn-save mb-6">Név mentése</button>
+          <p id="own-name-status" class="sm-status sm-status-small mb-14"></p>
 
           <div id="group-content">
             <div class="floating-group">
               <input type="text" id="group-name-display" class="floating-input" placeholder=" " maxlength="40" readonly />
               <label class="floating-label">Csoport neve</label>
             </div>
-            <button id="save-group-name-btn" class="sm-btn sm-btn-save" style="display: none; margin-bottom: 12px;">Név mentése</button>
+            <button id="save-group-name-btn" class="sm-btn sm-btn-save mb-12" hidden>Név mentése</button>
 
             <div class="floating-group input-with-toggle">
               <input type="password" id="group-code-display" class="floating-input" placeholder=" " readonly />
               <label class="floating-label">Csoportkód (ezzel tudnak csatlakozni)</label>
               <button id="toggle-group-code-visibility" type="button" class="input-toggle-btn">👁️</button>
             </div>
-            <button id="copy-group-code-btn" type="button" class="google-mini-edit-btn" style="margin-bottom: 14px;">📋 Kód másolása</button>
+            <button id="copy-group-code-btn" type="button" class="google-mini-edit-btn mb-14">📋 Kód másolása</button>
 
             <label class="sm-label">Tagok</label>
-            <div id="group-members-list" style="margin-bottom: 12px;"></div>
+            <div id="group-members-list" class="mb-12"></div>
 
             <p id="group-details-status" class="sm-status sm-status-small"></p>
 
-            <button id="regenerate-code-btn" class="google-menu-btn" style="display: none;">Új csoportkód generálása</button>
+            <button id="regenerate-code-btn" class="google-menu-btn" hidden>Új csoportkód generálása</button>
             <button id="leave-group-btn" class="google-menu-btn danger">Kilépés a csoportból</button>
-            <button id="delete-group-btn" class="google-menu-btn danger-dark" style="display: none;">Csoport törlése</button>
+            <button id="delete-group-btn" class="google-menu-btn danger-dark" hidden>Csoport törlése</button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- BEÁLLÍTÁSOK MODAL (TÉMA) -->
-    <div id="settings-modal" class="sm-overlay">
+    <div id="settings-modal" class="sm-overlay" hidden>
       <div class="sm-card">
         <div class="sm-header">
           <h3> Beállítások</h3>
@@ -169,7 +169,7 @@ export function injectUserNavHTML(state) {
     </div>
 
     <!-- HASZNÁLATI FELTÉTELEK MODAL -->
-    <div id="tos-modal" class="sm-overlay tos-modal-overlay">
+    <div id="tos-modal" class="sm-overlay tos-modal-overlay" hidden>
       <div class="sm-card tos-modal-card">
         <div class="sm-header">
           <h3 class="tos-modal-header"> Használati Feltételek</h3>
@@ -186,7 +186,7 @@ export function injectUserNavHTML(state) {
           <p>A feltöltött képekért, szövegekért és adatokért kizárólag a feltöltő személy vállalja a felelősséget. Jogszabályba ütköző tartalom feltöltése tilos.</p>
 
           <h4>4. Adatkezelés</h4>
-          <p>A bejelentkezéshez a Google-fiókod nevét és e-mail címét, a csoportos működéshez a csoport adatait felhőalapú (Supabase) adatbázisban tároljuk. A fiókodat a Profil menüben bármikor véglegesen törölheted. Részletek: <a href="privacy.html" target="_blank" rel="noopener" style="color: var(--accent-text); text-decoration: underline;">Adatvédelmi nyilatkozat</a>.</p>
+          <p>A bejelentkezéshez a Google-fiókod nevét és e-mail címét, a csoportos működéshez a csoport adatait felhőalapú (Supabase) adatbázisban tároljuk. A fiókodat a Profil menüben bármikor véglegesen törölheted. Részletek: <a href="privacy.html" target="_blank" rel="noopener" class="link-akcent">Adatvédelmi nyilatkozat</a>.</p>
         </div>
         <button id="accept-tos-modal-btn" class="sm-btn sm-btn-save tos-modal-btn">Elfogadom</button>
       </div>

@@ -8,9 +8,10 @@ export function initProfileModal() {
   const settingsModal = get('settings-modal');
   const authModal = get('auth-modal');
 
+  const STATUS_OSZTALY = { '#ef4444': 'status-hiba', '#10b981': 'status-ok', '#3b82f6': 'status-info' };
   const setStatus = (msg, color = '') => {
     const s = get('profile-status');
-    if (s) { s.textContent = msg || ''; s.style.color = color; }
+    if (s) { s.textContent = msg || ''; s.className = STATUS_OSZTALY[color] || ''; }
   };
 
   function fill() {
@@ -20,8 +21,8 @@ export function initProfileModal() {
 
     // Csoportfüggő menüpontok
     const hasGroup = !!s.group;
-    if (get('open-group-details-btn')) get('open-group-details-btn').style.display = hasGroup ? '' : 'none';
-    if (get('open-join-group-btn')) get('open-join-group-btn').style.display = hasGroup ? 'none' : '';
+    if (get('open-group-details-btn')) get('open-group-details-btn').hidden = !hasGroup;
+    if (get('open-join-group-btn')) get('open-join-group-btn').hidden = hasGroup;
     setStatus('');
   }
 
@@ -29,22 +30,22 @@ export function initProfileModal() {
   document.addEventListener('click', (e) => {
     if (e.target.closest?.('#open-profile-modal-btn')) {
       fill();
-      if (profileModal) profileModal.style.display = 'flex';
+      if (profileModal) profileModal.hidden = false;
     }
   });
 
   // Navigáció az al-ablakokba
   get('open-group-details-btn')?.addEventListener('click', () => {
-    profileModal.style.display = 'none';
-    groupDetailsModal.style.display = 'flex';
+    profileModal.hidden = true;
+    groupDetailsModal.hidden = false;
   });
   get('open-join-group-btn')?.addEventListener('click', () => {
-    profileModal.style.display = 'none';
-    authModal.style.display = 'flex';
+    profileModal.hidden = true;
+    authModal.hidden = false;
   });
   get('open-settings-btn')?.addEventListener('click', () => {
-    profileModal.style.display = 'none';
-    settingsModal.style.display = 'flex';
+    profileModal.hidden = true;
+    settingsModal.hidden = false;
   });
   // Kijelentkezés
   get('logout-btn')?.addEventListener('click', async () => {

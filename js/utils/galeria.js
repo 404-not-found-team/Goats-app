@@ -115,16 +115,7 @@ function frissitGaleria() {
         torlesGomb.href = '#';
         torlesGomb.title = 'Aktuális kép törlése';
         torlesGomb.innerHTML = '<i class="fa-solid fa-trash"></i>';
-        torlesGomb.style.cssText = `
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            z-index: 10;
-            color: #ef4444;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: transform 0.2s;
-        `;
+        torlesGomb.className = 'galeria-torles-gomb';
         torlesGomb.addEventListener('click', (e) => {
             e.preventDefault();
             torolAktualisKep();
@@ -136,11 +127,7 @@ function frissitGaleria() {
     if (!placeholder && galeriaDoboz) {
         placeholder = document.createElement('div');
         placeholder.id = 'galeria-placeholder';
-        placeholder.style.cssText = `
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 100%; height: 100%; min-height: 200px; color: #a1a1aa; text-align: center; font-family: sans-serif;
-            background: #18181b; border-radius: 16px; border: 1px solid #27272a; box-sizing: border-box; padding: 20px;
-        `;
+        placeholder.className = 'galeria-ures';
         galeriaDoboz.appendChild(placeholder);
     }
 
@@ -148,7 +135,7 @@ function frissitGaleria() {
         if (!galeriaDoboz) return;
         const elemek = galeriaDoboz.querySelectorAll('i, a, img');
         elemek.forEach(el => {
-            el.style.display = show ? '' : 'none';
+            el.hidden = !show;
         });
     };
 
@@ -156,23 +143,23 @@ function frissitGaleria() {
         toggleGombok(false);
 
         const feltoltGomb = document.getElementById('kepFeltoltesGomb');
-        if (feltoltGomb) feltoltGomb.style.display = 'inline-block';
-        if (torlesGomb) torlesGomb.style.display = 'none';
+        if (feltoltGomb) feltoltGomb.hidden = false;
+        if (torlesGomb) torlesGomb.hidden = true;
 
         if (placeholder) {
-            placeholder.style.display = 'flex';
+            placeholder.hidden = false;
             placeholder.innerHTML = `
-                <span style="font-size: 32px; margin-bottom: 8px;">🖼️</span>
-                <p style="margin: 0; font-weight: bold; color: #fff; font-size: 16px;">Még nincsenek képek</p>
-                <span style="font-size: 13px; margin-top: 4px; color: #a1a1aa;">Töltsd fel az első képet a gombbal!</span>
+                <span class="ures-ikon">🖼️</span>
+                <p class="ures-cim">Még nincsenek képek</p>
+                <span class="ures-leiras">Töltsd fel az első képet a gombbal!</span>
             `;
         }
         return;
     }
 
-    if (placeholder) placeholder.style.display = 'none';
+    if (placeholder) placeholder.hidden = true;
     toggleGombok(true);
-    if (torlesGomb) torlesGomb.style.display = 'inline-block';
+    if (torlesGomb) torlesGomb.hidden = false;
 
     let balIndex = (currentIndex - 1 + kepekLista.length) % kepekLista.length;
     let jobbIndex = (currentIndex + 1) % kepekLista.length;
@@ -406,9 +393,9 @@ function frissitsKezdolapElrendezes() {
     const ytDoboz = document.getElementById('youtube-doboz');
 
     if (currentGroup === 'duckies') {
-        if (ytDoboz) ytDoboz.style.display = 'flex';
+        if (ytDoboz) ytDoboz.hidden = false;
     } else {
-        if (ytDoboz) ytDoboz.style.display = 'none';
+        if (ytDoboz) ytDoboz.hidden = true;
     }
 }
 

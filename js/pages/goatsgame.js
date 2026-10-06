@@ -62,7 +62,7 @@ function hexToRgba(hex, alpha = 0.75) {
 function openUjJatekModal() {
     const modal = document.getElementById('ujJatekModal');
     if (modal) {
-        modal.style.display = 'flex';
+        modal.hidden = false;
         document.getElementById('ujJatekNevInput').focus();
     }
 }
@@ -70,7 +70,7 @@ function openUjJatekModal() {
 function closeUjJatekModal() {
     const modal = document.getElementById('ujJatekModal');
     if (modal) {
-        modal.style.display = 'none';
+        modal.hidden = true;
         document.getElementById('ujJatekNevInput').value = '';
     }
 }
@@ -178,7 +178,7 @@ function renderOszlop(jatekNev, szin, pontokTombja, gombElem, jatekElem) {
     const ujOszlop = document.createElement('div');
     ujOszlop.className = 'tablazat szines-jatek-oszlop';
 
-    ujOszlop.style.backgroundColor = hexToRgba(szin, 0.75);
+    ujOszlop.classList.add('szines-oszlop-hatter', szinOsztaly(hexToRgba(szin, 0.75)));
 
     // A játék neve felhasználói bevitel: textContent-tel kerül be, nem innerHTML-lel (XSS)
     const fejlec = document.createElement('div');

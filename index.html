@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goats</title>
     <link rel="manifest" href="manifest.json">
@@ -88,7 +89,7 @@
         </div>
 
         <div class="kepek">
-            <input type="file" id="kepFeltoltesInput" accept="image/*" multiple style="display: none;">
+            <input type="file" id="kepFeltoltesInput" accept="image/*" multiple hidden>
             <a href="#" id="kepFeltoltesGomb" onclick="nyisdMegFajlValasztot(); return false;" title="Kép feltöltése">
                 <i class="fa-solid fa-upload"></i>
             </a>
@@ -114,11 +115,11 @@
 
             <div id="naptar-rács" class="naptar-racs"></div>
 
-            <button id="uj-esemeny-gomb" class="sm-btn sm-btn-save" style="margin-top: 15px;">+ Új esemény</button>
+            <button id="uj-esemeny-gomb" class="sm-btn sm-btn-save mt-15">+ Új esemény</button>
         </div>
 
         <!-- Új Esemény Modal -->
-        <div id="esemeny-modal" class="sm-overlay">
+        <div id="esemeny-modal" class="sm-overlay" hidden>
             <div class="sm-card">
                 <div class="sm-header">
                     <h3>Esemény hozzáadása</h3>
@@ -137,21 +138,20 @@
             </div>
         </div>
 
-        <div id="napi-esemenyek-modal" class="sm-overlay" style="display: none;">
-            <div class="sm-card" style=" max-height: 80vh;">
+        <div id="napi-esemenyek-modal" class="sm-overlay" hidden>
+            <div class="sm-card modal-magas">
                 <div class="sm-header">
                     <h3 id="napi-modal-cím">Események</h3>
                     <button id="close-napi-esemenyek-modal" class="sm-close-btn">&times;</button>
                 </div>
-                <div id="napi-esemenyek-lista"
-                    style="display: flex; flex-direction: column; gap: 8px; margin: 15px 0; max-height: 300px; overflow-y: auto;">
+                <div id="napi-esemenyek-lista" class="napi-lista">
                 </div>
                 <button id="napi-uj-esemeny-btn" class="sm-btn sm-btn-save">Új esemény ezen a napon</button>
             </div>
         </div>
 
         <!-- 2. Esemény Részletek / Módosítás / Törlés Modal -->
-        <div id="esemeny-reszletek-modal" class="sm-overlay" style="display: none;">
+        <div id="esemeny-reszletek-modal" class="sm-overlay" hidden>
             <div class="sm-card">
                 <div class="sm-header">
                     <h3>Esemény szerkesztése</h3>
@@ -166,10 +166,9 @@
                     <label class="floating-label">Dátum:</label>
                 </div>
 
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button id="modosit-esemeny-btn" class="sm-btn sm-btn-save" style="flex: 1;">Módosítás</button>
-                    <button id="torol-esemeny-btn" class="sm-btn sm-btn-logout"
-                        style="flex: 1; margin-top: 0; display: block;">Törlés</button>
+                <div class="gomb-sor">
+                    <button id="modosit-esemeny-btn" class="sm-btn sm-btn-save nyujt">Módosítás</button>
+                    <button id="torol-esemeny-btn" class="sm-btn sm-btn-logout nyujt mt-0">Törlés</button>
                 </div>
             </div>
         </div>

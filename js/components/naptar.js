@@ -47,37 +47,37 @@ function setupGombok() {
     // Új esemény gomb a főoldalon
     document.getElementById('uj-esemeny-gomb')?.addEventListener('click', () => {
         const modal = document.getElementById('esemeny-modal');
-        if (modal) modal.style.display = 'flex';
+        if (modal) modal.hidden = false;
     });
     document.getElementById('close-esemeny-modal')?.addEventListener('click', () => {
         const modal = document.getElementById('esemeny-modal');
-        if (modal) modal.style.display = 'none';
+        if (modal) modal.hidden = true;
     });
     document.getElementById('ment-esemeny-btn')?.addEventListener('click', mentUjEsemeny);
 
     // Napi áttekintő modal bezárása
     document.getElementById('close-napi-esemenyek-modal')?.addEventListener('click', () => {
-        document.getElementById('napi-esemenyek-modal').style.display = 'none';
+        document.getElementById('napi-esemenyek-modal').hidden = true;
     });
 
     // Új esemény hozzáadása a napi áttekintőből
     document.getElementById('napi-uj-esemeny-btn')?.addEventListener('click', () => {
-        document.getElementById('napi-esemenyek-modal').style.display = 'none';
+        document.getElementById('napi-esemenyek-modal').hidden = true;
         const datumInput = document.getElementById('esemeny-datum-input');
         if (datumInput) datumInput.value = kivalasztottDatumString;
-        document.getElementById('esemeny-modal').style.display = 'flex';
+        document.getElementById('esemeny-modal').hidden = false;
     });
 
     // Szerkesztő modal gombjai
     document.getElementById('close-esemeny-reszletek-modal')?.addEventListener('click', () => {
-        document.getElementById('esemeny-reszletek-modal').style.display = 'none';
+        document.getElementById('esemeny-reszletek-modal').hidden = true;
     });
 
     document.getElementById('modosit-esemeny-btn')?.addEventListener('click', modositEsemeny);
     document.getElementById('torol-esemeny-btn')?.addEventListener('click', () => {
         if (aktivEsemeny && confirm(`Biztosan törlöd ezt az eseményt: "${aktivEsemeny.cim}"?`)) {
             torolEsemeny(aktivEsemeny.id);
-            document.getElementById('esemeny-reszletek-modal').style.display = 'none';
+            document.getElementById('esemeny-reszletek-modal').hidden = true;
         }
     });
 }
@@ -174,29 +174,20 @@ function nyisdNapiEsemenyeket(dString, napiEsemenyek) {
         listaDiv.innerHTML = '';
 
         if (napiEsemenyek.length === 0) {
-            listaDiv.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Nincsenek események ezen a napon.</p>';
+            const uzenet = document.createElement('p');
+            uzenet.className = 'ures-uzenet';
+            uzenet.textContent = 'Nincsenek események ezen a napon.';
+            listaDiv.replaceChildren(uzenet);
         } else {
             napiEsemenyek.forEach(es => {
                 const elem = document.createElement('div');
-                elem.style.cssText = `
-                    background: var(--inner-bg);
-                    border: 1px solid var(--border-color);
-                    padding: 10px 14px;
-                    border-radius: 8px;
-                    color: var(--text-primary);
-                    cursor: pointer;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    font-weight: 600;
-                `;
-                elem.innerHTML = '';
+                elem.className = 'naptar-esemeny-sor';
 
                 const cimSpan = document.createElement('span');
                 cimSpan.textContent = es.cim;
 
                 const szerkesztesSpan = document.createElement('span');
-                szerkesztesSpan.style.cssText = 'font-size: 12px; color: var(--accent-color);';
+                szerkesztesSpan.className = 'szerkesztes-jel';
                 szerkesztesSpan.textContent = 'Szerkesztés ✏️';
 
                 elem.appendChild(cimSpan);
@@ -204,7 +195,7 @@ function nyisdNapiEsemenyeket(dString, napiEsemenyek) {
 
                 // Kattintásra megnyílik a módosítás/törlés modal
                 elem.addEventListener('click', () => {
-                    modal.style.display = 'none';
+                    modal.hidden = true;
                     nyisdEsemenySzerkesztest(es);
                 });
 
@@ -213,7 +204,7 @@ function nyisdNapiEsemenyeket(dString, napiEsemenyek) {
         }
     }
 
-    if (modal) modal.style.display = 'flex';
+    if (modal) modal.hidden = false;
 }
 
 // Szerkesztő modal megnyitása
@@ -226,7 +217,7 @@ function nyisdEsemenySzerkesztest(esemeiny) {
     if (modal && cimInput && datumInput) {
         cimInput.value = esemeiny.cim;
         datumInput.value = esemeiny.datum;
-        modal.style.display = 'flex';
+        modal.hidden = false;
     }
 }
 
@@ -264,7 +255,7 @@ async function modositEsemeny() {
             esemenyekListaja[index].datum = ujDatum;
         }
 
-        document.getElementById('esemeny-reszletek-modal').style.display = 'none';
+        document.getElementById('esemeny-reszletek-modal').hidden = true;
         kirajzolNaptar();
     } catch (err) {
         console.error('Kivétel történt:', err);
@@ -304,7 +295,7 @@ async function mentUjEsemeny() {
 
     cimInput.value = '';
     datumInput.value = '';
-    document.getElementById('esemeny-modal').style.display = 'none';
+    document.getElementById('esemeny-modal').hidden = true;
 
     kirajzolNaptar();
 }

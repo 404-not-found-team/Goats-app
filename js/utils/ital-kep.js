@@ -97,7 +97,7 @@
         s.className = 'ital-ikon';
         s.setAttribute('role', 'img');
         s.setAttribute('aria-label', ital.nev || '');
-        s.style.setProperty('--ikon-url', `url("img/icons/${ikonFajl(ital.kategoria)}.svg")`);
+        s.classList.add('ikon-' + ikonFajl(ital.kategoria));
         return s;
     }
 

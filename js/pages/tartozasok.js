@@ -179,8 +179,7 @@ async function initMembersAndContainers() {
         members.forEach((member, index) => {
             const boxDiv = document.createElement('div');
             boxDiv.className = 'box';
-            const color = getMemberColor(index);
-            boxDiv.style.borderTopColor = color;
+            boxDiv.classList.add('tagdoboz', szinOsztaly(getMemberColor(index)));
 
             const h3 = document.createElement('h3');
             h3.textContent = member.display_name;
@@ -235,13 +234,11 @@ async function loadTartozasok() {
 
         const memberIndex = members.indexOf(ados);
         if (memberIndex !== -1) {
-            card.style.borderLeftColor = getMemberColor(memberIndex);
+            card.classList.add('tagkartya', szinOsztaly(getMemberColor(memberIndex)));
         }
 
         const row = document.createElement('div');
-        row.style.display = 'flex';
-        row.style.justifyContent = 'space-between';
-        row.style.alignItems = 'center';
+        row.className = 'tartozas-sor';
 
         const textSpan = document.createElement('span');
         textSpan.textContent = `${getNakNek(hitelezoNev)} ${item.mennyiert} Ft-tal - ${item.miert}`;
@@ -249,8 +246,7 @@ async function loadTartozasok() {
         const deleteSpan = document.createElement('span');
         deleteSpan.textContent = '🗑️';
         deleteSpan.title = 'Törlés';
-        deleteSpan.style.cursor = 'pointer';
-        deleteSpan.style.paddingLeft = '8px';
+        deleteSpan.className = 'torles-jel';
         deleteSpan.addEventListener('click', () => deleteTartozas(item.id));
 
         row.appendChild(textSpan);
@@ -259,9 +255,7 @@ async function loadTartozasok() {
 
         if (item.felvette_id) {
             const meta = document.createElement('div');
-            meta.style.fontSize = '0.75rem';
-            meta.style.opacity = '0.6';
-            meta.style.marginTop = '4px';
+            meta.className = 'meta-szoveg';
             const mikor = item.felvetel_ideje
                 ? ' · ' + new Date(item.felvetel_ideje).toLocaleDateString('hu-HU')
                 : '';
@@ -277,12 +271,8 @@ async function loadTartozasok() {
         const targetDiv = document.querySelector(`[data-member-id="${CSS.escape(member.user_id)}"]`);
         if (targetDiv && targetDiv.children.length === 0) {
             const emptyMsg = document.createElement('p');
-            emptyMsg.className = 'empty-msg';
+            emptyMsg.className = 'empty-msg ures-tartozas';
             emptyMsg.textContent = 'Még nincs tartozás';
-            emptyMsg.style.fontStyle = 'italic';
-            emptyMsg.style.opacity = '0.5';
-            emptyMsg.style.textAlign = 'center';
-            emptyMsg.style.marginTop = '40px';
             targetDiv.appendChild(emptyMsg);
         }
     });

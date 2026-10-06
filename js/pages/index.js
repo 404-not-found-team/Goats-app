@@ -27,7 +27,7 @@ async function frissitsNezetet() {
         const authStatus = document.getElementById('auth-status');
         if (authStatus) {
             authStatus.textContent = 'Be vagy lépve! Csatlakozz egy meglévő csoporthoz vagy hozz létre egy újat.';
-            authStatus.style.color = '#10b981';
+            authStatus.className = 'status-ok';
         }
     }
 }
@@ -36,7 +36,7 @@ function ellenorizVideokLathatosagat(groupCode) {
     const youtubeDoboz = document.getElementById('youtube-doboz');
     if (youtubeDoboz) {
         const lathato = !!groupCode && groupCode.toLowerCase() === 'duckies';
-        youtubeDoboz.style.display = lathato ? 'flex' : 'none';
+        youtubeDoboz.hidden = !lathato;
     }
 }
 
@@ -47,19 +47,19 @@ function kezelPWATelepitest() {
     const iosNotice = document.getElementById('ios-notice');
 
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-        if (installCard) installCard.style.display = 'none';
+        if (installCard) installCard.hidden = true;
     }
 
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (isIOS) {
-        if (installBtn) installBtn.style.display = 'none';
+        if (installBtn) installBtn.hidden = true;
         if (iosNotice) iosNotice.classList.remove('hidden');
     }
 
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        if (installBtn) installBtn.style.display = 'inline-flex';
+        if (installBtn) installBtn.hidden = false;
     });
 
     if (installBtn) {
@@ -68,12 +68,12 @@ function kezelPWATelepitest() {
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
             deferredPrompt = null;
-            if (outcome === 'accepted' && installCard) installCard.style.display = 'none';
+            if (outcome === 'accepted' && installCard) installCard.hidden = true;
         });
     }
 
     window.addEventListener('appinstalled', () => {
-        if (installCard) installCard.style.display = 'none';
+        if (installCard) installCard.hidden = true;
         deferredPrompt = null;
     });
 }

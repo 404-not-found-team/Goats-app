@@ -30,20 +30,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   closeBtns.forEach(({ btn, modal }) => {
     get(btn)?.addEventListener('click', () => {
       const m = get(modal);
-      if (m) m.style.display = 'none';
+      if (m) m.hidden = true;
     });
   });
 
   // Belépés ablak nyitása (a gombot több oldal is tartalmazhatja)
   document.addEventListener('click', (e) => {
     if (e.target.closest?.('#open-auth-modal-btn')) {
-      get('auth-modal').style.display = 'flex';
+      get('auth-modal').hidden = false;
     }
   });
 
   // Bejelentkezett, de csoport nélküli felhasználó: egyszer / fül megkínáljuk a csatlakozást
   if (state.user && !state.group && !sessionStorage.getItem('goats_auth_prompted')) {
     sessionStorage.setItem('goats_auth_prompted', '1');
-    get('auth-modal').style.display = 'flex';
+    get('auth-modal').hidden = false;
   }
 });
