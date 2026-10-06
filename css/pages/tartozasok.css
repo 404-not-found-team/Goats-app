@@ -302,3 +302,63 @@
         grid-template-columns: 1fr;
     }
 }
+/* Közös költség: egyenlő elosztás kapcsoló, előnézet, egyedi összegek */
+.kozos-koltseg {
+    width: 100%;
+    margin: -10px 0 25px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.kapcsolo-sor {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.kapcsolo-sor input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-color);
+}
+
+.elosztas-elonezet {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    min-height: 1.2em;
+}
+
+.elosztas-elonezet.hiba {
+    color: #ef4444;
+}
+
+.egyedi-osszegek {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.egyedi-osszegek.hidden {
+    display: none !important;
+}
+
+.egyedi-sor {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--text-primary);
+}
+
+.egyedi-input {
+    width: 140px;
+    padding: 6px 10px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+}
