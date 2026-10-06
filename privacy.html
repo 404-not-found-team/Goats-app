@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goats - Adatvédelmi nyilatkozat</title>
     <link rel="manifest" href="manifest.json">
@@ -10,47 +11,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="js/main.js"></script>
-
-    <style>
-        .jogi-oldal {
-            max-width: 720px;
-            margin: 0 auto;
-            padding: 24px 20px 60px;
-        }
-
-        .jogi-oldal h1 {
-            font-size: 1.5rem;
-            margin-bottom: 4px;
-        }
-
-        .jogi-oldal .utolso-frissites {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin-bottom: 24px;
-        }
-
-        .jogi-oldal .tos-modal-body {
-            font-size: 0.95rem;
-        }
-
-        .jogi-oldal .tos-modal-body h4 {
-            font-size: 1.05rem;
-            margin-top: 22px;
-        }
-
-        .jogi-oldal ul {
-            margin: 0 0 12px 0;
-            padding-left: 20px;
-        }
-
-        .jogi-oldal li {
-            margin-bottom: 6px;
-        }
-
-        .jogi-oldal a {
-            color: var(--accent-color);
-        }
-    </style>
+    <link rel="stylesheet" href="css/pages/jogi.css">
 </head>
 
 <body>
