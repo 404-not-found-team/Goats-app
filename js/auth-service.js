@@ -3,9 +3,14 @@
 // A localStorage itt csak GYORSÍTÓTÁR a régebbi oldalscriptek kompatibilitása miatt,
 // SOHA nem jogosultság: a szerver minden kérésnél a JWT alapján dönt.
 import { client } from './supabase-client.js';
+import { jeloles } from './utils/perf.js';
 
 export const TOS_VERSION = '2026-10';
 const KEEP_KEYS = new Set(['goats_theme', 'goats_tos_pending']);
+// Oldalváltáskor a friss állapot az oldalak között ebben él (sessionStorage), így nem kell
+// minden betöltésnél újra lekérdezni. Csak megjelenítésre szolgál: a jogosultságot az RLS dönti el.
+const SNAPSHOT_KULCS = 'goats_snapshot';
+const SNAPSHOT_FRISS_MS = 60 * 1000;
 
 const blank = () => ({
   session: null,
@@ -42,6 +47,40 @@ function clearCache() {
   Object.keys(localStorage)
     .filter(k => k.startsWith('goats_') && !KEEP_KEYS.has(k))
     .forEach(k => localStorage.removeItem(k));
+  try { sessionStorage.removeItem(SNAPSHOT_KULCS); } catch { /* nem elérhető tárhely: nincs mit törölni */ }
+}
+
+// Pillanatkép mentése (csak a megjelenítéshez szükséges adat, a token nem kerül bele)
+function saveSnapshot(userId) {
+  try {
+    sessionStorage.setItem(SNAPSHOT_KULCS, JSON.stringify({
+      t: Date.now(),
+      userId,
+      displayName: state.displayName,
+      profile: state.profile,
+      group: state.group,
+      groupRole: state.groupRole,
+      members: state.members,
+    }));
+  } catch { /* privát módban nem menthető: a következő oldal majd lekérdez */ }
+}
+
+// Ha a pillanatkép friss, és ugyanannak a felhasználónak szól, visszatöltjük (hálózat nélkül)
+function loadFreshSnapshot(userId) {
+  try {
+    const s = JSON.parse(sessionStorage.getItem(SNAPSHOT_KULCS) || 'null');
+    if (!s || s.userId !== userId || Date.now() - s.t > SNAPSHOT_FRISS_MS) return false;
+    Object.assign(state, {
+      displayName: s.displayName,
+      profile: s.profile,
+      group: s.group,
+      groupRole: s.groupRole,
+      members: s.members,
+    });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function writeCache() {
@@ -119,6 +158,7 @@ export async function refresh() {
   }
 
   writeCache();
+  saveSnapshot(session.user.id);
   emit();
   return state;
 }
@@ -183,7 +223,24 @@ export async function deleteMyAccount() {
 
 // ---------- Inicializálás ----------
 
-export const ready = refresh().catch(err => {
+// Oldalbetöltéskor: friss pillanatkép esetén nem várunk a hálózatra (a nav azonnal kirajzolódik),
+// egyébként teljes frissítés. A ToS-elfogadás függőben lévő állapotát mindig a teljes frissítés kezeli.
+async function indit() {
+  jeloles('auth-start');
+  const { data } = await client.auth.getSession();
+  const user = data?.session?.user;
+  if (user && !localStorage.getItem('goats_tos_pending') && loadFreshSnapshot(user.id)) {
+    state.session = data.session;
+    state.user = user;
+    jeloles('auth-pillanatkep');
+    return state;
+  }
+  const allapot = await refresh();
+  jeloles('auth-kesz');
+  return allapot;
+}
+
+export const ready = indit().catch(err => {
   console.error('Auth init hiba:', err);
   return state;
 });
