@@ -23,6 +23,11 @@ function aktualisGroupCode() {
     return window.goatsAuth?.getState()?.group?.group_code || localStorage.getItem('goats_group_code');
 }
 
+// A képek mappája a csoport azonosítója (groups.id), a kódcsere után sem változik
+function aktualisGroupId() {
+    return window.goatsAuth?.getState()?.group?.id || null;
+}
+
 // Aláírt URL-ek (privát bucket). A böngésző ugyanazt az URL-t használja, így a képeket
 // a normál HTTP cache-ből szolgálja ki (egy új aláírás új URL, azaz cache-miss lenne).
 const KEP_LEJARAT_MP = 60 * 60 * 24;       // 1 nap
@@ -38,33 +43,27 @@ function kepGyorsitotarIr(map) {
 }
 
 async function betoltKepek() {
+    const groupId = aktualisGroupId();
     const groupCode = aktualisGroupCode();
 
-    if (!groupCode) {
+    if (!groupId) {
         kepekLista = [];
         frissitGaleria();
         return;
     }
 
+    // A csoport mappái: a csoport azonosítója (és átmenetileg a régi, kód alapú mappa)
+    const utak = [];
+    for (const mappa of window.goatsKepek.csoportMappak(groupId, groupCode)) {
+        try {
+            utak.push(...await window.goatsKepek.mappaFajljai(mappa));
+        } catch (error) {
+            console.error('Hiba a képek listázásakor:', error);
+        }
+    }
+
+    // Aláírt URL-ek: a hiányzókat egy hívással írjuk alá, a többit a gyorsítótárból vesszük
     const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
-    const { data, error } = await client
-        .storage
-        .from(BUCKET_NEV)
-        .list(groupCode, {
-            sortBy: { column: 'name', order: 'asc' }
-        });
-
-    if (error) {
-        console.error('Hiba a képek listázásakor:', error);
-        kepekLista = [];
-        frissitGaleria();
-        return;
-    }
-
-    const fajlok = data ? data.filter(item => item.id !== null && item.name !== '.emptyFolderPlaceholder') : [];
-    const utak = fajlok.map(fajl => `${groupCode}/${fajl.name}`);
-
-    // Egy hívással aláírjuk a hiányzó vagy lejáróban lévő URL-eket, a többit a gyorsítótárból vesszük
     const gyorsitotar = kepGyorsitotarOlvas();
     const most = Date.now();
     const hianyzo = utak.filter(u => !gyorsitotar[u] || gyorsitotar[u].lejar - most < KEP_UJRA_ALAIRAS_MS);
@@ -89,7 +88,7 @@ async function betoltKepek() {
 
     kepekLista = utak
         .filter(u => gyorsitotar[u])
-        .map(u => ({ name: u.split('/').pop(), url: gyorsitotar[u].url }));
+        .map(u => ({ name: u.split('/').pop(), path: u, url: gyorsitotar[u].url }));
 
     if (currentIndex >= kepekLista.length) {
         currentIndex = Math.max(0, kepekLista.length - 1);
@@ -99,8 +98,8 @@ async function betoltKepek() {
 }
 
 function frissitGaleria() {
-    const groupCode = aktualisGroupCode();
-    if (!groupCode) return;
+    const groupId = aktualisGroupId();
+    if (!groupId) return;
 
     const elemBal = document.getElementById("kepBal");
     const elemKozep = document.getElementById("kepKozep");
@@ -188,8 +187,7 @@ function nyisdMegFajlValasztot() {
 
 // KÉP TÖRLESE SUPABASE STORAGE-BÓL
 async function torolAktualisKep() {
-    const groupCode = aktualisGroupCode();
-    if (!groupCode || kepekLista.length === 0) return;
+    if (!aktualisGroupId() || kepekLista.length === 0) return;
 
     const torlendoKep = kepekLista[currentIndex];
     if (!torlendoKep || !torlendoKep.name) {
@@ -199,7 +197,7 @@ async function torolAktualisKep() {
 
     if (!confirm('Biztosan törölni szeretnéd ezt a képet?')) return;
 
-    const eleresiUt = `${groupCode}/${torlendoKep.name}`;
+    const eleresiUt = torlendoKep.path;
     console.log('Törlésre küldött útvonal:', eleresiUt);
 
     const { data, error } = await supabase
@@ -319,8 +317,8 @@ function feltoltesiHiba(fajl, hiba) {
 }
 
 async function feltoltKepek(event) {
-    const groupCode = aktualisGroupCode();
-    if (!groupCode) {
+    const groupId = aktualisGroupId();
+    if (!groupId) {
         alert('Előbb lépj be egy csoportba a beállításoknál!');
         return;
     }
@@ -354,8 +352,8 @@ async function feltoltKepek(event) {
             const most = new Date();
             const idoBelyeg = `${most.getFullYear()}-${String(most.getMonth() + 1).padStart(2, '0')}-${String(most.getDate()).padStart(2, '0')}_${String(most.getHours()).padStart(2, '0')}-${String(most.getMinutes()).padStart(2, '0')}-${String(most.getSeconds()).padStart(2, '0')}`;
             const veletlen = Math.random().toString(36).substring(2, 8);
-            const egyediNev = `${groupCode}_${idoBelyeg}_${veletlen}.${kiterjesztes}`;
-            const eleresiUt = `${groupCode}/${egyediNev}`;
+            const egyediNev = `${groupId}_${idoBelyeg}_${veletlen}.${kiterjesztes}`;
+            const eleresiUt = `${groupId}/${egyediNev}`;
 
             const { error } = await client
                 .storage
