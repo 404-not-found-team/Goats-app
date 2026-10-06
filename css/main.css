@@ -1,6 +1,7 @@
 /* BASE STYLES */
 @import url('base/variables.css');
 @import url('base/reset.css');
+@import url('base/utilities.css');
 
 /* COMPONENTS */
 @import url('components/navbar.css');

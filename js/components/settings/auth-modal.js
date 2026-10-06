@@ -18,19 +18,19 @@ export function initAuthModal() {
     tosModal: get('tos-modal'),
   };
 
-  const COLORS = { error: '#ef4444', info: '#3b82f6', ok: '#10b981' };
+  const STATUS_OSZTALY = { error: 'status-hiba', info: 'status-info', ok: 'status-ok' };
   const setStatus = (msg, kind) => {
     if (!el.status) return;
     el.status.textContent = msg || '';
-    el.status.style.color = COLORS[kind] || '';
+    el.status.className = STATUS_OSZTALY[kind] || '';
   };
   const setBusy = (btn, on) => { if (btn) btn.disabled = on; };
 
   // A felület a valós állapotot tükrözi: nincs session -> belépés, van session -> csoport lépés
   function renderStep() {
     const { user } = getState();
-    if (el.stepLogin) el.stepLogin.style.display = user ? 'none' : 'block';
-    if (el.stepGroup) el.stepGroup.style.display = user ? 'block' : 'none';
+    if (el.stepLogin) el.stepLogin.hidden = !!user;
+    if (el.stepGroup) el.stepGroup.hidden = !user;
     if (el.title) el.title.textContent = user ? 'Csoport' : 'Belépés';
     if (el.userLine) el.userLine.textContent = user ? `Bejelentkezve: ${user.email}` : '';
   }
@@ -41,15 +41,15 @@ export function initAuthModal() {
   document.addEventListener('click', (e) => {
     if (e.target.closest?.('#open-tos-modal')) {
       e.preventDefault();
-      if (el.tosModal) el.tosModal.style.display = 'flex';
+      if (el.tosModal) el.tosModal.hidden = false;
     }
   });
   get('close-tos-modal')?.addEventListener('click', () => {
-    if (el.tosModal) el.tosModal.style.display = 'none';
+    if (el.tosModal) el.tosModal.hidden = true;
   });
   get('accept-tos-modal-btn')?.addEventListener('click', () => {
     if (el.tos) el.tos.checked = true;
-    if (el.tosModal) el.tosModal.style.display = 'none';
+    if (el.tosModal) el.tosModal.hidden = true;
   });
 
   // ---- 1. Google bejelentkezés ----

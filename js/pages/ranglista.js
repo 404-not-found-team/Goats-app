@@ -133,7 +133,7 @@ async function kategoriatValaszt(kategoriaNev) {
 }
 
 function modalBezár() {
-    document.getElementById('modal-hatter').style.display = 'none';
+    document.getElementById('modal-hatter').hidden = true;
     aktivElemId = null;
     aktivItalAdat = null;
 }
@@ -172,7 +172,7 @@ function frissitsSzamlalokat() {
 
         if (listaDiv) {
             const lathatoKartyak = Array.from(listaDiv.getElementsByClassName('ital-kartya'))
-                .filter(k => k.style.display !== 'none');
+                .filter(k => !k.hidden);
 
             const jelenlegiDb = lathatoKartyak.length;
             const osszesDb = doboz.getAttribute('data-osszes') || listaDiv.getElementsByClassName('ital-kartya').length;
@@ -185,9 +185,9 @@ function frissitsSzamlalokat() {
             const veglegesKatId = katId === 'ital' ? 'egyeb' : katId;
 
             if (kikapcsoltKategoriak.includes(veglegesKatId) || jelenlegiDb === 0) {
-                doboz.style.display = 'none';
+                doboz.hidden = true;
             } else {
-                doboz.style.display = 'block';
+                doboz.hidden = false;
             }
         }
     });
@@ -256,11 +256,11 @@ document.addEventListener("DOMContentLoaded", () => {
    ========================================================================== */
 
 function nyisdSzuroModal() {
-    document.getElementById('szuro-modal').style.display = 'flex';
+    document.getElementById('szuro-modal').hidden = false;
 }
 
 function zardSzuroModal() {
-    document.getElementById('szuro-modal').style.display = 'none';
+    document.getElementById('szuro-modal').hidden = true;
 }
 
 function epitSzuroUI(italKategoriak) {
@@ -342,9 +342,9 @@ async function frissitsSzureseketEsMents() {
         const nevKizarva = kizartMarkakTomb.some(szoveg => nev.includes(szoveg));
 
         if (kategoriaKizarva || nevKizarva) {
-            kartya.style.display = 'none';
+            kartya.hidden = true;
         } else {
-            kartya.style.display = 'inline-flex';
+            kartya.hidden = false;
         }
     });
 
@@ -413,12 +413,12 @@ function toggleForrasDoboz(fejlecElem) {
 }
 
 function nyisdUjItalModal() {
-    document.getElementById('uj-ital-modal').style.display = 'flex';
+    document.getElementById('uj-ital-modal').hidden = false;
     kategoriaValtozasCheck();
 }
 
 function zardUjItalModal() {
-    document.getElementById('uj-ital-modal').style.display = 'none';
+    document.getElementById('uj-ital-modal').hidden = true;
     document.getElementById('uj-ital-nev').value = '';
     document.getElementById('uj-ital-szazalek').value = '';
     document.getElementById('hozzavalok-lista').innerHTML = '';
@@ -437,12 +437,12 @@ function kategoriaValtozasCheck() {
 
     if (alkoholGroup) {
         const elrejtAlkohol = (kat === 'energiaital' || kat === 'koktel' || kat === 'froccs');
-        alkoholGroup.style.display = elrejtAlkohol ? 'none' : 'block';
+        alkoholGroup.hidden = elrejtAlkohol;
     }
 
     if (resz) {
         const kevert = isKevertItal(kat);
-        resz.style.display = kevert ? 'block' : 'none';
+        resz.hidden = !kevert;
         if (kevert && document.getElementById('hozzavalok-lista').children.length === 0) {
             if (kat === 'froccs') {
                 ujHozzavaloSor('1', 'dl', 'Bor');
@@ -486,7 +486,7 @@ function keszitInput(osztaly, stilus, placeholder, ertek, tipus = 'text') {
     const input = document.createElement('input');
     input.type = tipus;
     input.className = `sm-input ${osztaly}`;
-    input.style.flex = stilus;
+    input.classList.add(stilus === '2' ? 'nyujt-2' : 'nyujt');
     input.placeholder = placeholder;
     input.value = ertek;
     return input;
@@ -513,7 +513,7 @@ function keszitSorElemek(m, e, n) {
     const egysegek = ['dl', 'ml', 'cl', 'db', 'öntet'];
     const select = document.createElement('select');
     select.className = 'sm-input hozzavalo-egyseg';
-    select.style.flex = '1';
+    select.classList.add('nyujt');
     egysegek.forEach(opt => {
         const option = document.createElement('option');
         option.value = opt;
@@ -685,17 +685,17 @@ function addItalKartyaToUI(ital) {
             if (kat === 'energiaital') {
                 badge.className = 'alkohol-badge mentes';
                 badgeSzoveg(badge, '', 'Alkoholmentes');
-                badge.style.display = 'inline-flex';
+                badge.hidden = false;
             } else if (kat === 'froccs' || kat === 'fröccs' || kat === 'koktel' || kat === 'koktél') {
                 badge.className = 'alkohol-badge valtozo';
                 badgeSzoveg(badge, 'Alkoholfok: ', 'Változó');
-                badge.style.display = 'inline-flex';
+                badge.hidden = false;
             } else if (ital.alkohol_fok !== null && ital.alkohol_fok !== undefined) {
                 badge.className = 'alkohol-badge';
                 badgeSzoveg(badge, 'Alkoholfok: ', `${ital.alkohol_fok}%`);
-                badge.style.display = 'inline-flex';
+                badge.hidden = false;
             } else {
-                badge.style.display = 'none';
+                badge.hidden = true;
             }
         }
 
@@ -708,36 +708,36 @@ function addItalKartyaToUI(ital) {
                 if (Array.isArray(list) && list.length > 0) {
                     list.forEach((item, index) => {
                         const p = document.createElement('div');
-                        const borderStyle = index < list.length - 1 ? 'border-bottom: 1px solid var(--border-color);' : '';
-                        p.style.cssText = `display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.9rem; ${borderStyle}`;
+                        const elvalaszto = index < list.length - 1;
+                        p.className = 'koktel-sor' + (elvalaszto ? ' koktel-sor-elvalaszto' : '');
                         p.innerHTML = '';
 
                         const nevSpan = document.createElement('span');
-                        nevSpan.style.cssText = 'font-weight: 600; color: var(--text-primary);';
+                        nevSpan.className = 'koktel-nev';
                         nevSpan.textContent = item.nev;
 
                         const mennyisegSpan = document.createElement('span');
-                        mennyisegSpan.style.cssText = 'color: var(--text-secondary);';
+                        mennyisegSpan.className = 'koktel-mennyiseg';
                         mennyisegSpan.textContent = `${item.mennyiseg} ${item.egyseg || ''}`;
 
                         p.appendChild(nevSpan);
                         p.appendChild(mennyisegSpan); 
                         kontener.appendChild(p);
                     });
-                    if (doboz) doboz.style.display = 'block';
+                    if (doboz) doboz.hidden = false;
                 } else {
-                    if (doboz) doboz.style.display = 'none';
+                    if (doboz) doboz.hidden = true;
                 }
             } catch (e) {
                 console.error('Hiba a hozzávalók feldolgozásakor:', e);
                 kontener.textContent = ital.osszetevok;
-                if (doboz) doboz.style.display = 'block';
+                if (doboz) doboz.hidden = false;
             }
         } else {
-            if (doboz) doboz.style.display = 'none';
+            if (doboz) doboz.hidden = true;
         }
 
-        document.getElementById('modal-hatter').style.display = 'flex';
+        document.getElementById('modal-hatter').hidden = false;
     });
 
     celListaDiv.appendChild(kartya);

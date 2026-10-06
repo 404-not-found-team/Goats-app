@@ -63,3 +63,8 @@ input[type="radio"] {
     outline: 2px solid var(--accent-color);
     outline-offset: 2px;
 }
+
+/* A hidden attribútum mindig elrejt, a komponens-display nem írhatja felül */
+[hidden] {
+    display: none !important;
+}

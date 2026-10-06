@@ -7,9 +7,10 @@ import {
 export function initGroupDetails() {
   const get = id => document.getElementById(id);
 
+  const STATUS_OSZTALY = { '#ef4444': 'status-hiba', '#10b981': 'status-ok', '#3b82f6': 'status-info' };
   const setStatus = (msg, color = '') => {
     const s = get('group-details-status');
-    if (s) { s.textContent = msg || ''; s.style.color = color; }
+    if (s) { s.textContent = msg || ''; s.className = STATUS_OSZTALY[color] || ''; }
   };
 
   const updateAvatars = () => {
@@ -23,19 +24,16 @@ export function initGroupDetails() {
   // Tag sor felépítése (csak textContent, nincs innerHTML)
   function memberRow(m, me, isAdmin, groupId) {
     const row = document.createElement('div');
-    row.style.cssText =
-      'display:flex;align-items:center;gap:8px;padding:8px 10px;margin-bottom:6px;' +
-      'border:1px solid var(--border-color);background:var(--inner-bg);border-radius:8px;' +
-      'color:var(--text-primary);';
+    row.className = 'tag-sor';
 
     const name = document.createElement('span');
-    name.style.flex = '1';
+    name.className = 'nyujt';
     name.textContent = m.display_name + (m.user_id === me ? ' (te)' : '');
     row.appendChild(name);
 
     if (m.group_role === 'admin') {
       const badge = document.createElement('span');
-      badge.style.cssText = 'font-size:12px;color:var(--accent-color);';
+      badge.className = 'admin-jel';
       badge.textContent = '👑 admin';
       row.appendChild(badge);
     }
@@ -79,24 +77,24 @@ export function initGroupDetails() {
 
     const noGroup = get('group-no-group');
     const content = get('group-content');
-    if (noGroup) noGroup.style.display = group ? 'none' : 'block';
-    if (content) content.style.display = group ? 'block' : 'none';
+    if (noGroup) noGroup.hidden = !!group;
+    if (content) content.hidden = !group;
     updateAvatars();
     if (!group) return;
 
     const nameInput = get('group-name-display');
     if (nameInput) { nameInput.value = group.group_name || ''; nameInput.readOnly = !isAdmin; }
     const saveName = get('save-group-name-btn');
-    if (saveName) saveName.style.display = isAdmin ? '' : 'none';
+    if (saveName) saveName.hidden = !isAdmin;
 
     const codeInput = get('group-code-display');
     if (codeInput) { codeInput.value = group.group_code; codeInput.type = 'password'; }
     if (get('toggle-group-code-visibility')) get('toggle-group-code-visibility').textContent = '👁️';
 
     const regen = get('regenerate-code-btn');
-    if (regen) regen.style.display = isAdmin ? '' : 'none';
+    if (regen) regen.hidden = !isAdmin;
     const del = get('delete-group-btn');
-    if (del) del.style.display = isAdmin ? '' : 'none';
+    if (del) del.hidden = !isAdmin;
 
     const list = get('group-members-list');
     if (list) {
@@ -144,7 +142,7 @@ export function initGroupDetails() {
     const status = get('own-name-status');
     if (status) {
       status.textContent = ok ? 'A neved elmentve.' : '';
-      status.style.color = '#10b981';
+      status.className = 'status-ok';
     }
   });
 

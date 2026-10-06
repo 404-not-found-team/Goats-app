@@ -195,8 +195,47 @@
     width: 100%;
     height: 100px;
     background-color: var(--text-secondary);
-    -webkit-mask: var(--ikon-url) center / contain no-repeat;
-    mask: var(--ikon-url) center / contain no-repeat;
+}
+
+.ital-ikon.ikon-sor {
+    -webkit-mask: url('../../img/icons/sor.svg') center / contain no-repeat;
+    mask: url('../../img/icons/sor.svg') center / contain no-repeat;
+}
+.ital-ikon.ikon-bor {
+    -webkit-mask: url('../../img/icons/bor.svg') center / contain no-repeat;
+    mask: url('../../img/icons/bor.svg') center / contain no-repeat;
+}
+.ital-ikon.ikon-palinka {
+    -webkit-mask: url('../../img/icons/palinka.svg') center / contain no-repeat;
+    mask: url('../../img/icons/palinka.svg') center / contain no-repeat;
+}
+.ital-ikon.ikon-vodka {
+    -webkit-mask: url('../../img/icons/vodka.svg') center / contain no-repeat;
+    mask: url('../../img/icons/vodka.svg') center / contain no-repeat;
+}
+.ital-ikon.ikon-whisky {
+    -webkit-mask: url('../../img/icons/whisky.svg') center / contain no-repeat;
+    mask: url('../../img/icons/whisky.svg') center / contain no-repeat;
+}
+.ital-ikon.ikon-rum {
+    -webkit-mask: url('../../img/icons/rum.svg') center / contain no-repeat;
+    mask: url('../../img/icons/rum.svg') center / contain no-repeat;
+}
+.ital-ikon.ikon-likor {
+    -webkit-mask: url('../../img/icons/likor.svg') center / contain no-repeat;
+    mask: url('../../img/icons/likor.svg') center / contain no-repeat;
+}
+.ital-ikon.ikon-energiaital {
+    -webkit-mask: url('../../img/icons/energiaital.svg') center / contain no-repeat;
+    mask: url('../../img/icons/energiaital.svg') center / contain no-repeat;
+}
+.ital-ikon.ikon-udito {
+    -webkit-mask: url('../../img/icons/udito.svg') center / contain no-repeat;
+    mask: url('../../img/icons/udito.svg') center / contain no-repeat;
+}
+.ital-ikon.ikon-egyeb {
+    -webkit-mask: url('../../img/icons/egyeb.svg') center / contain no-repeat;
+    mask: url('../../img/icons/egyeb.svg') center / contain no-repeat;
 }
 
 @media (max-width: 768px) {
@@ -296,7 +335,7 @@
 
 .modal-hatter-ui,
 #modal-hatter {
-    display: none;
+    display: flex;
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.75);
@@ -344,7 +383,6 @@
 }
 
 .modal-hozzavalok-box {
-    display: none;
     background: var(--inner-bg);
     padding: 12px;
     border-radius: 12px;
@@ -377,7 +415,6 @@
 }
 
 .koktel-resz-kontener {
-    display: none;
     border-top: 1px dashed var(--border-color);
     padding-top: 15px;
     margin-top: 10px;
