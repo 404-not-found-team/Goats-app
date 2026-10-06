@@ -320,45 +320,91 @@
     font-size: 0.95rem;
 }
 
-.kapcsolo-sor input[type="checkbox"] {
+.kapcsolo-sor input[type="radio"] {
     width: 18px;
     height: 18px;
-    accent-color: var(--accent-color);
+    margin: 0;
 }
 
-.elosztas-elonezet {
+/* Kétállású választó (egyenlő / egyedi) */
+.elosztas-mod {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    align-items: center;
+    max-width: 520px;
+    margin: 0;
+    padding: 8px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+}
+
+.elosztas-mod legend {
+    padding: 0 6px;
     color: var(--text-secondary);
-    font-size: 0.9rem;
-    min-height: 1.2em;
+    font-size: 0.85rem;
+}
+
+/* Élő előnézet és összeg-ellenőrzés: szöveg + szín, nem csak szín */
+.elosztas-elonezet {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-weight: 600;
+    min-height: 1.4em;
+    margin: 0;
 }
 
 .elosztas-elonezet.hiba {
-    color: #ef4444;
+    color: var(--hiba-color);
+}
+
+.elosztas-elonezet.ok {
+    color: var(--ok-color);
 }
 
 .egyedi-osszegek {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    max-width: 520px;
 }
 
 .egyedi-osszegek.hidden {
     display: none !important;
 }
 
+/* Tagsor: a név a mező mellett, keskeny képernyőn egymás alatt */
 .egyedi-sor {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    gap: 6px 12px;
     color: var(--text-primary);
 }
 
+.egyedi-sor > span {
+    flex: 1 1 120px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
 .egyedi-input {
-    width: 140px;
+    width: 150px;
+    max-width: 100%;
     padding: 6px 10px;
     background-color: var(--input-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     color: var(--text-primary);
+}
+
+@media (max-width: 480px) {
+    .egyedi-sor {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .egyedi-input {
+        width: 100%;
+    }
 }
