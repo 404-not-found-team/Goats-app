@@ -142,7 +142,8 @@
 
 .forras-fejlec .ital-szamlalo {
     font-size: 0.9rem;
-    color: var(--text-secondary);
+    /* elsődleges szín: a másodlagos (--text-secondary) cyberpunk témában nem éri el a 4,5:1-et */
+    color: var(--text-primary);
     font-weight: 600;
     margin-left: auto;
 }
@@ -336,7 +337,7 @@
 }
 
 .modal-ital-cim {
-    color: white;
+    color: var(--text-primary);
     font-size: 20px;
     margin-bottom: 10px;
     font-weight: bold;

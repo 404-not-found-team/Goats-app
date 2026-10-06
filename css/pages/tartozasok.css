@@ -59,7 +59,7 @@
 }
 
 .tartozas-kartya strong {
-    color: white;
+    color: var(--text-primary);
     font-weight: 600;
 }
 

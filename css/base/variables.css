@@ -67,7 +67,8 @@
     --input-bg: #090a10;
     --border-color: #2b3254;
     --text-primary: #00ffcc;
-    --text-secondary: #708090;
+    /* #708090 volt: ezen a háttéren 4,3:1 körüli, a címkék és másodlagos szövegek így nem érték el a 4,5:1-et */
+    --text-secondary: #94a3b8;
     --accent-color: #ff0055;
     --accent-hover: #cc0044;
 
