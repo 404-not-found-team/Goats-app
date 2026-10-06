@@ -1,0 +1,76 @@
+/* Italok moderálása: jóváhagyásra váró jelvény (ranglista) és a superadmin lista (beállítások) */
+
+/* A saját, még jóváhagyatlan ital: halványabb kártya + jelvény */
+.ital-kartya.sajat-javaslat {
+    position: relative;
+    opacity: 0.8;
+}
+
+.jovahagyasra-var {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background-color: var(--accent-color);
+    color: #ffffff;
+    pointer-events: none;
+}
+
+/* A blokk a hidden attribútummal rejtett; ne írja felül a display */
+.moderalas-blokk[hidden] {
+    display: none;
+}
+
+.moderalas-blokk {
+    margin-top: 18px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.moderalas-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.moderalas-sor {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--inner-bg);
+    color: var(--text-primary);
+}
+
+.moderalas-leiras {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.moderalas-leiras span {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.moderalas-gombok {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.moderalas-ures {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.sm-status.hiba {
+    color: #ef4444;
+}

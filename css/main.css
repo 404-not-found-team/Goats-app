@@ -7,6 +7,7 @@
 @import url('components/modals.css');
 @import url('components/custom-dropdown.css');
 @import url('components/floating-label.css');
+@import url('components/moderation.css');
 
 /* PAGES */
 @import url('pages/signin.css');

@@ -4,6 +4,7 @@ import { initAuthModal } from './settings/auth-modal.js';
 import { initProfileModal } from './settings/profile-modal.js';
 import { initGroupDetails } from './settings/group-details.js';
 import { initThemePicker } from './settings/theme-picker.js';
+import { initDrinkModeration } from './settings/drink-moderation.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Megvárjuk a session betöltését, hogy a felület már a valós állapotot mutassa
@@ -16,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initProfileModal();
   initGroupDetails();
   initThemePicker();
+  initDrinkModeration();
 
   const get = id => document.getElementById(id);
 
