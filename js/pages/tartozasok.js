@@ -2,6 +2,12 @@ window.onload = async function () {
     if (window.goatsAuth) await window.goatsAuth.ready;
     initMembersAndContainers();
     loadTartozasok();
+
+    // Közös költség: előnézet és egyedi összegek élő frissítése
+    document.getElementById('mennyiertInput')?.addEventListener('input', frissitKozosKoltseg);
+    document.getElementById('egyenloElosztas')?.addEventListener('change', frissitKozosKoltseg);
+    document.getElementById('dropdownContent')?.addEventListener('change', frissitKozosKoltseg);
+    document.getElementById('egyediOsszegek')?.addEventListener('input', frissitOsszesen);
 };
 
 // A csoportkód/taglista forrása az élő auth-állapot; localStorage csak akkor,
@@ -109,6 +115,7 @@ function selectKinek(member, ragozottNev) {
         }
     });
 
+    frissitKozosKoltseg();
     closeAllDropdowns();
 }
 
@@ -297,17 +304,156 @@ async function deleteTartozas(id) {
     loadTartozasok();
 }
 
+// ---------- Közös költség elosztása ----------
+
+// Ezres tagolás szóközzel ("2 500 Ft"). A hu-HU locale 4 jegyű számoknál nem tagol, ezért kézzel.
+function formatFt(szam) {
+    const egesz = String(Math.round(szam));
+    return `${egesz.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} Ft`;
+}
+
+function egyenloElosztasE() {
+    const kapcsolo = document.getElementById('egyenloElosztas');
+    return !kapcsolo || kapcsolo.checked;
+}
+
+function kijeloltResztvevok() {
+    return Array.from(document.querySelectorAll('#dropdownContent input[type="checkbox"]:checked')).map(cb => cb.value);
+}
+
+function osszegErtek() {
+    const ertek = parseFloat(document.getElementById('mennyiertInput')?.value);
+    return Number.isFinite(ertek) && ertek > 0 ? Math.round(ertek) : null;
+}
+
+function tagNeve(id) {
+    return aktualisTagok().find(m => m.user_id === id)?.display_name || '';
+}
+
+// Egyenlő elosztás. A maradék forint a hitelezőnél marad, ha ő is résztvevő,
+// különben az első résztvevő kapja. A hitelező saját része nem tartozás, nincs hozzá sor.
+function egyenloAdatok(osszeg, resztvevok, hitelezo) {
+    const n = resztvevok.length;
+    const resz = Math.floor(osszeg / n);
+    const maradek = osszeg - resz * n;
+    const maradekGazda = resztvevok.includes(hitelezo) ? hitelezo : resztvevok[0];
+    return { n, resz, maradek, maradekGazda };
+}
+
+function egyenloSorok(osszeg, resztvevok, hitelezo) {
+    const { resz, maradek, maradekGazda } = egyenloAdatok(osszeg, resztvevok, hitelezo);
+    return resztvevok
+        .filter(id => id !== hitelezo)
+        .map(id => ({ adosId: id, osszeg: resz + (id === maradekGazda ? maradek : 0) }));
+}
+
+// Egyedi összegek résztvevőnként (a mezők a #egyediOsszegek konténerben vannak)
+function egyediOsszegekOlvas() {
+    const map = {};
+    document.querySelectorAll('#egyediOsszegek input').forEach(i => {
+        map[i.dataset.id] = Math.round(parseFloat(i.value) || 0);
+    });
+    return map;
+}
+
+function egyediMezok(osszeg, resztvevok) {
+    const konténer = document.getElementById('egyediOsszegek');
+    if (!konténer) return;
+    const elozo = egyediOsszegekOlvas();
+    const alap = Math.floor(osszeg / resztvevok.length);
+
+    konténer.replaceChildren(...resztvevok.map(id => {
+        const sor = document.createElement('div');
+        sor.className = 'egyedi-sor';
+        const nev = document.createElement('span');
+        nev.textContent = tagNeve(id);
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = '0';
+        input.className = 'egyedi-input';
+        input.dataset.id = id;
+        input.value = elozo[id] !== undefined ? elozo[id] : alap;
+        sor.append(nev, input);
+        return sor;
+    }));
+}
+
+function frissitOsszesen() {
+    const elonezet = document.getElementById('elosztasElonezet');
+    const osszeg = osszegErtek();
+    if (!elonezet || egyenloElosztasE() || !osszeg) return;
+    const map = egyediOsszegekOlvas();
+    const sum = kijeloltResztvevok().reduce((a, id) => a + (map[id] || 0), 0);
+    elonezet.textContent = `Összesen: ${formatFt(sum)} / ${formatFt(osszeg)}`;
+    elonezet.classList.toggle('hiba', sum !== osszeg);
+}
+
+// Élő előnézet: egyenlő elosztásnál "4 fő × 2 500 Ft", egyedinél összeg-ellenőrzés
+function frissitKozosKoltseg() {
+    const konténer = document.getElementById('egyediOsszegek');
+    const egyenlo = egyenloElosztasE();
+    if (konténer) konténer.classList.toggle('hidden', egyenlo);
+
+    const elonezet = document.getElementById('elosztasElonezet');
+    if (!elonezet) return;
+    const resztvevok = kijeloltResztvevok();
+    const osszeg = osszegErtek();
+    elonezet.classList.remove('hiba');
+
+    if (!osszeg || resztvevok.length === 0) {
+        elonezet.textContent = '';
+        if (!egyenlo && konténer) konténer.replaceChildren();
+        return;
+    }
+
+    if (egyenlo) {
+        const { n, resz, maradek, maradekGazda } = egyenloAdatok(osszeg, resztvevok, selectedKinek);
+        let szoveg = `${n} fő × ${formatFt(resz)}`;
+        if (maradek > 0) szoveg += ` (a ${maradek} Ft-os maradék: ${tagNeve(maradekGazda)})`;
+        elonezet.textContent = szoveg;
+    } else {
+        egyediMezok(osszeg, resztvevok);
+        frissitOsszesen();
+    }
+}
+
+// Sorok a felvitel előtt. Hibaüzenetet ad vissza, ha az elosztás nem helyes.
+function tartozasSorok(osszeg, resztvevok, hitelezo) {
+    if (egyenloElosztasE()) {
+        return { sorok: egyenloSorok(osszeg, resztvevok, hitelezo), mod: null };
+    }
+    const map = egyediOsszegekOlvas();
+    const sum = resztvevok.reduce((a, id) => a + (map[id] || 0), 0);
+    if (sum !== osszeg) {
+        return { hiba: `Az egyedi összegek összege (${formatFt(sum)}) nem egyezik a teljes összeggel (${formatFt(osszeg)}).` };
+    }
+    const sorok = resztvevok
+        .filter(id => id !== hitelezo && (map[id] || 0) > 0)
+        .map(id => ({ adosId: id, osszeg: map[id] }));
+    return { sorok, mod: 'egyedi összegek' };
+}
+
+// Az RLS-hibákat érthető magyar üzenetre fordítjuk (a szabályt maga az adatbázis tartja)
+function tartozasHiba(error) {
+    const uzenet = error?.message || '';
+    if (/row-level security|policy/i.test(uzenet)) {
+        return 'Ehhez nincs jogosultságod: csak a csoport tagjai rögzíthetnek tartozást.';
+    }
+    if (/foreign key|violates/i.test(uzenet)) {
+        return 'A kiválasztott tag nem tagja ennek a csoportnak.';
+    }
+    return 'Hiba történt a mentés során!';
+}
+
 async function addTartozas() {
     const groupCode = aktualisGroupCode();
     const miert = document.getElementById('miertInput').value.trim();
-    const mennyiert = document.getElementById('mennyiertInput').value.trim();
     const kinek = selectedKinek;
+    const resztvevok = kijeloltResztvevok();
+    const osszeg = osszegErtek();
 
-    const checkedBoxes = document.querySelectorAll('#dropdownContent input[type="checkbox"]:checked');
-    const kijeloltKik = Array.from(checkedBoxes).map(cb => cb.value);
-
-    if (!miert || !mennyiert || !kinek || kijeloltKik.length === 0) {
-        alert('Kérlek töltsd ki az összes mezőt és válassz ki legalább egy adóst!');
+    if (!miert || !osszeg || !kinek || resztvevok.length === 0) {
+        alert('Kérlek töltsd ki az összes mezőt és válassz ki legalább egy résztvevőt!');
         return;
     }
 
@@ -317,12 +463,25 @@ async function addTartozas() {
         return;
     }
 
-    const tagok = aktualisTagok();
-    const nevek = id => tagok.find(m => m.user_id === id)?.display_name || null;
+    const { sorok, mod, hiba } = tartozasSorok(osszeg, resztvevok, kinek);
+    if (hiba) {
+        alert(hiba);
+        return;
+    }
+    if (sorok.length === 0) {
+        alert('Legalább egy adósnak kell lennie a hitelezőn kívül.');
+        return;
+    }
 
-    const ujTartozasok = kijeloltKik.map(adosId => ({
-        miert: miert,
-        mennyiert: mennyiert,
+    // Leírás a teljes összeggel és a résztvevők számával, pl. "kaja (10 000 Ft / 4 fő)"
+    const leirasSzoveg = mod
+        ? `${miert} (${formatFt(osszeg)}, ${mod})`
+        : `${miert} (${formatFt(osszeg)} / ${resztvevok.length} fő)`;
+
+    const nevek = id => tagNeve(id) || null;
+    const ujTartozasok = sorok.map(({ adosId, osszeg: resz }) => ({
+        miert: leirasSzoveg,
+        mennyiert: resz,
         hitelezo_id: kinek,
         ados_id: adosId,
         felvette_id: felvevoId,
@@ -332,13 +491,14 @@ async function addTartozas() {
         group_code: groupCode
     }));
 
+    // Egyetlen insert: vagy minden sor bekerül, vagy egy sem (nincs részleges mentés)
     const { error } = await _supabase
         .from('tartozasok')
         .insert(ujTartozasok);
 
     if (error) {
         console.error('Hiba a mentéskor:', error);
-        alert('Hiba történt a mentés során!');
+        alert(tartozasHiba(error));
         return;
     }
 
@@ -349,8 +509,9 @@ async function addTartozas() {
     document.getElementById('kinekDropdownLabel').textContent = 'Kinek tartozik?';
     document.querySelectorAll('#kinekDropdownContent .dropdown-item').forEach(i => i.classList.remove('selected'));
 
-    checkedBoxes.forEach(cb => cb.checked = false);
+    document.querySelectorAll('#dropdownContent input[type="checkbox"]:checked').forEach(cb => cb.checked = false);
     updateDropdownLabel();
+    frissitKozosKoltseg();
 
     loadTartozasok();
 }

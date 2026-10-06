@@ -50,6 +50,16 @@
             <input type="button" value="Hozzáad" onclick="addTartozas()">
         </div>
 
+        <!-- Közös költség: a fenti űrlap alatt, teljes szélességben -->
+        <div class="kozos-koltseg">
+            <label class="kapcsolo-sor">
+                <input type="checkbox" id="egyenloElosztas" checked>
+                Közös költség: egyenlő elosztás
+            </label>
+            <p id="elosztasElonezet" class="elosztas-elonezet"></p>
+            <div id="egyediOsszegek" class="egyedi-osszegek hidden"></div>
+        </div>
+
         <div class="tartozasok-kontener tartozasok-grid"></div>
     </div>
 </body>
