@@ -7,7 +7,7 @@
 import { client } from '../supabase-client.js';
 
 export const BUCKET = 'kepek';
-export const ATMENETI_REGI_MAPPA = true; // TODO: átmozgatás után false, majd a kód törlése
+export const ATMENETI_REGI_MAPPA = false; // a képek átmozgatva (duckies: 7 kép); a kód törlése következhet
 
 const LISTA_LAPMERET = 100;
 
