@@ -164,7 +164,7 @@ export function initGroupDetails() {
 
   // Új kód (admin)
   get('regenerate-code-btn')?.addEventListener('click', async () => {
-    if (!confirm('Új csoportkódot generálsz. A régi kód azonnal érvénytelen lesz, a meglévő tagok bent maradnak. Folytatod?')) return;
+    if (!confirm('Új csoportkódot generálsz. A régi kód azonnal érvénytelen lesz, a meglévő tagok bent maradnak. Az új kódot MEG KELL OSZTANOD a tagokkal, mert a régivel már nem tudnak csatlakozni. A csoport képei nem változnak. Folytatod?')) return;
     const code = await regenerateGroupCode(getState().group.id);
     if (code) setStatus(`Új csoportkód: ${code}`, '#10b981');
   });
