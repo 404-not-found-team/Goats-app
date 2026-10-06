@@ -1,4 +1,5 @@
 import { ready, getState } from '../auth-service.js';
+import { jeloles } from '../utils/perf.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const htmlNevek = ["index", "tartozasok", "ranglista", "tervek", "goatsgame"];
@@ -106,6 +107,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         navBar.appendChild(moreLi);
     }
+    jeloles('nav-kirajzolva');
 });
 
 window.toggleNavDrawer = function () {
