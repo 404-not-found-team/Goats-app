@@ -18,13 +18,13 @@
 }
 
 .hero-section h1 {
-    font-size: 2rem;
+    font-size: var(--fs-xxl);
     margin-bottom: 10px;
     color: var(--text-primary, #fff);
 }
 
 .hero-subtitle {
-    font-size: 1rem;
+    font-size: var(--fs-base);
     color: var(--text-secondary, #aaa);
     max-width: 600px;
     margin: 0 auto;
@@ -40,7 +40,7 @@
 }
 
 .login-guide-card h2 {
-    font-size: 1.3rem;
+    font-size: var(--fs-xl);
     margin-bottom: 15px;
     color: var(--text-primary, #fff);
 }
@@ -51,16 +51,16 @@
     flex-direction: column;
     gap: 10px;
     color: var(--text-primary, #fff);
-    font-size: 0.95rem;
+    font-size: var(--fs-base);
 }
 
 .steps-list strong {
-    color: var(--accent-color, #d97706);
+    color: var(--accent-text, #d97706);
 }
 
 .notice-text {
     margin-top: 15px;
-    font-size: 0.9rem;
+    font-size: var(--fs-sm);
     color: var(--text-secondary, #aaa);
 }
 
@@ -88,18 +88,18 @@
 }
 
 .feature-icon {
-    font-size: 2.2rem;
+    font-size: var(--fs-xxl);
     margin-bottom: 10px;
 }
 
 .feature-card h3 {
-    font-size: 1.1rem;
+    font-size: var(--fs-lg);
     margin-bottom: 8px;
     color: var(--text-primary, #fff);
 }
 
 .feature-card p {
-    font-size: 0.85rem;
+    font-size: var(--fs-sm);
     color: var(--text-secondary, #aaa);
     line-height: 1.4;
 }
@@ -121,7 +121,7 @@
 }
 
 .install-icon {
-    font-size: 2.2rem;
+    font-size: var(--fs-xxl);
     flex-shrink: 0;
 }
 
@@ -133,12 +133,12 @@
 .install-text h3 {
     margin: 0 0 5px 0;
     color: var(--text-primary);
-    font-size: 1.1rem;
+    font-size: var(--fs-lg);
 }
 
 .install-text p {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: var(--fs-sm);
     color: var(--text-secondary);
     line-height: 1.4;
 }
@@ -159,10 +159,10 @@
     white-space: nowrap;
     padding: 10px 20px;
     background: var(--accent-color);
-    color: #ffffff;
+    color: var(--on-accent);
     border: none;
     border-radius: 10px;
-    font-size: 0.9rem;
+    font-size: var(--fs-sm);
     font-weight: 600;
     cursor: pointer;
     box-shadow: var(--install-btn-shadow);
@@ -180,7 +180,7 @@
 }
 
 .install-btn i {
-    font-size: 0.95rem;
+    font-size: var(--fs-base);
 }
 
 @media (max-width: 600px) {
@@ -195,7 +195,7 @@
     }
 
     .hero-section h1 {
-        font-size: 1.6rem;
+        font-size: var(--fs-xxl);
     }
 
     .login-guide-card {

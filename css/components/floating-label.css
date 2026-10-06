@@ -12,7 +12,7 @@
     border: 1px solid var(--border-color);
     border-radius: 8px;
     color: var(--text-primary);
-    font-size: 0.95rem;
+    font-size: var(--fs-base);
     outline: none;
     box-sizing: border-box;
     transition: border-color 0.2s ease;
@@ -29,7 +29,7 @@
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: var(--fs-sm);
     pointer-events: none;
     transition: all 0.2s ease;
 }
@@ -40,8 +40,8 @@
 .floating-select:has(option:checked)~.floating-label {
     top: 6px;
     transform: translateY(0);
-    font-size: 0.7rem;
-    color: var(--accent-color);
+    font-size: var(--fs-xs);
+    color: var(--accent-text);
     font-weight: bold;
 }
 
@@ -60,13 +60,13 @@
 .floating-info-row .floating-label {
     top: 6px;
     transform: translateY(0);
-    font-size: 0.7rem;
-    color: var(--accent-color);
+    font-size: var(--fs-xs);
+    color: var(--accent-text);
     font-weight: bold;
 }
 
 .floating-info-value {
-    font-size: 0.95rem;
+    font-size: var(--fs-base);
     color: var(--text-primary);
     font-weight: 500;
     word-break: break-all;
@@ -83,8 +83,8 @@
 .floating-emoji-group .floating-label {
     top: 6px;
     transform: translateY(0);
-    font-size: 0.7rem;
-    color: var(--accent-color);
+    font-size: var(--fs-xs);
+    color: var(--accent-text);
     font-weight: bold;
 }
 
@@ -119,7 +119,7 @@
 .floating-dropdown-group .floating-label {
     top: 6px;
     transform: translateY(0);
-    font-size: 0.7rem;
-    color: var(--accent-color);
+    font-size: var(--fs-xs);
+    color: var(--accent-text);
     font-weight: bold;
 }
