@@ -77,5 +77,17 @@ Az alkalmazás az alábbi modulokból áll:
   - tesztfiók a Play-ellenőrzőnek,
   - a Google OAuth jóváhagyási állapotának ellenőrzése.
 - **Adatvédelmi oldal:** `https://z0lcs.github.io/Goats-app/privacy.html`, fiók-törlés: `https://z0lcs.github.io/Goats-app/fiok-torles.html`
+- **Gyermekvédelmi normák:** `https://z0lcs.github.io/Goats-app/gyermekvedelem.html`
+
+---
+
+## 🚩 Jelentés kezelése
+
+- **Hol látszik:** a Profil → Beállítások ablak alján a superadminnak megjelenik a „Jelentések" blokk. A lista a beállítások megnyitásakor töltődik, a csoportnév helyett csak a csoport azonosítója látszik.
+- **Állapot:** „Folyamatban" vagy „Lezárva" gombbal változtatható (`set_report_status` RPC).
+- **Kép törlése (kézzel):** a jelentés „célazonosító" mezője a kép elérési útja (`csoport_azonosito/fajlnev.jpg`). A Supabase Storage felületén a `kepek` bucketben ezt a fájlt kell törölni, mert a storage-szabály csak a csoport tagjainak engedi a törlést.
+- **Fiók törlése (kézzel):** a jelentés „célazonosító" mezője a felhasználó azonosítója. A fiókot a Supabase Auth felületén, vagy a csoport admin/superadmin műveletekkel kell eltávolítani.
+- **Hatóságok:** a hatóságoknak szóló jelentést a csapat teszi meg kézzel. Az alkalmazás ezt nem automatizálja.
+- **Megőrzés:** a jelentések addig maradnak meg, amíg a csapat törölni nem dönti. A csoport törlésekor a jelentés megmarad (a csoport azonosítója üres lesz), a jelentő fiók törlésekor a jelentő azonosítója üres lesz.
 
 ---
