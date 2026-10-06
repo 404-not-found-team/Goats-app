@@ -1,3 +1,14 @@
+:root {
+    /* Közös betűcsalád és méretskála (minden oldal ezt használja) */
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --fs-xs: 0.75rem;
+    --fs-sm: 0.875rem;
+    --fs-base: 1rem;
+    --fs-lg: 1.125rem;
+    --fs-xl: 1.375rem;
+    --fs-xxl: 1.75rem;
+}
+
 :root,
 [data-theme="dark"] {
     --bg-color: #121212;
@@ -10,6 +21,8 @@
     --text-secondary: #a0a0a0;
     --accent-color: #6366f1;
     --accent-hover: #4f46e5;
+    --accent-text: #a5b4fc;
+    --on-accent: #000000;
     --hiba-color: #f87171;
     --ok-color: #34d399;
     color-scheme: dark;
@@ -33,6 +46,8 @@
     --text-secondary: #a3958c;
     --accent-color: #d97706;
     --accent-hover: #b45309;
+    --accent-text: #fbbf24;
+    --on-accent: #000000;
     --hiba-color: #f87171;
     --ok-color: #34d399;
     color-scheme: dark;
@@ -56,6 +71,8 @@
     --text-secondary: #998eb8;
     --accent-color: #8b5cf6;
     --accent-hover: #7c3aed;
+    --accent-text: #c4b5fd;
+    --on-accent: #000000;
     --hiba-color: #f87171;
     --ok-color: #34d399;
     color-scheme: dark;
@@ -80,6 +97,8 @@
     --text-secondary: #94a3b8;
     --accent-color: #ff0055;
     --accent-hover: #cc0044;
+    --accent-text: #ff5c8a;
+    --on-accent: #000000;
     --hiba-color: #ff3b6b;
     --ok-color: #00ffcc;
     color-scheme: dark;
@@ -103,6 +122,8 @@
     --text-secondary: #71717a;
     --accent-color: #4f46e5;
     --accent-hover: #4338ca;
+    --accent-text: #4f46e5;
+    --on-accent: #ffffff;
     --hiba-color: #b91c1c;
     --ok-color: #047857;
     color-scheme: light;

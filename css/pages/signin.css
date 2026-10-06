@@ -124,7 +124,7 @@
 }
 
 #kepFeltoltesGomb i {
-    font-size: 14px;
+    font-size: var(--fs-sm);
 }
 
 /* (1,1,0) > #kepFeltoltesGomb:hover (1,1,0) – a sorrend miatt ez nyer */
@@ -149,7 +149,7 @@
 
 /* Nyilak */
 .nyil {
-    font-size: 1.8rem;
+    font-size: var(--fs-xxl);
     margin: 0;
     color: var(--text-secondary);
     transition: color 0.2s ease, transform 0.2s ease;
@@ -198,7 +198,7 @@
 }
 
 .naptar-fejlec h2 {
-    font-size: 1.2rem;
+    font-size: var(--fs-lg);
     color: var(--text-primary);
 }
 
@@ -209,7 +209,7 @@
     font-weight: bold;
     color: var(--text-secondary);
     margin-bottom: 8px;
-    font-size: 0.9rem;
+    font-size: var(--fs-sm);
 }
 
 .naptar-racs {
@@ -260,14 +260,14 @@
 }
 
 .nap-szam {
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     color: var(--text-secondary);
 }
 
 .naptar-esemeny {
     background: var(--accent-color);
-    color: #fff;
-    font-size: 0.7rem;
+    color: var(--on-accent);
+    font-size: var(--fs-xs);
     padding: 2px 4px;
     border-radius: 4px;
     cursor: pointer;

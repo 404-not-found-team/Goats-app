@@ -26,7 +26,7 @@
     border: 1px solid var(--border-color);
     border-radius: 8px;
     color: var(--text-primary);
-    font-size: 1rem;
+    font-size: var(--fs-base);
     outline: none;
     min-width: 0;
 }
@@ -37,7 +37,7 @@
 
 .input input[type="button"] {
     background-color: var(--accent-color);
-    color: white;
+    color: var(--on-accent);
     border: none;
     padding: 12px 20px;
     border-radius: 8px;
@@ -79,7 +79,7 @@
 
 .terv-item span:not(.delete-btn) {
     flex: 1;
-    font-size: 1rem;
+    font-size: var(--fs-base);
     word-break: break-word;
     color: var(--text-primary);
 }
@@ -87,7 +87,7 @@
 .terv-item .delete-btn {
     cursor: pointer;
     padding-left: 8px;
-    font-size: 1rem;
+    font-size: var(--fs-base);
     user-select: none;
     transition: transform 0.2s, opacity 0.2s;
     flex-shrink: 0;
@@ -135,11 +135,11 @@
     margin: 0;
     flex-shrink: 0;
     background-color: var(--accent-color);
-    color: #ffffff;
+    color: var(--on-accent);
     border: none;
     border-radius: 8px;
     font-weight: bold;
-    font-size: 0.95rem;
+    font-size: var(--fs-base);
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
