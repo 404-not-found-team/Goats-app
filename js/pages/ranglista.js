@@ -737,6 +737,11 @@ function addItalKartyaToUI(ital) {
             if (doboz) doboz.hidden = true;
         }
 
+        // Jelentés gomb: csak bejelentkezett felhasználónak, a saját javaslatot nem lehet jelenteni
+        const jelentesGomb = document.getElementById('ital-jelentes-gomb');
+        const user = window.goatsAuth?.getState()?.user;
+        if (jelentesGomb) jelentesGomb.hidden = !user || ital.javasolta_id === user.id;
+
         document.getElementById('modal-hatter').hidden = false;
     });
 
@@ -746,3 +751,15 @@ function addItalKartyaToUI(ital) {
 }
 
 window.addEventListener('DOMContentLoaded', inicializalas);
+
+// Italjavaslat jelentése (a modal a jelentes.js-ből töltődik, csak az első kattintáskor)
+window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('ital-jelentes-gomb')?.addEventListener('click', () => {
+        if (!aktivItalAdat) return;
+        import('../utils/jelentes.js').then(({ jelentesMegnyit }) => jelentesMegnyit({
+            cel_tipus: 'ital',
+            cel_azonosito: aktivItalAdat.id,
+            group_id: window.goatsAuth?.getState()?.group?.id ?? null,
+        }));
+    });
+});

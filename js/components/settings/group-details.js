@@ -1,5 +1,6 @@
 import { getState, refresh, onChange, leaveGroup } from '../../auth-service.js';
 import { torolCsoportKepei } from '../../utils/csoport-kepek.js';
+import { jelentesGombElem } from '../../utils/jelentes-gomb.js';
 import {
   removeMember, transferOwnership, renameGroup, regenerateGroupCode, deleteCurrentGroup,
   updateMyDisplayName,
@@ -64,6 +65,17 @@ export function initGroupDetails() {
 
       row.appendChild(give);
       row.appendChild(del);
+    }
+
+    // Más tag jelentése (a saját soron nincs gomb). A jelentes.js csak az első kattintáskor töltődik be.
+    if (me && m.user_id !== me) {
+      row.appendChild(jelentesGombElem(() => {
+        import('../../utils/jelentes.js').then(({ jelentesMegnyit }) => jelentesMegnyit({
+          cel_tipus: 'tag',
+          cel_azonosito: m.user_id,
+          group_id: groupId,
+        }));
+      }));
     }
     return row;
   }
