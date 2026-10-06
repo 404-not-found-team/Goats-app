@@ -1,20 +1,17 @@
--- JAVASLAT (nem futtatandó addig, amíg a galéria kód nem használ signed URL-t):
--- a "kepek" bucket csoportfotóinak privátra állítása, csoportra szűkített storage-szabályokkal.
+-- VÉGLEGES (a galeria.js már aláírt URL-eket használ, createSignedUrls).
+-- Futtatási sorrend:
+--   a) a POLICY-blokk (lent, "2) csoportra szűkített") lefuthat elsőként: a publikus
+--      bucketet nem töri meg, a belépett tagoknak feltöltés/törlés jogot ad;
+--   b) a kód éles telepítése (signed URL, tömörített WebP/JPEG feltöltés);
+--   c) csak ezután az "1) bucket privátra" sor: a régi, publikus URL-ek megszűnnek.
+--      A fájlok helye (csoport/fájlnév) nem változik, nincs adatmozgatás.
 --
--- Miért: a csoportfotók nyilvános URL-en érhetők el, bárki, aki ismeri az útvonalat,
--- megnézheti őket bejelentkezés nélkül. A fájlnév tartalmazza a csoportkódot, így
--- a szabály a mappanévből (= group_code) dönt.
+-- Miért: a csoportfotók nyilvános URL-en érhetők el. A szabály a mappanévből (= group_code)
+-- dönt: csak az adott csoport tagjai olvashatják, tölthetik fel és törölhetik a képeit.
 --
--- Sorrend (fontos!):
---   1) a galeria.js átállítása: getPublicUrl helyett createSignedUrl (lejárat, pl. 1 óra),
---      és a feltöltés közben a csoport-mappa (group_code) ellenőrzése a kliensben is;
---   2) ez a fájl (policy-k) és a bucket privátra állítása;
---   3) csak ezután a régi, nyilvános URL-ek megszűnnek - ezt előtte tesztelni kell.
---
--- Megjegyzés: a storage-szabályok a storage.objects táblán vannak, nem a public sémában.
 -- A "kepek" bucket neve a galeria.js BUCKET_NEV konstansa.
-
--- 1) bucket privátra (csak a 2) lépés után futtasd!)
+--
+-- 1) bucket privátra (csak a c) lépés, a kód deploy után!)
 -- update storage.buckets set public = false where id = 'kepek';
 
 -- 2) csoportra szűkített olvasás/feltöltés/törlés: a mappanév (első szint) a group_code
