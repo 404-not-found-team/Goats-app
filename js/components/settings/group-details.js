@@ -1,4 +1,5 @@
 import { getState, refresh, onChange, leaveGroup } from '../../auth-service.js';
+import { torolCsoportKepei } from '../../utils/csoport-kepek.js';
 import {
   removeMember, transferOwnership, renameGroup, regenerateGroupCode, deleteCurrentGroup,
   updateMyDisplayName,
@@ -112,6 +113,12 @@ export function initGroupDetails() {
     await refresh();
   });
 
+  // A csoport képeinek törlése a csoport törlése/utolsó tag kilépése ELŐTT (utána már nincs jogunk)
+  async function csoportKepeinekTorlese(group) {
+    const hibak = await torolCsoportKepei(group.id, group.group_code);
+    if (hibak.length) setStatus('Néhány kép törlése nem sikerült, de a művelet folytatódik.', '#ef4444');
+  }
+
   // Kód mutatása/elrejtése, másolása
   document.addEventListener('click', async (e) => {
     if (e.target.id === 'toggle-group-code-visibility') {
@@ -166,6 +173,8 @@ export function initGroupDetails() {
   get('leave-group-btn')?.addEventListener('click', async () => {
     if (!confirm('Biztosan kilépsz a csoportból?')) return;
     try {
+      const { group, members } = getState();
+      if (members.length === 1) await csoportKepeinekTorlese(group);
       await leaveGroup();
       location.reload();
     } catch (err) {
@@ -181,6 +190,7 @@ export function initGroupDetails() {
     );
     if (typed === null) return;
     if (typed.trim() !== group.group_name) return setStatus('A név nem egyezik, a csoport nem lett törölve.', '#ef4444');
+    await csoportKepeinekTorlese(group);
     const ok = await deleteCurrentGroup(group.id);
     if (ok) location.reload();
   });

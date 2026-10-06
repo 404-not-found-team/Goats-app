@@ -1,4 +1,5 @@
 import { getState, signOut, deleteMyAccount } from '../../auth-service.js';
+import { torolCsoportKepei } from '../../utils/csoport-kepek.js';
 
 export function initProfileModal() {
   const get = id => document.getElementById(id);
@@ -67,6 +68,12 @@ export function initProfileModal() {
 
     setStatus('Fiók törlése...', '#3b82f6');
     try {
+      // Utolsó tagként a csoport képei is törlődnek (a fiók törlése után már nincs jogunk)
+      const { group, members } = getState();
+      if (group && members.length === 1) {
+        const hibak = await torolCsoportKepei(group.id, group.group_code);
+        if (hibak.length) console.warn('Néhány kép nem törlődött a fiók törlésekor:', hibak);
+      }
       await deleteMyAccount();
       alert('A fiókod törölve lett.');
       location.reload();
