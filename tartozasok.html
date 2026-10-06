@@ -52,11 +52,18 @@
 
         <!-- Közös költség: a fenti űrlap alatt, teljes szélességben -->
         <div class="kozos-koltseg">
-            <label class="kapcsolo-sor">
-                <input type="checkbox" id="egyenloElosztas" checked>
-                Közös költség: egyenlő elosztás
-            </label>
-            <p id="elosztasElonezet" class="elosztas-elonezet"></p>
+            <fieldset class="elosztas-mod">
+                <legend>Összeg elosztása</legend>
+                <label class="kapcsolo-sor">
+                    <input type="radio" name="elosztasMod" value="egyenlo" checked>
+                    Egyenlő elosztás
+                </label>
+                <label class="kapcsolo-sor">
+                    <input type="radio" name="elosztasMod" value="egyedi">
+                    Egyedi összegek
+                </label>
+            </fieldset>
+            <p id="elosztasElonezet" class="elosztas-elonezet" aria-live="polite"></p>
             <div id="egyediOsszegek" class="egyedi-osszegek hidden"></div>
         </div>
 

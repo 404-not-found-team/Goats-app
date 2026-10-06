@@ -51,3 +51,8 @@ h1 {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-color);
 }
+/* Natív jelölők a téma akcentusszínével (a böngésző alapértelmezett fehér vezérlője helyett) */
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: var(--accent-color);
+}

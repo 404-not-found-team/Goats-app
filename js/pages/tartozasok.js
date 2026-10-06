@@ -5,7 +5,7 @@ window.onload = async function () {
 
     // Közös költség: előnézet és egyedi összegek élő frissítése
     document.getElementById('mennyiertInput')?.addEventListener('input', frissitKozosKoltseg);
-    document.getElementById('egyenloElosztas')?.addEventListener('change', frissitKozosKoltseg);
+    document.querySelectorAll('input[name="elosztasMod"]').forEach(r => r.addEventListener('change', frissitKozosKoltseg));
     document.getElementById('dropdownContent')?.addEventListener('change', frissitKozosKoltseg);
     document.getElementById('egyediOsszegek')?.addEventListener('input', frissitOsszesen);
 };
@@ -312,9 +312,10 @@ function formatFt(szam) {
     return `${egesz.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} Ft`;
 }
 
+// Kétállású választó: "egyenlo" (alapértelmezett) vagy "egyedi"
 function egyenloElosztasE() {
-    const kapcsolo = document.getElementById('egyenloElosztas');
-    return !kapcsolo || kapcsolo.checked;
+    const valasztott = document.querySelector('input[name="elosztasMod"]:checked');
+    return !valasztott || valasztott.value === 'egyenlo';
 }
 
 function kijeloltResztvevok() {
@@ -372,20 +373,32 @@ function egyediMezok(osszeg, resztvevok) {
         input.min = '0';
         input.className = 'egyedi-input';
         input.dataset.id = id;
+        input.setAttribute('aria-label', `${tagNeve(id)} összege`);
         input.value = elozo[id] !== undefined ? elozo[id] : alap;
         sor.append(nev, input);
         return sor;
     }));
 }
 
+// Összeg-ellenőrző sor: szöveggel és színnel is jelez (nem csak színnel)
 function frissitOsszesen() {
     const elonezet = document.getElementById('elosztasElonezet');
     const osszeg = osszegErtek();
     if (!elonezet || egyenloElosztasE() || !osszeg) return;
     const map = egyediOsszegekOlvas();
     const sum = kijeloltResztvevok().reduce((a, id) => a + (map[id] || 0), 0);
-    elonezet.textContent = `Összesen: ${formatFt(sum)} / ${formatFt(osszeg)}`;
-    elonezet.classList.toggle('hiba', sum !== osszeg);
+    const kulonbseg = osszeg - sum;
+    elonezet.classList.remove('hiba', 'ok');
+    if (kulonbseg === 0) {
+        elonezet.textContent = `Egyezik: ${formatFt(sum)} / ${formatFt(osszeg)}`;
+        elonezet.classList.add('ok');
+    } else if (kulonbseg > 0) {
+        elonezet.textContent = `Még ${formatFt(kulonbseg)} hiányzik (${formatFt(sum)} / ${formatFt(osszeg)})`;
+        elonezet.classList.add('hiba');
+    } else {
+        elonezet.textContent = `${formatFt(-kulonbseg)} többet osztottál be a kelleténél (${formatFt(sum)} / ${formatFt(osszeg)})`;
+        elonezet.classList.add('hiba');
+    }
 }
 
 // Élő előnézet: egyenlő elosztásnál "4 fő × 2 500 Ft", egyedinél összeg-ellenőrzés
@@ -398,7 +411,7 @@ function frissitKozosKoltseg() {
     if (!elonezet) return;
     const resztvevok = kijeloltResztvevok();
     const osszeg = osszegErtek();
-    elonezet.classList.remove('hiba');
+    elonezet.classList.remove('hiba', 'ok');
 
     if (!osszeg || resztvevok.length === 0) {
         elonezet.textContent = '';
