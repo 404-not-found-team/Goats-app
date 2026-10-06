@@ -9,6 +9,7 @@
 @import url('components/custom-dropdown.css');
 @import url('components/floating-label.css');
 @import url('components/moderation.css');
+@import url('components/jelentes.css');
 
 /* PAGES */
 @import url('pages/signin.css');

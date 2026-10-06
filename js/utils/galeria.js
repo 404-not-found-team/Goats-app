@@ -122,6 +122,18 @@ function frissitGaleria() {
         galeriaDoboz.appendChild(torlesGomb);
     }
 
+    // Jelentés gomb: csak csoporttagnak (a modul csak az első kattintáskor töltődik be)
+    let jelentesGomb = document.getElementById('kepJelentesGomb');
+    if (!jelentesGomb && galeriaDoboz && aktualisGroupId()) {
+        import('./jelentes-gomb.js').then(({ jelentesGombElem }) => {
+            if (document.getElementById('kepJelentesGomb')) return;
+            jelentesGomb = jelentesGombElem(megnyitKepJelentes);
+            jelentesGomb.id = 'kepJelentesGomb';
+            galeriaDoboz.appendChild(jelentesGomb);
+            jelentesGomb.hidden = kepekLista.length === 0;
+        });
+    }
+
     let placeholder = document.getElementById('galeria-placeholder');
     if (!placeholder && galeriaDoboz) {
         placeholder = document.createElement('div');
@@ -144,6 +156,7 @@ function frissitGaleria() {
         const feltoltGomb = document.getElementById('kepFeltoltesGomb');
         if (feltoltGomb) feltoltGomb.hidden = false;
         if (torlesGomb) torlesGomb.hidden = true;
+        if (jelentesGomb) jelentesGomb.hidden = true;
 
         if (placeholder) {
             placeholder.hidden = false;
@@ -159,6 +172,7 @@ function frissitGaleria() {
     if (placeholder) placeholder.hidden = true;
     toggleGombok(true);
     if (torlesGomb) torlesGomb.hidden = false;
+    if (jelentesGomb) jelentesGomb.hidden = false;
 
     let balIndex = (currentIndex - 1 + kepekLista.length) % kepekLista.length;
     let jobbIndex = (currentIndex + 1) % kepekLista.length;
@@ -166,6 +180,17 @@ function frissitGaleria() {
     if (elemBal) elemBal.src = kepekLista[balIndex].url;
     if (elemKozep) elemKozep.src = kepekLista[currentIndex].url;
     if (elemJobb) elemJobb.src = kepekLista[jobbIndex].url;
+}
+
+// Az aktuálisan látott kép jelentése (a kép elérési útja a cel_azonosito)
+function megnyitKepJelentes() {
+    const kep = kepekLista[currentIndex];
+    if (!kep) return;
+    import('./jelentes.js').then(({ jelentesMegnyit }) => jelentesMegnyit({
+        cel_tipus: 'kep',
+        cel_azonosito: kep.path,
+        group_id: aktualisGroupId(),
+    }));
 }
 
 function eloKep() {

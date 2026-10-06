@@ -165,6 +165,40 @@ export function injectUserNavHTML(state) {
             <div id="pending-drinks-list" class="moderalas-lista"></div>
             <p id="pending-drinks-status" class="sm-status sm-status-small"></p>
           </div>
+
+          <!-- Superadmin: beérkezett jelentések (a szerepkört az RPC ellenőrzi, nem a felület) -->
+          <div id="report-moderation" class="moderalas-blokk" hidden>
+            <label class="sm-label">Jelentések</label>
+            <div id="reports-list" class="moderalas-lista"></div>
+            <p id="reports-status" class="sm-status sm-status-small"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JELENTÉS MODAL (kép, ital, csoporttag) -->
+    <div id="jelentes-modal" class="sm-overlay" hidden>
+      <div class="sm-card jelentes-kartya">
+        <div class="sm-header">
+          <h3>Jelentés</h3>
+          <button id="jelentes-bezar" type="button" class="sm-close-btn" aria-label="Bezárás">&times;</button>
+        </div>
+        <div class="sm-body">
+          <fieldset class="jelentes-okok">
+            <legend class="sm-label">Mi a probléma?</legend>
+            <label><input type="radio" name="jelentes-ok" value="gyermekbiztonsag"> Gyermekbiztonsági aggály (CSAE/CSAM)</label>
+            <label><input type="radio" name="jelentes-ok" value="jogellenes"> Jogellenes vagy sértő tartalom</label>
+            <label><input type="radio" name="jelentes-ok" value="zaklatas"> Zaklatás</label>
+            <label><input type="radio" name="jelentes-ok" value="egyeb" checked> Egyéb</label>
+          </fieldset>
+
+          <label class="sm-label" for="jelentes-leiras">Leírás (opcionális)</label>
+          <textarea id="jelentes-leiras" class="sm-input jelentes-leiras" maxlength="1000"></textarea>
+          <p id="jelentes-szamlalo" class="jelentes-szamlalo">0 / 1000</p>
+
+          <button id="jelentes-kuldes" type="button" class="sm-btn sm-btn-save">Jelentés elküldése</button>
+          <button id="jelentes-megse" type="button" class="sm-btn sm-btn-logout">Mégse</button>
+          <p id="jelentes-status" class="sm-status sm-status-small"></p>
         </div>
       </div>
     </div>
