@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v3'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v3';
+const CACHE_NEV = 'goats-v4';
 
 self.addEventListener('install', (event) => {
     // Azonnal aktiváljuk az új Service Workert, ne várakozzon
