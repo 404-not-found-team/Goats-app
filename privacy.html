@@ -8,89 +8,109 @@
     <title>Goats - Adatvédelmi nyilatkozat</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/main.css">
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="js/main.js"></script>
     <link rel="stylesheet" href="css/pages/jogi.css">
 </head>
 
 <body>
-    <ul id="navBar"></ul>
-
     <div class="jogi-oldal">
+        <p><a href="index.html">&larr; Vissza az alkalmazáshoz</a></p>
         <h1>Adatvédelmi nyilatkozat</h1>
-        <p class="utolso-frissites">Utolsó frissítés: 2026. október 5.</p>
+        <p class="utolso-frissites">Utolsó frissítés: 2026. október 6.</p>
 
         <div class="tos-modal-body">
-            <h4>1. Kik vagyunk</h4>
+            <h4>1. Az üzemeltető és a kapcsolat</h4>
             <p>
-                A Goats App egy nem-kereskedelmi, baráti társaságoknak készült alkalmazás
-                (közös tartozások, tervek és ital-ranglisták kezelésére). Az alkalmazást
-                egyetlen magánszemély fejleszti és üzemelteti. Adatvédelemmel kapcsolatos
-                kérdés esetén a <a href="mailto:aranyzoli11@gmail.com">aranyzoli11@gmail.com</a>
-                címen érhetsz el.
+                A Goats App-ot (a továbbiakban: alkalmazás) a <strong>404 not found team</strong> fejleszti és üzemelteti.
+                Adatvédelemmel kapcsolatos kérdés, észrevétel vagy kérelem esetén írj a
+                <a href="mailto:the.offical.404.not.found.team@gmail.com?subject=Adatv%C3%A9delem%20-%20Goats%20App">the.offical.404.not.found.team@gmail.com</a>
+                címre.
             </p>
 
             <h4>2. Milyen adatokat kezelünk</h4>
-            <p>Bejelentkezéskor (Google-fiókkal, OAuth-on keresztül) a következő adatokat kapjuk meg és tároljuk:</p>
+            <p>Bejelentkezéskor a Google-fiókodból (OAuth-on keresztül) a következőket kapjuk meg:</p>
             <ul>
-                <li>Google-fiókod neve és e-mail címe (ez alapján jön létre a profilod)</li>
-                <li>az általad megadható, módosítható megjelenítendő név</li>
+                <li>a Google-fiókod neve és e-mail-címe,</li>
+                <li>az általad megadott megjelenített név.</li>
             </ul>
-            <p>A csoportos funkciók használatához az alábbi, Ön által létrehozott adatokat tároljuk:</p>
+            <p>A csoportos működéshez az alábbi adatokat tároljuk, amelyeket te vagy a csoporttagok hoztok létre:</p>
             <ul>
-                <li>a csoport neve és csoportkódja, valamint a csoport tagjainak listája</li>
-                <li>a csoporton belül rögzített tartozások, tervek, naptári események és italok/ranglisták</li>
-                <li>a galériába feltöltött képek</li>
+                <li>csoporttagság és szerepkör (adminisztrátor vagy tag),</li>
+                <li>a csoportba felvitt tartozások: a tagok neve, az összeg, a leírás és az, hogy ki vette fel,</li>
+                <li>tervek és események,</li>
+                <li>italjavaslatok és értékelések (ki javasolta az italt),</li>
+                <li>a galériába feltöltött képek,</li>
+                <li>a használati feltételek elfogadásának ideje és verziója,</li>
+                <li>csoportcsatlakozási kísérletek naplója (a felhasználó azonosítója és az időpont), amelyet 1 napig őrzünk.</li>
             </ul>
             <p>
-                Az eszközödön (localStorage) kizárólag a fenti adatok egy részének gyorsítótárazott
-                másolatát tároljuk (pl. a csoport neve, a tagok neve), hogy az oldalak gyorsabban
-                töltsenek be. Ez a gyorsítótár soha nem jogosultsági forrás: a hozzáférést minden
-                esetben a szerveroldali adatbázis dönti el a bejelentkezésed alapján, nem az, hogy mi
-                van a böngésződben eltárolva.
+                A böngészőben (localStorage) csak gyorsítótárat és a téma-beállítást tároljuk. Ezek nem jogosultsági
+                adatok: a hozzáférést mindig a szerver dönti el a bejelentkezésed alapján.
             </p>
 
-            <h4>3. Hol és hogyan tároljuk az adatokat</h4>
+            <h4>3. Mire használjuk az adatokat, és mi az alapjuk</h4>
+            <ul>
+                <li><strong>A szolgáltatás nyújtása:</strong> a bejelentkezés, a csoportok, tartozások, tervek, események, ranglisták és a galéria működtetése. Jogalap: a szerződés teljesítése (az alkalmazás használata).</li>
+                <li><strong>Biztonság és visszaélés elleni védelem:</strong> például a csatlakozási kísérletek korlátozása. Jogalap: jogos érdek.</li>
+            </ul>
+            <p>Hirdetési vagy elemző célra nem használjuk az adatokat, és nem adjuk el őket.</p>
+
+            <h4>4. Kik kapják meg az adatokat (harmadik felek)</h4>
+            <ul>
+                <li><strong>Google:</strong> bejelentkezés (OAuth).</li>
+                <li><strong>Supabase:</strong> adatbázis, hitelesítés és fájltárolás. A szerver régiója: eu-west-1, Írország (EU).</li>
+                <li><strong>GitHub Pages:</strong> az oldal kiszolgálása.</li>
+                <li><strong>Tartalomszolgáltató hálózatok</strong> (jsDelivr, cdnjs, Google gstatic): az oldal betöltésekor látják a látogató IP-címét, mert onnan töltődnek be a könyvtárak és az ikonok.</li>
+            </ul>
+            <p>Hirdetési vagy elemző szolgáltató nincs.</p>
+
+            <h4>5. Nemzetközi adattovábbítás</h4>
             <p>
-                Az adatokat a Supabase nevű, harmadik fél felhőalapú adatbázis- és
-                hitelesítés-szolgáltatón keresztül tároljuk. A bejelentkezés Google OAuth-on
-                keresztül történik - a jelszavadat sosem látjuk és nem is tároljuk. A csoportos
-                adatokhoz csak az adott csoport tagjai férhetnek hozzá, ezt adatbázis szintű
-                hozzáférés-vezérlés (Row Level Security) kényszeríti ki.
+                Az adatbázis és a fájltárolás az Európai Unióban (Írország) van. A szolgáltatóink (például a Supabase és a Google)
+                a bejelentkezés és a működés során előfordulhat, hogy az EU-n kívül is kezelnek adatot. Ezt a szolgáltatóik
+                adatvédelmi feltételei szabályozzák.
             </p>
 
-            <h4>4. Mire használjuk az adatokat</h4>
+            <h4>6. Megőrzés</h4>
             <p>
-                Az adatokat kizárólag az alkalmazás funkcióinak működtetésére használjuk: a
-                bejelentkezésre, a csoportod tagjainak megjelenítésére, valamint a csoportod által
-                rögzített tartozások, tervek, események és italok megjelenítésére. Harmadik félnek
-                reklám vagy egyéb kereskedelmi célból nem adjuk tovább az adataidat.
+                Az adatokat a fiók vagy a csoport törléséig őrizzük. A csoportcsatlakozási naplót 1 napig tároljuk.
             </p>
 
-            <h4>5. Az adatok törlése</h4>
+            <h4>7. Törlés</h4>
             <p>
-                A fiókodat és a hozzá tartozó adatokat bármikor, véglegesen törölheted az
-                alkalmazásban (a csoport utolsó tagjaként a csoport képei is törlődnek): <strong>Profil &rarr; Fiók törlése</strong>. Ha a törléshez a
-                webes felületen nem férsz hozzá, kövesd a
-                <a href="fiok-torles.html">Fiók törlése</a> oldalon leírt lépéseket. A törlés
-                végleges és nem vonható vissza.
+                A fiókodat és az adataidat az alkalmazásban törölheted: <strong>Profil &rarr; Fiók törlése</strong>.
+                Ha ehhez nem férsz hozzá, e-mailben is kérheted a törlést, és a kérelmet 14 napon belül dolgozzuk fel.
+                A részletek a <a href="fiok-torles.html">Fiók törlése</a> oldalon vannak. A csoport képei
+                a csoport törlésekor és az utolsó tag távozásakor szintén törlődnek.
             </p>
 
-            <h4>6. Sütik és nyomkövetés</h4>
+            <h4>8. A te jogaid</h4>
             <p>
-                Az alkalmazás nem használ hirdetési vagy elemző (analitikai) sütiket, és nem követi
-                nyomon a böngészési szokásaidat más oldalakon. A localStorage-ban tárolt adatok
-                kizárólag a saját funkcionalitásunkat (bejelentkezési állapot gyorsítótárazása,
-                téma-beállítás) szolgálják.
+                Jogod van hozzáférést kérni az adataidhoz, kérheted azok helyesbítését vagy törlését, kérheted az adataid
+                hordozható formában való átadását, és tiltakozhatsz az adatkezelés ellen. Panasszal a
+                Nemzeti Adatvédelmi és Információszabadság Hatósághoz (NAIH, <a href="https://naih.hu" target="_blank" rel="noopener">naih.hu</a>) fordulhatsz.
             </p>
 
-            <h4>7. Kapcsolat</h4>
+            <h4>9. Korhatár</h4>
             <p>
-                Adatvédelemmel kapcsolatos kérdés, észrevétel vagy adattörlési kérelem esetén írj a
-                <a href="mailto:	
-the.offical.404.not.found.team@gmail.com">	
-the.offical.404.not.found.team@gmail.com</a> címre.
+                Az alkalmazás alkoholos italokról szól, ezért csak 18 év feletti felhasználóknak szól. Gyermekektől tudatosan
+                nem gyűjtünk adatot. Ha úgy tudod, hogy egy gyermek adatait megadta, írj a fenti címre, és töröljük azokat.
+            </p>
+
+            <h4>10. A felhasználók által feltöltött tartalom</h4>
+            <p>
+                A csoportba feltöltött képeket és a felvitt adatokat csak az adott csoport tagjai látják. Az italjavaslatot a
+                jóváhagyásig csak a javasló és a csoporttársai látják.
+            </p>
+
+            <h4>11. Sütik és helyi tárolás</h4>
+            <p>
+                Az alkalmazás nem használ hirdetési vagy elemző sütit. A localStorage csak gyorsítótárként és a téma-beállítás
+                mentésére szolgál.
+            </p>
+
+            <h4>12. Változások</h4>
+            <p>
+                Ezt a nyilatkozatot időről időre frissíthetjük. Az utolsó frissítés dátuma az oldal tetején látható.
             </p>
         </div>
     </div>
