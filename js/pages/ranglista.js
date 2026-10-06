@@ -219,25 +219,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const katKontener = document.getElementById('kategoriak-kontener');
     if (katKontener) {
-        katKontener.innerHTML = kategoriak.map(k => `
-            <div class="kategoria-kontener">
-                <h3 class="cimke ${k.cls} dark">${k.kod}</h3>
-                <div class="ranglista-dropzone" data-kategoria="${k.kod}"></div>
-            </div>
-        `).join('');
+        katKontener.replaceChildren(...kategoriak.map(k => {
+            const doboz = ujElem('div', 'kategoria-kontener');
+            const cimke = ujElem('h3', `cimke ${k.cls} dark`, k.kod);
+            const dropzone = ujElem('div', 'ranglista-dropzone');
+            dropzone.dataset.kategoria = k.kod;
+            doboz.append(cimke, dropzone);
+            return doboz;
+        }));
     }
 
     const forrasKontener = document.getElementById('forras-dobozok-kontener');
     if (forrasKontener) {
-        forrasKontener.innerHTML = italKategoriak.map(k => `
-            <div class="forras-doboz csukva">
-                <div class="forras-fejlec" onclick="toggleForrasDoboz(this)">
-                    <h3>${k.nev} <span class="nyil-ikon">▼</span></h3>
-                    <span class="ital-szamlalo" id="szamlalo-${k.id}">0 / 0</span>
-                </div>
-                <div class="ital-lista" id="${k.id === 'egyeb' ? 'italLista' : k.id + 'Lista'}"></div>
-            </div>
-        `).join('');
+        forrasKontener.replaceChildren(...italKategoriak.map(k => {
+            const doboz = ujElem('div', 'forras-doboz csukva');
+            const fejlec = ujElem('div', 'forras-fejlec');
+            fejlec.addEventListener('click', () => toggleForrasDoboz(fejlec));
+            const cim = ujElem('h3');
+            cim.append(document.createTextNode(`${k.nev} `));
+            cim.appendChild(ujElem('span', 'nyil-ikon', '▼'));
+            const szamlalo = ujElem('span', 'ital-szamlalo', '0 / 0');
+            szamlalo.id = `szamlalo-${k.id}`;
+            fejlec.append(cim, szamlalo);
+            const lista = ujElem('div', 'ital-lista');
+            lista.id = k.id === 'egyeb' ? 'italLista' : k.id + 'Lista';
+            doboz.append(fejlec, lista);
+            return doboz;
+        }));
     }
 
     epitSzuroUI(italKategoriak);
@@ -259,11 +267,12 @@ function epitSzuroUI(italKategoriak) {
     const kontener = document.getElementById('kategoria-szuro-list');
     if (!kontener) return;
 
-    kontener.innerHTML = italKategoriak.map(k => `
-        <div class="szuro-pill aktiv" data-id="${k.id}" onclick="toggleKategoriaPill(this)">
-            ${k.nev}
-        </div>
-    `).join('');
+    kontener.replaceChildren(...italKategoriak.map(k => {
+        const pill = ujElem('div', 'szuro-pill aktiv', k.nev);
+        pill.dataset.id = k.id;
+        pill.addEventListener('click', () => toggleKategoriaPill(pill));
+        return pill;
+    }));
 
     betoltSzuroBeallitasokat();
 }
@@ -465,32 +474,60 @@ function ujHozzavaloSor(m = '', e = 'dl', n = '') {
     const sorDiv = document.createElement('div');
     sorDiv.className = 'hozzavalo-sor';
 
-    sorDiv.innerHTML = keszitSorHTML(m, e, n);
+    sorDiv.replaceChildren(...keszitSorElemek(m, e, n));
     kontener.appendChild(sorDiv);
 
     frissitsTorlesGombokat();
 }
 
-function keszitSorHTML(m, e, n) {
-    if (aktualisMod === 'arany') {
-        return `
-            <input type="text" class="sm-input hozzavalo-mennyiseg" style="flex: 1;" placeholder="Mennyiség" value="${m}" />
-            <input type="text" class="sm-input hozzavalo-nev" style="flex: 2;" placeholder="Hozzávaló neve" value="${n}" />
-            <button type="button" class="hozzavalo-torles-btn" onclick="torolSor(this)">🗑️</button>
-        `;
-    } else {
-        const egysegek = ['dl', 'ml', 'cl', 'db', 'öntet'];
-        const opciok = egysegek.map(opt => `<option value="${opt}" ${opt === e ? 'selected' : ''}>${opt}</option>`).join('');
+// Hozzávaló-sor elemei DOM-építéssel: a felhasználó által írt szöveg (m, n) value-ként
+// kerül be, nem HTML-ként (XSS-védelem).
+function keszitInput(osztaly, stilus, placeholder, ertek, tipus = 'text') {
+    const input = document.createElement('input');
+    input.type = tipus;
+    input.className = `sm-input ${osztaly}`;
+    input.style.flex = stilus;
+    input.placeholder = placeholder;
+    input.value = ertek;
+    return input;
+}
 
-        return `
-            <input type="text" class="sm-input hozzavalo-nev" style="flex: 2;" placeholder="Hozzávaló neve" value="${n}" />
-            <input type="number" class="sm-input hozzavalo-mennyiseg" style="flex: 1;" placeholder="Mennyiség" value="${m}" />
-            <select class="sm-input hozzavalo-egyseg" style="flex: 1;">
-                ${opciok}
-            </select>
-            <button type="button" class="hozzavalo-torles-btn" onclick="torolSor(this)">🗑️</button>
-        `;
+function keszitTorlesGomb() {
+    const gomb = document.createElement('button');
+    gomb.type = 'button';
+    gomb.className = 'hozzavalo-torles-btn';
+    gomb.textContent = '🗑️';
+    gomb.addEventListener('click', () => torolSor(gomb));
+    return gomb;
+}
+
+function keszitSorElemek(m, e, n) {
+    if (aktualisMod === 'arany') {
+        return [
+            keszitInput('hozzavalo-mennyiseg', '1', 'Mennyiség', m),
+            keszitInput('hozzavalo-nev', '2', 'Hozzávaló neve', n),
+            keszitTorlesGomb()
+        ];
     }
+
+    const egysegek = ['dl', 'ml', 'cl', 'db', 'öntet'];
+    const select = document.createElement('select');
+    select.className = 'sm-input hozzavalo-egyseg';
+    select.style.flex = '1';
+    egysegek.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt;
+        option.textContent = opt;
+        option.selected = opt === e;
+        select.appendChild(option);
+    });
+
+    return [
+        keszitInput('hozzavalo-nev', '2', 'Hozzávaló neve', n),
+        keszitInput('hozzavalo-mennyiseg', '1', 'Mennyiség', m, 'number'),
+        select,
+        keszitTorlesGomb()
+    ];
 }
 
 function frissitsMindenSorSemat() {
@@ -500,7 +537,7 @@ function frissitsMindenSorSemat() {
         const e = sor.querySelector('.hozzavalo-egyseg')?.value || 'dl';
         const n = sor.querySelector('.hozzavalo-nev')?.value || '';
 
-        sor.innerHTML = keszitSorHTML(m, e, n);
+        sor.replaceChildren(...keszitSorElemek(m, e, n));
     });
 
     frissitsTorlesGombokat();
@@ -551,11 +588,15 @@ async function mentUjItal() {
         ? 0
         : (szazalek ? parseFloat(szazalek) : null);
 
+    // A kép nélküli új ital: a kép a márkából vagy a kategória-ikonból jön (ital-kep.js),
+    // a jóváhagyásig pedig nem látszik a közös katalógusban.
     const ujItalAdat = {
         nev: nev,
         kategoria: kategoria,
         alkohol_fok: mentesiAlkohol,
-        kep_url: 'https://bvositlxbeqztnhdembx.supabase.co/storage/v1/object/public/italok/feltoltesAlatt.png',
+        kep_url: null,
+        marka: window.italKep ? window.italKep.markaNevbol(nev) : null,
+        jovahagyva: false,
         osszetevok: isKevertItal(kategoria) ? JSON.stringify({ mod: aktualisMod, elemek: hozzavalokTomb }) : null
     };
 
@@ -582,6 +623,23 @@ async function mentUjItal() {
     }
 }
 
+// Új elem szöveggel és osztállyal, textContent-tel (nincs innerHTML)
+function ujElem(tag, osztaly = '', szoveg = '') {
+    const elem = document.createElement(tag);
+    if (osztaly) elem.className = osztaly;
+    if (szoveg) elem.textContent = szoveg;
+    return elem;
+}
+
+// Alkoholfok-jelvény szövege: előtag + kiemelt érték, textContent-tel (nincs innerHTML)
+function badgeSzoveg(elem, elotag, ertek) {
+    elem.replaceChildren();
+    if (elotag) elem.appendChild(document.createTextNode(elotag));
+    const kiemelt = document.createElement('span');
+    kiemelt.textContent = ertek;
+    elem.appendChild(kiemelt);
+}
+
 function addItalKartyaToUI(ital) {
     const celListaDiv = getListaDivByKategoria(ital.kategoria);
     if (!celListaDiv) return;
@@ -591,24 +649,20 @@ function addItalKartyaToUI(ital) {
     kartya.id = `ital-${ital.id}`;
     kartya.dataset.kategoria = ital.kategoria;
 
-    const img = document.createElement('img');
-    img.loading = 'lazy';
-    img.decoding = 'async';
-    img.src = ital.kep_url || ital.kep || 'https://bvositlxbeqztnhdembx.supabase.co/storage/v1/object/public/italok/feltoltesAlatt.png';
-    img.alt = ital.nev;
+    const kep = window.italKep.elemLetrehoz(ital);
 
     const felirat = document.createElement('span');
     felirat.className = 'ital-nev';
     felirat.textContent = ital.nev;
 
-    kartya.appendChild(img);
+    kartya.appendChild(kep);
     kartya.appendChild(felirat);
 
     kartya.addEventListener('click', () => {
         aktivElemId = kartya.id;
         aktivItalAdat = ital;
 
-        document.getElementById('modal-kep').src = img.src;
+        document.getElementById('modal-kep').src = window.italKep.elsoUrl(ital);
 
         const nevElem = document.getElementById('modal-nev');
         nevElem.textContent = ital.nev;
@@ -622,15 +676,15 @@ function addItalKartyaToUI(ital) {
         if (badge) {
             if (kat === 'energiaital') {
                 badge.className = 'alkohol-badge mentes';
-                badge.innerHTML = '<span>Alkoholmentes</span>';
+                badgeSzoveg(badge, '', 'Alkoholmentes');
                 badge.style.display = 'inline-flex';
             } else if (kat === 'froccs' || kat === 'fröccs' || kat === 'koktel' || kat === 'koktél') {
                 badge.className = 'alkohol-badge valtozo';
-                badge.innerHTML = 'Alkoholfok: <span>Változó</span>';
+                badgeSzoveg(badge, 'Alkoholfok: ', 'Változó');
                 badge.style.display = 'inline-flex';
             } else if (ital.alkohol_fok !== null && ital.alkohol_fok !== undefined) {
                 badge.className = 'alkohol-badge';
-                badge.innerHTML = `Alkoholfok: <span>${ital.alkohol_fok}%</span>`;
+                badgeSzoveg(badge, 'Alkoholfok: ', `${ital.alkohol_fok}%`);
                 badge.style.display = 'inline-flex';
             } else {
                 badge.style.display = 'none';
