@@ -86,16 +86,37 @@ export function injectUserNavHTML(state) {
           </div>
         </div>
 
-        <p id="profile-display-email" class="profil-email"></p>
 
         <div class="google-menu-list">
+          <button id="open-profile-details-btn" class="google-menu-btn"><span> Profil adatok</span><span class="arrow-icon">›</span></button>
           <button id="open-group-details-btn" class="google-menu-btn"><span> Csoport adatok</span><span class="arrow-icon">›</span></button>
           <button id="open-join-group-btn" class="google-menu-btn" hidden><span> Csatlakozás / új csoport</span><span class="arrow-icon">›</span></button>
           <button id="open-settings-btn" class="google-menu-btn"><span> Beállítások</span><span class="arrow-icon">›</span></button>
           <button id="logout-btn" class="google-menu-btn danger"><span> Kijelentkezés</span></button>
-          <button id="delete-account-btn" class="google-menu-btn danger-dark"><span> Fiók törlése</span></button>
         </div>
         <p id="profile-status" class="sm-status sm-status-small"></p>
+      </div>
+    </div>
+
+    <!-- PROFIL ADATOK MODAL -->
+    <div id="profil-details-modal" class="sm-overlay" hidden>
+      <div class="sm-card">
+        <div class="sm-header">
+          <h3> Profil adatok</h3>
+          <button id="close-profil-details-btn" class="sm-close-btn">&times;</button>
+        </div>
+        <div class="sm-body">
+          <p id="profile-display-email" class="profil-email"></p>
+
+          <div class="floating-group mb-8">
+            <input type="text" id="own-name-input" class="floating-input" placeholder=" " maxlength="40" autocomplete="off" />
+            <label class="floating-label">A te megjelenített neved</label>
+          </div>
+          <p id="own-name-status" class="sm-status sm-status-small mb-14"></p>
+
+          <button id="delete-account-btn" class="google-menu-btn danger-dark mt-12"><span> Fiók törlése</span></button>
+          <p id="profile-details-status" class="sm-status sm-status-small"></p>
+        </div>
       </div>
     </div>
 
@@ -109,20 +130,12 @@ export function injectUserNavHTML(state) {
         <div class="sm-body">
           <p id="group-no-group" class="csoport-nelkul" hidden>Még nem tartozol csoporthoz.</p>
 
-          <!-- Saját megjelenített név: csoporton kívül is elérhető -->
-          <div class="floating-group mb-8">
-            <input type="text" id="own-name-input" class="floating-input" placeholder=" " maxlength="40" />
-            <label class="floating-label">A te megjelenített neved</label>
-          </div>
-          <button id="save-own-name-btn" class="sm-btn sm-btn-save mb-6">Név mentése</button>
-          <p id="own-name-status" class="sm-status sm-status-small mb-14"></p>
-
           <div id="group-content">
             <div class="floating-group">
               <input type="text" id="group-name-display" class="floating-input" placeholder=" " maxlength="40" readonly />
               <label class="floating-label">Csoport neve</label>
             </div>
-            <button id="save-group-name-btn" class="sm-btn sm-btn-save mb-12" hidden>Név mentése</button>
+            <p id="group-name-status" class="sm-status sm-status-small mb-12"></p>
 
             <div class="floating-group input-with-toggle">
               <input type="password" id="group-code-display" class="floating-input" placeholder=" " readonly />
