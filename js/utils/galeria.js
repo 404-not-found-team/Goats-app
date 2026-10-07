@@ -142,7 +142,11 @@ function frissitGaleria() {
         toggleGombok(false);
 
         const feltoltGomb = document.getElementById('kepFeltoltesGomb');
-        if (feltoltGomb) feltoltGomb.hidden = false;
+        if (feltoltGomb) {
+            feltoltGomb.hidden = false;
+            // A toggleGombok(false) a gombon belüli ikont (<i>) is elrejtette, azt is vissza kell kapcsolni
+            feltoltGomb.querySelectorAll('i').forEach(ikon => { ikon.hidden = false; });
+        }
         if (torlesGomb) torlesGomb.hidden = true;
 
         if (placeholder) {
