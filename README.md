@@ -73,3 +73,15 @@ Az alkalmazás az alábbi modulokból áll:
 - **Adatvédelmi oldal:** `https://404-not-found-team.github.io/Goats-app/privacy.html`, fiók-törlés: `https://404-not-found-team.github.io/Goats-app/fiok-torles.html`
 
 ---
+
+## ⚖️ Jogi oldalak
+
+- **Hub:** `jogi.html` — innen érhető el mindegyik jogi dokumentum, és ez a link van a Profil menüben ("Jogi információk").
+- **Adatvédelmi tájékoztató:** `privacy.html`.
+- **Felhasználási feltételek:** `felhasznalasi-feltetelek.html` — a verziószáma (`auth-service.js` `TOS_VERSION`) egyezzen a lap tetején feltüntetett verzióval.
+- **Fiók törlése:** `fiok-torles.html`.
+- A bejelentkezési képernyőn (checkbox nélkül) egy mondat linkel a feltételekre és az adatvédelmi tájékoztatóra; az elfogadás tényleges rögzítése az `accept_tos` RPC-vel történik, a `TOS_VERSION`-nel.
+- **Verzióemelés menete:** ha a felhasználási feltételek szövege lényegesen változik, emeld a `TOS_VERSION` értékét (`js/auth-service.js`), és a `felhasznalasi-feltetelek.html` tetején lévő verziószámot/dátumot is ennek megfelelően. Ez új elfogadást kényszerít ki a következő bejelentkezéskor.
+- Mindhárom statikus oldal lábléce a másik kettőre és a hub-ra mutat.
+
+---
