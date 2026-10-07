@@ -154,8 +154,14 @@ export function injectUserNavHTML(state) {
             </div>
             <button id="copy-group-code-btn" type="button" class="sm-btn google-menu-btn mb-14"> Kód másolása</button>
 
-            <label class="sm-label">Tagok</label>
-            <div id="group-members-list" class="mb-12"></div>
+            <div class="mb-10">
+              <button id="toggle-tagok-btn" type="button" class="google-menu-btn" aria-expanded="false">
+                <span>👥 Tagok</span><span id="tagok-nyil" class="arrow-icon">›</span>
+              </button>
+              <div id="tagok-tartalom" class="mt-10" hidden>
+                <div id="group-members-list" class="mb-12"></div>
+              </div>
+            </div>
 
             <!-- Műveletek: a Kilépés mindenkinek látszik, a többi csak adminnak -->
             <div id="csoport-muveletek-blokk" class="mt-10" hidden>
