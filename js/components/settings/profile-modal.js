@@ -25,7 +25,7 @@ export function initProfileModal() {
   function fill() {
     const s = getState();
     if (get('profile-display-name')) get('profile-display-name').textContent = s.displayName || 'Nincs név';
-    if (get('profile-display-email')) get('profile-display-email').textContent = s.user?.email || '';
+    if (get('profile-display-email')) get('profile-display-email').value = s.user?.email || '';
 
     // A saját név mezőt csak akkor írjuk felül, ha épp nem gépelünk bele (pl. egy másik fülön módosult)
     const ownName = get('own-name-input');
@@ -55,6 +55,8 @@ export function initProfileModal() {
     fill();
     setStatus('');
     setNameStatus('');
+    const muveletekStatus = get('profil-muveletek-status');
+    if (muveletekStatus) { muveletekStatus.textContent = ''; muveletekStatus.className = ''; }
     profileModal.hidden = true;
     profilDetailsModal.hidden = false;
   });
@@ -91,14 +93,14 @@ export function initProfileModal() {
     const ok = await updateMyDisplayName(nev);
     if (ok) {
       utolsoMentettNev = nev;
-      setNameStatus('Elmentve ✓', '#10b981');
+      setNameStatus('Mentve ✓', '#10b981');
     } else {
       setNameStatus('A mentés nem sikerült.', '#ef4444');
     }
   }
   const mentNevetKesleltetve = debounce(mentNevet, 800);
   get('own-name-input')?.addEventListener('input', () => {
-    setNameStatus('Gépelés...', '#3b82f6');
+    setNameStatus('');
     mentNevetKesleltetve();
   });
   get('own-name-input')?.addEventListener('blur', () => mentNevetKesleltetve.flush());

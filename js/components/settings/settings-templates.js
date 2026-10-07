@@ -106,13 +106,25 @@ export function injectUserNavHTML(state) {
           <button id="close-profil-details-btn" class="sm-close-btn">&times;</button>
         </div>
         <div class="sm-body">
-          <p id="profile-display-email" class="profil-email"></p>
+          <div class="floating-group mb-8">
+            <input type="text" id="profile-display-email" class="floating-input" placeholder=" " readonly tabindex="-1" />
+            <label class="floating-label">E-mail cím</label>
+          </div>
 
           <div class="floating-group mb-8">
             <input type="text" id="own-name-input" class="floating-input" placeholder=" " maxlength="40" autocomplete="off" />
             <label class="floating-label">A te megjelenített neved</label>
           </div>
           <p id="own-name-status" class="sm-status sm-status-small mb-14"></p>
+
+          <!-- Csoportos műveletek: csak akkor látszik, ha van csoportod -->
+          <div id="profil-muveletek" class="mb-14" hidden>
+            <label class="sm-label">Módosítások / Műveletek</label>
+            <button id="regenerate-code-btn" class="google-menu-btn" hidden>Új csoportkód generálása</button>
+            <button id="leave-group-btn" class="google-menu-btn danger">Kilépés a csoportból</button>
+            <button id="delete-group-btn" class="google-menu-btn danger-dark" hidden>Csoport törlése</button>
+            <p id="profil-muveletek-status" class="sm-status sm-status-small"></p>
+          </div>
 
           <button id="delete-account-btn" class="google-menu-btn danger-dark mt-12"><span> Fiók törlése</span></button>
           <p id="profile-details-status" class="sm-status sm-status-small"></p>
@@ -142,16 +154,12 @@ export function injectUserNavHTML(state) {
               <label class="floating-label">Csoportkód (ezzel tudnak csatlakozni)</label>
               <button id="toggle-group-code-visibility" type="button" class="input-toggle-btn">👁️</button>
             </div>
-            <button id="copy-group-code-btn" type="button" class="google-mini-edit-btn mb-14">📋 Kód másolása</button>
+            <button id="copy-group-code-btn" type="button" class="sm-btn sm-btn-save mb-14">📋 Kód másolása</button>
 
             <label class="sm-label">Tagok</label>
             <div id="group-members-list" class="mb-12"></div>
 
             <p id="group-details-status" class="sm-status sm-status-small"></p>
-
-            <button id="regenerate-code-btn" class="google-menu-btn" hidden>Új csoportkód generálása</button>
-            <button id="leave-group-btn" class="google-menu-btn danger">Kilépés a csoportból</button>
-            <button id="delete-group-btn" class="google-menu-btn danger-dark" hidden>Csoport törlése</button>
           </div>
         </div>
       </div>
