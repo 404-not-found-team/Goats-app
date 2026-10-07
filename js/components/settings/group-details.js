@@ -129,6 +129,7 @@ export function initGroupDetails() {
     tartalom.hidden = !nyitva;
     get('toggle-tagok-btn')?.setAttribute('aria-expanded', String(nyitva));
     if (nyil) nyil.textContent = nyitva ? '⌄' : '›';
+    if (!nyitva) zarjMuveletMod();
   });
 
   // A csoport képeinek törlése a csoport törlése/utolsó tag kilépése ELŐTT (utána már nincs jogunk)
