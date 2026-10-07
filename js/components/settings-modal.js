@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const closeBtns = [
     { btn: 'close-auth-btn', modal: 'auth-modal' },
     { btn: 'close-profile-btn', modal: 'profile-modal' },
+    { btn: 'close-profil-details-btn', modal: 'profil-details-modal' },
     { btn: 'close-group-details-btn', modal: 'group-details-modal' },
     { btn: 'close-settings-btn', modal: 'settings-modal' },
   ];

@@ -2,8 +2,8 @@ import { getState, refresh, onChange, leaveGroup } from '../../auth-service.js';
 import { torolCsoportKepei } from '../../utils/csoport-kepek.js';
 import {
   removeMember, transferOwnership, renameGroup, regenerateGroupCode, deleteCurrentGroup,
-  updateMyDisplayName,
 } from '../../admin.js';
+import { debounce } from '../../utils/debounce.js';
 
 export function initGroupDetails() {
   const get = id => document.getElementById(id);
@@ -13,6 +13,8 @@ export function initGroupDetails() {
     const s = get('group-details-status');
     if (s) { s.textContent = msg || ''; s.className = STATUS_OSZTALY[color] || ''; }
   };
+
+  let utolsoMentettCsoportnev = null;
 
   const updateAvatars = () => {
     const { group, displayName } = getState();
@@ -69,12 +71,8 @@ export function initGroupDetails() {
   }
 
   function render() {
-    const { group, groupRole, user, members, displayName } = getState();
+    const { group, groupRole, user, members } = getState();
     const isAdmin = groupRole === 'admin';
-
-    // A saját név mezőt csak akkor írjuk felül, ha épp nem gépelünk bele
-    const ownName = get('own-name-input');
-    if (ownName && document.activeElement !== ownName) ownName.value = displayName || '';
 
     const noGroup = get('group-no-group');
     const content = get('group-content');
@@ -83,10 +81,13 @@ export function initGroupDetails() {
     updateAvatars();
     if (!group) return;
 
+    // A név mezőt csak akkor írjuk felül, ha épp nem gépelünk bele
     const nameInput = get('group-name-display');
-    if (nameInput) { nameInput.value = group.group_name || ''; nameInput.readOnly = !isAdmin; }
-    const saveName = get('save-group-name-btn');
-    if (saveName) saveName.hidden = !isAdmin;
+    if (nameInput && document.activeElement !== nameInput) {
+      nameInput.value = group.group_name || '';
+      utolsoMentettCsoportnev = group.group_name || '';
+    }
+    if (nameInput) nameInput.readOnly = !isAdmin;
 
     const codeInput = get('group-code-display');
     if (codeInput) { codeInput.value = group.group_code; codeInput.type = 'password'; }
@@ -140,27 +141,34 @@ export function initGroupDetails() {
     }
   });
 
-  // Saját megjelenített név mentése (minden bejelentkezett felhasználó)
-  get('save-own-name-btn')?.addEventListener('click', async () => {
-    const btn = get('save-own-name-btn');
-    btn.disabled = true;
-    const ok = await updateMyDisplayName(get('own-name-input')?.value);
-    btn.disabled = false;
-    const status = get('own-name-status');
-    if (status) {
-      status.textContent = ok ? 'A neved elmentve.' : '';
-      status.className = 'status-ok';
-    }
-  });
-
-  // Átnevezés (admin)
-  get('save-group-name-btn')?.addEventListener('click', async () => {
-    const { group } = getState();
+  // Csoportnév: automatikus mentés gépelés közben, csak admin (a mező a többieknek readonly)
+  const setNameStatus = (msg, color = '') => {
+    const s = get('group-name-status');
+    if (s) { s.textContent = msg || ''; s.className = STATUS_OSZTALY[color] || ''; }
+  };
+  async function mentCsoportnevet() {
+    const { group, groupRole } = getState();
+    if (groupRole !== 'admin' || !group) return;
     const name = (get('group-name-display')?.value || '').trim();
-    if (name.length < 2 || name.length > 40) return setStatus('A név 2–40 karakter legyen.', '#ef4444');
+    if (name === utolsoMentettCsoportnev) return;
+    if (name.length < 2 || name.length > 40) {
+      return setNameStatus('A név 2–40 karakter legyen.', '#ef4444');
+    }
+    setNameStatus('Mentés...', '#3b82f6');
     const ok = await renameGroup(group.id, name);
-    setStatus(ok ? 'A csoport neve elmentve.' : '', '#10b981');
+    if (ok) {
+      utolsoMentettCsoportnev = name;
+      setNameStatus('Elmentve ✓', '#10b981');
+    } else {
+      setNameStatus('A mentés nem sikerült.', '#ef4444');
+    }
+  }
+  const mentCsoportnevetKesleltetve = debounce(mentCsoportnevet, 800);
+  get('group-name-display')?.addEventListener('input', () => {
+    setNameStatus('Gépelés...', '#3b82f6');
+    mentCsoportnevetKesleltetve();
   });
+  get('group-name-display')?.addEventListener('blur', () => mentCsoportnevetKesleltetve.flush());
 
   // Új kód (admin)
   get('regenerate-code-btn')?.addEventListener('click', async () => {
