@@ -88,7 +88,7 @@
         const jeloltek = [];
         if (ital.kep_url) jeloltek.push(ital.kep_url);
         const marka = ital.marka || markaNevbol(ital.nev);
-        if (marka) jeloltek.push(`img/brands/${marka}.webp`);
+        if (marka) jeloltek.push(`Images/brands/${marka}.webp`);
         return jeloltek;
     }
 
@@ -123,7 +123,7 @@
     // Egyetlen URL a nagy nézethez (modal). Ikonnál az SVG fájl útvonala.
     function elsoUrl(ital) {
         const jeloltek = kepJeloltek(ital);
-        return jeloltek[0] || `img/icons/${ikonFajl(ital.kategoria)}.svg`;
+        return jeloltek[0] || `Images/icons/${ikonFajl(ital.kategoria)}.svg`;
     }
 
     window.italKep = { elemLetrehoz, elsoUrl, markaNevbol, ikonFajl };
