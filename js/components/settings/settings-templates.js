@@ -117,7 +117,10 @@ export function injectUserNavHTML(state) {
           </div>
           <p id="own-name-status" class="sm-status sm-status-small mb-14"></p>
 
-          <button id="delete-account-btn" class="google-menu-btn danger-dark mt-12"><span> Fiók törlése</span></button>
+          <label class="sm-label mt-12">Műveletek</label>
+          <div class="google-menu-list">
+            <button id="delete-account-btn" class="google-menu-btn danger-dark"><span> Fiók törlése</span></button>
+          </div>
           <p id="profile-details-status" class="sm-status sm-status-small"></p>
         </div>
       </div>
@@ -145,35 +148,28 @@ export function injectUserNavHTML(state) {
               <label class="floating-label">Csoportkód (ezzel tudnak csatlakozni)</label>
               <button id="toggle-group-code-visibility" type="button" class="input-toggle-btn">👁️</button>
             </div>
-            <button id="copy-group-code-btn" type="button" class="sm-btn sm-btn-save mb-14">📋 Kód másolása</button>
+            <button id="copy-group-code-btn" type="button" class="sm-btn google-menu-btn mb-14"> Kód másolása</button>
 
             <label class="sm-label">Tagok</label>
             <div id="group-members-list" class="mb-12"></div>
 
-            <!-- Admin-only műveletek: lenyíló blokk -->
-            <div id="csoport-muveletek-blokk" hidden>
+            <!-- Műveletek: a Kilépés mindenkinek látszik, a többi csak adminnak -->
+            <div id="csoport-muveletek-blokk" class="mt-10" hidden>
               <button id="toggle-muveletek-btn" type="button" class="google-menu-btn" aria-expanded="false">
                 <span>⚙️ Műveletek</span><span id="muveletek-nyil" class="arrow-icon">›</span>
               </button>
-              <div id="csoport-muveletek-tartalom" class="mt-10" hidden>
-                <button id="indit-eltavolitas-btn" type="button" class="google-menu-btn danger">Tagok eltávolítása</button>
-                <button id="indit-atadas-btn" type="button" class="google-menu-btn">Admin jog átadása</button>
-
-                <!-- Jóváhagyó/megszakító sor, csak kiválasztás közben -->
-                <div id="muveletek-megerosito" class="mt-10" hidden>
-                  <p id="muveletek-sugo" class="szoveg-kicsi mb-8"></p>
-                  <button id="muveletek-vegrehajt-btn" type="button" class="sm-btn sm-btn-save">Végrehajtás</button>
-                  <button id="muveletek-megse-btn" type="button" class="sm-btn sm-btn-logout">Mégse</button>
-                </div>
-
-                <button id="regenerate-code-btn" type="button" class="google-menu-btn mt-10">Új csoportkód generálása</button>
-                <button id="delete-group-btn" type="button" class="google-menu-btn danger-dark">Csoport törlése</button>
+              <div id="csoport-muveletek-tartalom" class="google-menu-list mt-10" hidden>
+                <button id="indit-eltavolitas-btn" type="button" class="google-menu-btn danger" hidden>Tagok eltávolítása</button>
+                <button id="indit-atadas-btn" type="button" class="google-menu-btn" hidden>Admin jog átadása</button>
+                <p id="muveletek-sugo" class="szoveg-kicsi" hidden></p>
+                <button id="muveletek-vegrehajt-btn" type="button" class="google-menu-btn" hidden>Végrehajtás</button>
+                <button id="muveletek-megse-btn" type="button" class="google-menu-btn" hidden>Mégse</button>
+                <button id="regenerate-code-btn" type="button" class="google-menu-btn" hidden>Új csoportkód generálása</button>
+                <button id="delete-group-btn" type="button" class="google-menu-btn danger-dark" hidden>Csoport törlése</button>
+                <p id="group-details-status" class="sm-status sm-status-small"></p>
+                <button id="leave-group-btn" type="button" class="google-menu-btn danger">Kilépés a csoportból</button>
               </div>
             </div>
-
-            <p id="group-details-status" class="sm-status sm-status-small"></p>
-
-            <button id="leave-group-btn" type="button" class="google-menu-btn danger mt-10">Kilépés a csoportból</button>
           </div>
         </div>
       </div>

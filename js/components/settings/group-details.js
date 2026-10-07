@@ -90,10 +90,11 @@ export function initGroupDetails() {
     if (codeInput) { codeInput.value = group.group_code; codeInput.type = 'password'; }
     if (get('toggle-group-code-visibility')) get('toggle-group-code-visibility').textContent = '👁️';
 
-    // A Műveletek blokk (eltávolítás, átadás, új kód, csoport törlése) csak adminnak
+    // A Műveletek blokk mindenkinek látszik (a Kilépés mindig ott van), a tartalma admin-függő
     const muveletekBlokk = get('csoport-muveletek-blokk');
-    if (muveletekBlokk) muveletekBlokk.hidden = !isAdmin;
-    if (!isAdmin) zarjMuveletMod();
+    if (muveletekBlokk) muveletekBlokk.hidden = false;
+    if (!isAdmin && kivalasztasMod) zarjMuveletMod();
+    frissitsAdminGombokLathatosagat(isAdmin);
 
     renderTagok();
     // Ha az admin jog átkerült máshoz (vagy elfogyott a kiválasztható tag), lépjünk ki a kiválasztásból
@@ -131,9 +132,9 @@ export function initGroupDetails() {
       if (!code) return;
       try {
         await navigator.clipboard.writeText(code);
-        setStatus('A csoportkód a vágólapra másolva.', '#10b981');
+        //setStatus('A csoportkód a vágólapra másolva.', '#10b981');
       } catch {
-        setStatus('A másolás nem sikerült, jelöld ki kézzel.', '#ef4444');
+        //setStatus('A másolás nem sikerült, jelöld ki kézzel.', '#ef4444');
       }
     }
   });
@@ -169,12 +170,23 @@ export function initGroupDetails() {
 
   // ---------- Műveletek blokk: lenyitás, kiválasztásos eltávolítás/átadás ----------
 
+  // Az admin-only gombok láthatósága. Kiválasztás közben az indító gombok amúgy is el vannak
+  // rejtve, azokat ilyenkor nem írjuk felül (a kiválasztás lezárásakor úgyis újrafut).
+  function frissitsAdminGombokLathatosagat(isAdmin) {
+    if (!kivalasztasMod) {
+      get('indit-eltavolitas-btn')?.toggleAttribute('hidden', !isAdmin);
+      get('indit-atadas-btn')?.toggleAttribute('hidden', !isAdmin);
+    }
+    get('regenerate-code-btn')?.toggleAttribute('hidden', !isAdmin);
+    get('delete-group-btn')?.toggleAttribute('hidden', !isAdmin);
+  }
+
   function zarjMuveletMod() {
     kivalasztasMod = null;
-    const megerosito = get('muveletek-megerosito');
-    if (megerosito) megerosito.hidden = true;
-    get('indit-eltavolitas-btn')?.removeAttribute('hidden');
-    get('indit-atadas-btn')?.removeAttribute('hidden');
+    get('muveletek-sugo')?.setAttribute('hidden', '');
+    get('muveletek-vegrehajt-btn')?.setAttribute('hidden', '');
+    get('muveletek-megse-btn')?.setAttribute('hidden', '');
+    frissitsAdminGombokLathatosagat(getState().groupRole === 'admin');
     renderTagok();
   }
 
@@ -190,26 +202,23 @@ export function initGroupDetails() {
     if (!nyitva) zarjMuveletMod();
   });
 
-  get('indit-eltavolitas-btn')?.addEventListener('click', () => {
-    kivalasztasMod = 'eltavolitas';
+  function inditsdKivalasztast(mod, sugoSzoveg) {
+    kivalasztasMod = mod;
     get('indit-eltavolitas-btn')?.setAttribute('hidden', '');
     get('indit-atadas-btn')?.setAttribute('hidden', '');
-    const megerosito = get('muveletek-megerosito');
     const sugo = get('muveletek-sugo');
-    if (sugo) sugo.textContent = 'Jelöld be, kiket távolítasz el a csoportból, majd nyomd meg a Végrehajtást.';
-    if (megerosito) megerosito.hidden = false;
+    if (sugo) { sugo.textContent = sugoSzoveg; sugo.hidden = false; }
+    get('muveletek-vegrehajt-btn')?.removeAttribute('hidden');
+    get('muveletek-megse-btn')?.removeAttribute('hidden');
     renderTagok();
+  }
+
+  get('indit-eltavolitas-btn')?.addEventListener('click', () => {
+    inditsdKivalasztast('eltavolitas', 'Jelöld be, kiket távolítasz el a csoportból, majd nyomd meg a Végrehajtást.');
   });
 
   get('indit-atadas-btn')?.addEventListener('click', () => {
-    kivalasztasMod = 'atadas';
-    get('indit-eltavolitas-btn')?.setAttribute('hidden', '');
-    get('indit-atadas-btn')?.setAttribute('hidden', '');
-    const megerosito = get('muveletek-megerosito');
-    const sugo = get('muveletek-sugo');
-    if (sugo) sugo.textContent = 'Válaszd ki, kire ruházod át az admin jogot, majd nyomd meg a Végrehajtást.';
-    if (megerosito) megerosito.hidden = false;
-    renderTagok();
+    inditsdKivalasztast('atadas', 'Válaszd ki, kire ruházod át az admin jogot, majd nyomd meg a Végrehajtást.');
   });
 
   get('muveletek-megse-btn')?.addEventListener('click', () => zarjMuveletMod());
