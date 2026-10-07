@@ -189,6 +189,27 @@ export function injectUserNavHTML(state) {
       </div>
     </div>
 
+    <!-- FELTÉTELEK ÚJRAELFOGADÁSA: csak akkor jelenik meg, ha a TOS_VERSION változott azóta,
+         hogy a felhasználó utoljára elfogadta. Szándékosan nincs bezáró (X) gombja. -->
+    <div id="tos-ujraelfogadas-modal" class="sm-overlay" hidden>
+      <div class="sm-card">
+        <div class="sm-header">
+          <h3> Frissültek a feltételeink</h3>
+        </div>
+        <div class="sm-body">
+          <p>
+            A Felhasználási feltételeket azóta frissítettük, hogy utoljára elfogadtad. A továbbhasználathoz
+            el kell fogadnod az új verziót.
+          </p>
+          <p>
+            <a href="felhasznalasi-feltetelek.html" target="_blank" rel="noopener" class="link-akcent">A teljes szöveg megnyitása</a>
+          </p>
+          <button id="ujraelfogad-btn" type="button" class="sm-btn sm-btn-save">Elfogadom</button>
+          <p id="ujraelfogadas-status" class="sm-status sm-status-small"></p>
+        </div>
+      </div>
+    </div>
+
     <!-- BEÁLLÍTÁSOK MODAL (TÉMA) -->
     <div id="settings-modal" class="sm-overlay" hidden>
       <div class="sm-card">

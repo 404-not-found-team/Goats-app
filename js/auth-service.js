@@ -31,6 +31,10 @@ export const isLoggedIn = () => !!state.user;
 export const hasGroup = () => !!state.group;
 export const isGroupAdmin = () => state.groupRole === 'admin';
 export const isSuperadmin = () => state.profile?.system_role === 'superadmin';
+// Igaz, ha a felhasználó be van jelentkezve, és a nála rögzített (accept_tos-szal mentett)
+// verzió nem egyezik a hatályos TOS_VERSION-nel (vagy még sosem fogadott el semmit).
+export const isTosUjraelfogadasSzukseges = () =>
+  !!state.user && state.profile?.tos_version !== TOS_VERSION;
 
 export function onChange(fn) {
   listeners.add(fn);
@@ -118,7 +122,7 @@ export async function refresh() {
 
   const [profileRes, memberRes] = await Promise.all([
     client.from('profiles')
-      .select('id, display_name, system_role')
+      .select('id, display_name, system_role, tos_version')
       .eq('id', session.user.id)
       .maybeSingle(),
     client.from('group_members')
