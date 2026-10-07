@@ -160,6 +160,13 @@ export function injectUserNavHTML(state) {
               </button>
               <div id="tagok-tartalom" class="mt-10" hidden>
                 <div id="group-members-list" class="mb-12"></div>
+                <div class="google-menu-list">
+                  <button id="indit-eltavolitas-btn" type="button" class="google-menu-btn danger" hidden>Tagok eltávolítása</button>
+                  <button id="indit-atadas-btn" type="button" class="google-menu-btn" hidden>Admin jog átadása</button>
+                  <p id="muveletek-sugo" class="szoveg-kicsi" hidden></p>
+                  <button id="muveletek-vegrehajt-btn" type="button" class="google-menu-btn" hidden>Végrehajtás</button>
+                  <button id="muveletek-megse-btn" type="button" class="google-menu-btn" hidden>Mégse</button>
+                </div>
               </div>
             </div>
 
@@ -169,11 +176,6 @@ export function injectUserNavHTML(state) {
                 <span>⚙️ Műveletek</span><span id="muveletek-nyil" class="arrow-icon">›</span>
               </button>
               <div id="csoport-muveletek-tartalom" class="google-menu-list mt-10" hidden>
-                <button id="indit-eltavolitas-btn" type="button" class="google-menu-btn danger" hidden>Tagok eltávolítása</button>
-                <button id="indit-atadas-btn" type="button" class="google-menu-btn" hidden>Admin jog átadása</button>
-                <p id="muveletek-sugo" class="szoveg-kicsi" hidden></p>
-                <button id="muveletek-vegrehajt-btn" type="button" class="google-menu-btn" hidden>Végrehajtás</button>
-                <button id="muveletek-megse-btn" type="button" class="google-menu-btn" hidden>Mégse</button>
                 <button id="regenerate-code-btn" type="button" class="google-menu-btn" hidden>Új csoportkód generálása</button>
                 <button id="delete-group-btn" type="button" class="google-menu-btn danger" hidden>Csoport törlése</button>
                 <p id="group-details-status" class="sm-status sm-status-small"></p>
