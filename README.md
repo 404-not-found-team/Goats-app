@@ -68,16 +68,16 @@ Az alkalmazás az alábbi modulokból áll:
 ## 📱 TWA (Android csomag)
 
 - **Csomagnév:** `hu.goatsapp.app`
-- **Host:** `z0lcs.github.io`, **start URL:** `/Goats-app/` (a `manifest.json` `start_url` és `scope` értéke ezzel egyezik)
-- **Digital Asset Links:** az `assetlinks.json` a `z0lcs.github.io` repóban él (a domain gyökerén kell kiszolgálni), nem ebben a repóban.
+- **Host:** `404-not-found-team.github.io`, **start URL:** `/Goats-app/` (a `manifest.json` `start_url` és `scope` értéke ezzel egyezik)
+- **Digital Asset Links:** az `assetlinks.json` a `404-not-found-team.github.io` repóban él (a domain gyökerén kell kiszolgálni: `https://404-not-found-team.github.io/.well-known/assetlinks.json`), nem ebben a repóban.
 - **Hátralévő lépések a Play-beadásig:**
   - képernyőképek a manifestbe és a Play-oldalra,
   - adatbiztonsági (Data safety) űrlap,
   - tartalom-besorolás,
   - tesztfiók a Play-ellenőrzőnek,
   - a Google OAuth jóváhagyási állapotának ellenőrzése.
-- **Adatvédelmi oldal:** `https://z0lcs.github.io/Goats-app/privacy.html`, fiók-törlés: `https://z0lcs.github.io/Goats-app/fiok-torles.html`
-- **Gyermekvédelmi normák:** `https://z0lcs.github.io/Goats-app/gyermekvedelem.html`
+- **Adatvédelmi oldal:** `https://404-not-found-team.github.io/Goats-app/privacy.html`, fiók-törlés: `https://404-not-found-team.github.io/Goats-app/fiok-torles.html`
+- **Gyermekvédelmi normák:** `https://404-not-found-team.github.io/Goats-app/gyermekvedelem.html`
 
 ---
 
