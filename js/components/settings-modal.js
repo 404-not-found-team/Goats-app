@@ -5,6 +5,7 @@ import { initProfileModal } from './settings/profile-modal.js';
 import { initGroupDetails } from './settings/group-details.js';
 import { initThemePicker } from './settings/theme-picker.js';
 import { initDrinkModeration } from './settings/drink-moderation.js';
+import { initTosUjraelfogadas } from './settings/tos-ujraelfogadas.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Megvárjuk a session betöltését, hogy a felület már a valós állapotot mutassa
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initGroupDetails();
   initThemePicker();
   initDrinkModeration();
+  initTosUjraelfogadas();
 
   const get = id => document.getElementById(id);
 
