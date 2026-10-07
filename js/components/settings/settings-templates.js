@@ -39,12 +39,13 @@ export function injectUserNavHTML(state) {
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" class="ikon-20">
             Bejelentkezés Google-fiókkal
           </button>
-          <div class="mt-15 szoveg-kicsi">
-            <label class="kurzor-mutato">
-              <input type="checkbox" id="accept-tos-checkbox">
-              Elfogadom a <a href="#" id="open-tos-modal" class="link-akcent">Használati Feltételeket</a>
-            </label>
-          </div>
+          <p class="mt-15 szoveg-kicsi">
+            A bejelentkezéssel elfogadod a
+            <a href="felhasznalasi-feltetelek.html" target="_blank" rel="noopener" class="link-akcent">Felhasználási feltételeket</a>
+            és az
+            <a href="privacy.html" target="_blank" rel="noopener" class="link-akcent">Adatvédelmi tájékoztatót</a>,
+            és kijelented, hogy elmúltál 18 éves.
+          </p>
         </div>
 
         <!-- 2. lépés: csoport (ha van session, de nincs csoport) -->
@@ -92,6 +93,7 @@ export function injectUserNavHTML(state) {
           <button id="open-group-details-btn" class="google-menu-btn"><span> Csoport adatok</span><span class="arrow-icon">›</span></button>
           <button id="open-join-group-btn" class="google-menu-btn" hidden><span> Csatlakozás / új csoport</span><span class="arrow-icon">›</span></button>
           <button id="open-settings-btn" class="google-menu-btn"><span> Beállítások</span><span class="arrow-icon">›</span></button>
+          <a href="jogi.html" target="_blank" rel="noopener" class="google-menu-btn"><span> Jogi információk</span><span class="arrow-icon">›</span></a>
           <button id="logout-btn" class="google-menu-btn danger"><span> Kijelentkezés</span></button>
         </div>
         <p id="profile-status" class="sm-status sm-status-small"></p>
@@ -208,30 +210,6 @@ export function injectUserNavHTML(state) {
             <p id="pending-drinks-status" class="sm-status sm-status-small"></p>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- HASZNÁLATI FELTÉTELEK MODAL -->
-    <div id="tos-modal" class="sm-overlay tos-modal-overlay" hidden>
-      <div class="sm-card tos-modal-card">
-        <div class="sm-header">
-          <h3 class="tos-modal-header"> Használati Feltételek</h3>
-          <button id="close-tos-modal" class="sm-close-btn">&times;</button>
-        </div>
-        <div class="tos-modal-body">
-          <h4>1. Felelősségkizárás</h4>
-          <p>Az alkalmazást az üzemeltető adott állapotában (as-is), garanciavállalás nélkül biztosítja. Az alkalmazás fejlesztője semmilyen felelősséget nem vállal az adatvesztésből, a szolgáltatás esetleges kimaradásából vagy hibáiból eredő károkért.</p>
-
-          <h4>2. Pénzügyi elszámolások</h4>
-          <p>A Tartozások modul kizárólag a felhasználók közötti tájékoztató jellegű nyilvántartásra szolgál. Az alkalmazás nem végez pénzügyi tranzakciókat, és nem vállal felelősséget az elszámolási vitákért.</p>
-
-          <h4>3. Feltöltött tartalmak</h4>
-          <p>A feltöltött képekért, szövegekért és adatokért kizárólag a feltöltő személy vállalja a felelősséget. Jogszabályba ütköző tartalom feltöltése tilos.</p>
-
-          <h4>4. Adatkezelés</h4>
-          <p>A bejelentkezéshez a Google-fiókod nevét és e-mail címét, a csoportos működéshez a csoport adatait felhőalapú (Supabase) adatbázisban tároljuk. A fiókodat a Profil menüben bármikor véglegesen törölheted. Részletek: <a href="privacy.html" target="_blank" rel="noopener" class="link-akcent">Adatvédelmi nyilatkozat</a>.</p>
-        </div>
-        <button id="accept-tos-modal-btn" class="sm-btn sm-btn-save tos-modal-btn">Elfogadom</button>
       </div>
     </div>
   `);
