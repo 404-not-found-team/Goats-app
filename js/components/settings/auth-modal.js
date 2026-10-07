@@ -10,12 +10,10 @@ export function initAuthModal() {
     userLine: get('auth-user-line'),
     status: get('auth-status'),
     googleBtn: get('google-login-btn'),
-    tos: get('accept-tos-checkbox'),
     codeInput: get('auth-group-code-input'),
     joinBtn: get('auth-submit-btn'),
     nameInput: get('new-group-name-input'),
     createBtn: get('create-group-btn'),
-    tosModal: get('tos-modal'),
   };
 
   const STATUS_OSZTALY = { error: 'status-hiba', info: 'status-info', ok: 'status-ok' };
@@ -37,26 +35,11 @@ export function initAuthModal() {
   renderStep();
   onChange(renderStep);
 
-  // ---- Használati feltételek ablak ----
-  document.addEventListener('click', (e) => {
-    if (e.target.closest?.('#open-tos-modal')) {
-      e.preventDefault();
-      if (el.tosModal) el.tosModal.hidden = false;
-    }
-  });
-  get('close-tos-modal')?.addEventListener('click', () => {
-    if (el.tosModal) el.tosModal.hidden = true;
-  });
-  get('accept-tos-modal-btn')?.addEventListener('click', () => {
-    if (el.tos) el.tos.checked = true;
-    if (el.tosModal) el.tosModal.hidden = true;
-  });
-
   // ---- 1. Google bejelentkezés ----
+  // Nincs külön elfogadó checkbox: a bejelentkezési képernyőn lévő szöveg mondja ki, hogy a
+  // bejelentkezés egyben elfogadás is. A tényleges rögzítés változatlanul az accept_tos RPC-vel
+  // történik (lásd auth-service.js signInWithGoogle / applyPendingTos).
   el.googleBtn?.addEventListener('click', async () => {
-    if (el.tos && !el.tos.checked) {
-      return setStatus('A belépéshez el kell fogadnod a Használati Feltételeket!', 'error');
-    }
     setBusy(el.googleBtn, true);
     setStatus('Átirányítás a Google bejelentkezéshez...', 'info');
     try {
