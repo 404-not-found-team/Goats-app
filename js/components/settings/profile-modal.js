@@ -55,8 +55,6 @@ export function initProfileModal() {
     fill();
     setStatus('');
     setNameStatus('');
-    const muveletekStatus = get('profil-muveletek-status');
-    if (muveletekStatus) { muveletekStatus.textContent = ''; muveletekStatus.className = ''; }
     profileModal.hidden = true;
     profilDetailsModal.hidden = false;
   });
