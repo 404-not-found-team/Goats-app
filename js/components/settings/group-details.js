@@ -13,6 +13,11 @@ export function initGroupDetails() {
     const s = get('group-details-status');
     if (s) { s.textContent = msg || ''; s.className = STATUS_OSZTALY[color] || ''; }
   };
+  // A Profil adatok ablakba költöztetett gombok (új kód, kilépés, csoport törlése) saját visszajelzése
+  const setMuveletekStatus = (msg, color = '') => {
+    const s = get('profil-muveletek-status');
+    if (s) { s.textContent = msg || ''; s.className = STATUS_OSZTALY[color] || ''; }
+  };
 
   let utolsoMentettCsoportnev = null;
 
@@ -76,8 +81,10 @@ export function initGroupDetails() {
 
     const noGroup = get('group-no-group');
     const content = get('group-content');
+    const muveletek = get('profil-muveletek');
     if (noGroup) noGroup.hidden = !!group;
     if (content) content.hidden = !group;
+    if (muveletek) muveletek.hidden = !group;
     updateAvatars();
     if (!group) return;
 
@@ -105,7 +112,7 @@ export function initGroupDetails() {
   }
 
   onChange(render);
-  updateAvatars();
+  render();
 
   // Megnyitáskor friss adat a szerverről
   get('open-group-details-btn')?.addEventListener('click', async () => {
@@ -114,10 +121,11 @@ export function initGroupDetails() {
     await refresh();
   });
 
-  // A csoport képeinek törlése a csoport törlése/utolsó tag kilépése ELŐTT (utána már nincs jogunk)
+  // A csoport képeinek törlése a csoport törlése/utolsó tag kilépése ELŐTT (utána már nincs jogunk).
+  // Csak a leave-group-btn és a delete-group-btn hívja, azok pedig a Profil adatok ablakban vannak.
   async function csoportKepeinekTorlese(group) {
     const hibak = await torolCsoportKepei(group.id, group.group_code);
-    if (hibak.length) setStatus('Néhány kép törlése nem sikerült, de a művelet folytatódik.', '#ef4444');
+    if (hibak.length) setMuveletekStatus('Néhány kép törlése nem sikerült, de a művelet folytatódik.', '#ef4444');
   }
 
   // Kód mutatása/elrejtése, másolása
@@ -158,26 +166,26 @@ export function initGroupDetails() {
     const ok = await renameGroup(group.id, name);
     if (ok) {
       utolsoMentettCsoportnev = name;
-      setNameStatus('Elmentve ✓', '#10b981');
+      setNameStatus('Mentve ✓', '#10b981');
     } else {
       setNameStatus('A mentés nem sikerült.', '#ef4444');
     }
   }
   const mentCsoportnevetKesleltetve = debounce(mentCsoportnevet, 800);
   get('group-name-display')?.addEventListener('input', () => {
-    setNameStatus('Gépelés...', '#3b82f6');
+    setNameStatus('');
     mentCsoportnevetKesleltetve();
   });
   get('group-name-display')?.addEventListener('blur', () => mentCsoportnevetKesleltetve.flush());
 
-  // Új kód (admin)
+  // Új kód (admin) — a gomb a Profil adatok ablakban van
   get('regenerate-code-btn')?.addEventListener('click', async () => {
     if (!confirm('Új csoportkódot generálsz. A régi kód azonnal érvénytelen lesz, a meglévő tagok bent maradnak. Az új kódot MEG KELL OSZTANOD a tagokkal, mert a régivel már nem tudnak csatlakozni. A csoport képei nem változnak. Folytatod?')) return;
     const code = await regenerateGroupCode(getState().group.id);
-    if (code) setStatus(`Új csoportkód: ${code}`, '#10b981');
+    if (code) setMuveletekStatus(`Új csoportkód: ${code}`, '#10b981');
   });
 
-  // Kilépés
+  // Kilépés — a gomb a Profil adatok ablakban van
   get('leave-group-btn')?.addEventListener('click', async () => {
     if (!confirm('Biztosan kilépsz a csoportból?')) return;
     try {
@@ -186,18 +194,18 @@ export function initGroupDetails() {
       await leaveGroup();
       location.reload();
     } catch (err) {
-      setStatus(err.message, '#ef4444');
+      setMuveletekStatus(err.message, '#ef4444');
     }
   });
 
-  // Csoport törlése (admin) – a csoport nevét kell begépelni
+  // Csoport törlése (admin) – a csoport nevét kell begépelni. A gomb a Profil adatok ablakban van
   get('delete-group-btn')?.addEventListener('click', async () => {
     const { group } = getState();
     const typed = prompt(
       `A csoport és MINDEN adata (tartozások, tervek, események...) véglegesen törlődik.\n\nA megerősítéshez írd be a csoport nevét: ${group.group_name}`
     );
     if (typed === null) return;
-    if (typed.trim() !== group.group_name) return setStatus('A név nem egyezik, a csoport nem lett törölve.', '#ef4444');
+    if (typed.trim() !== group.group_name) return setMuveletekStatus('A név nem egyezik, a csoport nem lett törölve.', '#ef4444');
     await csoportKepeinekTorlese(group);
     const ok = await deleteCurrentGroup(group.id);
     if (ok) location.reload();
