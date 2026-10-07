@@ -108,8 +108,27 @@ export function initGroupDetails() {
   get('open-group-details-btn')?.addEventListener('click', async () => {
     setStatus('');
     zarjMuveletMod();
+    zarjTagok();
     render();
     await refresh();
+  });
+
+  // Tagok: lenyíló blokk, alapból csukva
+  function zarjTagok() {
+    const tartalom = get('tagok-tartalom');
+    const nyil = get('tagok-nyil');
+    if (tartalom) tartalom.hidden = true;
+    get('toggle-tagok-btn')?.setAttribute('aria-expanded', 'false');
+    if (nyil) nyil.textContent = '›';
+  }
+  get('toggle-tagok-btn')?.addEventListener('click', () => {
+    const tartalom = get('tagok-tartalom');
+    const nyil = get('tagok-nyil');
+    if (!tartalom) return;
+    const nyitva = tartalom.hidden; // most nyitjuk-e
+    tartalom.hidden = !nyitva;
+    get('toggle-tagok-btn')?.setAttribute('aria-expanded', String(nyitva));
+    if (nyil) nyil.textContent = nyitva ? '⌄' : '›';
   });
 
   // A csoport képeinek törlése a csoport törlése/utolsó tag kilépése ELŐTT (utána már nincs jogunk)
