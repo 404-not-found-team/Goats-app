@@ -117,15 +117,6 @@ export function injectUserNavHTML(state) {
           </div>
           <p id="own-name-status" class="sm-status sm-status-small mb-14"></p>
 
-          <!-- Csoportos műveletek: csak akkor látszik, ha van csoportod -->
-          <div id="profil-muveletek" class="mb-14" hidden>
-            <label class="sm-label">Módosítások / Műveletek</label>
-            <button id="regenerate-code-btn" class="google-menu-btn" hidden>Új csoportkód generálása</button>
-            <button id="leave-group-btn" class="google-menu-btn danger">Kilépés a csoportból</button>
-            <button id="delete-group-btn" class="google-menu-btn danger-dark" hidden>Csoport törlése</button>
-            <p id="profil-muveletek-status" class="sm-status sm-status-small"></p>
-          </div>
-
           <button id="delete-account-btn" class="google-menu-btn danger-dark mt-12"><span> Fiók törlése</span></button>
           <p id="profile-details-status" class="sm-status sm-status-small"></p>
         </div>
@@ -159,7 +150,30 @@ export function injectUserNavHTML(state) {
             <label class="sm-label">Tagok</label>
             <div id="group-members-list" class="mb-12"></div>
 
+            <!-- Admin-only műveletek: lenyíló blokk -->
+            <div id="csoport-muveletek-blokk" hidden>
+              <button id="toggle-muveletek-btn" type="button" class="google-menu-btn" aria-expanded="false">
+                <span>⚙️ Műveletek</span><span id="muveletek-nyil" class="arrow-icon">›</span>
+              </button>
+              <div id="csoport-muveletek-tartalom" class="mt-10" hidden>
+                <button id="indit-eltavolitas-btn" type="button" class="google-menu-btn danger">Tagok eltávolítása</button>
+                <button id="indit-atadas-btn" type="button" class="google-menu-btn">Admin jog átadása</button>
+
+                <!-- Jóváhagyó/megszakító sor, csak kiválasztás közben -->
+                <div id="muveletek-megerosito" class="mt-10" hidden>
+                  <p id="muveletek-sugo" class="szoveg-kicsi mb-8"></p>
+                  <button id="muveletek-vegrehajt-btn" type="button" class="sm-btn sm-btn-save">Végrehajtás</button>
+                  <button id="muveletek-megse-btn" type="button" class="sm-btn sm-btn-logout">Mégse</button>
+                </div>
+
+                <button id="regenerate-code-btn" type="button" class="google-menu-btn mt-10">Új csoportkód generálása</button>
+                <button id="delete-group-btn" type="button" class="google-menu-btn danger-dark">Csoport törlése</button>
+              </div>
+            </div>
+
             <p id="group-details-status" class="sm-status sm-status-small"></p>
+
+            <button id="leave-group-btn" type="button" class="google-menu-btn danger mt-10">Kilépés a csoportból</button>
           </div>
         </div>
       </div>
