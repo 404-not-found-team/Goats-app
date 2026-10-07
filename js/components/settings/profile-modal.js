@@ -55,6 +55,7 @@ export function initProfileModal() {
     fill();
     setStatus('');
     setNameStatus('');
+    zarjProfilMuveletek();
     profileModal.hidden = true;
     profilDetailsModal.hidden = false;
   });
@@ -102,6 +103,26 @@ export function initProfileModal() {
     mentNevetKesleltetve();
   });
   get('own-name-input')?.addEventListener('blur', () => mentNevetKesleltetve.flush());
+
+  // Műveletek: lenyíló blokk (alapból csukva, mint a Csoport adatoknál)
+  function zarjProfilMuveletek() {
+    const tartalom = get('profil-muveletek-tartalom');
+    const btn = get('toggle-profil-muveletek-btn');
+    const nyil = get('profil-muveletek-nyil');
+    if (tartalom) tartalom.hidden = true;
+    btn?.setAttribute('aria-expanded', 'false');
+    if (nyil) nyil.textContent = '›';
+  }
+  get('toggle-profil-muveletek-btn')?.addEventListener('click', () => {
+    const tartalom = get('profil-muveletek-tartalom');
+    const btn = get('toggle-profil-muveletek-btn');
+    const nyil = get('profil-muveletek-nyil');
+    if (!tartalom) return;
+    const nyitva = tartalom.hidden; // most nyitjuk-e
+    tartalom.hidden = !nyitva;
+    btn?.setAttribute('aria-expanded', String(nyitva));
+    if (nyil) nyil.textContent = nyitva ? '⌄' : '›';
+  });
 
   // Fiók végleges törlése (Google Play követelmény: az appban is elérhető legyen)
   get('delete-account-btn')?.addEventListener('click', async () => {

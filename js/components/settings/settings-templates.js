@@ -117,9 +117,13 @@ export function injectUserNavHTML(state) {
           </div>
           <p id="own-name-status" class="sm-status sm-status-small mb-14"></p>
 
-          <label class="sm-label mt-12">Műveletek</label>
-          <div class="google-menu-list">
-            <button id="delete-account-btn" class="google-menu-btn danger-dark"><span> Fiók törlése</span></button>
+          <div class="mt-12">
+            <button id="toggle-profil-muveletek-btn" type="button" class="google-menu-btn" aria-expanded="false">
+              <span>⚙️ Műveletek</span><span id="profil-muveletek-nyil" class="arrow-icon">›</span>
+            </button>
+            <div id="profil-muveletek-tartalom" class="google-menu-list mt-10" hidden>
+              <button id="delete-account-btn" class="google-menu-btn danger-dark"><span> Fiók törlése</span></button>
+            </div>
           </div>
           <p id="profile-details-status" class="sm-status sm-status-small"></p>
         </div>
@@ -165,7 +169,7 @@ export function injectUserNavHTML(state) {
                 <button id="muveletek-vegrehajt-btn" type="button" class="google-menu-btn" hidden>Végrehajtás</button>
                 <button id="muveletek-megse-btn" type="button" class="google-menu-btn" hidden>Mégse</button>
                 <button id="regenerate-code-btn" type="button" class="google-menu-btn" hidden>Új csoportkód generálása</button>
-                <button id="delete-group-btn" type="button" class="google-menu-btn danger-dark" hidden>Csoport törlése</button>
+                <button id="delete-group-btn" type="button" class="google-menu-btn danger" hidden>Csoport törlése</button>
                 <p id="group-details-status" class="sm-status sm-status-small"></p>
                 <button id="leave-group-btn" type="button" class="google-menu-btn danger">Kilépés a csoportból</button>
               </div>
