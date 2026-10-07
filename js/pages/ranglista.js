@@ -594,7 +594,6 @@ async function mentUjItal() {
         nev: nev,
         kategoria: kategoria,
         alkohol_fok: mentesiAlkohol,
-        kep_url: null,
         marka: window.italKep ? window.italKep.markaNevbol(nev) : null,
         jovahagyva: false,
         osszetevok: isKevertItal(kategoria) ? JSON.stringify({ mod: aktualisMod, elemek: hozzavalokTomb }) : null
