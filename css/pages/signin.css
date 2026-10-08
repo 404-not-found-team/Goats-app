@@ -1,67 +1,20 @@
 /* ==========================================================================
    BEJELENTKEZETT NÉZET (DASHBOARD)
-   Desktop (>1000px): 2 oszlop – videó bal oldalt (2 sor magas),
-                      képek jobb felül, naptár jobb alul.
-   Mobil (<=1000px):  1 oszlop – videó, képek, naptár egymás alatt.
+   Egy oszlop, középre igazítva: képek felül, naptár alul.
    ========================================================================== */
 
 .hatter {
     display: grid;
     padding: 20px;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
+    grid-template-columns: 1fr;
     gap: 30px;
-    max-width: 1400px;
+    max-width: 650px;
+    margin: 0 auto;
     width: 100%;
-}
-
-/* Ha a videó doboz el van rejtve: egy oszlopos, középre igazított elrendezés.
-   A :has() specificitása az argumentumából jön (#id + attribútum = 1,1,0),
-   így a teljes szelektor magától felülírja a .kepek / .naptar-kontener
-   grid-column szabályát, !important nélkül. */
-@media screen and (min-width: 1001px) {
-    .hatter:has(#youtube-doboz[hidden]) {
-        grid-template-columns: 1fr;
-        max-width: 650px;
-        margin: 0 auto;
-    }
-
-    .hatter:has(#youtube-doboz[hidden]) .kepek,
-    .hatter:has(#youtube-doboz[hidden]) .naptar-kontener {
-        grid-column: 1 / -1;
-    }
 }
 
 /* --------------------------------------------------------------------------
-   1. VIDEÓ KOMPONENS
-   -------------------------------------------------------------------------- */
-.videok {
-    border: 1px solid var(--border-color);
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    min-height: 500px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--card-bg);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    border-radius: 15px;
-    padding: 20px;
-    gap: 15px;
-    grid-column: 1 / 2;
-    grid-row: 1 / 3;
-}
-
-.videok iframe {
-    width: 100%;
-    height: 100%;
-    min-height: 450px;
-    border-radius: 8px;
-}
-
-/* --------------------------------------------------------------------------
-   2. KÉP GALÉRIA KOMPONENS
+   1. KÉP GALÉRIA KOMPONENS
    -------------------------------------------------------------------------- */
 .kepek {
     border: 1px solid var(--border-color);
@@ -72,8 +25,6 @@
     background-color: var(--card-bg);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     border-radius: 15px;
-    grid-column: 2 / 3;
-    grid-row: 1 / 2;
     padding: 20px;
     gap: 15px;
     height: fit-content;
@@ -162,12 +113,8 @@
     transform: scale(1.15);
 }
 
-.video-nyil {
-    visibility: hidden;
-}
-
 /* --------------------------------------------------------------------------
-   3. NAPTÁR KOMPONENS
+   2. NAPTÁR KOMPONENS
    -------------------------------------------------------------------------- */
 .naptar-kontener {
     background-color: var(--card-bg);
@@ -176,8 +123,6 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     border: 1px solid var(--border-color);
     width: 100%;
-    grid-column: 2 / 3;
-    grid-row: 2 / 3;
 }
 
 .naptar-fejlec {
@@ -279,45 +224,23 @@
 }
 
 /* --------------------------------------------------------------------------
-   4. MOBIL / TABLET (<=1000px): EGY OSZLOP
+   3. MOBIL / TABLET (<=1000px): EGY OSZLOP
    A blokk az alapszabályok UTÁN áll, ezért azonos specificitásnál ő nyer.
    A display-t nem írjuk felül, így az inline style és a .hidden is működik.
    -------------------------------------------------------------------------- */
 @media screen and (max-width: 1000px) {
-    /* A .hatter marad grid (a JS inline display:grid-et is állíthat rá, azt
-       úgysem lehet CSS-ből !important nélkül felülírni) – csak 1 oszlopos lesz. */
     .hatter {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
+        max-width: 100%;
         padding: 10px;
         padding-bottom: 100px;
         gap: 20px;
     }
 
-    .videok,
     .kepek,
     .naptar-kontener {
-        grid-column: auto;
-        grid-row: auto;
         width: 100%;
         max-width: 100%;
         height: auto;
-    }
-
-    /* Videó: fix 250px magas lejátszó, a rejtett nyilak nem foglalnak helyet */
-    .videok {
-        padding: 12px 20px;
-        gap: 8px;
-        min-height: auto;
-    }
-
-    .videok>.fa-solid {
-        display: none;
-    }
-
-    .videok iframe {
-        height: 250px;
-        min-height: 250px;
     }
 
     /* Képek: nagy középső kép, két kisebb elmosott a szélén */
