@@ -161,26 +161,28 @@ function bizonyosodjModalRol() {
   });
 }
 
-export function nyitEgyenlitesModal({ enNev, masikId, masikNev, enTartozikMasiknak, masikTartozikEnnekem, beszamithato }) {
+// a és b: a két érintett fél (nem kell, hogy a megnyitó felhasználó valamelyikük legyen –
+// a tartozások ma is mindenki-mindenkiét-kezeli modellt követnek, bárki csoporttag egyenlíthet).
+export function nyitEgyenlitesModal({ aId, aNev, bId, bNev, aTartozikBnek, bTartozikAnak, beszamithato }) {
   bizonyosodjModalRol();
   const modal = document.getElementById('tartozas-egyenlites-modal');
 
-  const masikNak = nak(masikNev);
-  const enNak = nak(enNev);
-  const utanaEn = Math.max(enTartozikMasiknak - beszamithato, 0);
-  const utanaMasik = Math.max(masikTartozikEnnekem - beszamithato, 0);
+  const bNak = nak(bNev);
+  const aNak = nak(aNev);
+  const utanaA = Math.max(aTartozikBnek - beszamithato, 0);
+  const utanaB = Math.max(bTartozikAnak - beszamithato, 0);
 
   document.getElementById('tartozas-egyenlites-elotte').textContent =
-    `Most: ${enNev} tartozik ${masikNak} ${fmt(enTartozikMasiknak)}, ${masikNev} tartozik ${enNak} ${fmt(masikTartozikEnnekem)}.`;
+    `Most: ${aNev} tartozik ${bNak} ${fmt(aTartozikBnek)}, ${bNev} tartozik ${aNak} ${fmt(bTartozikAnak)}.`;
   document.getElementById('tartozas-egyenlites-utana').textContent =
-    `Egyenlítés után: ${enNev} tartozik ${masikNak} ${fmt(utanaEn)}, ${masikNev} tartozik ${enNak} ${fmt(utanaMasik)}. (Beszámítva: ${fmt(beszamithato)})`;
+    `Egyenlítés után: ${aNev} tartozik ${bNak} ${fmt(utanaA)}, ${bNev} tartozik ${aNak} ${fmt(utanaB)}. (Beszámítva: ${fmt(beszamithato)})`;
 
   const okBtn = document.getElementById('tartozas-egyenlites-ok-btn');
   const ujOkBtn = okBtn.cloneNode(true); // az előző megnyitás kattintás-figyelőjének eltávolítása
   okBtn.replaceWith(ujOkBtn);
   ujOkBtn.addEventListener('click', async () => {
     ujOkBtn.disabled = true;
-    const { error } = await _supabase.rpc('tartozasok_egyenlitese', { p_masik: masikId });
+    const { error } = await _supabase.rpc('tartozasok_egyenlitese', { p_a: aId, p_b: bId });
     ujOkBtn.disabled = false;
     if (error) {
       alert(error.message || 'Az egyenlítés nem sikerült.');
