@@ -62,8 +62,7 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
       felsoSor.className = 'tartozas-reszlet-sor-felso';
 
       const szoveg = document.createElement('span');
-      const mikor = t.felvetel_ideje ? new Date(t.felvetel_ideje).toLocaleDateString('hu-HU') : '';
-      szoveg.textContent = `${t.miert} – ${fmt(t.eredeti_osszeg)} · Felvette: ${nev(t.felvette_id)} · ${mikor}`;
+      szoveg.textContent = `${t.miert} – ${fmt(t.eredeti_osszeg)}`;
 
       const torlesSpan = document.createElement('span');
       torlesSpan.textContent = '🗑️';
