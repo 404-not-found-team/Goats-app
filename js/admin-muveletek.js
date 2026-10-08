@@ -2,7 +2,7 @@
 // a jogosultságot az adatbázis ellenőrzi (nem a kliens).
 // Visszatérés: true siker esetén; hiba esetén alert + false.
 import { client } from './supabase-client.js';
-import { callRpc, refresh, getState } from './auth-service.js';
+import { callRpc, refresh, getState } from './hitelesites.js';
 
 async function run(fn) {
   try {

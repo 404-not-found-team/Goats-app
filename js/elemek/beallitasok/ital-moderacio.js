@@ -1,4 +1,4 @@
-import { callRpc, isSuperadmin, onChange } from '../../auth-service.js';
+import { callRpc, isSuperadmin, onChange } from '../../hitelesites.js';
 
 // Superadmin: jóváhagyásra váró italok listája, jóváhagyás és elutasítás.
 // A jogosultságot minden hívásnál az adatbázis (RPC) ellenőrzi; ez a felület csak

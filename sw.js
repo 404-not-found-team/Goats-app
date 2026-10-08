@@ -16,7 +16,7 @@ const ELOGYORSITOTT = [
     'css/main.css',
     'js/main.js',
     'js/supabase-client.js',
-    'js/auth-service.js',
+    'js/hitelesites.js',
     'js/elemek/nav-bar.js',
     'js/pages/index.js',
     'js/pages/app.js',

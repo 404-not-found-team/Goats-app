@@ -1,8 +1,8 @@
-import { getState, refresh, onChange, leaveGroup } from '../../auth-service.js';
+import { getState, refresh, onChange, leaveGroup } from '../../hitelesites.js';
 import { torolCsoportKepei } from '../../segedek/csoport-kepek.js';
 import {
   removeMember, transferOwnership, renameGroup, regenerateGroupCode, deleteCurrentGroup,
-} from '../../admin.js';
+} from '../../admin-muveletek.js';
 import { debounce } from '../../segedek/keslelteto.js';
 
 export function initGroupDetails() {
