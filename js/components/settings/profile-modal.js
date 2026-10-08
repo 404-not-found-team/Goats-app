@@ -1,4 +1,4 @@
-import { getState, onChange, signOut, deleteMyAccount } from '../../auth-service.js';
+import { getState, onChange, signOut, deleteMyAccount, callRpc } from '../../auth-service.js';
 import { torolCsoportKepei } from '../../utils/csoport-kepek.js';
 import { updateMyDisplayName } from '../../admin.js';
 import { debounce } from '../../utils/debounce.js';
@@ -83,18 +83,38 @@ export function initProfileModal() {
     location.reload();
   });
 
-  // Saját megjelenített név: automatikus mentés gépelés közben, nincs külön "Mentés" gomb
+  // Saját megjelenített név: automatikus mentés gépelés közben, nincs külön "Mentés" gomb.
+  // Mentés előtt egy gyors (kb. 400 ms) kényelmi ellenőrzés fut az is_display_name_available
+  // RPC-vel ("van-e már ilyen nevű tag a csoportomban?") — a valódi védelem a szerveren (trigger)
+  // van, ez csak előre jelez, hogy ne kelljen a trigger hibájára (alert) várni.
   let utolsoMentettNev = null;
+  let ellenorzesSorszam = 0;
   async function mentNevet() {
     const input = get('own-name-input');
     if (!input) return;
     const nev = input.value.trim();
     if (nev === utolsoMentettNev) return;
-    if (nev.length < 1 || nev.length > 40) {
-      return setNameStatus('A név 1–40 karakter legyen.', '#ef4444');
+    if (nev.length < 2 || nev.length > 30) {
+      return setNameStatus('A név 2–30 karakter legyen.', '#ef4444');
     }
+
+    const sajatSorszam = ++ellenorzesSorszam;
+    setNameStatus('Ellenőrzés...', '#3b82f6');
+    try {
+      const szabad = await callRpc('is_display_name_available', { p_name: nev });
+      if (sajatSorszam !== ellenorzesSorszam) return; // közben újabb gépelés indult, ez elavult
+      if (!szabad) {
+        return setNameStatus('Ebben a csoportban már van ilyen nevű tag.', '#ef4444');
+      }
+    } catch (err) {
+      // Ha az ellenőrzés hibázik (pl. hálózat), a mentést a szerveri trigger úgyis védi
+      console.warn('Névütközés-ellenőrzés sikertelen, mentés megkísérelve:', err);
+    }
+    if (sajatSorszam !== ellenorzesSorszam) return;
+
     setNameStatus('Mentés...', '#3b82f6');
     const ok = await updateMyDisplayName(nev);
+    if (sajatSorszam !== ellenorzesSorszam) return;
     if (ok) {
       utolsoMentettNev = nev;
       setNameStatus('Mentve ✓', '#10b981');
@@ -102,7 +122,7 @@ export function initProfileModal() {
       setNameStatus('A mentés nem sikerült.', '#ef4444');
     }
   }
-  const mentNevetKesleltetve = debounce(mentNevet, 800);
+  const mentNevetKesleltetve = debounce(mentNevet, 400);
   get('own-name-input')?.addEventListener('input', () => {
     setNameStatus('');
     mentNevetKesleltetve();
