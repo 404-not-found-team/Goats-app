@@ -1,9 +1,9 @@
 import { getState, refresh, onChange, leaveGroup } from '../../auth-service.js';
-import { torolCsoportKepei } from '../../utils/csoport-kepek.js';
+import { torolCsoportKepei } from '../../segedek/csoport-kepek.js';
 import {
   removeMember, transferOwnership, renameGroup, regenerateGroupCode, deleteCurrentGroup,
 } from '../../admin.js';
-import { debounce } from '../../utils/debounce.js';
+import { debounce } from '../../segedek/keslelteto.js';
 
 export function initGroupDetails() {
   const get = id => document.getElementById(id);

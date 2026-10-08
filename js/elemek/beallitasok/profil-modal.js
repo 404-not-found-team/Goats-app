@@ -1,8 +1,8 @@
 import { getState, onChange, signOut, deleteMyAccount, callRpc } from '../../auth-service.js';
-import { torolCsoportKepei } from '../../utils/csoport-kepek.js';
+import { torolCsoportKepei } from '../../segedek/csoport-kepek.js';
 import { updateMyDisplayName } from '../../admin.js';
-import { debounce } from '../../utils/debounce.js';
-import { fokuszAllit } from '../../utils/modal-fokusz.js';
+import { debounce } from '../../segedek/keslelteto.js';
+import { fokuszAllit } from '../../segedek/modal-fokusz.js';
 
 export function initProfileModal() {
   const get = id => document.getElementById(id);
