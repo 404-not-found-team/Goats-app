@@ -388,23 +388,9 @@ async function feltoltKepek(event) {
     await betoltKepek();
 }
 
-function frissitsKezdolapElrendezes() {
-    const currentGroup = aktualisGroupCode();
-    if (!currentGroup) return;
-
-    const ytDoboz = document.getElementById('youtube-doboz');
-
-    if (currentGroup === 'duckies') {
-        if (ytDoboz) ytDoboz.hidden = false;
-    } else {
-        if (ytDoboz) ytDoboz.hidden = true;
-    }
-}
-
 document.addEventListener("DOMContentLoaded", async function () {
     if (window.goatsAuth) await window.goatsAuth.ready;
     betoltKepek();
-    frissitsKezdolapElrendezes();
 
     const fajlInput = document.getElementById('kepFeltoltesInput');
     if (fajlInput) {

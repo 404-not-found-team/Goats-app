@@ -15,7 +15,6 @@ async function frissitsNezetet() {
     if (user && group) {
         if (kijelentkezettDiv) kijelentkezettDiv.classList.add('hidden');
         if (bejelentkezettDiv) bejelentkezettDiv.classList.remove('hidden');
-        ellenorizVideokLathatosagat(group.group_code);
         return;
     }
 
@@ -29,14 +28,6 @@ async function frissitsNezetet() {
             authStatus.textContent = 'Be vagy lépve! Csatlakozz egy meglévő csoporthoz vagy hozz létre egy újat.';
             authStatus.className = 'status-ok';
         }
-    }
-}
-
-function ellenorizVideokLathatosagat(groupCode) {
-    const youtubeDoboz = document.getElementById('youtube-doboz');
-    if (youtubeDoboz) {
-        const lathato = !!groupCode && groupCode.toLowerCase() === 'duckies';
-        youtubeDoboz.hidden = !lathato;
     }
 }
 
