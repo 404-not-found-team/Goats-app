@@ -1,7 +1,7 @@
 // Kezdőlap (kijelentkezett nézet). FELADAT8 3. pont: minimális JS, csak a munkamenet-ellenőrzés,
 // az átirányítás és a Google-gombos bejelentkezés. A teljes alkalmazás (galéria, naptár, nav stb.)
 // az app.html-en tölt be, ide nem.
-import { ready, getState, signInWithGoogle } from '../auth-service.js';
+import { ready, getState, signInWithGoogle } from '../hitelesites.js';
 
 // Gyors, hálózat nélküli előzetes ellenőrzés: a supabase-js alapból a localStorage-ban tárolja a
 // munkamenet-tokent ("sb-<projekt>-auth-token" néven). Ha ez megvan, szinte biztos, hogy a

@@ -1,9 +1,9 @@
-import { onChange, callRpc, refresh, TOS_VERSION, isTosUjraelfogadasSzukseges } from '../../auth-service.js';
+import { onChange, callRpc, refresh, TOS_VERSION, isTosUjraelfogadasSzukseges } from '../../hitelesites.js';
 
 // Ha a felhasználó már be van jelentkezve, de a nála rögzített elfogadott verzió (profiles.tos_version,
 // az accept_tos RPC írja) nem egyezik a hatályos TOS_VERSION-nel, ez a modal kéri az újraelfogadást.
 // Első bejelentkezéskor ez nem fut le: azt a login-képernyő szövege és a goats_tos_pending mechanizmus
-// (auth-service.js) kezeli, változatlanul.
+// (hitelesites.js) kezeli, változatlanul.
 export function initTosUjraelfogadas() {
   const modal = document.getElementById('tos-ujraelfogadas-modal');
   const btn = document.getElementById('ujraelfogad-btn');

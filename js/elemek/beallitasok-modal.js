@@ -1,4 +1,4 @@
-import { ready, getState } from '../auth-service.js';
+import { ready, getState } from '../hitelesites.js';
 import { injectUserNavHTML } from './beallitasok/beallitasok-sablonok.js';
 import { initAuthModal } from './beallitasok/belepes-modal.js';
 import { initProfileModal } from './beallitasok/profil-modal.js';

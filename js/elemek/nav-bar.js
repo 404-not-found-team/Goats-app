@@ -1,4 +1,4 @@
-import { ready, getState } from '../auth-service.js';
+import { ready, getState } from '../hitelesites.js';
 import { jeloles } from '../segedek/teljesitmeny.js';
 
 document.addEventListener('DOMContentLoaded', async () => {

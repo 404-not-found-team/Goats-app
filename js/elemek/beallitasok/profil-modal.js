@@ -1,6 +1,6 @@
-import { getState, onChange, signOut, deleteMyAccount, callRpc } from '../../auth-service.js';
+import { getState, onChange, signOut, deleteMyAccount, callRpc } from '../../hitelesites.js';
 import { torolCsoportKepei } from '../../segedek/csoport-kepek.js';
-import { updateMyDisplayName } from '../../admin.js';
+import { updateMyDisplayName } from '../../admin-muveletek.js';
 import { debounce } from '../../segedek/keslelteto.js';
 import { fokuszAllit } from '../../segedek/modal-fokusz.js';
 

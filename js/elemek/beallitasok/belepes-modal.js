@@ -1,4 +1,4 @@
-import { signInWithGoogle, joinGroup, createGroup, getState, onChange } from '../../auth-service.js';
+import { signInWithGoogle, joinGroup, createGroup, getState, onChange } from '../../hitelesites.js';
 
 export function initAuthModal() {
   const get = id => document.getElementById(id);
@@ -38,7 +38,7 @@ export function initAuthModal() {
   // ---- 1. Google bejelentkezés ----
   // Nincs külön elfogadó checkbox: a bejelentkezési képernyőn lévő szöveg mondja ki, hogy a
   // bejelentkezés egyben elfogadás is. A tényleges rögzítés változatlanul az accept_tos RPC-vel
-  // történik (lásd auth-service.js signInWithGoogle / applyPendingTos).
+  // történik (lásd hitelesites.js signInWithGoogle / applyPendingTos).
   el.googleBtn?.addEventListener('click', async () => {
     setBusy(el.googleBtn, true);
     setStatus('Átirányítás a Google bejelentkezéshez...', 'info');
