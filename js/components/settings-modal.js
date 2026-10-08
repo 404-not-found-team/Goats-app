@@ -6,6 +6,7 @@ import { initGroupDetails } from './settings/group-details.js';
 import { initThemePicker } from './settings/theme-picker.js';
 import { initDrinkModeration } from './settings/drink-moderation.js';
 import { initTosUjraelfogadas } from './settings/tos-ujraelfogadas.js';
+import { fokuszAllit } from '../utils/modal-fokusz.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Megvárjuk a session betöltését, hogy a felület már a valós állapotot mutassa
@@ -23,6 +24,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const get = id => document.getElementById(id);
 
+  // A beállítások-rendszer "kezdőlapja" a Profil menü. Az almenükben (Profil adatok, Csoport
+  // adatok, Beállítások/téma) az X / Esc / háttérre kattintás ide visz vissza, nem zárja be az
+  // egészet. A kezdőlapon (és a Belépés/Csatlakozás ablakban, ami önálló belépési pont, nem
+  // "almenü") ugyanez a gomb/Esc/háttér egyszerűen bezár, ahogy eddig.
+  // A tos-ujraelfogadas-modal szándékosan kimarad: annak nincs bezáró útja, csak az "Elfogadom".
+  const KEZDOLAP_MODAL = 'profile-modal';
+  const ALMENU_HAZA = {
+    'profil-details-modal': KEZDOLAP_MODAL,
+    'group-details-modal': KEZDOLAP_MODAL,
+    'settings-modal': KEZDOLAP_MODAL,
+  };
+  const ESC_HATTER_KIVETEL = new Set(['tos-ujraelfogadas-modal']);
+
+  // X / Esc / háttér: almenüben haza visz, a kezdőlapon (és minden más önálló modalnál) bezár
+  function zarjVagyHaza(modalId) {
+    const m = get(modalId);
+    if (!m || m.hidden) return;
+    m.hidden = true;
+    const haza = ALMENU_HAZA[modalId];
+    const celModal = haza ? get(haza) : null;
+    if (celModal) {
+      celModal.hidden = false;
+      fokuszAllit(celModal);
+    }
+  }
+
   const closeBtns = [
     { btn: 'close-auth-btn', modal: 'auth-modal' },
     { btn: 'close-profile-btn', modal: 'profile-modal' },
@@ -31,9 +58,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     { btn: 'close-settings-btn', modal: 'settings-modal' },
   ];
   closeBtns.forEach(({ btn, modal }) => {
-    get(btn)?.addEventListener('click', () => {
-      const m = get(modal);
-      if (m) m.hidden = true;
+    get(btn)?.addEventListener('click', () => zarjVagyHaza(modal));
+  });
+
+  // Esc: a jelenleg látható (nem kivételezett) sm-overlay modalra ugyanaz a szabály, mint az X-re
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const nyitott = [...document.querySelectorAll('.sm-overlay')]
+      .find((m) => !m.hidden && !ESC_HATTER_KIVETEL.has(m.id));
+    if (nyitott) zarjVagyHaza(nyitott.id);
+  });
+
+  // Háttérre kattintás: ugyanaz a szabály, mint az X-re (a kártyán belüli kattintás nem számít,
+  // mert az eseményt a kártya gyermekei nem buborékoltatják el az overlay sima kattintásaként,
+  // itt az e.target === overlay ellenőrzés zárja ki azt)
+  document.querySelectorAll('.sm-overlay').forEach((overlay) => {
+    if (ESC_HATTER_KIVETEL.has(overlay.id)) return;
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) zarjVagyHaza(overlay.id);
     });
   });
 

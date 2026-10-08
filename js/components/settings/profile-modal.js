@@ -2,6 +2,7 @@ import { getState, onChange, signOut, deleteMyAccount } from '../../auth-service
 import { torolCsoportKepei } from '../../utils/csoport-kepek.js';
 import { updateMyDisplayName } from '../../admin.js';
 import { debounce } from '../../utils/debounce.js';
+import { fokuszAllit } from '../../utils/modal-fokusz.js';
 
 export function initProfileModal() {
   const get = id => document.getElementById(id);
@@ -46,7 +47,7 @@ export function initProfileModal() {
   document.addEventListener('click', (e) => {
     if (e.target.closest?.('#open-profile-modal-btn')) {
       fill();
-      if (profileModal) profileModal.hidden = false;
+      if (profileModal) { profileModal.hidden = false; fokuszAllit(profileModal); }
     }
   });
 
@@ -58,18 +59,22 @@ export function initProfileModal() {
     zarjProfilMuveletek();
     profileModal.hidden = true;
     profilDetailsModal.hidden = false;
+    fokuszAllit(profilDetailsModal);
   });
   get('open-group-details-btn')?.addEventListener('click', () => {
     profileModal.hidden = true;
     groupDetailsModal.hidden = false;
+    fokuszAllit(groupDetailsModal);
   });
   get('open-join-group-btn')?.addEventListener('click', () => {
     profileModal.hidden = true;
     authModal.hidden = false;
+    fokuszAllit(authModal);
   });
   get('open-settings-btn')?.addEventListener('click', () => {
     profileModal.hidden = true;
     settingsModal.hidden = false;
+    fokuszAllit(settingsModal);
   });
   // Kijelentkezés
   get('logout-btn')?.addEventListener('click', async () => {
