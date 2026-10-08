@@ -10,6 +10,12 @@
     backdrop-filter: blur(4px);
 }
 
+/* A modal programozott fókuszt kap (váltáskor), de ne jelenjen meg rajta a teljes képernyős
+   overlay köré húzott böngésző-alap fókuszkeret */
+.sm-overlay:focus {
+    outline: none;
+}
+
 /* Egységes kártyaméret minden modal ablaknak (a magasság: --modal-height, alapból 480px) */
 .sm-card,
 .google-profile-card {

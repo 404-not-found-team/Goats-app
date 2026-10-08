@@ -23,7 +23,7 @@ export function injectUserNavHTML(state) {
 
   document.body.insertAdjacentHTML('beforeend', `
     <!-- BELÉPÉS / CSOPORT MODAL -->
-    <div id="auth-modal" class="sm-overlay" hidden>
+    <div id="auth-modal" class="sm-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-title" hidden>
       <div class="sm-card auth-kartya">
         <div class="sm-header sm-fejlec-sor">
           <h3 id="auth-title">Belépés</h3>
@@ -76,7 +76,7 @@ export function injectUserNavHTML(state) {
     </div>
 
     <!-- PROFIL MODAL -->
-    <div id="profile-modal" class="sm-overlay" hidden>
+    <div id="profile-modal" class="sm-overlay" role="dialog" aria-modal="true" hidden>
       <div class="google-profile-card">
         <button id="close-profile-btn" class="google-close-btn">&times;</button>
         <div class="google-user-header">
@@ -101,7 +101,7 @@ export function injectUserNavHTML(state) {
     </div>
 
     <!-- PROFIL ADATOK MODAL -->
-    <div id="profil-details-modal" class="sm-overlay" hidden>
+    <div id="profil-details-modal" class="sm-overlay" role="dialog" aria-modal="true" hidden>
       <div class="sm-card">
         <div class="sm-header">
           <h3> Profil adatok</h3>
@@ -133,7 +133,7 @@ export function injectUserNavHTML(state) {
     </div>
 
     <!-- CSOPORT ADATOK MODAL -->
-    <div id="group-details-modal" class="sm-overlay" hidden>
+    <div id="group-details-modal" class="sm-overlay" role="dialog" aria-modal="true" hidden>
       <div class="sm-card">
         <div class="sm-header">
           <h3> Csoport adatok</h3>
@@ -191,7 +191,7 @@ export function injectUserNavHTML(state) {
 
     <!-- FELTÉTELEK ÚJRAELFOGADÁSA: csak akkor jelenik meg, ha a TOS_VERSION változott azóta,
          hogy a felhasználó utoljára elfogadta. Szándékosan nincs bezáró (X) gombja. -->
-    <div id="tos-ujraelfogadas-modal" class="sm-overlay" hidden>
+    <div id="tos-ujraelfogadas-modal" class="sm-overlay" role="dialog" aria-modal="true" hidden>
       <div class="sm-card">
         <div class="sm-header">
           <h3> Frissültek a feltételeink</h3>
@@ -211,7 +211,7 @@ export function injectUserNavHTML(state) {
     </div>
 
     <!-- BEÁLLÍTÁSOK MODAL (TÉMA) -->
-    <div id="settings-modal" class="sm-overlay" hidden>
+    <div id="settings-modal" class="sm-overlay" role="dialog" aria-modal="true" hidden>
       <div class="sm-card">
         <div class="sm-header">
           <h3> Beállítások</h3>
