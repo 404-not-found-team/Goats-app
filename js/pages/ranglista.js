@@ -419,6 +419,7 @@ function zardUjItalModal() {
     document.getElementById('uj-ital-modal').hidden = true;
     document.getElementById('uj-ital-nev').value = '';
     document.getElementById('uj-ital-szazalek').value = '';
+    document.getElementById('uj-ital-kiszereles').value = 'dobozos';
     document.getElementById('hozzavalok-lista').innerHTML = '';
 }
 
@@ -432,10 +433,15 @@ function kategoriaValtozasCheck() {
     const kat = document.getElementById('uj-ital-kategoria').value;
     const resz = document.getElementById('koktel-összeallitas-resz');
     const alkoholGroup = document.getElementById('alkoholfok-group');
+    const kiszerelesGroup = document.getElementById('kiszereles-group');
 
     if (alkoholGroup) {
         const elrejtAlkohol = (kat === 'energiaital' || kat === 'koktel' || kat === 'froccs');
         alkoholGroup.hidden = elrejtAlkohol;
+    }
+
+    if (kiszerelesGroup) {
+        kiszerelesGroup.hidden = (kat !== 'sor');
     }
 
     if (resz) {
@@ -588,10 +594,15 @@ async function mentUjItal() {
 
     // A kép nélküli új ital: a kép a márkából vagy a kategória-ikonból jön (ital-kep.js),
     // a jóváhagyásig pedig nem látszik a közös katalógusban.
+    const kiszereles = kategoria === 'sor'
+        ? (document.getElementById('uj-ital-kiszereles')?.value || null)
+        : null;
+
     const ujItalAdat = {
         nev: nev,
         kategoria: kategoria,
         alkohol_fok: mentesiAlkohol,
+        kiszereles: kiszereles,
         marka: window.italKep ? window.italKep.markaNevbol(nev) : null,
         jovahagyva: false,
         osszetevok: isKevertItal(kategoria) ? JSON.stringify({ mod: aktualisMod, elemek: hozzavalokTomb }) : null
@@ -637,6 +648,12 @@ function badgeSzoveg(elem, elotag, ertek) {
     elem.appendChild(kiemelt);
 }
 
+// Sörnél a kiszerelés (dobozos/üveges) rövid, emojis jelzése
+function kiszerelesSzoveg(ital) {
+    if (String(ital.kategoria || '').toLowerCase() !== 'sor' || !ital.kiszereles) return null;
+    return ital.kiszereles === 'uveges' ? '🍾 Üveges' : '📦 Dobozos';
+}
+
 function addItalKartyaToUI(ital) {
     const celListaDiv = getListaDivByKategoria(ital.kategoria);
     if (!celListaDiv) return;
@@ -654,6 +671,11 @@ function addItalKartyaToUI(ital) {
 
     kartya.appendChild(kep);
     kartya.appendChild(felirat);
+
+    const kiszerelesCimke = kiszerelesSzoveg(ital);
+    if (kiszerelesCimke) {
+        kartya.appendChild(ujElem('span', 'ital-kiszereles', kiszerelesCimke));
+    }
 
     // A saját, még jóváhagyatlan italon jelvény (mást a szerver nem is ad vissza jóváhagyatlanul)
     const sajatJavaslat = !ital.jovahagyva && !!ital.javasolta_id
@@ -693,6 +715,17 @@ function addItalKartyaToUI(ital) {
                 badge.hidden = false;
             } else {
                 badge.hidden = true;
+            }
+        }
+
+        const kiszerelesBadge = document.getElementById('modal-kiszereles-badge');
+        if (kiszerelesBadge) {
+            const cimke = kiszerelesSzoveg(ital);
+            if (cimke) {
+                badgeSzoveg(kiszerelesBadge, '', cimke);
+                kiszerelesBadge.hidden = false;
+            } else {
+                kiszerelesBadge.hidden = true;
             }
         }
 

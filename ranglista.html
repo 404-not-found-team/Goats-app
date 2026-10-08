@@ -48,6 +48,7 @@
             <img id="modal-kep" src="" alt="Kiválasztott ital">
             <div id="modal-nev" class="modal-ital-cim"></div>
             <div id="modal-alkohol-badge" class="alkohol-badge" hidden></div>
+            <div id="modal-kiszereles-badge" class="alkohol-badge valtozo" hidden></div>
 
             <div id="modal-koktel-hozzavalok-doboz" class="modal-hozzavalok-box" hidden>
                 <div class="modal-hozzavalok-fejlec">🍹 Hozzávalók és Arányok:</div>
@@ -96,6 +97,14 @@
             <div id="alkoholfok-group" class="floating-group">
                 <input type="number" id="uj-ital-szazalek" class="floating-input" placeholder=" " step="0.1" />
                 <label class="floating-label">Alkoholfok (%)</label>
+            </div>
+
+            <div id="kiszereles-group" class="floating-group" hidden>
+                <select id="uj-ital-kiszereles" class="floating-select">
+                    <option value="dobozos">Dobozos</option>
+                    <option value="uveges">Üveges</option>
+                </select>
+                <label class="floating-label">Kiszerelés</label>
             </div>
 
             <div id="koktel-összeallitas-resz" class="koktel-resz-kontener" hidden>
