@@ -11,5 +11,5 @@
 @import url('elemek/moderacio.css');
 
 /* PAGES */
-@import url('pages/signin.css');
-@import url('pages/signout.css');
+@import url('pages/bejelentkezes.css');
+@import url('pages/fooldal.css');
