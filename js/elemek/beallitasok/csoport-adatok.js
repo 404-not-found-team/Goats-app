@@ -257,11 +257,9 @@ export function initGroupDetails() {
       if (!confirm(`Eltávolítod a csoportból: ${nevek}?`)) return;
 
       setStatus('Eltávolítás...', '#3b82f6');
-      let hibaDb = 0;
-      for (const userId of kijeloltek) {
-        const ok = await removeMember(userId, group.id);
-        if (!ok) hibaDb += 1;
-      }
+      // Párhuzamosan, nem egyenként: a tagok eltávolítása egymástól független művelet
+      const eredmenyek = await Promise.all(kijeloltek.map(userId => removeMember(userId, group.id)));
+      const hibaDb = eredmenyek.filter(ok => !ok).length;
       setStatus(hibaDb === 0 ? 'A kiválasztott tagok eltávolítva.' : `${hibaDb} tag eltávolítása nem sikerült.`, hibaDb === 0 ? '#10b981' : '#ef4444');
       zarjMuveletMod();
       return;

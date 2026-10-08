@@ -442,7 +442,10 @@ async function feltoltKepek(event) {
 
             if (sorBeszurasHiba) {
                 console.error('A kepek sor beszúrása másodszorra sem sikerült, a fájl törlése:', sorBeszurasHiba);
-                await client.storage.from(BUCKET_NEV).remove([eleresiUt]);
+                const { error: takaritasHiba } = await client.storage.from(BUCKET_NEV).remove([eleresiUt]);
+                if (takaritasHiba) {
+                    console.error('A gazdátlanul maradt fájl törlése is sikertelen:', takaritasHiba, eleresiUt);
+                }
                 alert(feltoltesiHiba(eredetiFajl, 'A feltöltés nem fejeződött be rendesen, kérlek próbáld újra.'));
             }
         } catch (err) {
