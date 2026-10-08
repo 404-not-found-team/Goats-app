@@ -606,7 +606,8 @@ async function addTartozas() {
         mennyiert: resz,
         hitelezo_id: kinek,
         ados_id: adosId,
-        felvette_id: felvevoId,
+        // felvette_id-t nem küldjük: az adatbázis default auth.uid()-ja állítja be,
+        // a kliens sosem jelentheti ki magáról, hogy "ő" vette fel
         // régi, szöveges oszlopok: csak pillanatkép, a megjelenítés az azonosítókból megy
         kinek: nevek(kinek),
         kitartozik: nevek(adosId),
