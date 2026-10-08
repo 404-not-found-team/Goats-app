@@ -103,6 +103,11 @@
         }
         const marka = ital.marka || markaNevbol(ital.nev);
         if (marka) jeloltek.push(`img/markak/${marka}.webp`);
+        // Sörnél márka-kép híján: két generikus kép a kiszerelés szerint (nem kell minden sörnek saját fotó)
+        if (String(ital.kategoria || '').toLowerCase() === 'sor' && ital.kiszereles) {
+            const fajl = ital.kiszereles === 'uveges' ? 'sor-uveges' : 'sor-doboz';
+            jeloltek.push(`img/markak/${fajl}.webp`);
+        }
         return jeloltek;
     }
 
