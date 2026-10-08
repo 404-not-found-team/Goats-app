@@ -301,14 +301,27 @@
     .tartozasok-grid {
         grid-template-columns: 1fr;
     }
+
+    .elosztas-elonezet{
+        min-width: 288.4px;
+    }
 }
+
 /* Közös költség: egyenlő elosztás kapcsoló, előnézet, egyedi összegek */
 .kozos-koltseg {
-    width: 100%;
     margin: -10px 0 25px 0;
     display: flex;
     flex-direction: column;
     gap: 12px;
+}
+
+.kozos-koltseg-infok {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 15px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .kapcsolo-sor {
@@ -333,34 +346,44 @@
     flex-wrap: wrap;
     gap: 8px 20px;
     align-items: center;
-    max-width: 520px;
+    flex: 1 1 260px;
+    min-width: 0;
     margin: 0;
     padding: 10px 16px;
     background-color: var(--inner-bg);
     border: 1px solid var(--border-color);
     border-radius: 10px;
+    box-sizing: border-box;
 }
 
+/* A natív legend alapból átlóg/megtöri a felső szegélyt, ettől a doboz a mellette
+   lévő (szegélyen belül teljesen kitöltött) figyelmeztetéshez képest vizuálisan
+   kisebbnek tűnik, pedig pixelre egyenlő magasságúak. A legendet a dobozon belülre
+   visszük, hogy a keretezett terület is teljes magasságban kitöltve látsszon. */
 .elosztas-mod legend {
-    padding: 0 6px;
+    flex-basis: 100%;
+    padding: 0;
+    margin: 0 0 4px 0;
     color: var(--text-secondary);
     font-size: var(--fs-sm);
     font-weight: 600;
 }
 
-/* Élő előnézet és összeg-ellenőrzés: jelvényként (háttér+keret), nem csak szín jelzi az állapotot */
+/* Élő előnézet és összeg-ellenőrzés: jelvényként (háttér+keret), nem csak szín jelzi az állapotot.
+   A szülő (.kozos-koltseg-infok) nyújtja azonos magasságúra az .elosztas-mod dobozzal. */
 .elosztas-elonezet {
-    display: inline-block;
-    width: fit-content;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
     color: var(--text-primary);
     font-size: var(--fs-sm);
     font-weight: 600;
-    min-height: 0;
     margin: 0;
     padding: 7px 14px;
     border-radius: 8px;
     background-color: var(--inner-bg);
     border: 1px solid var(--border-color);
+    box-sizing: border-box;
 }
 
 .elosztas-elonezet:empty {
@@ -381,9 +404,11 @@
 
 .egyedi-osszegek {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 8px;
-    max-width: 520px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .egyedi-osszegek.hidden {
@@ -396,13 +421,15 @@
     align-items: center;
     justify-content: space-between;
     gap: 10px;
+    flex: 1 1 220px;
     padding: 8px 12px;
     background-color: var(--inner-bg);
     border: 1px solid var(--border-color);
     border-radius: 10px;
+    box-sizing: border-box;
 }
 
-.egyedi-sor > span {
+.egyedi-sor>span {
     flex: 1 1 auto;
     min-width: 0;
     overflow-wrap: anywhere;
@@ -426,4 +453,16 @@
 .egyedi-input:focus {
     outline: none;
     border-color: var(--accent-color);
+}
+
+/* Mobil: az egyedi összegek egy oszlopban, teljes szélességben. Szándékosan a fenti
+   alapértelmezések UTÁN áll a fájlban, hogy forrás-sorrendben biztosan felülírja őket. */
+@media (max-width: 600px) {
+    .egyedi-osszegek {
+        flex-direction: column;
+    }
+
+    .egyedi-sor {
+        flex-basis: auto;
+    }
 }
