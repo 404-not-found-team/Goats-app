@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v9';
+const CACHE_NEV = 'goats-v10';
 
 // Előgyorsítótár: az alkalmazás váza, hogy az első oldalváltás is gyors legyen.
 // Egyesével töltjük: ha egy fájl hiányzik, a telepítés attól még sikeres marad.
