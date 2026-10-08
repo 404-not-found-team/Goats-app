@@ -3,9 +3,7 @@ let aktivItalAdat = null;
 let aktualisMod = 'arany';
 let kizartMarkakTomb = [];
 
-function aktualisGroupCode() {
-    return window.goatsAuth?.getState()?.group?.group_code || localStorage.getItem('goats_group_code');
-}
+// aktualisGroupCode(): lásd js/segedek/csoport-kod.js (közös, minden klasszikus oldalscript használja)
 
 async function inicializalas() {
     if (window.goatsAuth) await window.goatsAuth.ready;

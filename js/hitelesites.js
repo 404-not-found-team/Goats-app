@@ -3,7 +3,7 @@
 // A localStorage itt csak GYORSÍTÓTÁR a régebbi oldalscriptek kompatibilitása miatt,
 // SOHA nem jogosultság: a szerver minden kérésnél a JWT alapján dönt.
 import { client } from './supabase-client.js';
-import { jeloles } from './utils/perf.js';
+import { jeloles } from './segedek/teljesitmeny.js';
 
 export const TOS_VERSION = '2026-10';
 const KEEP_KEYS = new Set(['goats_theme', 'goats_tos_pending']);

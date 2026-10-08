@@ -1,12 +1,12 @@
-import { ready, getState } from '../auth-service.js';
-import { injectUserNavHTML } from './settings/settings-templates.js';
-import { initAuthModal } from './settings/auth-modal.js';
-import { initProfileModal } from './settings/profile-modal.js';
-import { initGroupDetails } from './settings/group-details.js';
-import { initThemePicker } from './settings/theme-picker.js';
-import { initDrinkModeration } from './settings/drink-moderation.js';
-import { initTosUjraelfogadas } from './settings/tos-ujraelfogadas.js';
-import { fokuszAllit } from '../utils/modal-fokusz.js';
+import { ready, getState } from '../hitelesites.js';
+import { injectUserNavHTML } from './beallitasok/beallitasok-sablonok.js';
+import { initAuthModal } from './beallitasok/belepes-modal.js';
+import { initProfileModal } from './beallitasok/profil-modal.js';
+import { initGroupDetails } from './beallitasok/csoport-adatok.js';
+import { initThemePicker } from './beallitasok/tema-valaszto.js';
+import { initDrinkModeration } from './beallitasok/ital-moderacio.js';
+import { initTosUjraelfogadas } from './beallitasok/tos-ujraelfogadas.js';
+import { fokuszAllit } from '../segedek/modal-fokusz.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Megvárjuk a session betöltését, hogy a felület már a valós állapotot mutassa

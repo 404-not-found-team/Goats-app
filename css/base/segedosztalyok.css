@@ -103,7 +103,7 @@
 .status-ok { color: var(--ok-color); }
 .status-info { color: var(--accent-text); }
 
-/* Dinamikus szín (lásd js/utils/szin-osztaly.js): a --szin változót a szin-* osztály adja */
+/* Dinamikus szín (lásd js/segedek/szin-osztaly.js): a --szin változót a szin-* osztály adja */
 /* kettős szelektor: a komponens-szabályok (pl. .box border-top shorthand) felül ne írják */
 .box.tagdoboz { border-top-color: var(--szin, transparent); }
 .tartozas-kartya.tagkartya { border-left-color: var(--szin, transparent); }

@@ -14,9 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initNaptar();
 });
 
-function aktualisGroupCode() {
-    return window.goatsAuth?.getState()?.group?.group_code || localStorage.getItem('goats_group_code');
-}
+// aktualisGroupCode(): lásd js/segedek/csoport-kod.js (közös, minden klasszikus oldalscript használja)
 
 async function initNaptar() {
     setupGombok();
