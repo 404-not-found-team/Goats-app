@@ -339,11 +339,10 @@ function epitsOsszevontKartyat(sor, ados, memberIndex, members) {
     // Kölcsönös tartozás esetén bárki csoporttag indíthat egyenlítést (mint a törlésnél is)
     const masikIranyu = nyitottOsszeg(sor.hitelezo_id, ados.user_id);
     if (masikIranyu > 0) {
-        const beszamithato = Math.min(sor.nyitott_osszeg, masikIranyu);
         const egyenlitBtn = document.createElement('button');
         egyenlitBtn.type = 'button';
         egyenlitBtn.className = 'gomb-egyenlit';
-        egyenlitBtn.textContent = `Tartozások egyenlítése (${formatFt(beszamithato)} beszámítása)`;
+        egyenlitBtn.textContent = 'Tartozások egyenlítése';
         fejlec.appendChild(egyenlitBtn);
     }
 
