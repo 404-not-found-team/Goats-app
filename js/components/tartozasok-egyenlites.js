@@ -98,13 +98,23 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
   const sajat = sajatId();
   const admin = sajatAdmin();
 
+  // Alapból csukva – csak gombnyomásra épül fel, hogy ne legyen zsúfolt a nézet.
+  const elozmenyGomb = document.createElement('button');
+  elozmenyGomb.type = 'button';
+  elozmenyGomb.className = 'tartozas-egyenlites-elozmenyek-gomb';
+  elozmenyGomb.setAttribute('aria-expanded', 'false');
+  elozmenyGomb.textContent = `› Egyenlítési előzmények (${elozmenyek.length})`;
+
   const elozmenyBlokk = document.createElement('div');
   elozmenyBlokk.className = 'tartozas-egyenlites-elozmenyek';
+  elozmenyBlokk.hidden = true;
 
-  const cim = document.createElement('p');
-  cim.className = 'tartozas-egyenlites-elozmenyek-cim';
-  cim.textContent = 'Egyenlítési előzmények';
-  elozmenyBlokk.appendChild(cim);
+  elozmenyGomb.addEventListener('click', () => {
+    const nyitva = !elozmenyBlokk.hidden;
+    elozmenyBlokk.hidden = nyitva;
+    elozmenyGomb.setAttribute('aria-expanded', String(!nyitva));
+    elozmenyGomb.textContent = `${nyitva ? '›' : '⌄'} Egyenlítési előzmények (${elozmenyek.length})`;
+  });
 
   elozmenyek.forEach(e => {
     const sor = document.createElement('div');
@@ -140,6 +150,7 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
     elozmenyBlokk.appendChild(sor);
   });
 
+  kontener.appendChild(elozmenyGomb);
   kontener.appendChild(elozmenyBlokk);
 }
 
