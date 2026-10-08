@@ -83,6 +83,19 @@
     color: var(--text-primary);
 }
 
+.tartozas-reszlet-sor-felso {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.tartozas-reszlet-sor-felso .torles-jel:hover {
+    opacity: 0.7;
+    transform: scale(1.1);
+    transition: 0.2s;
+}
+
 .tartozas-reszlet-sor.egyenlitve {
     opacity: 0.55;
     text-decoration: line-through;
