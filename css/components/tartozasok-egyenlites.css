@@ -1,0 +1,160 @@
+/* ==========================================================================
+   TARTOZÁSOK: ÖSSZEVONT NÉZET, EGYENLÍTÉS, ELŐZMÉNYEK
+   ========================================================================== */
+
+.tartozas-osszevont {
+    background-color: var(--inner-bg);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 3px solid transparent;
+    font-size: var(--fs-base);
+    color: var(--text-primary);
+}
+
+.tartozas-osszevont.tagkartya {
+    border-left-color: var(--szin, transparent);
+}
+
+.tartozas-osszevont-fejlec {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.nyil-toggle {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: var(--fs-lg);
+    line-height: 1;
+    padding: 0 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+.nyil-toggle:hover {
+    color: var(--text-primary);
+}
+
+.tartozas-osszevont-osszeg {
+    flex: 1 1 auto;
+    min-width: 0;
+    word-break: break-word;
+}
+
+.gomb-egyenlit {
+    flex: 1 1 100%;
+    margin-top: 4px;
+    padding: 8px 10px;
+    background-color: var(--accent-color);
+    color: var(--on-accent);
+    border: none;
+    border-radius: 8px;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.gomb-egyenlit:hover {
+    background-color: var(--accent-hover);
+}
+
+.tartozas-reszletek-kontener {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+.tartozas-reszlet-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tartozas-reszlet-sor {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: var(--fs-sm);
+    color: var(--text-primary);
+}
+
+.tartozas-reszlet-sor.egyenlitve {
+    opacity: 0.55;
+    text-decoration: line-through;
+}
+
+.tartozas-reszlet-allapot {
+    font-size: var(--fs-xs);
+    color: var(--accent-text);
+    text-decoration: none;
+}
+
+.tartozas-egyenlites-elozmenyek {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tartozas-egyenlites-elozmenyek-cim {
+    margin: 0;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.tartozas-egyenlites-elozmeny-sor {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: var(--fs-xs);
+    color: var(--text-primary);
+}
+
+.tartozas-egyenlites-elozmeny-sor.visszavonva {
+    opacity: 0.6;
+}
+
+.tartozas-egyenlites-visszavon-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--hiba-color);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: var(--fs-xs);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.tartozas-egyenlites-visszavon-btn:hover {
+    opacity: 0.8;
+}
+
+/* Egyenlítés megerősítő modal (a közös .sm-overlay/.sm-card minta a modals.css-ből) */
+.tartozas-egyenlites-kartya {
+    height: auto;
+    max-height: 85vh;
+}
+
+.tartozas-egyenlites-sor {
+    color: var(--text-primary);
+    font-size: var(--fs-base);
+    line-height: 1.5;
+    margin: 0 0 12px 0;
+}
+
+@media (max-width: 480px) {
+    .tartozas-egyenlites-elozmeny-sor {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

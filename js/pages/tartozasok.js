@@ -8,6 +8,9 @@ window.onload = async function () {
     document.querySelectorAll('input[name="elosztasMod"]').forEach(r => r.addEventListener('change', frissitKozosKoltseg));
     document.getElementById('dropdownContent')?.addEventListener('change', frissitKozosKoltseg);
     document.getElementById('egyediOsszegek')?.addEventListener('input', frissitOsszesen);
+
+    // Összevont sorok nyila / egyenlítés gomb – egyszer felkötve, a kártyák újrarajzolásakor is működik
+    document.querySelector('.tartozasok-grid')?.addEventListener('click', kezeldTartozasKattintast);
 };
 
 // A csoportkód/taglista forrása az élő auth-állapot; localStorage csak akkor,
@@ -194,31 +197,60 @@ async function initMembersAndContainers() {
     }
 }
 
+// Az utolsó betöltött összesítés ([{ados_id, hitelezo_id, nyitott_osszeg}]) – az egyenlítés-modal
+// "előtte" összegeit ebből olvassuk ki, nem kell külön RPC-hívás a gomb megnyitásakor.
+let osszesitesAdatok = [];
+
+function nyitottOsszeg(adosId, hitelezoId) {
+    const sor = osszesitesAdatok.find(s => s.ados_id === adosId && s.hitelezo_id === hitelezoId);
+    return sor ? sor.nyitott_osszeg : 0;
+}
+
 async function loadTartozasok() {
     const groupCode = aktualisGroupCode();
-
-    const { data, error } = await _supabase
-        .from('tartozasok')
-        .select('*')
-        .eq('group_code', groupCode)
-        .order('id', { ascending: false });
-
-    if (error) {
-        console.error('Hiba a betöltéskor:', error);
-        return;
-    }
-
     const members = aktualisTagok();
     const tagById = id => members.find(m => m.user_id === id);
     // A migráció előtti, nem párosított sorokhoz: név alapú tartalék
     const tagByName = nev => members.find(m => m.display_name === nev);
+
+    const [osszesitesRes, legacyRes] = await Promise.all([
+        _supabase.rpc('tartozas_osszesites', { p_group: null }),
+        _supabase
+            .from('tartozasok')
+            .select('*')
+            .eq('group_code', groupCode)
+            .or('ados_id.is.null,hitelezo_id.is.null')
+            .order('id', { ascending: false }),
+    ]);
+
+    if (osszesitesRes.error) {
+        console.error('Hiba az összesítés betöltésekor:', osszesitesRes.error);
+        return;
+    }
+    if (legacyRes.error) {
+        console.error('Hiba a régi tartozások betöltésekor:', legacyRes.error);
+    }
+
+    osszesitesAdatok = osszesitesRes.data || [];
 
     members.forEach(member => {
         const targetDiv = document.querySelector(`[data-member-id="${CSS.escape(member.user_id)}"]`);
         if (targetDiv) targetDiv.innerHTML = '';
     });
 
-    (data || []).forEach(item => {
+    members.forEach((ados, memberIndex) => {
+        const targetDiv = document.querySelector(`[data-member-id="${CSS.escape(ados.user_id)}"]`);
+        if (!targetDiv) return;
+
+        const sajatSorok = osszesitesAdatok.filter(s => s.ados_id === ados.user_id && s.nyitott_osszeg > 0);
+        sajatSorok.forEach(sor => {
+            targetDiv.appendChild(epitsOsszevontKartyat(sor, ados, memberIndex, members));
+        });
+    });
+
+    // Régi, azonosító nélküli sorok (a jelenlegi kód nem tud párba állítani se egyenlítéshez,
+    // se összevonáshoz) – ugyanúgy, flat kártyaként jelenítjük meg, mint korábban.
+    (legacyRes.data || []).forEach(item => {
         const ados = tagById(item.ados_id) || tagByName(item.kitartozik);
         if (!ados) return; // törölt vagy ismeretlen adós – nincs doboza
 
@@ -228,14 +260,11 @@ async function loadTartozasok() {
         const hitelezo = tagById(item.hitelezo_id) || tagByName(item.kinek);
         const hitelezoNev = hitelezo ? hitelezo.display_name : (item.kinek || 'Törölt tag');
         const felvette = tagById(item.felvette_id);
+        const memberIndex = members.indexOf(ados);
 
         const card = document.createElement('div');
         card.className = 'tartozas-kartya';
-
-        const memberIndex = members.indexOf(ados);
-        if (memberIndex !== -1) {
-            card.classList.add('tagkartya', szinOsztaly(getMemberColor(memberIndex)));
-        }
+        if (memberIndex !== -1) card.classList.add('tagkartya', szinOsztaly(getMemberColor(memberIndex)));
 
         const row = document.createElement('div');
         row.className = 'tartozas-sor';
@@ -276,6 +305,100 @@ async function loadTartozasok() {
             targetDiv.appendChild(emptyMsg);
         }
     });
+}
+window.loadTartozasok = loadTartozasok; // a dinamikusan importált egyenlítés-modul frissítéshez hívja
+
+// Egy összevont (ados → hitelező) sor kártyája: fejléc (összeg + nyíl + esetleg egyenlítés gomb)
+// és egy üres, lazán betöltött részletek-konténer.
+function epitsOsszevontKartyat(sor, ados, memberIndex, members) {
+    const hitelezo = members.find(m => m.user_id === sor.hitelezo_id);
+    const hitelezoNev = hitelezo ? hitelezo.display_name : 'Törölt tag';
+
+    const card = document.createElement('div');
+    card.className = 'tartozas-osszevont tagkartya';
+    card.classList.add(szinOsztaly(getMemberColor(memberIndex)));
+    card.dataset.ados = ados.user_id;
+    card.dataset.hitelezo = sor.hitelezo_id;
+
+    const fejlec = document.createElement('div');
+    fejlec.className = 'tartozas-osszevont-fejlec';
+
+    const nyilBtn = document.createElement('button');
+    nyilBtn.type = 'button';
+    nyilBtn.className = 'nyil-toggle';
+    nyilBtn.setAttribute('aria-expanded', 'false');
+    nyilBtn.textContent = '›';
+
+    const osszegSpan = document.createElement('span');
+    osszegSpan.className = 'tartozas-osszevont-osszeg';
+    osszegSpan.textContent = `Tartozik ${getNakNek(hitelezoNev)}: ${formatFt(sor.nyitott_osszeg)}`;
+
+    fejlec.appendChild(nyilBtn);
+    fejlec.appendChild(osszegSpan);
+
+    // Kölcsönös tartozás esetén csak a két érintett fél kap egyenlítés gombot (ők hívhatják az RPC-t)
+    const masikIranyu = nyitottOsszeg(sor.hitelezo_id, ados.user_id);
+    const sajatId = window.goatsAuth?.getState()?.user?.id;
+    const erintett = sajatId === ados.user_id || sajatId === sor.hitelezo_id;
+    if (masikIranyu > 0 && erintett) {
+        const beszamithato = Math.min(sor.nyitott_osszeg, masikIranyu);
+        const egyenlitBtn = document.createElement('button');
+        egyenlitBtn.type = 'button';
+        egyenlitBtn.className = 'gomb-egyenlit';
+        egyenlitBtn.textContent = `Tartozások egyenlítése (${formatFt(beszamithato)} beszámítása)`;
+        fejlec.appendChild(egyenlitBtn);
+    }
+
+    const reszletek = document.createElement('div');
+    reszletek.className = 'tartozas-reszletek-kontener';
+    reszletek.hidden = true;
+
+    card.appendChild(fejlec);
+    card.appendChild(reszletek);
+    return card;
+}
+
+// Egy kattintás-figyelő a teljes rácson (delegálás, mert a kártyák minden betöltéskor újraépülnek)
+async function kezeldTartozasKattintast(e) {
+    const kartya = e.target.closest('.tartozas-osszevont');
+    if (!kartya) return;
+
+    const adosId = kartya.dataset.ados;
+    const hitelezoId = kartya.dataset.hitelezo;
+
+    if (e.target.closest('.nyil-toggle')) {
+        const nyilBtn = e.target.closest('.nyil-toggle');
+        const reszletek = kartya.querySelector('.tartozas-reszletek-kontener');
+        const nyitva = !reszletek.hidden;
+        reszletek.hidden = nyitva;
+        nyilBtn.setAttribute('aria-expanded', String(!nyitva));
+        nyilBtn.textContent = nyitva ? '›' : '⌄';
+
+        if (!nyitva && !reszletek.dataset.betoltve) {
+            reszletek.dataset.betoltve = '1';
+            const modul = await import('../components/tartozasok-egyenlites.js');
+            modul.toltsReszleteket(reszletek, adosId, hitelezoId);
+        }
+        return;
+    }
+
+    if (e.target.closest('.gomb-egyenlit')) {
+        const members = aktualisTagok();
+        const sajatId = window.goatsAuth?.getState()?.user?.id;
+        const masikId = sajatId === adosId ? hitelezoId : adosId;
+        const masik = members.find(m => m.user_id === masikId);
+        const enNev = members.find(m => m.user_id === sajatId)?.display_name || 'Te';
+
+        const modul = await import('../components/tartozasok-egyenlites.js');
+        modul.nyitEgyenlitesModal({
+            enNev,
+            masikId,
+            masikNev: masik ? masik.display_name : 'Törölt tag',
+            enTartozikMasiknak: nyitottOsszeg(sajatId, masikId),
+            masikTartozikEnnekem: nyitottOsszeg(masikId, sajatId),
+            beszamithato: Math.min(nyitottOsszeg(sajatId, masikId), nyitottOsszeg(masikId, sajatId)),
+        });
+    }
 }
 
 async function deleteTartozas(id) {
