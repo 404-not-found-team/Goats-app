@@ -529,3 +529,9 @@
     margin-top: 10px;
 }
 
+a.google-menu-btn{
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .8rem;
+}
+

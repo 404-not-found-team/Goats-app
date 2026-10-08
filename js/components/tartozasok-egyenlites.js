@@ -207,9 +207,9 @@ export function nyitEgyenlitesModal({ aId, aNev, bId, bNev, aTartozikBnek, bTart
   const utanaB = Math.max(bTartozikAnak - beszamithato, 0);
 
   document.getElementById('tartozas-egyenlites-elotte').textContent =
-    `Most: ${aNev} tartozik ${bNak} ${fmt(aTartozikBnek)}, ${bNev} tartozik ${aNak} ${fmt(bTartozikAnak)}.`;
+    `${aNev} tartozása: ${fmt(aTartozikBnek)} => ${fmt(utanaA)}.`;
   document.getElementById('tartozas-egyenlites-utana').textContent =
-    `Egyenlítés után: ${aNev} tartozik ${bNak} ${fmt(utanaA)}, ${bNev} tartozik ${aNak} ${fmt(utanaB)}. (Beszámítva: ${fmt(beszamithato)})`;
+    `${bNev} tartozása: ${fmt(bTartozikAnak)} => ${fmt(utanaB)}.`;
 
   const okBtn = document.getElementById('tartozas-egyenlites-ok-btn');
   const ujOkBtn = okBtn.cloneNode(true); // az előző megnyitás kattintás-figyelőjének eltávolítása
