@@ -107,20 +107,29 @@
     text-decoration: none;
 }
 
-.tartozas-egyenlites-elozmenyek {
+.tartozas-egyenlites-elozmenyek-gomb {
+    display: block;
     margin-top: 10px;
-    padding-top: 10px;
+    padding: 0;
+    background: none;
+    border: none;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.tartozas-egyenlites-elozmenyek-gomb:hover {
+    color: var(--text-primary);
+}
+
+.tartozas-egyenlites-elozmenyek {
+    margin-top: 8px;
+    padding-top: 8px;
     border-top: 1px dashed var(--border-color);
     display: flex;
     flex-direction: column;
     gap: 6px;
-}
-
-.tartozas-egyenlites-elozmenyek-cim {
-    margin: 0;
-    font-size: var(--fs-xs);
-    font-weight: 600;
-    color: var(--text-secondary);
 }
 
 .tartozas-egyenlites-elozmeny-sor {
