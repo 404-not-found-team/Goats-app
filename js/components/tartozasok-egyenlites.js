@@ -56,10 +56,24 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
       sor.className = 'tartozas-reszlet-sor';
       if (t.nyitott_osszeg <= 0) sor.classList.add('egyenlitve');
 
+      // Felső sor: szöveg + törlés (ez a mai "kifizetve" mechanizmusa – a sor törlésével jelezzük,
+      // hogy a tartozás rendeződött, ugyanúgy, mint a nem összevont kártyáknál eddig is).
+      const felsoSor = document.createElement('div');
+      felsoSor.className = 'tartozas-reszlet-sor-felso';
+
       const szoveg = document.createElement('span');
       const mikor = t.felvetel_ideje ? new Date(t.felvetel_ideje).toLocaleDateString('hu-HU') : '';
       szoveg.textContent = `${t.miert} – ${fmt(t.eredeti_osszeg)} · Felvette: ${nev(t.felvette_id)} · ${mikor}`;
-      sor.appendChild(szoveg);
+
+      const torlesSpan = document.createElement('span');
+      torlesSpan.textContent = '🗑️';
+      torlesSpan.title = 'Törlés (kifizetve)';
+      torlesSpan.className = 'torles-jel';
+      torlesSpan.addEventListener('click', () => window.deleteTartozas?.(t.id));
+
+      felsoSor.appendChild(szoveg);
+      felsoSor.appendChild(torlesSpan);
+      sor.appendChild(felsoSor);
 
       if (t.nyitott_osszeg <= 0) {
         const jelzes = document.createElement('span');
