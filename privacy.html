@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
+    <meta http-equiv="Content-Security-Policy"
+        content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goats - Adatvédelmi nyilatkozat</title>
     <link rel="manifest" href="manifest.json">
@@ -20,9 +21,13 @@
         <div class="tos-modal-body">
             <h4>1. Az üzemeltető és a kapcsolat</h4>
             <p>
-                A Goats App-ot (a továbbiakban: alkalmazás) a <strong>404 not found team</strong> fejleszti és üzemelteti.
+                A Goats App-ot (a továbbiakban: alkalmazás) a <strong>404 not found team</strong> fejleszti és
+                üzemelteti.
                 Adatvédelemmel kapcsolatos kérdés, észrevétel vagy kérelem esetén írj a
-                <a href="mailto:the.offical.404.not.found.team@gmail.com?subject=Adatv%C3%A9delem%20-%20Goats%20App">the.offical.404.not.found.team@gmail.com</a>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=the.offical.404.not.found.team@gmail.com&su=Adatv%C3%A9delem%20-%20Goats%20App"
+                    target="_blank">
+                    the.offical.404.not.found.team@gmail.com
+                </a>
                 címre.
             </p>
 
@@ -33,15 +38,18 @@
                 <li>az általad megadott megjelenített név.</li>
             </ul>
             <p>A csoportos működéshez az alábbi adatokat tároljuk, amelyeket te vagy a csoporttagok hoztok létre:</p>
-            <ul>
+            <ul class="tarolt-adat">
                 <li>csoporttagság és szerepkör (adminisztrátor vagy tag),</li>
-                <li>a csoportba felvitt tartozások: a tagok neve, az összeg, a leírás és az, hogy ki és mikor vette fel,</li>
+                <li>a csoportba felvitt tartozások: a tagok neve, az összeg, a leírás és az, hogy ki és mikor vette fel,
+                </li>
                 <li>tervek és események, azzal, hogy ki és mikor vette fel,</li>
                 <li>italjavaslatok és értékelések (ki javasolta az italt, és mikor),</li>
                 <li>a galériába feltöltött képek, azzal, hogy ki és mikor töltötte fel,</li>
                 <li>a használati feltételek elfogadásának ideje és verziója,</li>
-                <li>csoportcsatlakozási kísérletek naplója (a felhasználó azonosítója és az időpont), amelyet 1 napig őrzünk,</li>
-                <li>műveleti napló: ki, mikor, milyen műveletet (létrehozás, módosítás, törlés) végzett, melyik csoportban és melyik rekordon — részletesen a 7. pontban.</li>
+                <li>csoportcsatlakozási kísérletek naplója (a felhasználó azonosítója és az időpont), amelyet 1 napig
+                    őrzünk,</li>
+                <li>műveleti napló: ki, mikor, milyen műveletet (létrehozás, módosítás, törlés) végzett, melyik
+                    csoportban és melyik rekordon — részletesen a 7. pontban.</li>
             </ul>
             <p>
                 A böngészőben (localStorage) csak gyorsítótárat és a téma-beállítást tároljuk. Ezek nem jogosultsági
@@ -50,24 +58,31 @@
 
             <h4>3. Mire használjuk az adatokat, és mi az alapjuk</h4>
             <ul>
-                <li><strong>A szolgáltatás nyújtása:</strong> a bejelentkezés, a csoportok, tartozások, tervek, események, ranglisták és a galéria működtetése. Jogalap: a szerződés teljesítése (az alkalmazás használata).</li>
-                <li><strong>Biztonság és visszaélés elleni védelem:</strong> például a csatlakozási kísérletek korlátozása. Jogalap: jogos érdek.</li>
+                <li><strong>A szolgáltatás nyújtása:</strong> a bejelentkezés, a csoportok, tartozások, tervek,
+                    események, ranglisták és a galéria működtetése. Jogalap: a szerződés teljesítése (az alkalmazás
+                    használata).</li>
+                <li><strong>Biztonság és visszaélés elleni védelem:</strong> például a csatlakozási kísérletek
+                    korlátozása. Jogalap: jogos érdek.</li>
             </ul>
             <p>Hirdetési vagy elemző célra nem használjuk az adatokat, és nem adjuk el őket.</p>
 
             <h4>4. Kik kapják meg az adatokat (harmadik felek)</h4>
             <ul>
                 <li><strong>Google:</strong> bejelentkezés (OAuth).</li>
-                <li><strong>Supabase:</strong> adatbázis, hitelesítés és fájltárolás. A szerver régiója: eu-west-1, Írország (EU).</li>
+                <li><strong>Supabase:</strong> adatbázis, hitelesítés és fájltárolás. A szerver régiója: eu-west-1,
+                    Írország (EU).</li>
                 <li><strong>GitHub Pages:</strong> az oldal kiszolgálása.</li>
-                <li><strong>Tartalomszolgáltató hálózatok</strong> (jsDelivr, cdnjs, Google gstatic): az oldal betöltésekor látják a látogató IP-címét, mert onnan töltődnek be a könyvtárak és az ikonok.</li>
+                <li><strong>Tartalomszolgáltató hálózatok</strong> (jsDelivr, cdnjs, Google gstatic): az oldal
+                    betöltésekor látják a látogató IP-címét, mert onnan töltődnek be a könyvtárak és az ikonok.</li>
             </ul>
             <p>Hirdetési vagy elemző szolgáltató nincs.</p>
 
             <h4>5. Nemzetközi adattovábbítás</h4>
             <p>
-                Az adatbázis és a fájltárolás az Európai Unióban (Írország) van. A szolgáltatóink (például a Supabase és a Google)
-                a bejelentkezés és a működés során előfordulhat, hogy az EU-n kívül is kezelnek adatot. Ezt a szolgáltatóik
+                Az adatbázis és a fájltárolás az Európai Unióban (Írország) van. A szolgáltatóink (például a Supabase és
+                a Google)
+                a bejelentkezés és a működés során előfordulhat, hogy az EU-n kívül is kezelnek adatot. Ezt a
+                szolgáltatóik
                 adatvédelmi feltételei szabályozzák.
             </p>
 
@@ -80,9 +95,9 @@
             <h4>7. Műveleti napló</h4>
             <p>
                 Biztonsági okból és a visszaélések, viták kivizsgálása céljából naplózzuk, hogy <strong>ki, mikor,
-                milyen műveletet</strong> (létrehozás, módosítás, törlés) végzett a tartozásokon, terveken,
+                    milyen műveletet</strong> (létrehozás, módosítás, törlés) végzett a tartozásokon, terveken,
                 eseményeken, italjavaslatokon, a csoporttagságon és a galériaképeken, és hogy <strong>melyik
-                csoportban, melyik rekordon</strong>. A naplóbejegyzés csak a lényeges adatokat tartalmazza (pl. az
+                    csoportban, melyik rekordon</strong>. A naplóbejegyzés csak a lényeges adatokat tartalmazza (pl. az
                 összeget, az állapotot), nem a teljes rekordot. Jogalap: jogos érdek.
             </p>
             <p>
@@ -101,27 +116,33 @@
 
             <h4>9. A te jogaid</h4>
             <p>
-                Jogod van hozzáférést kérni az adataidhoz, kérheted azok helyesbítését vagy törlését, kérheted az adataid
+                Jogod van hozzáférést kérni az adataidhoz, kérheted azok helyesbítését vagy törlését, kérheted az
+                adataid
                 hordozható formában való átadását, és tiltakozhatsz az adatkezelés ellen. Panasszal a
-                Nemzeti Adatvédelmi és Információszabadság Hatósághoz (NAIH, <a href="https://naih.hu" target="_blank" rel="noopener">naih.hu</a>) fordulhatsz.
+                Nemzeti Adatvédelmi és Információszabadság Hatósághoz (NAIH, <a href="https://naih.hu" target="_blank"
+                    rel="noopener">naih.hu</a>) fordulhatsz.
             </p>
 
             <h4>10. Korhatár</h4>
             <p>
-                Az alkalmazás alkoholos italokról szól, ezért csak 18 év feletti felhasználóknak szól. Gyermekektől tudatosan
-                nem gyűjtünk adatot. Ha úgy tudod, hogy egy gyermek adatait megadta, írj a fenti címre, és töröljük azokat.
+                Az alkalmazás alkoholos italokról szól, ezért csak 18 év feletti felhasználóknak szól. Gyermekektől
+                tudatosan
+                nem gyűjtünk adatot. Ha úgy tudod, hogy egy gyermek adatait megadta, írj a fenti címre, és töröljük
+                azokat.
             </p>
 
             <h4>11. A felhasználók által feltöltött tartalom</h4>
             <p>
-                A csoportba feltöltött képeket és a felvitt adatokat csak az adott csoport tagjai látják. Az italjavaslatot a
+                A csoportba feltöltött képeket és a felvitt adatokat csak az adott csoport tagjai látják. Az
+                italjavaslatot a
                 jóváhagyásig csak a javasló és a csoporttársai látják. A galériaképek feltöltőjét (a nevét) a csoport
                 tagjai az alkalmazásban is látják, a kép nagyított nézetében.
             </p>
 
             <h4>12. Sütik és helyi tárolás</h4>
             <p>
-                Az alkalmazás nem használ hirdetési vagy elemző sütit. A localStorage csak gyorsítótárként és a téma-beállítás
+                Az alkalmazás nem használ hirdetési vagy elemző sütit. A localStorage csak gyorsítótárként és a
+                téma-beállítás
                 mentésére szolgál.
             </p>
 
