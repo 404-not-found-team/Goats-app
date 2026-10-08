@@ -404,6 +404,12 @@
         align-items: stretch;
     }
 
+    /* Oszlop-elrendezésben a "flex: 1 1 120px" a 120px-et MAGASSÁGKÉNT venné (a főtengely
+       függőlegesre vált), ezért itt visszaállítjuk a span saját tartalom-magasságára. */
+    .egyedi-sor > span {
+        flex: 0 0 auto;
+    }
+
     .egyedi-input {
         width: 100%;
     }
