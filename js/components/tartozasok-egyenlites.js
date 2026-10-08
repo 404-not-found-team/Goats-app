@@ -61,8 +61,11 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
       const felsoSor = document.createElement('div');
       felsoSor.className = 'tartozas-reszlet-sor-felso';
 
+      // A "miert" a közös költség felvételekor kap egy "(3 660 Ft / 2 fő)"-szerű záradékot –
+      // itt, a már egyénre bontott összeg mellett ez redundáns, ezért levágjuk.
+      const alapMiert = t.miert.replace(/\s*\([^)]*\)\s*$/, '');
       const szoveg = document.createElement('span');
-      szoveg.textContent = `${t.miert} – ${fmt(t.eredeti_osszeg)}`;
+      szoveg.textContent = `${alapMiert} – ${fmt(t.eredeti_osszeg)}`;
 
       const torlesSpan = document.createElement('span');
       torlesSpan.textContent = '🗑️';
