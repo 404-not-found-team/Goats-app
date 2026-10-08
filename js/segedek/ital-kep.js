@@ -1,7 +1,8 @@
 // Italkép-feloldás egy helyen. Sorrend:
 //   1) a felhasználó saját képe (kep_url),
-//   2) márkakép: img/markak/<marka>.webp (ha a márkához van fájl),
-//   3) kategória-ikon: img/ikonok/<ikon>.svg (CSS maszkkal, így a téma színét veszi fel).
+//   2) koktélnál: img/koktelok/<ital-neve-szlugositve>.webp (ha van ilyen fájl),
+//   3) márkakép: img/markak/<marka>.webp (ha a márkához van fájl),
+//   4) kategória-ikon: img/ikonok/<ikon>.svg (CSS maszkkal, így a téma színét veszi fel).
 // A képek betöltési hibáját onerror kezeli, így a hiányzó fájl nem töri el a kártyát.
 // Klasszikus script (nem modul): window.italKep-en keresztül érhető el.
 // A MARKA_MINTAK listát a sql/03_ital_marka.sql-ből kell szinkronban tartani.
@@ -84,9 +85,22 @@
         return KATEGORIA_IKON[String(kategoria || '').toLowerCase()] || 'egyeb';
     }
 
+    // Fájlnév-barát szlug: ékezetek levágva, kisbetű, kötőjelekkel (pl. "Hugó Spéci" -> "hugo-speci")
+    function nevSzlug(nev) {
+        return String(nev || '')
+            .toLowerCase()
+            .normalize('NFD').replace(/[̀-ͯ]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
     function kepJeloltek(ital) {
         const jeloltek = [];
         if (ital.kep_url) jeloltek.push(ital.kep_url);
+        if (String(ital.kategoria || '').toLowerCase() === 'koktel') {
+            const szlug = nevSzlug(ital.nev);
+            if (szlug) jeloltek.push(`img/koktelok/${szlug}.webp`);
+        }
         const marka = ital.marka || markaNevbol(ital.nev);
         if (marka) jeloltek.push(`img/markak/${marka}.webp`);
         return jeloltek;
@@ -126,5 +140,5 @@
         return jeloltek[0] || `img/ikonok/${ikonFajl(ital.kategoria)}.svg`;
     }
 
-    window.italKep = { elemLetrehoz, elsoUrl, markaNevbol, ikonFajl };
+    window.italKep = { elemLetrehoz, elsoUrl, markaNevbol, ikonFajl, nevSzlug };
 })();
