@@ -1,7 +1,7 @@
 /* BASE STYLES */
-@import url('base/variables.css');
-@import url('base/reset.css');
-@import url('base/utilities.css');
+@import url('base/valtozok.css');
+@import url('base/visszaallitas.css');
+@import url('base/segedosztalyok.css');
 
 /* COMPONENTS */
 @import url('components/navbar.css');
