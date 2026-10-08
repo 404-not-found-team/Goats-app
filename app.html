@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goats</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+
+    <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="modulepreload" href="js/main.js">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
+
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/pages/app.js"></script>
+
+    <script defer src="js/utils/galeria.js"></script>
+    <script defer src="js/components/naptar.js"></script>
+</head>
+
+<body>
+    <ul id="navBar"></ul>
+
+    <div class="hatter">
+
+        <div class="kepek">
+            <input type="file" id="kepFeltoltesInput" accept="image/*" multiple hidden>
+            <a href="#" id="kepFeltoltesGomb" onclick="nyisdMegFajlValasztot(); return false;" title="Kép feltöltése">
+                <i class="fa-solid fa-upload"></i>
+            </a>
+            <i class="fa-solid fa-caret-left nyil" onclick="eloKep()"></i>
+
+            <img id="kepBal" class="hatrebb" src="" alt="Előző kép">
+            <img id="kepKozep" src="" alt="Aktuális kép">
+            <img id="kepJobb" class="hatrebb" src="" alt="Következő kép">
+
+            <i class="fa-solid fa-caret-right nyil" onclick="kovKep()"></i>
+        </div>
+
+        <div class="naptar-kontener">
+            <div class="naptar-fejlec">
+                <button id="elozo-honap-btn">&lt;</button>
+                <h2 id="naptar-honap-nev">2026 Szeptember</h2>
+                <button id="kovetkezo-honap-btn">&gt;</button>
+            </div>
+
+            <div class="naptar-napok-fejlec">
+                <span>H</span><span>K</span><span>Sze</span><span>Cs</span><span>P</span><span>Szo</span><span>V</span>
+            </div>
+
+            <div id="naptar-rács" class="naptar-racs"></div>
+
+            <button id="uj-esemeny-gomb" class="sm-btn sm-btn-save mt-15">+ Új esemény</button>
+        </div>
+
+        <!-- Új Esemény Modal -->
+        <div id="esemeny-modal" class="sm-overlay" hidden>
+            <div class="sm-card">
+                <div class="sm-header">
+                    <h3>Esemény hozzáadása</h3>
+                    <button id="close-esemeny-modal" class="sm-close-btn">&times;</button>
+                </div>
+                <div class="floating-group">
+                    <input type="text" id="esemeny-cim-input" class="floating-input" placeholder=" " />
+                    <label class="floating-label">Esemény neve:</label>
+                </div>
+                <div class="floating-group">
+                    <input type="date" id="esemeny-datum-input" class="floating-input" placeholder=" " />
+                    <label class="floating-label">Dátum:</label>
+                </div>
+
+                <button id="ment-esemeny-btn" class="sm-btn sm-btn-save">Mentés</button>
+            </div>
+        </div>
+
+        <div id="napi-esemenyek-modal" class="sm-overlay" hidden>
+            <div class="sm-card modal-magas">
+                <div class="sm-header">
+                    <h3 id="napi-modal-cím">Események</h3>
+                    <button id="close-napi-esemenyek-modal" class="sm-close-btn">&times;</button>
+                </div>
+                <div id="napi-esemenyek-lista" class="napi-lista">
+                </div>
+                <button id="napi-uj-esemeny-btn" class="sm-btn sm-btn-save">Új esemény ezen a napon</button>
+            </div>
+        </div>
+
+        <!-- 2. Esemény Részletek / Módosítás / Törlés Modal -->
+        <div id="esemeny-reszletek-modal" class="sm-overlay" hidden>
+            <div class="sm-card">
+                <div class="sm-header">
+                    <h3>Esemény szerkesztése</h3>
+                    <button id="close-esemeny-reszletek-modal" class="sm-close-btn">&times;</button>
+                </div>
+                <div class="floating-group">
+                    <input type="text" id="szerkeszt-esemeny-cim" class="floating-input" placeholder=" " />
+                    <label class="floating-label">Esemény neve:</label>
+                </div>
+                <div class="floating-group">
+                    <input type="date" id="szerkeszt-esemeny-datum" class="floating-input" placeholder=" " />
+                    <label class="floating-label">Dátum:</label>
+                </div>
+
+                <div class="gomb-sor">
+                    <button id="modosit-esemeny-btn" class="sm-btn sm-btn-save nyujt">Módosítás</button>
+                    <button id="torol-esemeny-btn" class="sm-btn sm-btn-logout nyujt mt-0">Törlés</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker sikeresen betöltve!', reg))
+                    .catch(err => console.error('Service Worker hiba:', err));
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Megvárjuk a session + csoport betöltését (nincs külön lekérdezés, nincs villogás)
     await ready;
-    const { group } = getState();
+    const { user, group } = getState();
 
     // Csoport nélkül (kijelentkezve vagy még nincs csoport) csak a publikus oldalak
     let allowedPages = publicPages;
@@ -56,7 +56,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     for (let i = 0; i < htmlNevek.length; i++) {
         const pageKey = htmlNevek[i];
-        const celFajl = `${pageKey}.html`;
+        // A "Kezdőlap" fül bejelentkezve az app.html-re visz (ott az alkalmazás), kijelentkezve
+        // (vagy ha még nincs session) az index.html-re (a bejelentkezési oldalra).
+        const celFajl = pageKey === 'index' ? (user ? 'app.html' : 'index.html') : `${pageKey}.html`;
 
         if (!allowedPages.includes(pageKey)) continue;
 
@@ -67,7 +69,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const teljesNev = document.createElement('span');
         const emojiNev = document.createElement('span');
 
-        if (aktualisUtvonal === celFajl) oldal.className = "active";
+        // Az "app.html" is a "Kezdőlap" fület jelöli aktívnak, nem csak az "index.html"
+        const aktivE = aktualisUtvonal === celFajl || (pageKey === 'index' && aktualisUtvonal === 'app.html');
+        if (aktivE) oldal.className = "active";
 
         teljesNev.textContent = oldalNevek[i];
         teljesNev.className = "teljes-szoveg";
