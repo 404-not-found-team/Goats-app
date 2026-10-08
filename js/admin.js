@@ -15,11 +15,12 @@ async function run(fn) {
   }
 }
 
-// 1. Saját becenév frissítése
+// 1. Saját becenév frissítése. A hossz 2–30 karakter (lásd FELADAT8 2. pont); a tényleges
+// egyediség-védelem a profiles táblán lévő trigger, ez a hívás attól még elbukhat (ha ütközik).
 export function updateMyDisplayName(newDisplayName) {
   const name = (newDisplayName || '').trim();
-  if (name.length < 1 || name.length > 40) {
-    alert('A név 1–40 karakter legyen.');
+  if (name.length < 2 || name.length > 30) {
+    alert('A név 2–30 karakter legyen.');
     return Promise.resolve(false);
   }
   const userId = getState().user?.id;

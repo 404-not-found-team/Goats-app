@@ -114,7 +114,7 @@ export function injectUserNavHTML(state) {
           </div>
 
           <div class="floating-group mb-8">
-            <input type="text" id="own-name-input" class="floating-input" placeholder=" " maxlength="40" autocomplete="off" />
+            <input type="text" id="own-name-input" class="floating-input" placeholder=" " maxlength="30" autocomplete="off" />
             <label class="floating-label">A te megjelenített neved</label>
           </div>
           <p id="own-name-status" class="sm-status sm-status-small mb-14"></p>
