@@ -13,11 +13,7 @@ window.onload = async function () {
     document.querySelector('.tartozasok-grid')?.addEventListener('click', kezeldTartozasKattintast);
 };
 
-// A csoportkód/taglista forrása az élő auth-állapot; localStorage csak akkor,
-// ha az auth-service valamiért még nem futott le (sosem kéne előfordulnia).
-function aktualisGroupCode() {
-    return window.goatsAuth?.getState()?.group?.group_code || localStorage.getItem('goats_group_code');
-}
+// aktualisGroupCode(): lásd js/segedek/csoport-kod.js (közös, minden klasszikus oldalscript használja)
 
 // Tagok: [{ user_id, display_name }] – az azonosító a kulcs, a név csak megjelenítés.
 function aktualisTagok() {
@@ -373,7 +369,7 @@ async function kezeldTartozasKattintast(e) {
 
         if (!nyitva && !reszletek.dataset.betoltve) {
             reszletek.dataset.betoltve = '1';
-            const modul = await import('../components/tartozasok-egyenlites.js');
+            const modul = await import('../elemek/tartozasok-egyenlitese.js');
             modul.toltsReszleteket(reszletek, adosId, hitelezoId);
         }
         return;
@@ -384,7 +380,7 @@ async function kezeldTartozasKattintast(e) {
         const ados = members.find(m => m.user_id === adosId);
         const hitelezo = members.find(m => m.user_id === hitelezoId);
 
-        const modul = await import('../components/tartozasok-egyenlites.js');
+        const modul = await import('../elemek/tartozasok-egyenlitese.js');
         modul.nyitEgyenlitesModal({
             aId: adosId,
             aNev: ados ? ados.display_name : 'Törölt tag',
@@ -606,7 +602,8 @@ async function addTartozas() {
         mennyiert: resz,
         hitelezo_id: kinek,
         ados_id: adosId,
-        felvette_id: felvevoId,
+        // felvette_id-t nem küldjük: az adatbázis default auth.uid()-ja állítja be,
+        // a kliens sosem jelentheti ki magáról, hogy "ő" vette fel
         // régi, szöveges oszlopok: csak pillanatkép, a megjelenítés az azonosítókból megy
         kinek: nevek(kinek),
         kitartozik: nevek(adosId),

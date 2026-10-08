@@ -19,9 +19,7 @@ const ENGEDELYEZETT_TIPUSOK = [
 let kepekLista = []; // { name: 'fajlnev.jpg', url: 'https://...' } elemeket tárol
 let currentIndex = 0;
 
-function aktualisGroupCode() {
-    return window.goatsAuth?.getState()?.group?.group_code || localStorage.getItem('goats_group_code');
-}
+// aktualisGroupCode(): lásd js/segedek/csoport-kod.js (közös, minden klasszikus oldalscript használja)
 
 // A képek mappája a csoport azonosítója (groups.id), a kódcsere után sem változik
 function aktualisGroupId() {
@@ -442,7 +440,10 @@ async function feltoltKepek(event) {
 
             if (sorBeszurasHiba) {
                 console.error('A kepek sor beszúrása másodszorra sem sikerült, a fájl törlése:', sorBeszurasHiba);
-                await client.storage.from(BUCKET_NEV).remove([eleresiUt]);
+                const { error: takaritasHiba } = await client.storage.from(BUCKET_NEV).remove([eleresiUt]);
+                if (takaritasHiba) {
+                    console.error('A gazdátlanul maradt fájl törlése is sikertelen:', takaritasHiba, eleresiUt);
+                }
                 alert(feltoltesiHiba(eredetiFajl, 'A feltöltés nem fejeződött be rendesen, kérlek próbáld újra.'));
             }
         } catch (err) {

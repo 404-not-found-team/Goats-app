@@ -78,10 +78,39 @@ Az alkalmazás az alábbi modulokból áll:
 
 - **Hub:** `jogi.html` — innen érhető el mindegyik jogi dokumentum, és ez a link van a Profil menüben ("Jogi információk").
 - **Adatvédelmi tájékoztató:** `privacy.html`.
-- **Felhasználási feltételek:** `felhasznalasi-feltetelek.html` — a verziószáma (`auth-service.js` `TOS_VERSION`) egyezzen a lap tetején feltüntetett verzióval.
+- **Felhasználási feltételek:** `felhasznalasi-feltetelek.html` — a verziószáma (`hitelesites.js` `TOS_VERSION`) egyezzen a lap tetején feltüntetett verzióval.
 - **Fiók törlése:** `fiok-torles.html`.
 - A bejelentkezési képernyőn (checkbox nélkül) egy mondat linkel a feltételekre és az adatvédelmi tájékoztatóra; az elfogadás tényleges rögzítése az `accept_tos` RPC-vel történik, a `TOS_VERSION`-nel.
-- **Verzióemelés menete:** ha a felhasználási feltételek szövege lényegesen változik, emeld a `TOS_VERSION` értékét (`js/auth-service.js`), és a `felhasznalasi-feltetelek.html` tetején lévő verziószámot/dátumot is ennek megfelelően. Ez új elfogadást kényszerít ki a következő bejelentkezéskor.
+- **Verzióemelés menete:** ha a felhasználási feltételek szövege lényegesen változik, emeld a `TOS_VERSION` értékét (`js/hitelesites.js`), és a `felhasznalasi-feltetelek.html` tetején lévő verziószámot/dátumot is ennek megfelelően. Ez új elfogadást kényszerít ki a következő bejelentkezéskor.
 - Mindhárom statikus oldal lábléce a másik kettőre és a hub-ra mutat.
+
+---
+
+## 📂 Mappa- és fájlszerkezet
+
+A FELADAT13-as átszervezés óta a mappa- és fájlnevek (ahol lehetett) magyarok, ékezet és szóköz nélkül, kisbetűvel, kötőjellel elválasztva — a GitHub Pages és az URL-ek kis-/nagybetű-érzékenysége miatt. A `css/`, `js/`, `css/base/`, `css/pages/`, `js/pages/`, `main.*`, `navbar.css`, `modals.css` és `supabase-client.js` nevek szándékosan maradtak (már eleve egyértelműek vagy általánosan ismert technikai kifejezések).
+
+```
+css/
+  base/            # alap: szinek/betumeret (valtozok.css), reset (visszaallitas.css), segedosztalyok.css
+  elemek/          # ujrafelhasznalhato komponensek (navbar.css, modals.css, lenyilo-menu.css, lebego-cimke.css, moderacio.css, tartozasok-egyenlitese.css)
+  pages/           # oldal-specifikus stilusok (bejelentkezes.css = index.html, fooldal.css = app.html, tartozasok/ranglista/tervek/jogi.css, goatsgame.css)
+  main.css         # a fenti @import-ok gyujtofajlja
+js/
+  hitelesites.js       # kozponti auth/session/csoport-allapot (window.goatsAuth)
+  supabase-client.js   # Supabase kliens singleton
+  admin-muveletek.js   # csoport/profil admin RPC wrapperek
+  main.js              # modul-aggregator a bejelentkezett oldalakhoz
+  elemek/              # ujrafelhasznalhato UI-komponensek (naptar, nav-bar, galeria, beallitasok-modal, tartozasok-egyenlitese.js)
+    beallitasok/        # a beallitasok-modal al-nezetei (belepes-modal, profil-modal, csoport-adatok, tema-valaszto, ital-moderacio, beallitasok-sablonok, tos-ujraelfogadas)
+  pages/               # egy-egy HTML oldalhoz tartozo belepesi script (bejelentkezes-oldal.js, app-orzo.js, tartozasok.js, tervek.js, ranglista.js, goatsgame.js)
+  segedek/             # altalanos segedfuggvenyek (ital-kep, modal-fokusz, szin-osztaly, csoport-kepek, keslelteto, teljesitmeny, tema)
+img/
+  icon-*.png           # PWA ikonok (a manifest.json hivatkozza)
+  ikonok/              # ital-kategoria SVG ikonok (CSS maszkkal szinezve)
+  markak/               # ital-marka kepek (.webp) + szerkesztoi forras (.xcf) es nevkonvencio README
+```
+
+**Service worker verziózása:** a `sw.js` tetején lévő `CACHE_NEV` (pl. `'goats-v11'`) minden olyan kiadásnál emelendő, ami bármelyik előgyorsítótárazott (`ELOGYORSITOTT`) fájl útvonalát vagy tartalmát megváltoztatja — enélkül a már telepített/PWA-ként futó appok a régi, lecserélt fájlokat kapnák a gyorsítótárból. Az `activate` esemény a korábbi cache-neveket automatikusan törli.
 
 ---

@@ -1,5 +1,5 @@
-import { ready, getState } from '../auth-service.js';
-import { jeloles } from '../utils/perf.js';
+import { ready, getState } from '../hitelesites.js';
+import { jeloles } from '../segedek/teljesitmeny.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const htmlNevek = ["index", "tartozasok", "ranglista", "tervek", "goatsgame"];

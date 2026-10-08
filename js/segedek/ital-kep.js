@@ -1,7 +1,7 @@
 // Italkép-feloldás egy helyen. Sorrend:
 //   1) a felhasználó saját képe (kep_url),
-//   2) márkakép: img/brands/<marka>.webp (ha a márkához van fájl),
-//   3) kategória-ikon: img/icons/<ikon>.svg (CSS maszkkal, így a téma színét veszi fel).
+//   2) márkakép: img/markak/<marka>.webp (ha a márkához van fájl),
+//   3) kategória-ikon: img/ikonok/<ikon>.svg (CSS maszkkal, így a téma színét veszi fel).
 // A képek betöltési hibáját onerror kezeli, így a hiányzó fájl nem töri el a kártyát.
 // Klasszikus script (nem modul): window.italKep-en keresztül érhető el.
 // A MARKA_MINTAK listát a sql/03_ital_marka.sql-ből kell szinkronban tartani.
@@ -88,7 +88,7 @@
         const jeloltek = [];
         if (ital.kep_url) jeloltek.push(ital.kep_url);
         const marka = ital.marka || markaNevbol(ital.nev);
-        if (marka) jeloltek.push(`Images/brands/${marka}.webp`);
+        if (marka) jeloltek.push(`img/markak/${marka}.webp`);
         return jeloltek;
     }
 
@@ -123,7 +123,7 @@
     // Egyetlen URL a nagy nézethez (modal). Ikonnál az SVG fájl útvonala.
     function elsoUrl(ital) {
         const jeloltek = kepJeloltek(ital);
-        return jeloltek[0] || `Images/icons/${ikonFajl(ital.kategoria)}.svg`;
+        return jeloltek[0] || `img/ikonok/${ikonFajl(ital.kategoria)}.svg`;
     }
 
     window.italKep = { elemLetrehoz, elsoUrl, markaNevbol, ikonFajl };
