@@ -107,6 +107,11 @@
     text-decoration: none;
 }
 
+.tartozas-reszlet-athuzott {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
 .tartozas-egyenlites-elozmenyek-gomb {
     display: block;
     margin-top: 10px;
