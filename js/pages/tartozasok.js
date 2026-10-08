@@ -373,7 +373,7 @@ async function kezeldTartozasKattintast(e) {
 
         if (!nyitva && !reszletek.dataset.betoltve) {
             reszletek.dataset.betoltve = '1';
-            const modul = await import('../components/tartozasok-egyenlites.js');
+            const modul = await import('../elemek/tartozasok-egyenlitese.js');
             modul.toltsReszleteket(reszletek, adosId, hitelezoId);
         }
         return;
@@ -384,7 +384,7 @@ async function kezeldTartozasKattintast(e) {
         const ados = members.find(m => m.user_id === adosId);
         const hitelezo = members.find(m => m.user_id === hitelezoId);
 
-        const modul = await import('../components/tartozasok-egyenlites.js');
+        const modul = await import('../elemek/tartozasok-egyenlitese.js');
         modul.nyitEgyenlitesModal({
             aId: adosId,
             aNev: ados ? ados.display_name : 'Törölt tag',

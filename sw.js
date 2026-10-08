@@ -17,11 +17,11 @@ const ELOGYORSITOTT = [
     'js/main.js',
     'js/supabase-client.js',
     'js/auth-service.js',
-    'js/components/nav-bar.js',
+    'js/elemek/nav-bar.js',
     'js/pages/index.js',
     'js/pages/app.js',
-    'js/utils/perf.js',
-    'js/utils/theme.js',
+    'js/segedek/teljesitmeny.js',
+    'js/segedek/tema.js',
     'manifest.json',
 ];
 

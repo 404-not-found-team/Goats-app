@@ -1,7 +1,7 @@
 import './supabase-client.js';
 import './auth-service.js';
-import './components/settings-modal.js';
-import './components/nav-bar.js';
-import './utils/theme.js';
-import './utils/csoport-kepek.js';
+import './elemek/beallitasok-modal.js';
+import './elemek/nav-bar.js';
+import './segedek/tema.js';
+import './segedek/csoport-kepek.js';
 import './admin.js';
