@@ -77,8 +77,12 @@
     cursor: pointer;
 }
 
-.terv-item span:not(.delete-btn) {
+.terv-item .terv-szoveg-sor {
     flex: 1;
+    min-width: 0;
+}
+
+.terv-item span:not(.delete-btn) {
     font-size: var(--fs-base);
     word-break: break-word;
     color: var(--text-primary);

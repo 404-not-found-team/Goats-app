@@ -90,11 +90,37 @@ async function betoltKepek() {
         .filter(u => gyorsitotar[u])
         .map(u => ({ name: u.split('/').pop(), path: u, url: gyorsitotar[u].url }));
 
+    // Feltöltő: a public.kepek táblából (FELADAT9). Ha egy képnek nincs sora (pl. a backfill előtti
+    // állapot, vagy a beszúrás egyszer elakadt), egyszerűen nem jelenik meg feltöltő-felirat nála.
+    if (kepekLista.length > 0) {
+        try {
+            const { data: kepSorok, error: kepSorHiba } = await client
+                .from('kepek')
+                .select('utvonal, feltoltotte_id')
+                .eq('group_id', groupId);
+            if (kepSorHiba) {
+                console.error('Hiba a feltöltők lekérésekor:', kepSorHiba);
+            } else {
+                const feltoltoTerkep = new Map((kepSorok || []).map(s => [s.utvonal, s.feltoltotte_id]));
+                kepekLista.forEach(k => { k.feltoltotteId = feltoltoTerkep.get(k.path) || null; });
+            }
+        } catch (err) {
+            console.error('Hiba a feltöltők lekérésekor:', err);
+        }
+    }
+
     if (currentIndex >= kepekLista.length) {
         currentIndex = Math.max(0, kepekLista.length - 1);
     }
 
     frissitGaleria();
+}
+
+// A feltöltő neve az azonosítója alapján (a csoporttagok listájából)
+function feltoltoNev(userId) {
+    if (!userId) return null;
+    const tag = window.goatsAuth?.getState()?.members?.find(m => m.user_id === userId);
+    return tag ? tag.display_name : 'Törölt tag';
 }
 
 function frissitGaleria() {
@@ -120,6 +146,15 @@ function frissitGaleria() {
             torolAktualisKep();
         });
         galeriaDoboz.appendChild(torlesGomb);
+    }
+
+    // Feltöltő-felirat a középső kép alatt
+    let feltoltoFelirat = document.getElementById('kepFeltoltoFelirat');
+    if (!feltoltoFelirat && galeriaDoboz) {
+        feltoltoFelirat = document.createElement('div');
+        feltoltoFelirat.id = 'kepFeltoltoFelirat';
+        feltoltoFelirat.className = 'galeria-feltolto-felirat';
+        galeriaDoboz.appendChild(feltoltoFelirat);
     }
 
     let placeholder = document.getElementById('galeria-placeholder');
@@ -148,6 +183,7 @@ function frissitGaleria() {
             feltoltGomb.querySelectorAll('i').forEach(ikon => { ikon.hidden = false; });
         }
         if (torlesGomb) torlesGomb.hidden = true;
+        if (feltoltoFelirat) feltoltoFelirat.hidden = true;
 
         if (placeholder) {
             placeholder.hidden = false;
@@ -170,6 +206,12 @@ function frissitGaleria() {
     if (elemBal) elemBal.src = kepekLista[balIndex].url;
     if (elemKozep) elemKozep.src = kepekLista[currentIndex].url;
     if (elemJobb) elemJobb.src = kepekLista[jobbIndex].url;
+
+    if (feltoltoFelirat) {
+        const nev = feltoltoNev(kepekLista[currentIndex].feltoltotteId);
+        feltoltoFelirat.hidden = !nev;
+        feltoltoFelirat.textContent = nev ? `Feltöltötte: ${nev}` : '';
+    }
 }
 
 function eloKep() {
@@ -216,6 +258,12 @@ async function torolAktualisKep() {
     }
 
     console.log('Törlés eredménye:', data);
+
+    // A hozzá tartozó sor törlése a kepek táblából is (FELADAT9). Nem blokkoló: ha ez nem
+    // sikerül, a fájl már törölve van, a sor legfeljebb árván marad (a következő betoltKepek()
+    // úgyis csak a ténylegesen létező fájlokat listázza, az árva sor nem okoz hibát).
+    const { error: sorTorlesHiba } = await supabase.from('kepek').delete().eq('utvonal', eleresiUt);
+    if (sorTorlesHiba) console.error('A kepek tábla sorának törlése nem sikerült:', sorTorlesHiba);
 
     // Ha sikeres, frissítjük a nézetet
     await betoltKepek();
@@ -371,6 +419,31 @@ async function feltoltKepek(event) {
             if (error) {
                 console.error('Feltöltési hiba (Supabase Storage):', error, { tipus: eredetiFajl.type, meret: eredetiFajl.size });
                 alert(feltoltesiHiba(eredetiFajl, error));
+                continue;
+            }
+
+            // A Storage-feltöltés után a sor rögzítése a kepek táblában (FELADAT9). Ha ez egyszer
+            // nem sikerül, egyet újrapróbáljuk; ha másodszor is elakad, a fájlt inkább töröljük a
+            // Storage-ból, hogy ne maradjon "gazdátlan" (a táblában nem szereplő) kép.
+            let sorBeszurasHiba = (await client.from('kepek').insert({
+                group_id: groupId,
+                utvonal: eleresiUt,
+                meret: blob.size,
+            })).error;
+
+            if (sorBeszurasHiba) {
+                console.warn('A kepek sor beszúrása nem sikerült, újrapróbálás:', sorBeszurasHiba);
+                sorBeszurasHiba = (await client.from('kepek').insert({
+                    group_id: groupId,
+                    utvonal: eleresiUt,
+                    meret: blob.size,
+                })).error;
+            }
+
+            if (sorBeszurasHiba) {
+                console.error('A kepek sor beszúrása másodszorra sem sikerült, a fájl törlése:', sorBeszurasHiba);
+                await client.storage.from(BUCKET_NEV).remove([eleresiUt]);
+                alert(feltoltesiHiba(eredetiFajl, 'A feltöltés nem fejeződött be rendesen, kérlek próbáld újra.'));
             }
         } catch (err) {
             console.error('Feltöltési hiba:', err, { tipus: eredetiFajl.type, nev: eredetiFajl.name, meret: eredetiFajl.size });

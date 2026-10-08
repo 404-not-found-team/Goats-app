@@ -24,8 +24,14 @@ async function loadTervek() {
     const container = document.querySelector('.tervek');
     container.innerHTML = '';
     data.forEach(terv => {
-        renderTervItem(terv.id, terv.text, terv.completed);
+        renderTervItem(terv.id, terv.text, terv.completed, terv.felvette_id, terv.created_at);
     });
+}
+
+// A tag neve az azonosítója alapján (a csoporttagok listájából, amit az auth-service már betöltött)
+function tagNevId(userId) {
+    const tag = window.goatsAuth?.getState()?.members?.find(m => m.user_id === userId);
+    return tag ? tag.display_name : 'Törölt tag';
 }
 
 async function add() {
@@ -72,7 +78,7 @@ async function deleteTerv(id) {
     loadTervek();
 }
 
-function renderTervItem(id, text, isCompleted) {
+function renderTervItem(id, text, isCompleted, felvetteId, createdAt) {
     const container = document.querySelector('.tervek');
 
     const itemDiv = document.createElement('div');
@@ -85,8 +91,19 @@ function renderTervItem(id, text, isCompleted) {
     checkbox.type = 'checkbox';
     checkbox.checked = isCompleted;
 
+    const szovegSor = document.createElement('div');
+    szovegSor.className = 'terv-szoveg-sor';
     const span = document.createElement('span');
     span.textContent = text;
+    szovegSor.appendChild(span);
+
+    if (felvetteId) {
+        const meta = document.createElement('div');
+        meta.className = 'meta-szoveg';
+        const mikor = createdAt ? ' · ' + new Date(createdAt).toLocaleDateString('hu-HU') : '';
+        meta.textContent = `Felvette: ${tagNevId(felvetteId)}${mikor}`;
+        szovegSor.appendChild(meta);
+    }
 
     // Törlés gomb (kuka ikon)
     const deleteSpan = document.createElement('span');
@@ -117,7 +134,7 @@ function renderTervItem(id, text, isCompleted) {
     });
 
     itemDiv.appendChild(checkbox);
-    itemDiv.appendChild(span);
+    itemDiv.appendChild(szovegSor);
     itemDiv.appendChild(deleteSpan);
 
     if (isCompleted) {
