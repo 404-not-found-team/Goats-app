@@ -13,11 +13,7 @@ window.onload = async function () {
     document.querySelector('.tartozasok-grid')?.addEventListener('click', kezeldTartozasKattintast);
 };
 
-// A csoportkód/taglista forrása az élő auth-állapot; localStorage csak akkor,
-// ha az auth-service valamiért még nem futott le (sosem kéne előfordulnia).
-function aktualisGroupCode() {
-    return window.goatsAuth?.getState()?.group?.group_code || localStorage.getItem('goats_group_code');
-}
+// aktualisGroupCode(): lásd js/segedek/csoport-kod.js (közös, minden klasszikus oldalscript használja)
 
 // Tagok: [{ user_id, display_name }] – az azonosító a kulcs, a név csak megjelenítés.
 function aktualisTagok() {
