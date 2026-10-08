@@ -198,44 +198,44 @@
 }
 
 .ital-ikon.ikon-sor {
-    -webkit-mask: url('../../img/icons/sor.svg') center / contain no-repeat;
-    mask: url('../../img/icons/sor.svg') center / contain no-repeat;
+    -webkit-mask: url('../../img/ikonok/sor.svg') center / contain no-repeat;
+    mask: url('../../img/ikonok/sor.svg') center / contain no-repeat;
 }
 .ital-ikon.ikon-bor {
-    -webkit-mask: url('../../img/icons/bor.svg') center / contain no-repeat;
-    mask: url('../../img/icons/bor.svg') center / contain no-repeat;
+    -webkit-mask: url('../../img/ikonok/bor.svg') center / contain no-repeat;
+    mask: url('../../img/ikonok/bor.svg') center / contain no-repeat;
 }
 .ital-ikon.ikon-palinka {
-    -webkit-mask: url('../../img/icons/palinka.svg') center / contain no-repeat;
-    mask: url('../../img/icons/palinka.svg') center / contain no-repeat;
+    -webkit-mask: url('../../img/ikonok/palinka.svg') center / contain no-repeat;
+    mask: url('../../img/ikonok/palinka.svg') center / contain no-repeat;
 }
 .ital-ikon.ikon-vodka {
-    -webkit-mask: url('../../img/icons/vodka.svg') center / contain no-repeat;
-    mask: url('../../img/icons/vodka.svg') center / contain no-repeat;
+    -webkit-mask: url('../../img/ikonok/vodka.svg') center / contain no-repeat;
+    mask: url('../../img/ikonok/vodka.svg') center / contain no-repeat;
 }
 .ital-ikon.ikon-whisky {
-    -webkit-mask: url('../../img/icons/whisky.svg') center / contain no-repeat;
-    mask: url('../../img/icons/whisky.svg') center / contain no-repeat;
+    -webkit-mask: url('../../img/ikonok/whisky.svg') center / contain no-repeat;
+    mask: url('../../img/ikonok/whisky.svg') center / contain no-repeat;
 }
 .ital-ikon.ikon-rum {
-    -webkit-mask: url('../../img/icons/rum.svg') center / contain no-repeat;
-    mask: url('../../img/icons/rum.svg') center / contain no-repeat;
+    -webkit-mask: url('../../img/ikonok/rum.svg') center / contain no-repeat;
+    mask: url('../../img/ikonok/rum.svg') center / contain no-repeat;
 }
 .ital-ikon.ikon-likor {
-    -webkit-mask: url('../../img/icons/likor.svg') center / contain no-repeat;
-    mask: url('../../img/icons/likor.svg') center / contain no-repeat;
+    -webkit-mask: url('../../img/ikonok/likor.svg') center / contain no-repeat;
+    mask: url('../../img/ikonok/likor.svg') center / contain no-repeat;
 }
 .ital-ikon.ikon-energiaital {
-    -webkit-mask: url('../../img/icons/energiaital.svg') center / contain no-repeat;
-    mask: url('../../img/icons/energiaital.svg') center / contain no-repeat;
+    -webkit-mask: url('../../img/ikonok/energiaital.svg') center / contain no-repeat;
+    mask: url('../../img/ikonok/energiaital.svg') center / contain no-repeat;
 }
 .ital-ikon.ikon-udito {
-    -webkit-mask: url('../../img/icons/udito.svg') center / contain no-repeat;
-    mask: url('../../img/icons/udito.svg') center / contain no-repeat;
+    -webkit-mask: url('../../img/ikonok/udito.svg') center / contain no-repeat;
+    mask: url('../../img/ikonok/udito.svg') center / contain no-repeat;
 }
 .ital-ikon.ikon-egyeb {
-    -webkit-mask: url('../../img/icons/egyeb.svg') center / contain no-repeat;
-    mask: url('../../img/icons/egyeb.svg') center / contain no-repeat;
+    -webkit-mask: url('../../img/ikonok/egyeb.svg') center / contain no-repeat;
+    mask: url('../../img/ikonok/egyeb.svg') center / contain no-repeat;
 }
 
 @media (max-width: 768px) {
