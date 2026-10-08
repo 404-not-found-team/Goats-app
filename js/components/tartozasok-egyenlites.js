@@ -65,7 +65,19 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
       // itt, a már egyénre bontott összeg mellett ez redundáns, ezért levágjuk.
       const alapMiert = t.miert.replace(/\s*\([^)]*\)\s*$/, '');
       const szoveg = document.createElement('span');
-      szoveg.textContent = `${alapMiert} – ${fmt(t.eredeti_osszeg)}`;
+      szoveg.appendChild(document.createTextNode(`${alapMiert} – `));
+
+      if (t.nyitott_osszeg > 0 && t.nyitott_osszeg < t.eredeti_osszeg) {
+        // Részben egyenlítve: az eredeti összeg áthúzva, mellette a ténylegesen nyitott rész –
+        // egy sorban, nem kell külön "részben egyenlítve · nyitott: X Ft" magyarázó sor.
+        const eredetiSpan = document.createElement('span');
+        eredetiSpan.className = 'tartozas-reszlet-athuzott';
+        eredetiSpan.textContent = fmt(t.eredeti_osszeg);
+        szoveg.appendChild(eredetiSpan);
+        szoveg.appendChild(document.createTextNode(' ' + fmt(t.nyitott_osszeg)));
+      } else {
+        szoveg.appendChild(document.createTextNode(fmt(t.eredeti_osszeg)));
+      }
 
       const torlesSpan = document.createElement('span');
       torlesSpan.textContent = '🗑️';
@@ -81,11 +93,6 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
         const jelzes = document.createElement('span');
         jelzes.className = 'tartozas-reszlet-allapot';
         jelzes.textContent = 'egyenlítve';
-        sor.appendChild(jelzes);
-      } else if (t.nyitott_osszeg < t.eredeti_osszeg) {
-        const jelzes = document.createElement('span');
-        jelzes.className = 'tartozas-reszlet-allapot';
-        jelzes.textContent = `részben egyenlítve · nyitott: ${fmt(t.nyitott_osszeg)}`;
         sor.appendChild(jelzes);
       }
 
