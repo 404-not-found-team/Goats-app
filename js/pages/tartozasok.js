@@ -495,13 +495,13 @@ function frissitOsszesen() {
     const kulonbseg = osszeg - sum;
     elonezet.classList.remove('hiba', 'ok');
     if (kulonbseg === 0) {
-        elonezet.textContent = `Egyezik: ${formatFt(sum)} / ${formatFt(osszeg)}`;
-        elonezet.classList.add('ok');
+        elonezet.textContent = ``;
+        //elonezet.classList.add('ok');
     } else if (kulonbseg > 0) {
-        elonezet.textContent = `Még ${formatFt(kulonbseg)} hiányzik (${formatFt(sum)} / ${formatFt(osszeg)})`;
+        elonezet.textContent = `Még ${formatFt(kulonbseg)} hiányzik`;
         elonezet.classList.add('hiba');
     } else {
-        elonezet.textContent = `${formatFt(-kulonbseg)} többet osztottál be a kelleténél (${formatFt(sum)} / ${formatFt(osszeg)})`;
+        elonezet.textContent = `${formatFt(-kulonbseg)} többet osztottál be a kelleténél`;
         elonezet.classList.add('hiba');
     }
 }
@@ -525,9 +525,9 @@ function frissitKozosKoltseg() {
     }
 
     if (egyenlo) {
-        const { n, resz, maradek, maradekGazda } = egyenloAdatok(osszeg, resztvevok, selectedKinek);
+        const { n, resz, maradek } = egyenloAdatok(osszeg, resztvevok, selectedKinek);
         let szoveg = `${n} fő × ${formatFt(resz)}`;
-        if (maradek > 0) szoveg += ` (a ${maradek} Ft-os maradék: ${tagNeve(maradekGazda)})`;
+        if (maradek > 0) szoveg += ` `;
         elonezet.textContent = szoveg;
     } else {
         egyediMezok(osszeg, resztvevok);
@@ -602,11 +602,6 @@ async function addTartozas() {
         mennyiert: resz,
         hitelezo_id: kinek,
         ados_id: adosId,
-        // felvette_id-t nem küldjük: az adatbázis default auth.uid()-ja állítja be,
-        // a kliens sosem jelentheti ki magáról, hogy "ő" vette fel
-        // régi, szöveges oszlopok: csak pillanatkép, a megjelenítés az azonosítókból megy
-        kinek: nevek(kinek),
-        kitartozik: nevek(adosId),
         group_code: groupCode
     }));
 

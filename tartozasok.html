@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
+    <meta http-equiv="Content-Security-Policy"
+        content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goats - Tartozások</title>
     <link rel="manifest" href="manifest.json">
@@ -59,18 +60,20 @@
 
         <!-- Közös költség: a fenti űrlap alatt, teljes szélességben -->
         <div class="kozos-koltseg">
-            <fieldset class="elosztas-mod">
-                <legend>Összeg elosztása</legend>
-                <label class="kapcsolo-sor">
-                    <input type="radio" name="elosztasMod" value="egyenlo" checked>
-                    Egyenlő elosztás
-                </label>
-                <label class="kapcsolo-sor">
-                    <input type="radio" name="elosztasMod" value="egyedi">
-                    Egyedi összegek
-                </label>
-            </fieldset>
-            <p id="elosztasElonezet" class="elosztas-elonezet" aria-live="polite"></p>
+            <div class="kozos-koltseg-infok">
+                <fieldset class="elosztas-mod">
+                    <legend>Összeg elosztása</legend>
+                    <label class="kapcsolo-sor">
+                        <input type="radio" name="elosztasMod" value="egyenlo" checked>
+                        Egyenlő elosztás
+                    </label>
+                    <label class="kapcsolo-sor">
+                        <input type="radio" name="elosztasMod" value="egyedi">
+                        Egyedi összegek
+                    </label>
+                </fieldset>
+                <p id="elosztasElonezet" class="elosztas-elonezet" aria-live="polite"></p>
+            </div>
             <div id="egyediOsszegek" class="egyedi-osszegek hidden"></div>
         </div>
 
