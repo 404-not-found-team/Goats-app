@@ -336,11 +336,9 @@ function epitsOsszevontKartyat(sor, ados, memberIndex, members) {
     fejlec.appendChild(nyilBtn);
     fejlec.appendChild(osszegSpan);
 
-    // Kölcsönös tartozás esetén csak a két érintett fél kap egyenlítés gombot (ők hívhatják az RPC-t)
+    // Kölcsönös tartozás esetén bárki csoporttag indíthat egyenlítést (mint a törlésnél is)
     const masikIranyu = nyitottOsszeg(sor.hitelezo_id, ados.user_id);
-    const sajatId = window.goatsAuth?.getState()?.user?.id;
-    const erintett = sajatId === ados.user_id || sajatId === sor.hitelezo_id;
-    if (masikIranyu > 0 && erintett) {
+    if (masikIranyu > 0) {
         const beszamithato = Math.min(sor.nyitott_osszeg, masikIranyu);
         const egyenlitBtn = document.createElement('button');
         egyenlitBtn.type = 'button';
@@ -384,19 +382,18 @@ async function kezeldTartozasKattintast(e) {
 
     if (e.target.closest('.gomb-egyenlit')) {
         const members = aktualisTagok();
-        const sajatId = window.goatsAuth?.getState()?.user?.id;
-        const masikId = sajatId === adosId ? hitelezoId : adosId;
-        const masik = members.find(m => m.user_id === masikId);
-        const enNev = members.find(m => m.user_id === sajatId)?.display_name || 'Te';
+        const ados = members.find(m => m.user_id === adosId);
+        const hitelezo = members.find(m => m.user_id === hitelezoId);
 
         const modul = await import('../components/tartozasok-egyenlites.js');
         modul.nyitEgyenlitesModal({
-            enNev,
-            masikId,
-            masikNev: masik ? masik.display_name : 'Törölt tag',
-            enTartozikMasiknak: nyitottOsszeg(sajatId, masikId),
-            masikTartozikEnnekem: nyitottOsszeg(masikId, sajatId),
-            beszamithato: Math.min(nyitottOsszeg(sajatId, masikId), nyitottOsszeg(masikId, sajatId)),
+            aId: adosId,
+            aNev: ados ? ados.display_name : 'Törölt tag',
+            bId: hitelezoId,
+            bNev: hitelezo ? hitelezo.display_name : 'Törölt tag',
+            aTartozikBnek: nyitottOsszeg(adosId, hitelezoId),
+            bTartozikAnak: nyitottOsszeg(hitelezoId, adosId),
+            beszamithato: Math.min(nyitottOsszeg(adosId, hitelezoId), nyitottOsszeg(hitelezoId, adosId)),
         });
     }
 }
