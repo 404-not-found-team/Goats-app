@@ -4,11 +4,11 @@
 @import url('base/segedosztalyok.css');
 
 /* COMPONENTS */
-@import url('components/navbar.css');
-@import url('components/modals.css');
-@import url('components/custom-dropdown.css');
-@import url('components/floating-label.css');
-@import url('components/moderation.css');
+@import url('elemek/navbar.css');
+@import url('elemek/modals.css');
+@import url('elemek/lenyilo-menu.css');
+@import url('elemek/lebego-cimke.css');
+@import url('elemek/moderacio.css');
 
 /* PAGES */
 @import url('pages/signin.css');
