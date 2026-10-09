@@ -121,11 +121,16 @@ function kovKep() {
     frissitGaleria();
 }
 
-// Az "Összes kép" link csak akkor látszik, ha a csoportnál a Képek oldal engedélyezett
+// Az "Összes kép" link ugyanakkor látszik, mint a menüben a Képek fül: superadminnak mindig,
+// másnak ha a csoport enabled_pages-ében benne van ÉS a globális kapcsolója be van kapcsolva
 function osszesKepLinkFrissites() {
     const link = document.getElementById('osszesKepLink');
-    const oldalak = window.goatsAuth?.getState()?.group?.enabled_pages;
-    if (link) link.hidden = !aktualisGroupId() || (Array.isArray(oldalak) && !oldalak.includes('kepek'));
+    if (!link) return;
+    const auth = window.goatsAuth;
+    const oldalak = auth?.getState()?.group?.enabled_pages;
+    const csoportban = !Array.isArray(oldalak) || oldalak.includes('kepek');
+    link.hidden = !aktualisGroupId()
+        || !(auth?.isSuperadmin?.() || (csoportban && auth?.oldalEngedelyezett?.('kepek') !== false));
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
