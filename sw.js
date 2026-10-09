@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v13';
+const CACHE_NEV = 'goats-v14';
 
 // Előgyorsítótár: az alkalmazás váza, hogy az első oldalváltás is gyors legyen.
 // Egyesével töltjük: ha egy fájl hiányzik, a telepítés attól még sikeres marad.
@@ -44,7 +44,10 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((kulcsok) =>
-            Promise.all(kulcsok.filter((k) => k !== CACHE_NEV).map((k) => caches.delete(k)))
+            // a galériaképek helyi tárát (goats-kepek-*) a kep-gyorsitotar.js kezeli, azt nem töröljük
+            Promise.all(kulcsok
+                .filter((k) => k !== CACHE_NEV && !k.startsWith('goats-kepek-'))
+                .map((k) => caches.delete(k)))
         ).then(() => clients.claim()) // Átveszi az irányítást az összes nyitott ablak felett
     );
 });
@@ -73,10 +76,10 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // A Supabase Storage fájlok (galéria képek) egyedi, soha nem újrahasznált
-    // fájlnévvel kerülnek fel - ezeket a böngésző normál HTTP cache-ére bízzuk
-    // (nem avatkozunk bele), különben minden oldalbetöltéskor újra letöltődnének
-    // a Supabase CDN-jéről (ez hajtotta fel a "Cached Egress" kvótát).
+    // A Supabase Storage kéréseket (aláírt kép-URL-ek) nem cache-eljük: az aláírt URL
+    // minden aláíráskor új, így a cache-ben csak felhalmozódna. A galériaképeket a
+    // js/segedek/kep-gyorsitotar.js tárolja a saját Cache Storage-ában (goats-kepek-v1)
+    // az útvonal alapján, a SW ezt nem kezeli és nem is törli (lásd activate).
     const supabaseStorageKeres = url.hostname.endsWith('.supabase.co') && url.pathname.startsWith('/storage/');
     if (supabaseStorageKeres) {
         return; // nincs event.respondWith hívás -> a böngésző a sima, SW nélküli utat követi

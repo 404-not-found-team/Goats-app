@@ -4,6 +4,7 @@
 // SOHA nem jogosultság: a szerver minden kérésnél a JWT alapján dönt.
 import { client } from './supabase-client.js';
 import { jeloles } from './segedek/teljesitmeny.js';
+import { uritKepGyorsitotar } from './segedek/kep-gyorsitotar.js';
 
 export const TOS_VERSION = '2026-10';
 const KEEP_KEYS = new Set(['goats_theme', 'goats_tos_pending']);
@@ -189,6 +190,7 @@ export async function signOut() {
   } finally {
     Object.assign(state, blank());
     clearCache();
+    await uritKepGyorsitotar(); // a galériaképek helyi tára (FELADAT12)
     emit();
     signingOut = false;
   }
@@ -255,8 +257,9 @@ client.auth.onAuthStateChange((event) => {
     const hadUser = !!state.user;
     Object.assign(state, blank());
     clearCache();
+    const urites = uritKepGyorsitotar(); // a galériaképek helyi tára (FELADAT12); nem Supabase-hívás
     emit();
-    if (hadUser) setTimeout(() => location.reload(), 0); // másik fülön kijelentkeztek
+    if (hadUser) urites.finally(() => setTimeout(() => location.reload(), 0)); // másik fülön kijelentkeztek
   }
 });
 
