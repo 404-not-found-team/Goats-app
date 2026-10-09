@@ -4,7 +4,7 @@
 // - Feltöltés: négyzetes kivágás (js/elemek/kep-kivago.js), majd tömörítés (js/segedek/kep-tomorites.js);
 //   mindkettő az első feltöltéskor töltődik be
 // - Megjelenítés: js/segedek/kep-gyorsitotar.js (eszközönként egyszer letöltve, blob URL)
-// - Jelentés: public.jelentesek (cel_tipus = 'kep', cel_azonosito = a kép útvonala)
+// - Jelentés: a kep-jelentes Edge Function (public.jelentesek sor + másolat a privát "jelentett" bucketbe)
 import { client } from '../supabase-client.js';
 import { ready, getState } from '../hitelesites.js';
 import { BUCKET, csoportMappak, mappaFajljai } from '../segedek/csoport-kepek.js';
@@ -260,19 +260,19 @@ async function jelentesKuldes(e) {
     if (!csoport || !jelentendoUtvonal) return;
 
     $('jelentesKuld').disabled = true;
-    const { error } = await client.from('jelentesek').insert({
-        group_id: csoport.id,
-        cel_tipus: 'kep',
-        cel_azonosito: jelentendoUtvonal,
-        ok,
-        leiras: leiras || null,
+    // A kep-jelentes Edge Function a felhasználó nevében rögzíti a jelentést, és a képről
+    // másolatot készít a privát "jelentett" bucketbe (supabase/functions/kep-jelentes)
+    const { error } = await client.functions.invoke('kep-jelentes', {
+        body: { group_id: csoport.id, utvonal: jelentendoUtvonal, ok, leiras: leiras || null },
     });
     $('jelentesKuld').disabled = false;
 
     if (error) {
-        console.error('Hiba a jelentés beküldésekor:', error);
-        // A beküldési policy óránként legfeljebb 20 jelentést enged (RLS-hibaként jelez)
-        hiba.textContent = rlsHibaE(error)
+        let kod = null;
+        try { kod = (await error.context?.json?.())?.hiba || null; } catch { /* nem JSON válasz */ }
+        console.error('Hiba a jelentés beküldésekor:', error, kod);
+        // A beküldési szabály óránként legfeljebb 20 jelentést enged (a function "korlat" kóddal jelzi)
+        hiba.textContent = kod === 'korlat'
             ? 'Túl sok jelentést küldtél az elmúlt órában, próbáld újra később.'
             : 'A jelentés beküldése nem sikerült, próbáld újra.';
         hiba.hidden = false;
@@ -327,7 +327,7 @@ async function lekerKepKorlat() {
     return null;
 }
 
-// RLS-elutasítás (a képkorlát és a jelentés-korlát is így jelez)
+// RLS-elutasítás (a képkorlát így jelez)
 function rlsHibaE(error) {
     const uzenet = String(error?.message || '').toLowerCase();
     return String(error?.statusCode) === '403' || error?.code === '42501'
