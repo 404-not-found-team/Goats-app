@@ -156,5 +156,10 @@
         return jeloltek[0] || `img/ikonok/${ikonFajl(ital.kategoria)}.svg`;
     }
 
-    window.italKep = { elemLetrehoz, elsoUrl, markaNevbol, nevMarkaNelkul, ikonFajl, nevSzlug };
+    // Az összes jelölt URL a nagy nézethez, a végén a kategória-ikonnal (onerror-láncoláshoz)
+    function osszesUrl(ital) {
+        return [...kepJeloltek(ital), `img/ikonok/${ikonFajl(ital.kategoria)}.svg`];
+    }
+
+    window.italKep = { elemLetrehoz, elsoUrl, osszesUrl, markaNevbol, nevMarkaNelkul, ikonFajl, nevSzlug };
 })();
