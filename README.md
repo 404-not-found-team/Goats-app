@@ -18,6 +18,7 @@
 - [Főbb oldalak és funkciók](#-főbb-oldalak-és-funkciók)
 - [Technológiai stack](#️-technológiai-stack)
 - [Képek](#️-képek)
+- [Admin oldal és globális kapcsolók](#️-admin-oldal-és-globális-kapcsolók)
 - [PWA támogatás](#-pwa-támogatás)
 - [Mappa- és fájlszerkezet](#-mappa--és-fájlszerkezet)
 - [Helyi indítás](#-helyi-indítás)
@@ -78,6 +79,8 @@ A **Goats App** egy reszponzív webes alkalmazás baráti csoportok számára: k
    - Ital-moderáció (admin): beküldött italjavaslatok jóváhagyása/elutasítása.
    - Téma váltás (sötét, világos és további színsémák).
 
+9. **Admin (`admin.html`)** – csak superadminnak, lásd [Admin oldal és globális kapcsolók](#️-admin-oldal-és-globális-kapcsolók).
+
 ---
 
 ## 🛠️ Technológiai stack
@@ -132,6 +135,32 @@ A galéria képei a privát `kepek` Supabase Storage bucketben vannak, csoporton
 
 ---
 
+## ⚙️ Admin oldal és globális kapcsolók
+Az `admin.html` (`js/pages/admin.js`, `css/pages/admin.css`) csak a superadminoké (`profiles.system_role = 'superadmin'`). Session nélkül az `index.html`-re, nem superadminnak az `app.html`-re irányít (`location.replace`), az adatai addig nem töltődnek be; a profil változásakor (`onChange`) újra ellenőriz. A menüben az „Admin ⚙️” csak superadminnak látszik, a csoporttól és a kapcsolóktól függetlenül (mobilon a „Több ☰” fiókban).
+
+**Globális kapcsolók** – az egész alkalmazásra érvényesek (nem csoportonként), a `public.app_kapcsolok` táblában (`kulcs`, `ertek boolean`, `modositotta`, `modositva`). Olvasni minden bejelentkezett felhasználó tudja, írni csak a superadmin az `admin_beallitas_mentese(kulcs_in, ertek_in)` RPC-vel. (A `public.app_beallitasok` a FELADAT12 számértékű beállításait tárolja, pl. a képkorlátot; az külön tábla.)
+
+| Kulcs | Mit kapcsol |
+|---|---|
+| `oldal_tartozasok`, `oldal_ranglista`, `oldal_kepek`, `oldal_tervek`, `oldal_goatsgame` | Az oldal a menüben és közvetlen megnyitáskor (a Kezdőlap nem kapcsolható) |
+| `funkcio_kepfeltoltes` | Képfeltöltés (Képek oldal) |
+| `funkcio_italjavaslat` | Új ital javaslása (Ranglista) |
+| `funkcio_uj_csoport` | Új csoport létrehozása |
+| `funkcio_tartozas_felvetel` | Új tartozás felvétele |
+| `funkcio_csoportcsatlakozas` | Csatlakozás csoportkóddal |
+
+**A superadminokra egyik kapcsoló sem vonatkozik**: minden oldalt látnak és minden funkciót használhatnak.
+
+**Működés**
+- Az oldalak listája egy helyen van: `js/segedek/oldalak.js` (a nav-bar és az admin oldal is ezt használja).
+- A `hitelesites.js` a bejelentkezéskor betölti a kapcsolókat (`state.beallitasok`, a munkamenet-pillanatképben legfeljebb 60 másodpercig), és kiadja az `oldalEngedelyezett(kulcs)` és `funkcioEngedelyezett(kulcs)` segédet; mindkettő igaz superadminnak.
+- Menü: egy oldal látszik, ha (superadmin) VAGY (a csoport `enabled_pages`-ében benne van ÉS a globális kapcsolója be van kapcsolva).
+- Közvetlen megnyitás: a kapcsolható oldalak `<body data-oldal="...">` attribútuma alapján a `js/segedek/oldal-orzo.js` az `app.html`-re irányít („Ez az oldal jelenleg nem elérhető.”). Kijelentkezve a kapcsolók nem olvashatók, ezért a publikus Ranglistát ilyenkor nem korlátozza.
+- Funkciók: a `js/segedek/funkcio-kapcsolo.js` letiltja a gombot, és mellé írja: „Ez a funkció jelenleg ki van kapcsolva.”
+- **Szerveroldali kikényszerítés** (a felület elrejtése csak kozmetika): `public.funkcio_engedelyezve(kulcs)` (superadminnak mindig igaz). A képfeltöltést, az italjavaslatot és a tartozás felvételét RESTRICTIVE INSERT policyk ellenőrzik (`storage.objects` a `kepek` bucketre, `kepek`, `ital_katalogus`, `tartozasok`), a csoportlétrehozást és a csatlakozást a `create_new_group` és a `join_group_with_code` RPC.
+
+---
+
 ## 📲 PWA támogatás
 Az alkalmazás telepíthető asztali és mobil böngészőkből is ("Telepítés" / "Hozzáadás a kezdőképernyőhöz").
 - A `sw.js` előgyorsítótárazza az alkalmazás vázát (a bejelentkezési és a legfontosabb belépési fájlokat), hogy az első/ismételt betöltés gyors legyen, és navigációnál 2 másodperces hálózati időkorlát után a gyorsítótárra vált.
@@ -149,7 +178,7 @@ A FELADAT13-as átszervezés óta a mappa- és fájlnevek (ahol lehetett) magyar
 css/
   base/            # alap: szinek/betumeret (valtozok.css), reset (visszaallitas.css), segedosztalyok.css
   elemek/          # ujrafelhasznalhato komponensek (navbar.css, modals.css, lenyilo-menu.css, lebego-cimke.css, moderacio.css, tartozasok-egyenlitese.css)
-  pages/           # oldal-specifikus stilusok (bejelentkezes.css = index.html, fooldal.css = app.html, tartozasok/ranglista/tervek/kepek/jogi.css, goatsgame.css)
+  pages/           # oldal-specifikus stilusok (bejelentkezes.css = index.html, fooldal.css = app.html, tartozasok/ranglista/tervek/kepek/admin/jogi.css, goatsgame.css)
   main.css         # a fenti @import-ok gyujtofajlja
 js/
   hitelesites.js       # kozponti auth/session/csoport-allapot (window.goatsAuth)
@@ -158,8 +187,8 @@ js/
   main.js              # modul-aggregator a bejelentkezett oldalakhoz
   elemek/              # ujrafelhasznalhato UI-komponensek (naptar, nav-bar, galeria, kep-kivago, beallitasok-modal, tartozasok-egyenlitese.js)
     beallitasok/        # a beallitasok-modal al-nezetei (belepes-modal, profil-modal, csoport-adatok, tema-valaszto, ital-moderacio, beallitasok-sablonok, tos-ujraelfogadas)
-  pages/               # egy-egy HTML oldalhoz tartozo belepesi script (bejelentkezes-oldal.js, app-orzo.js, tartozasok.js, tervek.js, kepek.js, ranglista.js, goatsgame.js)
-  segedek/             # altalanos segedfuggvenyek (ital-kep, modal-fokusz, szin-osztaly, csoport-kepek, csoport-kod, kep-tomorites, kep-gyorsitotar, keslelteto, teljesitmeny, tema)
+  pages/               # egy-egy HTML oldalhoz tartozo belepesi script (bejelentkezes-oldal.js, app-orzo.js, tartozasok.js, tervek.js, kepek.js, admin.js, ranglista.js, goatsgame.js)
+  segedek/             # altalanos segedfuggvenyek (ital-kep, modal-fokusz, szin-osztaly, csoport-kepek, csoport-kod, kep-tomorites, kep-gyorsitotar, oldalak, oldal-orzo, funkcio-kapcsolo, keslelteto, teljesitmeny, tema)
 img/
   icon-*.png           # PWA ikonok (a manifest.json hivatkozza)
   ikonok/              # ital-kategoria SVG ikonok (CSS maszkkal szinezve)
