@@ -299,6 +299,52 @@
     margin-top: 14px;
 }
 
+/* Kivágó ablak */
+.kivago-dialog {
+    width: min(400px, calc(100% - 32px));
+}
+
+.kivago-vaszon {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    background: var(--border-color);
+    cursor: grab;
+    touch-action: none; /* a húzás ne görgesse az oldalt */
+}
+
+.kivago-vaszon:active {
+    cursor: grabbing;
+}
+
+.kivago-vaszon:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.kivago-nagyitas {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    color: var(--text-secondary);
+}
+
+.kivago-nagyitas input {
+    flex: 1;
+    accent-color: var(--accent-color);
+}
+
+.kivago-gombok {
+    flex-wrap: wrap;
+}
+
+#kivagoKesz {
+    margin-left: auto;
+}
+
 @media (max-width: 600px) {
     .kepek-oldal {
         padding: 14px 12px;

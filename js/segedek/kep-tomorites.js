@@ -2,8 +2,9 @@
 // töltődik be az első feltöltéskor.
 // - Betöltés createImageBitmap(..., { imageOrientation: 'from-image' })-gel: az EXIF-forgatás
 //   érvényesül, a vászonra rajzolás után pedig semmilyen metaadat (EXIF, GPS) nem kerül a kimenetbe.
-// - Méret: a rövidebb oldal legfeljebb a kijelzett méret 2×-ese (a galéria 180 px-es négyzetre vágja
-//   a képet, így 360 px), a hosszabb oldal legfeljebb 720 px.
+// - Méret: a rövidebb oldal legfeljebb a kijelzett méret 2×-ese (a galéria 180 px-es négyzetben
+//   mutatja a képet, így 360 px), a hosszabb oldal legfeljebb 720 px. A Képek oldalon a feltöltő
+//   négyzetre vágja a képet (js/elemek/kep-kivago.js), így a kimenet 360×360 px.
 // - Kimenet: WebP (ha a böngésző nem tud WebP-t kódolni, JPEG), célméret 100 KB, kemény korlát 150 KB.
 
 export const MAX_HOSSZABB_OLDAL = 720;
@@ -99,7 +100,9 @@ function kezdoHosszabbOldal(w, h) {
     return Math.round(Math.min(hosszabb, MAX_HOSSZABB_OLDAL, rovidebbSzerint));
 }
 
-function vaszonra(forras, w, h, hosszabbOldal) {
+// A forrás (vagy annak kivágott téglalapja) vászonra rajzolása; a hosszabb oldal legfeljebb hosszabbOldal
+function vaszonra(forras, kivagas, hosszabbOldal) {
+    const { x, y, w, h } = kivagas;
     const arany = Math.min(1, hosszabbOldal / Math.max(w, h));
     const vaszon = document.createElement('canvas');
     vaszon.width = Math.max(1, Math.round(w * arany));
@@ -108,7 +111,7 @@ function vaszonra(forras, w, h, hosszabbOldal) {
     ctx.fillStyle = '#ffffff'; // átlátszó forrásnál is értelmes háttér (JPEG-nél kötelező)
     ctx.fillRect(0, 0, vaszon.width, vaszon.height);
     ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(forras, 0, 0, vaszon.width, vaszon.height);
+    ctx.drawImage(forras, x, y, w, h, 0, 0, vaszon.width, vaszon.height);
     return vaszon;
 }
 
@@ -129,11 +132,11 @@ async function webpKodolhato() {
 }
 
 /**
- * Egy képfájl tömörítése feltöltéshez.
- * @returns {Promise<{blob: Blob, kiterjesztes: string, szelesseg: number, magassag: number}>}
+ * Egy képfájl ellenőrzése és beolvasása (az EXIF-forgatás érvényesítésével).
+ * @returns {Promise<{forras: ImageBitmap|HTMLImageElement, szelesseg: number, magassag: number}>}
  * @throws {KepHiba} érthető magyar üzenettel, ha a kép nem tölthető fel
  */
-export async function kepTomorites(fajl) {
+export async function kepBetoltes(fajl) {
     if (!fajl || fajl.size === 0) throw new KepHiba('A fájl üres vagy sérült.');
     if (!kepTipusE(fajl)) throw new KepHiba('Csak képfájl tölthető fel.');
     if (fajl.size > MAX_BEMENET) {
@@ -142,21 +145,36 @@ export async function kepTomorites(fajl) {
     if (await animaltGifE(fajl)) {
         throw new KepHiba('Animált GIF nem tölthető fel (csak az első képkocka maradna meg).');
     }
-
     const forras = await forrasBetoltes(fajl);
-    const w = forras.naturalWidth || forras.width;
-    const h = forras.naturalHeight || forras.height;
-    if (!w || !h) throw new KepHiba('A kép mérete nem olvasható.');
+    const szelesseg = forras.naturalWidth || forras.width;
+    const magassag = forras.naturalHeight || forras.height;
+    if (!szelesseg || !magassag) throw new KepHiba('A kép mérete nem olvasható.');
+    return { forras, szelesseg, magassag };
+}
 
+// A forrás felszabadítása (ImageBitmap-nél azonnal elengedi a memóriát)
+export function forrasFelszabaditas(forras) {
+    if (forras && typeof forras.close === 'function') forras.close();
+}
+
+/**
+ * Egy beolvasott kép (vagy a kivágott része) tömörítése feltöltéshez.
+ * @param {{forras, szelesseg, magassag}} kep a kepBetoltes() eredménye
+ * @param {{x:number, y:number, w:number, h:number}} [kivagas] forráspixelben; alapból az egész kép
+ * @returns {Promise<{blob: Blob, kiterjesztes: string, szelesseg: number, magassag: number}>}
+ * @throws {KepHiba} ha a kép tömörítés után is a kemény korlát fölött van
+ */
+export async function kepTomoritesKivagassal(kep, kivagas) {
+    const ki = kivagas || { x: 0, y: 0, w: kep.szelesseg, h: kep.magassag };
     const webp = await webpKodolhato();
     const tipus = webp ? 'image/webp' : 'image/jpeg';
     const kezdoMinoseg = webp ? WEBP_KEZDO_MINOSEG : JPEG_KEZDO_MINOSEG;
-    const minHosszabb = Math.min(MIN_HOSSZABB_OLDAL, Math.max(w, h));
+    const minHosszabb = Math.min(MIN_HOSSZABB_OLDAL, Math.max(ki.w, ki.h));
 
-    let hosszabbOldal = kezdoHosszabbOldal(w, h);
+    let hosszabbOldal = kezdoHosszabbOldal(ki.w, ki.h);
     let legjobb = null;
     for (;;) {
-        const vaszon = vaszonra(forras, w, h, hosszabbOldal);
+        const vaszon = vaszonra(kep.forras, ki, hosszabbOldal);
         for (let minoseg = kezdoMinoseg; minoseg >= MIN_MINOSEG - 1e-9; minoseg -= MINOSEG_LEPES) {
             const blob = await kodolas(vaszon, tipus, minoseg);
             if (!blob || blob.size === 0) throw new KepHiba('A kép tömörítése nem sikerült.');
@@ -166,10 +184,22 @@ export async function kepTomorites(fajl) {
         if (legjobb.blob.size <= CEL_MERET || hosszabbOldal <= minHosszabb) break;
         hosszabbOldal = Math.max(minHosszabb, Math.round(hosszabbOldal * MERET_LEPES));
     }
-    if (typeof forras.close === 'function') forras.close();
 
     if (legjobb.blob.size > KEMENY_KORLAT) {
         throw new KepHiba('A kép tömörítés után is túl nagy (legfeljebb 150 KB lehet), ezért nem töltöttük fel.');
     }
     return { ...legjobb, kiterjesztes: webp ? 'webp' : 'jpg' };
+}
+
+/**
+ * Egy képfájl tömörítése feltöltéshez, kivágás nélkül (betöltés + tömörítés + felszabadítás).
+ * @throws {KepHiba} érthető magyar üzenettel, ha a kép nem tölthető fel
+ */
+export async function kepTomorites(fajl) {
+    const kep = await kepBetoltes(fajl);
+    try {
+        return await kepTomoritesKivagassal(kep);
+    } finally {
+        forrasFelszabaditas(kep.forras);
+    }
 }
