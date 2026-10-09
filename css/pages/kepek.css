@@ -1,0 +1,376 @@
+/* ==========================================================================
+   KÉPEK OLDAL (kepek.html): rács, feltöltés, ⋮ menü, jelentés-ablak
+   ========================================================================== */
+
+.kepek-oldal {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+}
+
+.kepek-fejlec {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.kepek-fejlec h1 {
+    margin: 0;
+}
+
+.kepek-feltolt-gomb,
+.kepek-gomb {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent-color);
+    color: var(--on-accent);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.kepek-feltolt-gomb:hover,
+.kepek-gomb:hover {
+    background: var(--accent-hover);
+}
+
+.kepek-feltolt-gomb:disabled,
+.kepek-gomb:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.kepek-gomb.masodlagos {
+    background: var(--inner-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.kepek-gomb.masodlagos:hover {
+    background: var(--border-color);
+}
+
+/* Feltöltés állapota */
+.kepek-allapot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px 6px 6px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    background: var(--inner-bg);
+    color: var(--text-primary);
+    font-size: var(--fs-sm);
+    min-height: 40px;
+}
+
+.kepek-allapot.allapot-hiba {
+    background: rgba(127, 29, 29, 0.9);
+    color: #ffffff;
+}
+
+.kepek-allapot.allapot-ok {
+    background: rgba(20, 83, 45, 0.9);
+    color: #ffffff;
+}
+
+.kepek-elonezet {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.kepek-szamlalo {
+    margin: 0 0 10px;
+    color: var(--text-secondary);
+    font-size: var(--fs-xs);
+}
+
+/* Rács: kis, négyzetes csempék (mobilon 3, szélesebben több oszlop) */
+.kepek-racs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+.kepek-csempe {
+    display: flex;
+    flex-direction: column;
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: visible;
+    min-width: 0;
+}
+
+.kepek-csempe-kep {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+    background: var(--border-color);
+}
+
+.kepek-csempe.betoltesi-hiba .kepek-csempe-kep {
+    opacity: 0.4;
+}
+
+.kepek-csempe-info {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 4px 6px 8px;
+    min-width: 0;
+}
+
+.kepek-csempe-szoveg {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.kepek-feltolto {
+    font-size: var(--fs-xs);
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kepek-datum {
+    font-size: var(--fs-xs);
+    color: var(--text-secondary);
+}
+
+/* ⋮ menü */
+.kepek-menu {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.kepek-menu-gomb {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.kepek-menu-gomb:hover,
+.kepek-menu-gomb[aria-expanded="true"] {
+    background: var(--border-color);
+    color: var(--text-primary);
+}
+
+.kepek-menu-lista {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 4px);
+    z-index: 50;
+    min-width: 130px;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+}
+
+.kepek-menupont {
+    text-align: left;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: var(--fs-sm);
+    cursor: pointer;
+}
+
+.kepek-menupont:hover,
+.kepek-menupont:focus-visible {
+    background: var(--border-color);
+}
+
+.kepek-menupont.veszelyes {
+    color: #ef4444;
+}
+
+/* Jelentés-ablak (natív <dialog>) */
+.kepek-dialog {
+    margin: auto; /* a visszaállító CSS nullázza, így a dialog nem lenne középen */
+    width: min(420px, calc(100% - 32px));
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--inner-bg);
+    color: var(--text-primary);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+.kepek-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.kepek-dialog h2 {
+    margin: 0 0 6px;
+    font-size: var(--fs-lg, 1.2rem);
+}
+
+.kepek-dialog-leiras {
+    margin: 0 0 12px;
+    color: var(--text-secondary);
+    font-size: var(--fs-sm);
+}
+
+.kepek-okok {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+}
+
+.kepek-okok legend {
+    padding: 0 4px;
+    font-size: var(--fs-xs);
+    color: var(--text-secondary);
+}
+
+.kepek-okok label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+}
+
+.kepek-leiras-cimke {
+    display: block;
+    margin-bottom: 4px;
+    font-size: var(--fs-xs);
+    color: var(--text-secondary);
+}
+
+.kepek-dialog textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: var(--fs-sm);
+    resize: vertical;
+}
+
+.kepek-dialog-gombok {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+/* Kivágó ablak */
+.kivago-dialog {
+    width: min(400px, calc(100% - 32px));
+}
+
+.kivago-vaszon {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    background: var(--border-color);
+    cursor: grab;
+    touch-action: none; /* a húzás ne görgesse az oldalt */
+}
+
+.kivago-vaszon:active {
+    cursor: grabbing;
+}
+
+.kivago-vaszon:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.kivago-nagyitas {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    color: var(--text-secondary);
+}
+
+.kivago-nagyitas input {
+    flex: 1;
+    accent-color: var(--accent-color);
+}
+
+.kivago-gombok {
+    flex-wrap: wrap;
+}
+
+#kivagoKesz {
+    margin-left: auto;
+}
+
+@media (max-width: 600px) {
+    .kepek-oldal {
+        padding: 14px 12px;
+        border-radius: 12px;
+    }
+
+    .kepek-racs {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .kepek-csempe-info {
+        padding: 4px 2px 4px 6px;
+    }
+
+    .kepek-datum {
+        display: none;
+    }
+
+    /* Szűk csempén csak a név (az előtag vizuálisan rejtett, felolvasva marad) */
+    .kepek-feltolto-elotag {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+}

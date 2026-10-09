@@ -2,9 +2,9 @@ import { ready, getState } from '../hitelesites.js';
 import { jeloles } from '../segedek/teljesitmeny.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const htmlNevek = ["index", "tartozasok", "ranglista", "tervek", "goatsgame"];
-    const oldalNevek = ["Kezdőlap", "Tartozások", "Ranglista", "Tervek", "Goats Game"];
-    const oldalEmojik = ["🏠", "💸", "🍹", "📋", "🎮"];
+    const htmlNevek = ["index", "tartozasok", "ranglista", "kepek", "tervek", "goatsgame"];
+    const oldalNevek = ["Kezdőlap", "Tartozások", "Ranglista", "Képek", "Tervek", "Goats Game"];
+    const oldalEmojik = ["🏠", "💸", "🍹", "🖼️", "📋", "🎮"];
 
     // A 3 kiemelt oldal, ami mindig látszik az alsó sávban mobilon
     const FO_OLDALAK = ["index", "tartozasok", "ranglista"];
