@@ -58,7 +58,7 @@ A **Goats App** egy reszponzív webes alkalmazás baráti csoportok számára: k
 
 4. **Képek (`kepek.html`)** – csoportonként ki-be kapcsolható oldal (`enabled_pages`: `kepek`)
    - A csoport összes képe rácsban (legújabb elöl), a feltöltő nevével és dátumával.
-   - Feltöltés (négyzetes kivágással és tömörítéssel), ⋮ menü: **Törlés** a saját (vagy ismeretlen feltöltőjű) képnél, **Jelentés** bármelyik képnél (a `public.jelentesek` táblába, `cel_tipus = 'kep'`, óránként legfeljebb 20).
+   - Feltöltés (négyzetes kivágással és tömörítéssel), ⋮ menü: **Törlés** a saját (vagy ismeretlen feltöltőjű) képnél, **Jelentés** bármelyik képnél (a `public.jelentesek` táblába, `cel_tipus = 'kep'`, óránként legfeljebb 20; a képről másolat készül a privát `jelentett` bucketbe).
    - Részletek: [Képek](#️-képek).
 
 5. **Tervek / Ötletek (`tervek.html`)**
@@ -116,6 +116,13 @@ A galéria képei a privát `kepek` Supabase Storage bucketben vannak, csoporton
 - `kepek.html` + `js/pages/kepek.js`: a teljes rács, feltöltés, törlés, jelentés; a csempék képe csak akkor töltődik be, amikor a görgetésben láthatóvá válik (IntersectionObserver, kötegelt aláírással).
 - `app.html` + `js/elemek/galeria.js`: csak lapozás. Az „Összes kép →” link akkor látszik, ha a csoportnál a `kepek` oldal engedélyezett.
 - A Képek oldal ki-be kapcsolása a `groups.enabled_pages` tömbben (`kepek` kulcs); új csoportnál alapból be van kapcsolva.
+
+**Jelentés és a jelentett képek másolata**
+- A Képek oldal a `kep-jelentes` Edge Functiont hívja (`supabase/functions/kep-jelentes/index.ts`). Ez a felhasználó nevében (az ő JWT-jével) szúrja be a sort a `public.jelentesek` táblába, így a táblaszabályok érvényesek: csak csoporttag jelenthet, óránként legfeljebb 20-at.
+- Utána a service role-lal lemásolja a képet a privát `jelentett` bucketbe `<jelentés-azonosító>.<kiterjesztés>` néven, és a helyét beírja a jelentés `masolat_utvonal` oszlopába. A `jelentett` bucketre nincs storage-policy: a csoporttagok nem látják és nem törölhetik, a másolat akkor is megmarad, ha az eredeti képet vagy a csoportot törlik.
+- A másolatot az üzemeltetők törlik kézzel (Supabase → Storage → `jelentett`), a jelentés lezárása után (`statusz = 'lezarva'`).
+- A kliens a `jelentesek` táblába csak a `group_id`, `cel_tipus`, `cel_azonosito`, `ok`, `leiras` oszlopot írhatja (oszlopszintű jog); a `statusz` és a `masolat_utvonal` csak szerveroldalon változik.
+- Telepítés: `supabase functions deploy kep-jelentes` (JWT-ellenőrzéssel). A `SUPABASE_URL`, `SUPABASE_ANON_KEY` és `SUPABASE_SERVICE_ROLE_KEY` környezeti változót a Supabase automatikusan adja.
 
 **Helyi gyorsítótár** (`js/segedek/kep-gyorsitotar.js`)
 - A privát bucket miatt aláírt URL kell, ami minden aláíráskor új, így a böngésző HTTP-cache-e nem segít. Ezért a letöltött képet a Cache Storage `goats-kepek-v1` tárolója őrzi az útvonal alapján, és a következő megnyitáskor onnan, blob URL-ként jelenik meg: egy képet eszközönként csak egyszer töltünk le.
