@@ -51,70 +51,26 @@
     cursor: pointer;
 }
 
-/* Képfeltöltés gomb */
-#kepFeltoltesGomb {
+/* "Összes kép" link a Képek oldalra (a feltöltés, törlés és jelentés ott van) */
+.galeria-osszes-link {
     position: absolute;
     top: 10px;
-    left: 10px;
+    right: 12px;
     z-index: 100;
-    background: rgba(0, 0, 0, 0.5);
-    color: #ffffff;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    transition: background 0.2s ease, transform 0.2s ease;
-}
-
-#kepFeltoltesGomb:hover {
-    background: var(--accent-color);
-    transform: scale(1.1);
-}
-
-/* Feltöltő neve a középső kép alatt (FELADAT9) */
-.galeria-feltolto-felirat {
-    position: absolute;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-    background: rgba(0, 0, 0, 0.55);
-    color: #ffffff;
+    color: var(--accent-text);
     font-size: var(--fs-xs);
+    text-decoration: none;
     padding: 3px 10px;
     border-radius: 999px;
-    white-space: nowrap;
-    max-width: calc(100% - 80px);
-    overflow: hidden;
-    text-overflow: ellipsis;
+    background: rgba(0, 0, 0, 0.45);
 }
 
-#kepFeltoltesGomb i {
-    font-size: var(--fs-sm);
+.galeria-osszes-link:hover,
+.galeria-osszes-link:focus-visible {
+    background: var(--accent-color);
+    color: var(--on-accent);
 }
 
-/* (1,1,0) > #kepFeltoltesGomb:hover (1,1,0) – a sorrend miatt ez nyer */
-#kepFeltoltesGomb.feltoltes-folyamatban {
-    pointer-events: none;
-    color: #ffffff;
-    background-color: #333333;
-    animation: feltoltes-pulzalas 1s ease-in-out infinite;
-}
-
-@keyframes feltoltes-pulzalas {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.4;
-    }
-}
 
 /* Nyilak */
 .nyil {

@@ -28,7 +28,8 @@ export async function mappaFajljai(mappa) {
             .list(mappa, {
                 limit: LISTA_LAPMERET,
                 offset,
-                sortBy: { column: 'name', order: 'asc' }
+                // feltöltési sorrend: a fájlnév (uuid) nem hordoz időt (FELADAT12)
+                sortBy: { column: 'created_at', order: 'asc' }
             });
         if (error) throw error;
         const fajlok = (data || []).filter(item => item.id !== null && item.name !== '.emptyFolderPlaceholder');

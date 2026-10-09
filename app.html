@@ -29,17 +29,17 @@
     <div class="hatter">
 
         <div class="kepek">
-            <input type="file" id="kepFeltoltesInput" accept="image/*" multiple hidden>
-            <a href="#" id="kepFeltoltesGomb" onclick="nyisdMegFajlValasztot(); return false;" title="Kép feltöltése">
-                <i class="fa-solid fa-upload"></i>
-            </a>
+            <!-- Feltöltés, törlés, jelentés: a Képek oldalon (csak ha a csoportnál engedélyezett) -->
+            <a href="kepek.html" id="osszesKepLink" class="galeria-osszes-link" hidden>Összes kép &rarr;</a>
             <i class="fa-solid fa-caret-left nyil" onclick="eloKep()"></i>
 
-            <img id="kepBal" class="hatrebb" src="" alt="Előző kép">
-            <img id="kepKozep" src="" alt="Aktuális kép">
-            <img id="kepJobb" class="hatrebb" src="" alt="Következő kép">
+            <img id="kepBal" class="galeria-kep hatrebb" alt="Előző kép" width="120" height="120" loading="lazy" decoding="async">
+            <img id="kepKozep" class="galeria-kep" alt="Aktuális kép" width="180" height="180" loading="lazy" decoding="async">
+            <img id="kepJobb" class="galeria-kep hatrebb" alt="Következő kép" width="120" height="120" loading="lazy" decoding="async">
 
             <i class="fa-solid fa-caret-right nyil" onclick="kovKep()"></i>
+
+            <div id="galeria-placeholder" class="galeria-ures" hidden></div>
         </div>
 
         <div class="naptar-kontener">
