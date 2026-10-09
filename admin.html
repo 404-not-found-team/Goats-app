@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Goats - Admin</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/pages/admin.css">
+
+    <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="modulepreload" href="js/main.js">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
+
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/pages/admin.js"></script>
+</head>
+
+<body>
+    <ul id="navBar"></ul>
+
+    <!-- Csak superadminnak: a js/pages/admin.js az ellenőrzés után jeleníti meg (addig rejtett),
+         másnak azonnal továbbirányít. A mentést a szerver is ellenőrzi (admin_beallitas_mentese). -->
+    <main id="adminTartalom" class="admin-oldal" hidden>
+        <h1>Admin</h1>
+        <p class="admin-bevezeto">
+            Globális kapcsolók: az egész alkalmazásra érvényesek, minden csoportra. A superadminokra egyik sem
+            vonatkozik, ők mindent látnak és használhatnak.
+        </p>
+
+        <div id="adminFigyelmeztetes" class="admin-figyelmeztetes" role="status" hidden></div>
+        <p id="adminAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
+
+        <section class="admin-szekcio" aria-labelledby="adminOldalakCim">
+            <h2 id="adminOldalakCim">Oldalak</h2>
+            <p class="admin-szekcio-leiras">A kikapcsolt oldal eltűnik a menüből, és közvetlenül sem nyitható meg. A Kezdőlap nem kapcsolható.</p>
+            <ul id="adminOldalak" class="admin-lista"></ul>
+        </section>
+
+        <section class="admin-szekcio" aria-labelledby="adminFunkciokCim">
+            <h2 id="adminFunkciokCim">Funkciók</h2>
+            <p class="admin-szekcio-leiras">A kikapcsolt funkció gombja letiltva jelenik meg, és a szerver is elutasítja.</p>
+            <ul id="adminFunkciok" class="admin-lista"></ul>
+        </section>
+    </main>
+</body>
+
+</html>
