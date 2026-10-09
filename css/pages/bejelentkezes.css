@@ -51,179 +51,26 @@
     cursor: pointer;
 }
 
-/* Képfeltöltés gomb */
-#kepFeltoltesGomb {
+/* "Összes kép" link a Képek oldalra (a feltöltés, törlés és jelentés ott van) */
+.galeria-osszes-link {
     position: absolute;
     top: 10px;
-    left: 10px;
+    right: 12px;
     z-index: 100;
-    background: rgba(0, 0, 0, 0.5);
-    color: #ffffff;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    transition: background 0.2s ease, transform 0.2s ease;
-}
-
-#kepFeltoltesGomb:hover {
-    background: var(--accent-color);
-    transform: scale(1.1);
-}
-
-/* Műveleti sáv a középső kép alatt (FELADAT12): feltöltő neve (FELADAT9) + ⋮ menü.
-   Nagyított nézet nincs, a kép műveletei mind ide kerülnek. */
-.galeria-muvelet-sav {
-    position: absolute;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    z-index: 100;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    pointer-events: none; /* a sáv üres része ne takarja a képeket */
-}
-
-
-.galeria-feltolto-felirat {
-    background: rgba(0, 0, 0, 0.55);
-    color: #ffffff;
+    color: var(--accent-text);
     font-size: var(--fs-xs);
+    text-decoration: none;
     padding: 3px 10px;
     border-radius: 999px;
-    white-space: nowrap;
-    max-width: calc(100% - 80px);
-    overflow: hidden;
-    text-overflow: ellipsis;
+    background: rgba(0, 0, 0, 0.45);
 }
 
-.galeria-menu {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    pointer-events: auto;
-}
-
-.galeria-menu-gomb {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(0, 0, 0, 0.5);
-    color: #ffffff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s ease;
-}
-
-.galeria-menu-gomb:hover,
-.galeria-menu-gomb[aria-expanded="true"] {
+.galeria-osszes-link:hover,
+.galeria-osszes-link:focus-visible {
     background: var(--accent-color);
+    color: var(--on-accent);
 }
 
-
-.galeria-menu-lista {
-    position: absolute;
-    right: 0;
-    bottom: calc(100% + 6px);
-    min-width: 130px;
-    display: flex;
-    flex-direction: column;
-    padding: 4px;
-    background: var(--inner-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-}
-
-
-.galeria-menupont {
-    text-align: left;
-    padding: 8px 10px;
-    border: none;
-    border-radius: 6px;
-    background: transparent;
-    color: var(--text-primary);
-    font-size: var(--fs-sm);
-    cursor: pointer;
-}
-
-.galeria-menupont:hover,
-.galeria-menupont:focus-visible {
-    background: var(--border-color);
-}
-
-.galeria-menupont.veszelyes {
-    color: #ef4444;
-}
-
-
-/* Feltöltés állapota (előnézet + szöveg) a galéria tetején */
-.galeria-feltoltes-allapot {
-    position: absolute;
-    top: 10px;
-    left: 50px;
-    right: 10px;
-    z-index: 101;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 10px 4px 4px;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.7);
-    color: #ffffff;
-    font-size: var(--fs-xs);
-    min-height: 32px;
-}
-
-
-.galeria-feltoltes-allapot.allapot-hiba {
-    background: rgba(127, 29, 29, 0.9);
-}
-
-.galeria-feltoltes-allapot.allapot-ok {
-    background: rgba(20, 83, 45, 0.9);
-}
-
-/* (0,2,0): erősebb a .kepek img (0,1,1) szabálynál, így a kis előnézet nem nő meg */
-.kepek .galeria-elonezet {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    box-shadow: none;
-    flex-shrink: 0;
-}
-
-
-#kepFeltoltesGomb i {
-    font-size: var(--fs-sm);
-}
-
-/* (1,1,0) > #kepFeltoltesGomb:hover (1,1,0) – a sorrend miatt ez nyer */
-#kepFeltoltesGomb.feltoltes-folyamatban {
-    pointer-events: none;
-    color: #ffffff;
-    background-color: #333333;
-    animation: feltoltes-pulzalas 1s ease-in-out infinite;
-}
-
-@keyframes feltoltes-pulzalas {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.4;
-    }
-}
 
 /* Nyilak */
 .nyil {
