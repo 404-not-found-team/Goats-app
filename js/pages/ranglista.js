@@ -80,8 +80,8 @@ function rendezKartyakatContainerben(container) {
     const kartyak = Array.from(container.querySelectorAll(':scope > .ital-kartya'));
     
     kartyak.sort((a, b) => {
-        const nevA = a.querySelector('.ital-nev')?.textContent.trim() || '';
-        const nevB = b.querySelector('.ital-nev')?.textContent.trim() || '';
+        const nevA = (a.dataset.nev || '').trim();
+        const nevB = (b.dataset.nev || '').trim();
         return nevA.localeCompare(nevB, 'hu', { sensitivity: 'base' });
     });
 
@@ -333,7 +333,7 @@ async function frissitsSzureseketEsMents() {
         .map(pill => pill.dataset.id.toLowerCase());
 
     document.querySelectorAll('.ital-kartya').forEach(kartya => {
-        const nev = kartya.querySelector('.ital-nev')?.textContent.toLowerCase() || '';
+        const nev = (kartya.dataset.nev || '').toLowerCase();
         const kategoria = kartya.dataset.kategoria?.toLowerCase() || '';
 
         const kategoriaKizarva = kikapcsoltKategoriak.includes(kategoria);
@@ -662,12 +662,15 @@ function addItalKartyaToUI(ital) {
     kartya.className = 'ital-kartya';
     kartya.id = `ital-${ital.id}`;
     kartya.dataset.kategoria = ital.kategoria;
+    // Teljes név (márkával) a rendezéshez és a kizárás-szűréshez; a felirat márka nélküli
+    kartya.dataset.nev = ital.nev || '';
 
     const kep = window.italKep.elemLetrehoz(ital);
 
     const felirat = document.createElement('span');
     felirat.className = 'ital-nev';
-    felirat.textContent = ital.nev;
+    felirat.textContent = window.italKep.nevMarkaNelkul(ital.nev);
+    felirat.title = ital.nev || '';
 
     kartya.appendChild(kep);
     kartya.appendChild(felirat);
