@@ -81,6 +81,17 @@
         return talalat ? talalat[1] : null;
     }
 
+    // Listanézethez: a név a márka-előtag nélkül (pl. "Finlandia Mango" -> "Mango").
+    // Ha a név csak a márkából áll, marad a teljes név.
+    function nevMarkaNelkul(nev) {
+        const teljes = String(nev || '');
+        const kisbetus = teljes.toLowerCase();
+        const talalat = MARKA_MINTAK.find(([minta]) => kisbetus.startsWith(minta.toLowerCase()));
+        if (!talalat) return teljes;
+        const maradek = teljes.slice(talalat[0].length).replace(/^[\s\-–:,.]+/, '').trim();
+        return maradek || teljes;
+    }
+
     function ikonFajl(kategoria) {
         return KATEGORIA_IKON[String(kategoria || '').toLowerCase()] || 'egyeb';
     }
@@ -145,5 +156,10 @@
         return jeloltek[0] || `img/ikonok/${ikonFajl(ital.kategoria)}.svg`;
     }
 
-    window.italKep = { elemLetrehoz, elsoUrl, markaNevbol, ikonFajl, nevSzlug };
+    // Az összes jelölt URL a nagy nézethez, a végén a kategória-ikonnal (onerror-láncoláshoz)
+    function osszesUrl(ital) {
+        return [...kepJeloltek(ital), `img/ikonok/${ikonFajl(ital.kategoria)}.svg`];
+    }
+
+    window.italKep = { elemLetrehoz, elsoUrl, osszesUrl, markaNevbol, nevMarkaNelkul, ikonFajl, nevSzlug };
 })();
