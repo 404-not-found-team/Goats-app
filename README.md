@@ -47,7 +47,7 @@ A **Goats App** egy reszponzív webes alkalmazás baráti csoportok számára: k
    - PWA telepítő kártya, funkció-bemutató, jogi lábléc.
 
 2. **Főoldal (`app.html`, bejelentkezett nézet)**
-   - **Galéria:** lapozható, csak kis képeket mutató nézegető (nagyítás nincs), feltöltéssel, a feltöltő nevével és ⋮ menüvel (Törlés a saját képnél). Részletek: [Képek](#️-képek).
+   - **Galéria:** lapozható, csak kis képeket mutató nézegető (nagyítás nincs), „Összes kép →” linkkel a Képek oldalra.
    - **Naptár:** saját (nem külső/Google) havi naptár, események létrehozásával, szerkesztésével, törlésével és napi áttekintő nézettel.
 
 3. **Tartozások (`tartozasok.html`)**
@@ -56,18 +56,23 @@ A **Goats App** egy reszponzív webes alkalmazás baráti csoportok számára: k
    - **Kölcsönös egyenlítés:** ha két tag kölcsönösen tartozik egymásnak, a közös rész beszámítható (FIFO, akár részlegesen is) anélkül, hogy az eredeti tételek törlődnének — az egyenlítés visszavonható, előzményekkel.
    - Egy tartozás törlése (= kifizetve) bármikor, bárki által a csoportból.
 
-4. **Tervek / Ötletek (`tervek.html`)**
+4. **Képek (`kepek.html`)** – csoportonként ki-be kapcsolható oldal (`enabled_pages`: `kepek`)
+   - A csoport összes képe rácsban (legújabb elöl), a feltöltő nevével és dátumával.
+   - Feltöltés (tömörítéssel), ⋮ menü: **Törlés** a saját (vagy ismeretlen feltöltőjű) képnél, **Jelentés** bármelyik képnél (a `public.jelentesek` táblába, `cel_tipus = 'kep'`, óránként legfeljebb 20).
+   - Részletek: [Képek](#️-képek).
+
+5. **Tervek / Ötletek (`tervek.html`)**
    - Közös bakancslista: hozzáadás, pipálás, törlés, ki vette fel.
 
-5. **Ranglista (`ranglista.html`)**
+6. **Ranglista (`ranglista.html`)**
    - Italok besorolása kategóriás tier-listába (kategóriánként saját szekció).
    - Új ital javaslata (admin jóváhagyással kerül be a katalógusba), saját kép vagy márka-kép/kategória-ikon megjelenítéssel.
    - Szűrés, keresés, koktél-összetevők megadása.
 
-6. **Goats Game (`goatsgame.html`)**
+7. **Goats Game (`goatsgame.html`)**
    - Önálló mini-játék a csoporttagoknak.
 
-7. **Beállítások / Profil** (a fejlécben elérhető menü, minden oldalon)
+8. **Beállítások / Profil** (a fejlécben elérhető menü, minden oldalon)
    - Saját adatok: megjelenített név (automatikus mentéssel), e-mail (csak megjelenítve), fiók törlése.
    - Csoport adatok: tagok listája, admin jog átadása, tag eltávolítása, csoportnév átnevezése, kód újragenerálása, csoport törlése vagy kilépés.
    - Ital-moderáció (admin): beküldött italjavaslatok jóváhagyása/elutasítása.
@@ -106,9 +111,14 @@ A galéria képei a privát `kepek` Supabase Storage bucketben vannak, csoporton
   ```
 - A korlátot a `storage.objects` táblán egy RESTRICTIVE INSERT policy (`kepek_csoport_korlat`) ellenőrzi a `kep_mappa_korlat_alatt()` függvénnyel; a kliens a `kep_korlat_csoportonkent()` RPC-vel kérdezi le, és elérésekor ezt írja ki: „A csoport elérte a képkorlátot, törölj régebbi képeket.”
 
+**Oldalak**
+- `kepek.html` + `js/pages/kepek.js`: a teljes rács, feltöltés, törlés, jelentés; a csempék képe csak akkor töltődik be, amikor a görgetésben láthatóvá válik (IntersectionObserver, kötegelt aláírással).
+- `app.html` + `js/elemek/galeria.js`: csak lapozás. Az „Összes kép →” link akkor látszik, ha a csoportnál a `kepek` oldal engedélyezett.
+- A Képek oldal ki-be kapcsolása a `groups.enabled_pages` tömbben (`kepek` kulcs); új csoportnál alapból be van kapcsolva.
+
 **Helyi gyorsítótár** (`js/segedek/kep-gyorsitotar.js`)
 - A privát bucket miatt aláírt URL kell, ami minden aláíráskor új, így a böngésző HTTP-cache-e nem segít. Ezért a letöltött képet a Cache Storage `goats-kepek-v1` tárolója őrzi az útvonal alapján, és a következő megnyitáskor onnan, blob URL-ként jelenik meg: egy képet eszközönként csak egyszer töltünk le.
-- Csak a látható (középső és két szomszédos) képet töltjük be; a hiányzókra egy kötegelt `createSignedUrls` hívás megy (2 perces lejárattal).
+- Csak a látható képeket töltjük be (a főoldalon a középsőt és a két szomszédját, a Képek oldalon a láthatóvá vált csempéket); a hiányzókra egy kötegelt `createSignedUrls` hívás megy (2 perces lejárattal).
 - Legfeljebb 150 kép / 20 MB, a legrégebben használt törlődik (index: `localStorage` `goats_kep_cache_index`). Kijelentkezéskor az egész törlődik.
 - A service worker a Storage-kéréseket nem cache-eli, és a `goats-kepek-*` tárolót verzióváltáskor sem törli.
 
@@ -131,7 +141,7 @@ A FELADAT13-as átszervezés óta a mappa- és fájlnevek (ahol lehetett) magyar
 css/
   base/            # alap: szinek/betumeret (valtozok.css), reset (visszaallitas.css), segedosztalyok.css
   elemek/          # ujrafelhasznalhato komponensek (navbar.css, modals.css, lenyilo-menu.css, lebego-cimke.css, moderacio.css, tartozasok-egyenlitese.css)
-  pages/           # oldal-specifikus stilusok (bejelentkezes.css = index.html, fooldal.css = app.html, tartozasok/ranglista/tervek/jogi.css, goatsgame.css)
+  pages/           # oldal-specifikus stilusok (bejelentkezes.css = index.html, fooldal.css = app.html, tartozasok/ranglista/tervek/kepek/jogi.css, goatsgame.css)
   main.css         # a fenti @import-ok gyujtofajlja
 js/
   hitelesites.js       # kozponti auth/session/csoport-allapot (window.goatsAuth)
@@ -140,7 +150,7 @@ js/
   main.js              # modul-aggregator a bejelentkezett oldalakhoz
   elemek/              # ujrafelhasznalhato UI-komponensek (naptar, nav-bar, galeria, beallitasok-modal, tartozasok-egyenlitese.js)
     beallitasok/        # a beallitasok-modal al-nezetei (belepes-modal, profil-modal, csoport-adatok, tema-valaszto, ital-moderacio, beallitasok-sablonok, tos-ujraelfogadas)
-  pages/               # egy-egy HTML oldalhoz tartozo belepesi script (bejelentkezes-oldal.js, app-orzo.js, tartozasok.js, tervek.js, ranglista.js, goatsgame.js)
+  pages/               # egy-egy HTML oldalhoz tartozo belepesi script (bejelentkezes-oldal.js, app-orzo.js, tartozasok.js, tervek.js, kepek.js, ranglista.js, goatsgame.js)
   segedek/             # altalanos segedfuggvenyek (ital-kep, modal-fokusz, szin-osztaly, csoport-kepek, csoport-kod, kep-tomorites, kep-gyorsitotar, keslelteto, teljesitmeny, tema)
 img/
   icon-*.png           # PWA ikonok (a manifest.json hivatkozza)
