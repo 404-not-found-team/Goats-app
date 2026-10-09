@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goats - Képek</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/pages/kepek.css">
+
+    <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="modulepreload" href="js/main.js">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
+
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/pages/app-orzo.js"></script>
+    <script type="module" src="js/pages/kepek.js"></script>
+</head>
+
+<body>
+    <ul id="navBar"></ul>
+
+    <main class="kepek-oldal">
+        <div class="kepek-fejlec">
+            <h1>Képek</h1>
+            <input type="file" id="kepFeltoltesInput" accept="image/*" multiple hidden>
+            <button type="button" id="kepFeltoltesGomb" class="kepek-feltolt-gomb">
+                <i class="fa-solid fa-upload" aria-hidden="true"></i> Feltöltés
+            </button>
+        </div>
+
+        <!-- Feltöltés állapota: előnézet + szöveg -->
+        <div id="kepFeltoltesAllapot" class="kepek-allapot" role="status" aria-live="polite" hidden>
+            <img id="kepFeltoltesElonezet" class="kepek-elonezet" alt="A feltöltendő kép előnézete" width="40" height="40" hidden>
+            <span id="kepFeltoltesSzoveg"></span>
+        </div>
+
+        <p id="kepekSzamlalo" class="kepek-szamlalo"></p>
+
+        <div id="kepekUres" class="galeria-ures" hidden>
+            <span class="ures-ikon">🖼️</span>
+            <p class="ures-cim">Még nincsenek képek</p>
+            <span class="ures-leiras">Töltsd fel az első képet a Feltöltés gombbal!</span>
+        </div>
+
+        <!-- A képek rácsa (a csempéket a js/pages/kepek.js építi, textContent-tel) -->
+        <ul id="kepekRacs" class="kepek-racs"></ul>
+    </main>
+
+    <!-- Négyzetes kivágás feltöltés előtt (js/elemek/kep-kivago.js) -->
+    <dialog id="kivagoDialog" class="kepek-dialog kivago-dialog" aria-labelledby="kivagoCim">
+        <h2 id="kivagoCim">Kép igazítása</h2>
+        <p class="kepek-dialog-leiras">Húzd a képet, hogy a fontos rész a keretbe kerüljön. Ami a keretben van, az lesz látható.</p>
+        <p id="kivagoSorszam" class="kepek-szamlalo"></p>
+        <canvas id="kivagoVaszon" class="kivago-vaszon" width="640" height="640" tabindex="0"
+            aria-label="A kivágás előnézete. Nyilakkal mozgathatod, a plusz és mínusz billentyűvel nagyíthatsz."></canvas>
+        <label class="kivago-nagyitas">
+            <i class="fa-solid fa-magnifying-glass-minus" aria-hidden="true"></i>
+            <input type="range" id="kivagoNagyitas" min="1" max="4" step="0.01" value="1" aria-label="Nagyítás">
+            <i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i>
+        </label>
+        <div class="kepek-dialog-gombok kivago-gombok">
+            <button type="button" id="kivagoKihagy" class="kepek-gomb masodlagos">Kihagyás</button>
+            <button type="button" id="kivagoKozepre" class="kepek-gomb masodlagos">Középre</button>
+            <button type="button" id="kivagoMindKozepre" class="kepek-gomb masodlagos" hidden>A többit középre</button>
+            <button type="button" id="kivagoKesz" class="kepek-gomb">Kész</button>
+        </div>
+    </dialog>
+
+    <!-- Kép jelentése (public.jelentesek, cel_tipus = 'kep') -->
+    <dialog id="jelentesDialog" class="kepek-dialog" aria-labelledby="jelentesCim">
+        <form id="jelentesUrlap" method="dialog">
+            <h2 id="jelentesCim">Kép jelentése</h2>
+            <p class="kepek-dialog-leiras">Miért jelented ezt a képet? A jelentést az üzemeltetők kapják meg.</p>
+            <fieldset class="kepek-okok">
+                <legend>Ok</legend>
+                <label><input type="radio" name="ok" value="jogellenes" required> Jogellenes tartalom</label>
+                <label><input type="radio" name="ok" value="zaklatas"> Zaklatás, bántó tartalom</label>
+                <label><input type="radio" name="ok" value="gyermekbiztonsag"> Gyermekbiztonság</label>
+                <label><input type="radio" name="ok" value="egyeb"> Egyéb</label>
+            </fieldset>
+            <label class="kepek-leiras-cimke" for="jelentesLeiras">Részletek (nem kötelező)</label>
+            <textarea id="jelentesLeiras" name="leiras" maxlength="1000" rows="3"></textarea>
+            <p id="jelentesHiba" class="status-hiba" role="alert" hidden></p>
+            <div class="kepek-dialog-gombok">
+                <button type="button" id="jelentesMegse" class="kepek-gomb masodlagos">Mégse</button>
+                <button type="submit" id="jelentesKuld" class="kepek-gomb">Jelentés küldése</button>
+            </div>
+        </form>
+    </dialog>
+</body>
+
+</html>
