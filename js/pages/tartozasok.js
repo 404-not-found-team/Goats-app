@@ -1,5 +1,7 @@
 window.onload = async function () {
     if (window.goatsAuth) await window.goatsAuth.ready;
+    // Globálisan kikapcsolt tartozás-felvétel (FELADAT15): a gomb letiltva, a szerver is elutasítaná
+    window.goatsKapcsolok?.funkcioGombTiltas(document.getElementById('tartozasHozzaadGomb'), 'funkcio_tartozas_felvetel');
     initMembersAndContainers();
     loadTartozasok();
 
@@ -564,6 +566,10 @@ function tartozasHiba(error) {
 }
 
 async function addTartozas() {
+    if (window.goatsKapcsolok && !window.goatsKapcsolok.funkcioEngedelyezett('funkcio_tartozas_felvetel')) {
+        alert(window.goatsKapcsolok.TILTVA_SZOVEG);
+        return;
+    }
     const groupCode = aktualisGroupCode();
     const miert = document.getElementById('miertInput').value.trim();
     const kinek = selectedKinek;

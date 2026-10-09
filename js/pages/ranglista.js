@@ -7,6 +7,8 @@ let kizartMarkakTomb = [];
 
 async function inicializalas() {
     if (window.goatsAuth) await window.goatsAuth.ready;
+    // Globálisan kikapcsolt italjavaslat (FELADAT15): a gomb letiltva, a szerver is elutasítaná
+    window.goatsKapcsolok?.funkcioGombTiltas(document.getElementById('uj-ital-gomb'), 'funkcio_italjavaslat');
     const groupCode = aktualisGroupCode();
     const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
 
@@ -411,6 +413,10 @@ function toggleForrasDoboz(fejlecElem) {
 }
 
 function nyisdUjItalModal() {
+    if (window.goatsKapcsolok && !window.goatsKapcsolok.funkcioEngedelyezett('funkcio_italjavaslat')) {
+        alert(window.goatsKapcsolok.TILTVA_SZOVEG);
+        return;
+    }
     document.getElementById('uj-ital-modal').hidden = false;
     kategoriaValtozasCheck();
 }

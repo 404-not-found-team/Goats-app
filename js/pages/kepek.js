@@ -6,9 +6,10 @@
 // - Megjelenítés: js/segedek/kep-gyorsitotar.js (eszközönként egyszer letöltve, blob URL)
 // - Jelentés: a kep-jelentes Edge Function (public.jelentesek sor + másolat a privát "jelentett" bucketbe)
 import { client } from '../supabase-client.js';
-import { ready, getState } from '../hitelesites.js';
+import { ready, getState, funkcioEngedelyezett } from '../hitelesites.js';
 import { BUCKET, csoportMappak, mappaFajljai } from '../segedek/csoport-kepek.js';
 import { kepUrlek, torolKepGyorsitotarbol } from '../segedek/kep-gyorsitotar.js';
+import { funkcioGombTiltas, TILTVA_SZOVEG } from '../segedek/funkcio-kapcsolo.js';
 
 const KORLAT_UZENET = 'A csoport elérte a képkorlátot, törölj régebbi képeket.';
 const BETOLTES_KOTEG_MS = 50; // a láthatóvá vált csempéket ennyi ideig gyűjtjük egy aláírás-kötegbe
@@ -344,6 +345,13 @@ async function feltoltKepek(event) {
         return;
     }
 
+    // Globálisan kikapcsolt képfeltöltés (FELADAT15); a szerver is elutasítaná
+    if (!funkcioEngedelyezett('funkcio_kepfeltoltes')) {
+        allapotMutat(TILTVA_SZOVEG, 'hiba', null);
+        allapotRejtesKesobb(5000);
+        return;
+    }
+
     const gomb = $('kepFeltoltesGomb');
     gomb.disabled = true;
     gomb.setAttribute('aria-busy', 'true');
@@ -434,7 +442,7 @@ async function feltoltKepek(event) {
         console.error('A tömörítő nem tölthető be:', err);
         utolsoHiba = 'A képfeltöltés most nem érhető el, próbáld újra később.';
     } finally {
-        gomb.disabled = false;
+        funkcioGombTiltas(gomb, 'funkcio_kepfeltoltes'); // visszaengedélyezés (ha a funkció be van kapcsolva)
         gomb.removeAttribute('aria-busy');
     }
 
@@ -456,6 +464,7 @@ async function feltoltKepek(event) {
 // ---------- Indítás ----------
 
 await ready;
+funkcioGombTiltas($('kepFeltoltesGomb'), 'funkcio_kepfeltoltes');
 betoltKepek();
 
 $('kepFeltoltesGomb').addEventListener('click', () => $('kepFeltoltesInput').click());

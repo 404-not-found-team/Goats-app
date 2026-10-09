@@ -1,15 +1,8 @@
-import { ready, getState } from '../hitelesites.js';
+import { ready, getState, isSuperadmin, oldalEngedelyezett } from '../hitelesites.js';
 import { jeloles } from '../segedek/teljesitmeny.js';
+import { OLDALAK, ADMIN_OLDAL } from '../segedek/oldalak.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const htmlNevek = ["index", "tartozasok", "ranglista", "kepek", "tervek", "goatsgame"];
-    const oldalNevek = ["Kezdőlap", "Tartozások", "Ranglista", "Képek", "Tervek", "Goats Game"];
-    const oldalEmojik = ["🏠", "💸", "🍹", "🖼️", "📋", "🎮"];
-
-    // A 3 kiemelt oldal, ami mindig látszik az alsó sávban mobilon
-    const FO_OLDALAK = ["index", "tartozasok", "ranglista"];
-    const publicPages = ["index", "ranglista"];
-
     const navBar = document.getElementById("navBar");
     if (!navBar) return;
 
@@ -17,11 +10,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     await ready;
     const { user, group } = getState();
 
-    // Csoport nélkül (kijelentkezve vagy még nincs csoport) csak a publikus oldalak
-    let allowedPages = publicPages;
-    if (group) {
-        allowedPages = Array.isArray(group.enabled_pages) ? group.enabled_pages : htmlNevek;
-    }
+    // Egy oldal látszik, ha (superadmin) VAGY (a csoport enabled_pages-ében benne van ÉS a globális
+    // kapcsolója be van kapcsolva). Csoport nélkül (kijelentkezve vagy még nincs csoport) csak a
+    // publikus oldalak. Az Admin csak superadminnak, a csoporttól és a kapcsolóktól függetlenül.
+    const superadmin = isSuperadmin();
+    const csoportOldalai = group && Array.isArray(group.enabled_pages) ? group.enabled_pages : null;
+    const lathato = (o) => {
+        if (superadmin) return true;
+        if (!group) return !!o.publikus;
+        if (csoportOldalai && !csoportOldalai.includes(o.kulcs)) return false;
+        return oldalEngedelyezett(o.kulcs);
+    };
+    const menuOldalak = OLDALAK.filter(lathato);
+    if (superadmin) menuOldalak.push(ADMIN_OLDAL);
 
     const aktualisUtvonal = window.location.pathname.split('/').pop() || "index.html";
     navBar.innerHTML = '';
@@ -54,15 +55,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let vanExtraOldal = false;
 
-    for (let i = 0; i < htmlNevek.length; i++) {
-        const pageKey = htmlNevek[i];
+    for (const o of menuOldalak) {
         // A "Kezdőlap" fül bejelentkezve az app.html-re visz (ott az alkalmazás), kijelentkezve
         // (vagy ha még nincs session) az index.html-re (a bejelentkezési oldalra).
-        const celFajl = pageKey === 'index' ? (user ? 'app.html' : 'index.html') : `${pageKey}.html`;
-
-        if (!allowedPages.includes(pageKey)) continue;
-
-        const isMainTab = FO_OLDALAK.includes(pageKey);
+        const celFajl = o.kulcs === 'index' ? (user ? 'app.html' : 'index.html') : o.fajl;
+        const isMainTab = !!o.fo;
 
         const oldal = document.createElement('li');
         const link = document.createElement('a');
@@ -70,14 +67,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         const emojiNev = document.createElement('span');
 
         // Az "app.html" is a "Kezdőlap" fület jelöli aktívnak, nem csak az "index.html"
-        const aktivE = aktualisUtvonal === celFajl || (pageKey === 'index' && aktualisUtvonal === 'app.html');
+        const aktivE = aktualisUtvonal === celFajl || (o.kulcs === 'index' && aktualisUtvonal === 'app.html');
         if (aktivE) oldal.className = "active";
 
-        teljesNev.textContent = oldalNevek[i];
+        teljesNev.textContent = o.nev;
         teljesNev.className = "teljes-szoveg";
         link.appendChild(teljesNev);
 
-        emojiNev.textContent = oldalEmojik[i];
+        emojiNev.textContent = o.emoji;
         emojiNev.className = "rovid-szoveg";
         link.appendChild(emojiNev);
 
