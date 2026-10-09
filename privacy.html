@@ -16,7 +16,7 @@
     <div class="jogi-oldal">
         <p><a href="index.html">&larr; Vissza az alkalmazáshoz</a></p>
         <h1>Adatvédelmi nyilatkozat</h1>
-        <p class="utolso-frissites">Utolsó frissítés: 2026. október 8.</p>
+        <p class="utolso-frissites">Utolsó frissítés: 2026. október 9.</p>
 
         <div class="tos-modal-body">
             <h4>1. Az üzemeltető és a kapcsolat</h4>
@@ -52,8 +52,10 @@
                     csoportban és melyik rekordon — részletesen a 7. pontban.</li>
             </ul>
             <p>
-                A böngészőben (localStorage) csak gyorsítótárat és a téma-beállítást tároljuk. Ezek nem jogosultsági
-                adatok: a hozzáférést mindig a szerver dönti el a bejelentkezésed alapján.
+                A böngészőben (localStorage és a böngésző gyorsítótára) csak gyorsítótárat és a téma-beállítást
+                tároljuk, ide tartozik a csoport már megnézett galériaképeinek helyi másolata is (legfeljebb 150 kép),
+                amely kijelentkezéskor törlődik. Ezek nem jogosultsági adatok: a hozzáférést mindig a szerver dönti el
+                a bejelentkezésed alapján.
             </p>
 
             <h4>3. Mire használjuk az adatokat, és mi az alapjuk</h4>
@@ -136,14 +138,22 @@
                 A csoportba feltöltött képeket és a felvitt adatokat csak az adott csoport tagjai látják. Az
                 italjavaslatot a
                 jóváhagyásig csak a javasló és a csoporttársai látják. A galériaképek feltöltőjét (a nevét) a csoport
-                tagjai az alkalmazásban is látják, a kép nagyított nézetében.
+                tagjai az alkalmazásban is látják, a kép alatt.
+            </p>
+            <p>
+                A galériába feltöltött képeket még a te eszközödön, a feltöltés előtt kicsinyítjük és tömörítjük, és
+                ekkor a kép összes metaadata (például a helyadat/GPS, a készülék típusa és a készítés ideje) is
+                eltávolításra kerül; a szerverre csak a kicsinyített kép jut el. A képek csak kis méretben tárolódnak
+                és jelennek meg, eredeti, teljes méretű példányt nem őrzünk. A képeket kizárólag az adott csoport
+                tagjai láthatják.
             </p>
 
             <h4>12. Sütik és helyi tárolás</h4>
             <p>
                 Az alkalmazás nem használ hirdetési vagy elemző sütit. A localStorage csak gyorsítótárként és a
                 téma-beállítás
-                mentésére szolgál.
+                mentésére szolgál. A galériaképek helyi másolatát a böngésző gyorsítótára (Cache Storage) őrzi, hogy
+                egy képet ne kelljen többször letölteni; ez kijelentkezéskor törlődik.
             </p>
 
             <h4>13. Változások</h4>
