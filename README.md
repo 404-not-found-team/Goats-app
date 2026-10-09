@@ -58,7 +58,7 @@ A **Goats App** egy reszponzív webes alkalmazás baráti csoportok számára: k
 
 4. **Képek (`kepek.html`)** – csoportonként ki-be kapcsolható oldal (`enabled_pages`: `kepek`)
    - A csoport összes képe rácsban (legújabb elöl), a feltöltő nevével és dátumával.
-   - Feltöltés (tömörítéssel), ⋮ menü: **Törlés** a saját (vagy ismeretlen feltöltőjű) képnél, **Jelentés** bármelyik képnél (a `public.jelentesek` táblába, `cel_tipus = 'kep'`, óránként legfeljebb 20).
+   - Feltöltés (négyzetes kivágással és tömörítéssel), ⋮ menü: **Törlés** a saját (vagy ismeretlen feltöltőjű) képnél, **Jelentés** bármelyik képnél (a `public.jelentesek` táblába, `cel_tipus = 'kep'`, óránként legfeljebb 20).
    - Részletek: [Képek](#️-képek).
 
 5. **Tervek / Ötletek (`tervek.html`)**
@@ -97,7 +97,8 @@ A **Goats App** egy reszponzív webes alkalmazás baráti csoportok számára: k
 A galéria képei a privát `kepek` Supabase Storage bucketben vannak, csoportonként a csoport azonosítójával elnevezett mappában (`<group_id>/<uuid>.webp`).
 
 **Méret és formátum**
-- Feltöltés előtt a böngésző kicsinyíti és tömöríti a képet (`js/segedek/kep-tomorites.js`, az első feltöltéskor töltődik be): a rövidebb oldal legfeljebb 360 px (a galéria 180 px-es kijelzett méretének 2×-ese), a hosszabb legfeljebb 720 px.
+- A képek mindenhol négyzetben jelennek meg, ezért feltöltéskor a feltöltő kiválasztja a négyzetes kivágást (`js/elemek/kep-kivago.js`): a képet húzni lehet (egérrel, ujjal, nyilakkal), nagyítani csúszkával, görgővel vagy két ujjal. Gombok: Kihagyás (Esc), Középre, Kész; több képnél „A többit középre”. A kivágó `<canvas>`-ra rajzol, inline stílus nélkül.
+- Feltöltés előtt a böngésző kicsinyíti és tömöríti a képet (`js/segedek/kep-tomorites.js`, az első feltöltéskor töltődik be): a rövidebb oldal legfeljebb 360 px (a galéria 180 px-es kijelzett méretének 2×-ese), a hosszabb legfeljebb 720 px. A négyzetre vágott kép így 360×360 px, jellemzően 40–50 KB. A FELADAT12 előtti (nem négyzetes) képek maradnak, azok középre vágva jelennek meg.
 - Kimenet: WebP 0,65-ös minőséggel (ha a böngésző nem tud WebP-t kódolni, JPEG 0,6). Ha 100 KB fölött van, a minőség 0,05-ös lépésekben 0,4-ig csökken, utána a méret 10%-onként (legalább 480 px-ig). 150 KB fölött a feltöltés elmarad.
 - A bemenet legfeljebb 15 MB, csak kép; animált GIF nem tölthető fel. A HEIC-et a böngésző (vagy tartalékként a heic2any) alakítja át.
 - A vászonra rajzolás miatt a kimenetben nincs EXIF/GPS metaadat; a tájolást (EXIF-forgatás) a betöltés érvényesíti.
@@ -148,7 +149,7 @@ js/
   supabase-client.js   # Supabase kliens singleton
   admin-muveletek.js   # csoport/profil admin RPC wrapperek
   main.js              # modul-aggregator a bejelentkezett oldalakhoz
-  elemek/              # ujrafelhasznalhato UI-komponensek (naptar, nav-bar, galeria, beallitasok-modal, tartozasok-egyenlitese.js)
+  elemek/              # ujrafelhasznalhato UI-komponensek (naptar, nav-bar, galeria, kep-kivago, beallitasok-modal, tartozasok-egyenlitese.js)
     beallitasok/        # a beallitasok-modal al-nezetei (belepes-modal, profil-modal, csoport-adatok, tema-valaszto, ital-moderacio, beallitasok-sablonok, tos-ujraelfogadas)
   pages/               # egy-egy HTML oldalhoz tartozo belepesi script (bejelentkezes-oldal.js, app-orzo.js, tartozasok.js, tervek.js, kepek.js, ranglista.js, goatsgame.js)
   segedek/             # altalanos segedfuggvenyek (ital-kep, modal-fokusz, szin-osztaly, csoport-kepek, csoport-kod, kep-tomorites, kep-gyorsitotar, keslelteto, teljesitmeny, tema)
