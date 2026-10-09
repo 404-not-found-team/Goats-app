@@ -648,12 +648,6 @@ function badgeSzoveg(elem, elotag, ertek) {
     elem.appendChild(kiemelt);
 }
 
-// Sörnél a kiszerelés (dobozos/üveges) rövid, emojis jelzése
-function kiszerelesSzoveg(ital) {
-    if (String(ital.kategoria || '').toLowerCase() !== 'sor' || !ital.kiszereles) return null;
-    return ital.kiszereles === 'uveges' ? '🍾 Üveges' : '📦 Dobozos';
-}
-
 function addItalKartyaToUI(ital) {
     const celListaDiv = getListaDivByKategoria(ital.kategoria);
     if (!celListaDiv) return;
@@ -675,11 +669,6 @@ function addItalKartyaToUI(ital) {
     kartya.appendChild(kep);
     kartya.appendChild(felirat);
 
-    const kiszerelesCimke = kiszerelesSzoveg(ital);
-    if (kiszerelesCimke) {
-        kartya.appendChild(ujElem('span', 'ital-kiszereles', kiszerelesCimke));
-    }
-
     // A saját, még jóváhagyatlan italon jelvény (mást a szerver nem is ad vissza jóváhagyatlanul)
     const sajatJavaslat = !ital.jovahagyva && !!ital.javasolta_id
         && ital.javasolta_id === window.goatsAuth?.getState()?.user?.id;
@@ -692,7 +681,16 @@ function addItalKartyaToUI(ital) {
         aktivElemId = kartya.id;
         aktivItalAdat = ital;
 
-        document.getElementById('modal-kep').src = window.italKep.elsoUrl(ital);
+        // Ugyanaz a tartalék-sorrend, mint a kártyán: hiányzó kép esetén a következő jelöltre lép
+        const modalKep = document.getElementById('modal-kep');
+        const urlek = window.italKep.osszesUrl(ital);
+        let urlIndex = 0;
+        modalKep.onerror = () => {
+            urlIndex++;
+            if (urlIndex < urlek.length) modalKep.src = urlek[urlIndex];
+            else modalKep.onerror = null;
+        };
+        modalKep.src = urlek[0];
 
         const nevElem = document.getElementById('modal-nev');
         nevElem.textContent = ital.nev;
@@ -718,17 +716,6 @@ function addItalKartyaToUI(ital) {
                 badge.hidden = false;
             } else {
                 badge.hidden = true;
-            }
-        }
-
-        const kiszerelesBadge = document.getElementById('modal-kiszereles-badge');
-        if (kiszerelesBadge) {
-            const cimke = kiszerelesSzoveg(ital);
-            if (cimke) {
-                badgeSzoveg(kiszerelesBadge, '', cimke);
-                kiszerelesBadge.hidden = false;
-            } else {
-                kiszerelesBadge.hidden = true;
             }
         }
 
