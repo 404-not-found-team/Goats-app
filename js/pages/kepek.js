@@ -1,7 +1,8 @@
 // Képek oldal (kepek.html): a csoport összes képe rácsban, feltöltéssel, törléssel és jelentéssel.
 // A képek csak kicsiben jelennek meg, nagyítás nincs (FELADAT12). A feltöltő neve és a dátum
 // csak itt látszik; a főoldali galéria (js/elemek/galeria.js) csak lapozható nézegető.
-// - Tömörítés: js/segedek/kep-tomorites.js (az első feltöltéskor töltődik be)
+// - Feltöltés: négyzetes kivágás (js/elemek/kep-kivago.js), majd tömörítés (js/segedek/kep-tomorites.js);
+//   mindkettő az első feltöltéskor töltődik be
 // - Megjelenítés: js/segedek/kep-gyorsitotar.js (eszközönként egyszer letöltve, blob URL)
 // - Jelentés: public.jelentesek (cel_tipus = 'kep', cel_azonosito = a kép útvonala)
 import { client } from '../supabase-client.js';
@@ -349,20 +350,46 @@ async function feltoltKepek(event) {
     clearTimeout(allapotRejtesIdozito);
 
     let sikeres = 0;
+    let kihagyott = 0;
     let utolsoHiba = null;
 
     try {
         allapotMutat('Tömörítő betöltése…', null, null);
-        const { kepTomorites, KepHiba } = await import('../segedek/kep-tomorites.js');
+        const [{ kepBetoltes, kepTomoritesKivagassal, forrasFelszabaditas, KepHiba }, { kivagasValasztas, kozepsoNegyzet }] =
+            await Promise.all([import('../segedek/kep-tomorites.js'), import('../elemek/kep-kivago.js')]);
         const korlat = await lekerKepKorlat();
+        let mindKozepre = false; // "A többit középre": a további képeknél nincs kivágó ablak
 
         for (const [i, fajl] of fajlok.entries()) {
             const elotag = fajlok.length > 1 ? `(${i + 1}/${fajlok.length}) ` : '';
             try {
                 if (korlat !== null && kepek.length + sikeres >= korlat) throw new KepHiba(KORLAT_UZENET);
 
-                allapotMutat(`${elotag}Tömörítés…`, null, null);
-                const { blob, kiterjesztes } = await kepTomorites(fajl);
+                allapotMutat(`${elotag}Beolvasás…`, null, null);
+                const kep = await kepBetoltes(fajl);
+                let tomoritett;
+                try {
+                    // A feltöltő választja ki a négyzetes kivágást (a kép mindenhol négyzetben jelenik meg)
+                    let kivagas = kozepsoNegyzet(kep);
+                    if (!mindKozepre) {
+                        allapotMutat(`${elotag}Igazítsd a képet…`, null, null);
+                        const valasz = await kivagasValasztas(kep, {
+                            sorszam: fajlok.length > 1 ? `${i + 1}. kép a ${fajlok.length}-ból` : '',
+                            tobbVanHatra: i < fajlok.length - 1,
+                        });
+                        if (!valasz) {
+                            kihagyott++;
+                            continue; // a finally felszabadítja a képet
+                        }
+                        kivagas = valasz.kivagas;
+                        mindKozepre = !!valasz.mindKozepre;
+                    }
+                    allapotMutat(`${elotag}Tömörítés…`, null, null);
+                    tomoritett = await kepTomoritesKivagassal(kep, kivagas);
+                } finally {
+                    forrasFelszabaditas(kep.forras);
+                }
+                const { blob, kiterjesztes } = tomoritett;
                 allapotMutat(`${elotag}Feltöltés… (${Math.round(blob.size / 1024)} KB)`, null, blob);
 
                 const eleresiUt = `${csoport.id}/${crypto.randomUUID()}.${kiterjesztes}`;
@@ -414,8 +441,12 @@ async function feltoltKepek(event) {
     if (utolsoHiba) {
         allapotMutat(`${sikeres > 0 ? `${sikeres} kép feltöltve. ` : ''}${utolsoHiba}`, 'hiba', null);
         allapotRejtesKesobb(10000);
+    } else if (sikeres === 0) {
+        allapotMutat('Nem töltöttél fel képet.', null, null);
+        allapotRejtesKesobb(3000);
     } else {
-        allapotMutat(sikeres > 1 ? `${sikeres} kép feltöltve.` : 'Kép feltöltve.', 'ok', null);
+        const kihagyva = kihagyott > 0 ? ` (${kihagyott} kihagyva)` : '';
+        allapotMutat(sikeres > 1 ? `${sikeres} kép feltöltve.${kihagyva}` : `Kép feltöltve.${kihagyva}`, 'ok', null);
         allapotRejtesKesobb(3000);
     }
 

@@ -51,6 +51,26 @@
         <ul id="kepekRacs" class="kepek-racs"></ul>
     </main>
 
+    <!-- Négyzetes kivágás feltöltés előtt (js/elemek/kep-kivago.js) -->
+    <dialog id="kivagoDialog" class="kepek-dialog kivago-dialog" aria-labelledby="kivagoCim">
+        <h2 id="kivagoCim">Kép igazítása</h2>
+        <p class="kepek-dialog-leiras">Húzd a képet, hogy a fontos rész a keretbe kerüljön. Ami a keretben van, az lesz látható.</p>
+        <p id="kivagoSorszam" class="kepek-szamlalo"></p>
+        <canvas id="kivagoVaszon" class="kivago-vaszon" width="640" height="640" tabindex="0"
+            aria-label="A kivágás előnézete. Nyilakkal mozgathatod, a plusz és mínusz billentyűvel nagyíthatsz."></canvas>
+        <label class="kivago-nagyitas">
+            <i class="fa-solid fa-magnifying-glass-minus" aria-hidden="true"></i>
+            <input type="range" id="kivagoNagyitas" min="1" max="4" step="0.01" value="1" aria-label="Nagyítás">
+            <i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i>
+        </label>
+        <div class="kepek-dialog-gombok kivago-gombok">
+            <button type="button" id="kivagoKihagy" class="kepek-gomb masodlagos">Kihagyás</button>
+            <button type="button" id="kivagoKozepre" class="kepek-gomb masodlagos">Középre</button>
+            <button type="button" id="kivagoMindKozepre" class="kepek-gomb masodlagos" hidden>A többit középre</button>
+            <button type="button" id="kivagoKesz" class="kepek-gomb">Kész</button>
+        </div>
+    </dialog>
+
     <!-- Kép jelentése (public.jelentesek, cel_tipus = 'kep') -->
     <dialog id="jelentesDialog" class="kepek-dialog" aria-labelledby="jelentesCim">
         <form id="jelentesUrlap" method="dialog">
