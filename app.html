@@ -35,11 +35,35 @@
             </a>
             <i class="fa-solid fa-caret-left nyil" onclick="eloKep()"></i>
 
-            <img id="kepBal" class="hatrebb" src="" alt="Előző kép">
-            <img id="kepKozep" src="" alt="Aktuális kép">
-            <img id="kepJobb" class="hatrebb" src="" alt="Következő kép">
+            <img id="kepBal" class="galeria-kep hatrebb" alt="Előző kép" width="120" height="120" loading="lazy" decoding="async">
+            <img id="kepKozep" class="galeria-kep" alt="Aktuális kép" width="180" height="180" loading="lazy" decoding="async">
+            <img id="kepJobb" class="galeria-kep hatrebb" alt="Következő kép" width="120" height="120" loading="lazy" decoding="async">
 
             <i class="fa-solid fa-caret-right nyil" onclick="kovKep()"></i>
+
+            <div id="galeria-placeholder" class="galeria-ures" hidden></div>
+
+            <!-- Feltöltés állapota: előnézet + szöveg (FELADAT12) -->
+            <div id="kepFeltoltesAllapot" class="galeria-feltoltes-allapot" role="status" aria-live="polite" hidden>
+                <img id="kepFeltoltesElonezet" class="galeria-elonezet" alt="A feltöltendő kép előnézete" width="32" height="32" hidden>
+                <span id="kepFeltoltesSzoveg"></span>
+            </div>
+
+            <!-- Műveleti sáv a középső kép alatt: feltöltő neve (FELADAT9) és ⋮ menü.
+                 Nagyított nézet nincs (FELADAT12), a kép műveletei mind ide kerülnek. -->
+            <div id="kepMuveletSav" class="galeria-muvelet-sav" hidden>
+                <span id="kepFeltoltoFelirat" class="galeria-feltolto-felirat" hidden></span>
+                <div class="galeria-menu">
+                    <button type="button" id="kepMenuGomb" class="galeria-menu-gomb" title="Műveletek" aria-label="Kép műveletei" aria-haspopup="menu" aria-expanded="false" aria-controls="kepMenu">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </button>
+                    <div id="kepMenu" class="galeria-menu-lista" role="menu" hidden>
+                        <!-- FELADAT5: a "Jelentés" menüpont helye (még nincs funkciója, ezért rejtett) -->
+                        <button type="button" class="galeria-menupont" data-muvelet="jelentes" role="menuitem" hidden>Jelentés</button>
+                        <button type="button" id="kepTorlesMenupont" class="galeria-menupont veszelyes" data-muvelet="torles" role="menuitem">Törlés</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="naptar-kontener">
