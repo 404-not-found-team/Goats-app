@@ -17,6 +17,7 @@
 - [Csoportok és szerepkörök](#-csoportok-és-szerepkörök)
 - [Főbb oldalak és funkciók](#-főbb-oldalak-és-funkciók)
 - [Technológiai stack](#️-technológiai-stack)
+- [Képek](#️-képek)
 - [PWA támogatás](#-pwa-támogatás)
 - [Mappa- és fájlszerkezet](#-mappa--és-fájlszerkezet)
 - [Helyi indítás](#-helyi-indítás)
@@ -46,7 +47,7 @@ A **Goats App** egy reszponzív webes alkalmazás baráti csoportok számára: k
    - PWA telepítő kártya, funkció-bemutató, jogi lábléc.
 
 2. **Főoldal (`app.html`, bejelentkezett nézet)**
-   - **Galéria:** lapozható képnézegető, feltöltéssel és törléssel (Supabase Storage), a feltöltő nevének megjelenítésével.
+   - **Galéria:** lapozható, csak kis képeket mutató nézegető (nagyítás nincs), feltöltéssel, a feltöltő nevével és ⋮ menüvel (Törlés a saját képnél). Részletek: [Képek](#️-képek).
    - **Naptár:** saját (nem külső/Google) havi naptár, események létrehozásával, szerkesztésével, törlésével és napi áttekintő nézettel.
 
 3. **Tartozások (`tartozasok.html`)**
@@ -87,11 +88,37 @@ A **Goats App** egy reszponzív webes alkalmazás baráti csoportok számára: k
 
 ---
 
+## 🖼️ Képek
+A galéria képei a privát `kepek` Supabase Storage bucketben vannak, csoportonként a csoport azonosítójával elnevezett mappában (`<group_id>/<uuid>.webp`).
+
+**Méret és formátum**
+- Feltöltés előtt a böngésző kicsinyíti és tömöríti a képet (`js/segedek/kep-tomorites.js`, az első feltöltéskor töltődik be): a rövidebb oldal legfeljebb 360 px (a galéria 180 px-es kijelzett méretének 2×-ese), a hosszabb legfeljebb 720 px.
+- Kimenet: WebP 0,65-ös minőséggel (ha a böngésző nem tud WebP-t kódolni, JPEG 0,6). Ha 100 KB fölött van, a minőség 0,05-ös lépésekben 0,4-ig csökken, utána a méret 10%-onként (legalább 480 px-ig). 150 KB fölött a feltöltés elmarad.
+- A bemenet legfeljebb 15 MB, csak kép; animált GIF nem tölthető fel. A HEIC-et a böngésző (vagy tartalékként a heic2any) alakítja át.
+- A vászonra rajzolás miatt a kimenetben nincs EXIF/GPS metaadat; a tájolást (EXIF-forgatás) a betöltés érvényesíti.
+- A fájl soha nem módosul: mindig új (uuid) útvonalra kerül, `upsert` nélkül, `cacheControl: 31536000`-zel.
+- Szerveroldalon a bucket is korlátoz: `file_size_limit = 153600` (150 KB), `allowed_mime_types = {image/webp,image/jpeg}`. A korábban feltöltött, nagyobb képek megmaradnak.
+
+**Csoportonkénti korlát**
+- Egy csoport mappájában legfeljebb 300 kép lehet. A számot a `public.app_beallitasok` tábla adja, újratelepítés nélkül módosítható (Supabase SQL editor):
+  ```sql
+  update public.app_beallitasok set ertek = 500 where kulcs = 'kep_korlat_csoportonkent';
+  ```
+- A korlátot a `storage.objects` táblán egy RESTRICTIVE INSERT policy (`kepek_csoport_korlat`) ellenőrzi a `kep_mappa_korlat_alatt()` függvénnyel; a kliens a `kep_korlat_csoportonkent()` RPC-vel kérdezi le, és elérésekor ezt írja ki: „A csoport elérte a képkorlátot, törölj régebbi képeket.”
+
+**Helyi gyorsítótár** (`js/segedek/kep-gyorsitotar.js`)
+- A privát bucket miatt aláírt URL kell, ami minden aláíráskor új, így a böngésző HTTP-cache-e nem segít. Ezért a letöltött képet a Cache Storage `goats-kepek-v1` tárolója őrzi az útvonal alapján, és a következő megnyitáskor onnan, blob URL-ként jelenik meg: egy képet eszközönként csak egyszer töltünk le.
+- Csak a látható (középső és két szomszédos) képet töltjük be; a hiányzókra egy kötegelt `createSignedUrls` hívás megy (2 perces lejárattal).
+- Legfeljebb 150 kép / 20 MB, a legrégebben használt törlődik (index: `localStorage` `goats_kep_cache_index`). Kijelentkezéskor az egész törlődik.
+- A service worker a Storage-kéréseket nem cache-eli, és a `goats-kepek-*` tárolót verzióváltáskor sem törli.
+
+---
+
 ## 📲 PWA támogatás
 Az alkalmazás telepíthető asztali és mobil böngészőkből is ("Telepítés" / "Hozzáadás a kezdőképernyőhöz").
 - A `sw.js` előgyorsítótárazza az alkalmazás vázát (a bejelentkezési és a legfontosabb belépési fájlokat), hogy az első/ismételt betöltés gyors legyen, és navigációnál 2 másodperces hálózati időkorlát után a gyorsítótárra vált.
 - A saját domain és a CDN-es (jsDelivr, cdnjs) statikus fájlok "stale-while-revalidate" stratégiával töltődnek: azonnal a gyorsítótárból, a háttérben frissülve.
-- A Supabase API- és Storage-kéréseket a service worker sosem gyorsítótárazza (ezek mindig frissek/felhasználó-specifikusak kell legyenek).
+- A Supabase API- és Storage-kéréseket a service worker sosem gyorsítótárazza (ezek mindig frissek/felhasználó-specifikusak kell legyenek). A galériaképeket külön, a [Képek](#️-képek) szakaszban leírt helyi gyorsítótár tárolja.
 - **Verziózás:** lásd a [Mappa- és fájlszerkezet](#-mappa--és-fájlszerkezet) szakasz alján.
 
 ---
@@ -114,7 +141,7 @@ js/
   elemek/              # ujrafelhasznalhato UI-komponensek (naptar, nav-bar, galeria, beallitasok-modal, tartozasok-egyenlitese.js)
     beallitasok/        # a beallitasok-modal al-nezetei (belepes-modal, profil-modal, csoport-adatok, tema-valaszto, ital-moderacio, beallitasok-sablonok, tos-ujraelfogadas)
   pages/               # egy-egy HTML oldalhoz tartozo belepesi script (bejelentkezes-oldal.js, app-orzo.js, tartozasok.js, tervek.js, ranglista.js, goatsgame.js)
-  segedek/             # altalanos segedfuggvenyek (ital-kep, modal-fokusz, szin-osztaly, csoport-kepek, csoport-kod, keslelteto, teljesitmeny, tema)
+  segedek/             # altalanos segedfuggvenyek (ital-kep, modal-fokusz, szin-osztaly, csoport-kepek, csoport-kod, kep-tomorites, kep-gyorsitotar, keslelteto, teljesitmeny, tema)
 img/
   icon-*.png           # PWA ikonok (a manifest.json hivatkozza)
   ikonok/              # ital-kategoria SVG ikonok (CSS maszkkal szinezve)
