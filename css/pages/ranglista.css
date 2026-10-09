@@ -282,17 +282,6 @@
     white-space: nowrap;
 }
 
-/* Sörnél: dobozos/üveges kiszerelés rövid felirata a kártyán */
-.ital-kiszereles {
-    font-size: var(--fs-xs);
-    color: var(--text-secondary);
-    margin-top: 2px;
-    width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 /* ==========================================================================
    4. GOMBOK ÉS MODAL-OK
    ========================================================================== */
