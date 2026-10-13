@@ -374,3 +374,14 @@
         white-space: nowrap;
     }
 }
+
+/* Kikapcsolt képfeltöltés magyarázata a gomb alatt (FELADAT15) */
+.kepek-fejlec {
+    flex-wrap: wrap;
+}
+
+.kepek-fejlec .funkcio-tiltva-szoveg {
+    flex-basis: 100%;
+    margin: 0;
+    text-align: right;
+}
