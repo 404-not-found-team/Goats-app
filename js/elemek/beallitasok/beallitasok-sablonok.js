@@ -78,12 +78,11 @@ export function injectUserNavHTML(state) {
     <!-- PROFIL MODAL -->
     <div id="profile-modal" class="sm-overlay" role="dialog" aria-modal="true" hidden>
       <div class="google-profile-card">
-        <button id="close-profile-btn" class="google-close-btn">&times;</button>
+        <button id="close-profile-btn" class="sm-close-btn">×</button>
         <div class="google-user-header">
           <div id="group-avatar-badge" class="google-avatar-circle large"></div>
           <div class="google-user-info">
             <h3 id="profile-display-name">Nincs név</h3>
-            <span class="google-plus-badge">V1.0.3</span>
           </div>
         </div>
 
