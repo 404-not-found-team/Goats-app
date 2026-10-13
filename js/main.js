@@ -5,4 +5,6 @@ import './elemek/nav-bar.js';
 import './segedek/tema.js';
 import './segedek/csoport-kepek.js';
 import './segedek/kep-gyorsitotar.js';
+import './segedek/funkcio-kapcsolo.js';
+import './segedek/oldal-orzo.js';
 import './admin-muveletek.js';

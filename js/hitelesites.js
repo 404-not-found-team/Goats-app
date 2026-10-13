@@ -5,6 +5,7 @@
 import { client } from './supabase-client.js';
 import { jeloles } from './segedek/teljesitmeny.js';
 import { uritKepGyorsitotar } from './segedek/kep-gyorsitotar.js';
+import { oldalKulcsbol } from './segedek/oldalak.js';
 
 export const TOS_VERSION = '2026-10';
 const KEEP_KEYS = new Set(['goats_theme', 'goats_tos_pending']);
@@ -21,6 +22,7 @@ const blank = () => ({
   group: null,       // { id, group_code, group_name, enabled_pages }
   groupRole: null,   // 'admin' | 'member'
   members: [],       // [{ user_id, display_name, group_role }]
+  beallitasok: {},   // globális kapcsolók (public.app_kapcsolok): { kulcs: boolean }, FELADAT15
 });
 
 const state = blank();
@@ -32,6 +34,23 @@ export const isLoggedIn = () => !!state.user;
 export const hasGroup = () => !!state.group;
 export const isGroupAdmin = () => state.groupRole === 'admin';
 export const isSuperadmin = () => state.profile?.system_role === 'superadmin';
+
+// Globális kapcsolók (FELADAT15). A superadminra egyik sem vonatkozik. Ismeretlen vagy be nem
+// töltött kulcsnál engedélyezett (a tényleges tiltást úgyis a szerver kényszeríti ki).
+const kapcsoloErtek = (kulcs) => state.beallitasok?.[kulcs] !== false;
+
+// Oldal: a page-kulcs ('kepek') vagy a kapcsoló kulcsa ('oldal_kepek'); a nem kapcsolható oldal mindig igaz
+export function oldalEngedelyezett(kulcs) {
+  if (isSuperadmin()) return true;
+  const kapcsolo = String(kulcs).startsWith('oldal_') ? kulcs : oldalKulcsbol(kulcs)?.kapcsolo;
+  return !kapcsolo || kapcsoloErtek(kapcsolo);
+}
+
+// Funkció: 'funkcio_kepfeltoltes' vagy röviden 'kepfeltoltes'
+export function funkcioEngedelyezett(kulcs) {
+  if (isSuperadmin()) return true;
+  return kapcsoloErtek(String(kulcs).startsWith('funkcio_') ? kulcs : `funkcio_${kulcs}`);
+}
 // Igaz, ha a felhasználó be van jelentkezve, és a nála rögzített (accept_tos-szal mentett)
 // verzió nem egyezik a hatályos TOS_VERSION-nel (vagy még sosem fogadott el semmit).
 export const isTosUjraelfogadasSzukseges = () =>
@@ -66,6 +85,7 @@ function saveSnapshot(userId) {
       group: state.group,
       groupRole: state.groupRole,
       members: state.members,
+      beallitasok: state.beallitasok,
     }));
   } catch { /* privát módban nem menthető: a következő oldal majd lekérdez */ }
 }
@@ -81,6 +101,7 @@ function loadFreshSnapshot(userId) {
       group: s.group,
       groupRole: s.groupRole,
       members: s.members,
+      beallitasok: s.beallitasok || {},
     });
     return true;
   } catch {
@@ -121,7 +142,7 @@ export async function refresh() {
 
   await applyPendingTos();
 
-  const [profileRes, memberRes] = await Promise.all([
+  const [profileRes, memberRes, kapcsoloRes] = await Promise.all([
     client.from('profiles')
       .select('id, display_name, system_role, tos_version')
       .eq('id', session.user.id)
@@ -130,7 +151,12 @@ export async function refresh() {
       .select('group_role, groups(id, group_code, group_name, enabled_pages)')
       .eq('user_id', session.user.id)
       .maybeSingle(),
+    // Globális kapcsolók (FELADAT15); hiba esetén üres (= minden engedélyezett, a szerver úgyis dönt)
+    client.from('app_kapcsolok').select('kulcs, ertek'),
   ]);
+
+  if (kapcsoloRes.error) console.warn('A globális kapcsolók nem tölthetők be:', kapcsoloRes.error.message);
+  state.beallitasok = Object.fromEntries((kapcsoloRes.data || []).map(k => [k.kulcs, k.ertek]));
 
   if (profileRes.error || memberRes.error) {
     // Hálózati/szerver hiba: a user ismert, de a csoportállapotot nem írjuk felül
@@ -266,4 +292,5 @@ client.auth.onAuthStateChange((event) => {
 // Nem-modul oldalscriptek (pl. index.js) számára
 window.goatsAuth = {
   ready, refresh, getState, onChange, signOut, joinGroup, createGroup, leaveGroup, callRpc,
+  isSuperadmin, oldalEngedelyezett, funkcioEngedelyezett,
 };

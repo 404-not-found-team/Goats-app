@@ -1,4 +1,5 @@
-import { signInWithGoogle, joinGroup, createGroup, getState, onChange } from '../../hitelesites.js';
+import { ready, signInWithGoogle, joinGroup, createGroup, getState, onChange, funkcioEngedelyezett } from '../../hitelesites.js';
+import { funkcioGombTiltas, TILTVA_SZOVEG } from '../../segedek/funkcio-kapcsolo.js';
 
 export function initAuthModal() {
   const get = id => document.getElementById(id);
@@ -31,9 +32,13 @@ export function initAuthModal() {
     if (el.stepGroup) el.stepGroup.hidden = !user;
     if (el.title) el.title.textContent = user ? 'Csoport' : 'Belépés';
     if (el.userLine) el.userLine.textContent = user ? `Bejelentkezve: ${user.email}` : '';
+    // Globálisan kikapcsolt csatlakozás / csoportlétrehozás (FELADAT15); a szerver is elutasítaná
+    funkcioGombTiltas(el.joinBtn, 'funkcio_csoportcsatlakozas');
+    funkcioGombTiltas(el.createBtn, 'funkcio_uj_csoport');
   }
   renderStep();
   onChange(renderStep);
+  ready.then(renderStep); // pillanatképből betöltött állapotnál nincs onChange: a kapcsolókat így is alkalmazzuk
 
   // ---- 1. Google bejelentkezés ----
   // Nincs külön elfogadó checkbox: a bejelentkezési képernyőn lévő szöveg mondja ki, hogy a
@@ -54,6 +59,7 @@ export function initAuthModal() {
   async function doJoin() {
     const code = (el.codeInput?.value || '').trim();
     if (!code) return setStatus('Írd be a csoportkódot!', 'error');
+    if (!funkcioEngedelyezett('funkcio_csoportcsatlakozas')) return setStatus(TILTVA_SZOVEG, 'error');
 
     setBusy(el.joinBtn, true);
     setStatus('Csatlakozás...', 'info');
@@ -64,6 +70,7 @@ export function initAuthModal() {
     } catch (err) {
       setStatus(err.message || 'Érvénytelen csoportkód!', 'error');
       setBusy(el.joinBtn, false);
+      funkcioGombTiltas(el.joinBtn, 'funkcio_csoportcsatlakozas');
     }
   }
   el.joinBtn?.addEventListener('click', doJoin);
@@ -75,6 +82,7 @@ export function initAuthModal() {
     if (name.length < 2 || name.length > 40) {
       return setStatus('A csoport neve 2–40 karakter legyen!', 'error');
     }
+    if (!funkcioEngedelyezett('funkcio_uj_csoport')) return setStatus(TILTVA_SZOVEG, 'error');
 
     setBusy(el.createBtn, true);
     setStatus('Új csoport létrehozása...', 'info');
@@ -86,6 +94,7 @@ export function initAuthModal() {
     } catch (err) {
       setStatus(err.message || 'Hiba a csoport létrehozásakor!', 'error');
       setBusy(el.createBtn, false);
+      funkcioGombTiltas(el.createBtn, 'funkcio_uj_csoport');
     }
   }
   el.createBtn?.addEventListener('click', doCreate);

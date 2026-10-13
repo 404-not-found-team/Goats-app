@@ -23,7 +23,7 @@
     <script src="js/pages/tartozasok.js"></script>
 </head>
 
-<body>
+<body data-oldal="tartozasok">
     <ul id="navBar"></ul>
 
     <div class="container-tartozasok">
@@ -55,7 +55,7 @@
                 <div class="dropdown-content" id="dropdownContent"></div>
             </div>
 
-            <input type="button" value="Hozzáad" onclick="addTartozas()">
+            <input type="button" id="tartozasHozzaadGomb" value="Hozzáad" onclick="addTartozas()">
         </div>
 
         <!-- Közös költség: a fenti űrlap alatt, teljes szélességben -->
