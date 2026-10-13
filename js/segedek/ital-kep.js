@@ -149,7 +149,12 @@
         img.onerror = () => {
             i++;
             if (i < jeloltek.length) img.src = jeloltek[i];
-            else img.replaceWith(ikonElem(ital));
+            else {
+                // az ikon átveszi a kép azonosítóját (pl. #modal-kep), hogy a CSS és a hívó is megtalálja
+                const ikon = ikonElem(ital);
+                if (img.id) ikon.id = img.id;
+                img.replaceWith(ikon);
+            }
         };
         img.src = jeloltek[0];
         return img;

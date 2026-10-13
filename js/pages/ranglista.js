@@ -12,7 +12,7 @@ let aktivItalAdat = null;
 let aktualisMod = 'arany';
 
 const ZERO_ERTEKEK = ['mind', 'zero', 'nem_zero'];
-const ZERO_FELIRAT = { mind: 'Mind', zero: 'Csak zero', nem_zero: 'Nem zero' };
+const ZERO_FELIRAT = { mind: 'Mind', zero: 'Cukormentes', nem_zero: 'Cukros' };
 
 let csoportSzuro = null; // { v: 2, beallitva: true, kategoriak: [kod], alkategoriak_ki: [kulcs], zero: {fokod: ertek} }
 let sajatSzuro = ujSajatSzuro();
@@ -377,21 +377,33 @@ function kategoriaLista(kontener, beallitas) {
         sor.appendChild(pirula(fo.nev, foAktiv, () => beallitas.foValt(fo)));
 
         if (foAktiv) {
+            // Alkategóriák és zero: egy felcímkézett panelben a főkategória alatt
+            const reszletek = ujElem('div', 'szuro-reszletek');
             const alok = K().alkategoriai(fo.id);
             if (alok.length > 0) {
                 const alsor = ujElem('div', 'szuro-alkategoriak');
                 [...alok.map(a => ({ kulcs: a.kod, nev: a.nev })), { kulcs: alKulcs(fo.kod, ''), nev: 'Egyéb' }].forEach(al => {
                     alsor.appendChild(pirula(al.nev, beallitas.alLathato(al.kulcs), () => beallitas.alValt(al.kulcs), 'kicsi'));
                 });
-                sor.appendChild(alsor);
+                reszletek.appendChild(reszletSor('Alkategória', alsor));
             }
-            if (fo.zero_szuro) sor.appendChild(zeroValaszto(beallitas.zero(fo), (z) => beallitas.zeroValt(fo, z)));
+            if (fo.zero_szuro) {
+                reszletek.appendChild(reszletSor('Cukor', zeroValaszto(beallitas.zero(fo), (z) => beallitas.zeroValt(fo, z))));
+            }
+            if (reszletek.children.length) sor.appendChild(reszletek);
         }
         // Alkategóriás / zero-választós sor teljes szélességű, a többi pirula egymás mellett tördelődik
         sor.classList.toggle('teljes', sor.children.length > 1);
         return sor;
     });
     kontener.replaceChildren(...sorok);
+}
+
+// A részletek-panel egy sora: címke + vezérlő
+function reszletSor(cimke, vezerlo) {
+    const sor = ujElem('div', 'szuro-reszlet-sor');
+    sor.append(ujElem('span', 'szuro-reszlet-cimke', cimke), vezerlo);
+    return sor;
 }
 
 const valt = (tomb, ertek) => (tomb.includes(ertek) ? tomb.filter(t => t !== ertek) : [...tomb, ertek]);
@@ -840,16 +852,10 @@ function italReszletek(kartya, ital, fo, kepAdat) {
     aktivElemId = kartya.id;
     aktivItalAdat = ital;
 
-    // Ugyanaz a tartalék-sorrend, mint a kártyán: hiányzó kép esetén a következő jelöltre lép
-    const modalKep = document.getElementById('modal-kep');
-    const urlek = window.italKep.osszesUrl(kepAdat);
-    let urlIndex = 0;
-    modalKep.onerror = () => {
-        urlIndex++;
-        if (urlIndex < urlek.length) modalKep.src = urlek[urlIndex];
-        else modalKep.onerror = null;
-    };
-    modalKep.src = urlek[0];
+    // Ugyanaz az elem, mint a kártyán: kép (tartalék-sorrenddel), vagy kép híján a színezett kategória-ikon
+    const kep = window.italKep.elemLetrehoz(kepAdat);
+    kep.id = 'modal-kep';
+    document.getElementById('modal-kep-hely').replaceChildren(kep);
 
     document.getElementById('modal-nev').textContent = ital.nev;
 
@@ -871,6 +877,10 @@ function italReszletek(kartya, ital, fo, kepAdat) {
             badge.hidden = true;
         }
     }
+
+    // Zero energiaital: "Cukormentes" jelvény az alkohol-jelvény mellett (italok.zero, üresen a névből)
+    const cukor = document.getElementById('modal-cukor-badge');
+    if (cukor) cukor.hidden = !(fo.zero_szuro && K().zero(ital));
 
     const doboz = document.getElementById('modal-koktel-hozzavalok-doboz');
     const kontener = document.getElementById('modal-koktel-hozzavalok-lista');

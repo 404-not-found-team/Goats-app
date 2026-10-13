@@ -375,6 +375,25 @@
     margin: 0 auto 15px auto;
 }
 
+/* Kép híján a kategória-ikon (maszkolt span), az ablakban nagyobb méretben */
+#modal-kep.ital-ikon {
+    width: 180px;
+    height: 240px;
+    max-width: 100%;
+}
+
+.modal-jelvenyek {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.modal-jelvenyek .alkohol-badge {
+    margin-bottom: 0;
+}
+
 .modal-ital-cim {
     color: var(--text-primary);
     font-size: var(--fs-xl);
@@ -613,6 +632,7 @@
 
 .szuro-kategoria-sor.teljes {
     flex-basis: 100%;
+    width: 100%;
 }
 
 .szuro-kategoria-sor {
@@ -622,31 +642,63 @@
     gap: 6px;
 }
 
+/* Alkategóriák és zero egy panelben a főkategória alatt: címke + vezérlő soronként */
+.szuro-reszletek {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+}
+
+.szuro-reszlet-sor {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.szuro-reszlet-cimke {
+    flex: 0 0 86px;
+    font-size: var(--fs-xs);
+    color: var(--text-secondary);
+}
+
 .szuro-alkategoriak {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    padding-left: 14px;
-    border-left: 2px solid var(--border-color);
 }
 
+/* Az alkategória-pirula szerényebb: nincs ragyogás, finom kiemelés */
 .szuro-pill.kicsi {
-    padding: 3px 10px;
+    padding: 4px 12px;
     font-size: var(--fs-xs);
+    font-weight: 600;
+    box-shadow: none;
+    background: transparent;
+}
+
+.szuro-pill.kicsi.aktiv {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(99, 102, 241, 0.6);
+    box-shadow: none;
 }
 
 .szuro-zero {
     display: inline-flex;
-    margin-left: 14px;
     border: 1px solid var(--border-color);
-    border-radius: 10px;
+    border-radius: 999px;
     overflow: hidden;
 }
 
 .szuro-zero-gomb {
-    padding: 4px 10px;
+    padding: 4px 12px;
     border: none;
-    background: var(--inner-bg);
+    background: transparent;
     color: var(--text-secondary);
     font-size: var(--fs-xs);
     font-weight: 600;
@@ -658,8 +710,20 @@
 }
 
 .szuro-zero-gomb.aktiv {
-    background: rgba(99, 102, 241, 0.25);
+    background: rgba(99, 102, 241, 0.18);
     color: var(--text-primary);
+}
+
+@media (max-width: 480px) {
+    .szuro-reszlet-sor {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .szuro-reszlet-cimke {
+        flex-basis: auto;
+    }
 }
 
 .szuro-kategoria-lista.csak-olvashato button {
@@ -758,6 +822,12 @@
     background: rgba(34, 197, 94, 0.15);
     color: #22c55e;
     border-color: rgba(34, 197, 94, 0.3);
+}
+
+.alkohol-badge.cukormentes {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.3);
 }
 
 .toggle-mode-container {
