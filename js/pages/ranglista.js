@@ -138,6 +138,17 @@ function modalBezár() {
     aktivItalAdat = null;
 }
 
+// A kiválasztott ital ablaka bezárul a háttérre (az ablakon kívülre) kattintva és Esc-re is
+document.addEventListener('DOMContentLoaded', () => {
+    const hatter = document.getElementById('modal-hatter');
+    hatter?.addEventListener('click', (e) => {
+        if (e.target === hatter) modalBezár();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && hatter && !hatter.hidden) modalBezár();
+    });
+});
+
 function getListaDivByKategoria(kategoria) {
     const kat = kategoria ? kategoria.toLowerCase() : 'egyeb';
     switch (kat) {
