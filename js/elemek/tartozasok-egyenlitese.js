@@ -173,7 +173,7 @@ function bizonyosodjModalRol() {
       <div class="sm-card tartozas-egyenlites-kartya">
         <div class="sm-header">
           <h3 id="tartozas-egyenlites-title">Tartozások egyenlítése</h3>
-          <button id="tartozas-egyenlites-close-btn" class="sm-close-btn" type="button">&times;</button>
+          <button aria-label="Bezárás" id="tartozas-egyenlites-close-btn" class="sm-close-btn" type="button">&times;</button>
         </div>
         <div class="sm-body">
           <p id="tartozas-egyenlites-elotte" class="tartozas-egyenlites-sor"></p>
