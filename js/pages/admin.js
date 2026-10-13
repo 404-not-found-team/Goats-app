@@ -3,6 +3,7 @@
 //   az admin adatai addig nem töltődnek be. A profil későbbi változásakor (onChange) is.
 // - Globális kapcsolók: public.app_kapcsolok; mentés az admin_beallitas_mentese RPC-vel, amit a
 //   szerver is ellenőriz (csak superadmin). Hiba esetén a kapcsoló visszaáll.
+// - Italkategóriák: js/pages/admin-kategoriak.js.
 import { client } from '../supabase-client.js';
 import { ready, getState, isSuperadmin, onChange } from '../hitelesites.js';
 import { OLDALAK, FUNKCIOK } from '../segedek/oldalak.js';
@@ -13,6 +14,14 @@ const $ = (id) => document.getElementById(id);
 const KAPCSOLOK = [
     ...OLDALAK.filter(o => o.kapcsolo).map(o => ({ kulcs: o.kapcsolo, nev: `${o.emoji} ${o.nev}`, leiras: null, csoport: 'adminOldalak' })),
     ...FUNKCIOK.map(f => ({ kulcs: f.kulcs, nev: f.nev, leiras: f.leiras, csoport: 'adminFunkciok' })),
+    // Beállítás (nem tiltás): alapból kikapcsolt, ezért nem kerül a "Jelenleg kikapcsolva" sorba
+    {
+        kulcs: 'csoportszuro_csak_admin',
+        nev: 'A csoportszűrőt csak a csoport adminja módosíthatja',
+        leiras: 'Kikapcsolva a csoport bármelyik tagja beállíthatja, mely italok jelenjenek meg a Ranglistán.',
+        csoport: 'adminBeallitasok',
+        figyelmeztet: false,
+    },
 ];
 
 let ertekek = {}; // kulcs -> boolean (a szerver szerinti állapot)
@@ -37,7 +46,7 @@ function allapot(szoveg, tipus) {
 }
 
 function figyelmeztetesFrissites() {
-    const kikapcsolt = KAPCSOLOK.filter(k => ertekek[k.kulcs] === false).map(k => k.nev);
+    const kikapcsolt = KAPCSOLOK.filter(k => k.figyelmeztet !== false && ertekek[k.kulcs] === false).map(k => k.nev);
     const doboz = $('adminFigyelmeztetes');
     doboz.hidden = kikapcsolt.length === 0;
     doboz.textContent = kikapcsolt.length ? `Jelenleg kikapcsolva: ${kikapcsolt.join(', ')}` : '';
@@ -82,6 +91,7 @@ function sor(k) {
 function kirajzolas() {
     $('adminOldalak').replaceChildren(...KAPCSOLOK.filter(k => k.csoport === 'adminOldalak').map(sor));
     $('adminFunkciok').replaceChildren(...KAPCSOLOK.filter(k => k.csoport === 'adminFunkciok').map(sor));
+    $('adminBeallitasok').replaceChildren(...KAPCSOLOK.filter(k => k.csoport === 'adminBeallitasok').map(sor));
     figyelmeztetesFrissites();
 }
 
@@ -128,6 +138,10 @@ await ready;
 if (!jogosultsagEllenorzes()) {
     $('adminTartalom').hidden = false;
     betoltes();
+    // Italkategóriák és az italok besorolása (csak az ellenőrzés után töltődik be)
+    import('./admin-kategoriak.js')
+        .then(m => m.indit())
+        .catch(err => console.error('Az italkategóriák betöltése nem sikerült:', err));
 }
 // Ha a profil később változik (pl. kijelentkezés másik fülön, szerepkör-váltás), újra ellenőrzünk
 onChange(() => {
