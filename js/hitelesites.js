@@ -128,6 +128,18 @@ async function applyPendingTos() {
   else console.warn('ToS elfogadás mentése sikertelen:', error.message);
 }
 
+// Globális kapcsolók (FELADAT15). Minden oldalbetöltéskor frissen kérjük le (pillanatképből sem
+// vesszük át), így az admin oldalon végzett változás a következő oldalbetöltéskor már érvényes.
+// Hiba esetén null: a korábbi (vagy üres = minden engedélyezett) állapot marad, a szerver úgyis dönt.
+async function kapcsolokBetoltese() {
+  const { data, error } = await client.from('app_kapcsolok').select('kulcs, ertek');
+  if (error) {
+    console.warn('A globális kapcsolók nem tölthetők be:', error.message);
+    return null;
+  }
+  return Object.fromEntries((data || []).map(k => [k.kulcs, k.ertek]));
+}
+
 export async function refresh() {
   const { data, error: sessionErr } = await client.auth.getSession();
   if (sessionErr) console.error('Session hiba:', sessionErr);
@@ -151,12 +163,9 @@ export async function refresh() {
       .select('group_role, groups(id, group_code, group_name, enabled_pages)')
       .eq('user_id', session.user.id)
       .maybeSingle(),
-    // Globális kapcsolók (FELADAT15); hiba esetén üres (= minden engedélyezett, a szerver úgyis dönt)
-    client.from('app_kapcsolok').select('kulcs, ertek'),
+    kapcsolokBetoltese(),
   ]);
-
-  if (kapcsoloRes.error) console.warn('A globális kapcsolók nem tölthetők be:', kapcsoloRes.error.message);
-  state.beallitasok = Object.fromEntries((kapcsoloRes.data || []).map(k => [k.kulcs, k.ertek]));
+  if (kapcsoloRes) state.beallitasok = kapcsoloRes;
 
   if (profileRes.error || memberRes.error) {
     // Hálózati/szerver hiba: a user ismert, de a csoportállapotot nem írjuk felül
@@ -264,6 +273,9 @@ async function indit() {
   if (user && !localStorage.getItem('goats_tos_pending') && loadFreshSnapshot(user.id)) {
     state.session = data.session;
     state.user = user;
+    // A profil/csoport jöhet a pillanatképből, de a kapcsolókat mindig frissen kérjük le (egy kis lekérdezés)
+    const kapcsolok = await kapcsolokBetoltese();
+    if (kapcsolok) state.beallitasok = kapcsolok;
     jeloles('auth-pillanatkep');
     return state;
   }
