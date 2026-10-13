@@ -18,6 +18,7 @@
     <script type="module" src="js/main.js"></script>
 
     <script src="js/segedek/ital-kep.js"></script>
+    <script src="js/segedek/ital-kategoriak.js"></script>
     <script src="js/segedek/csoport-kod.js"></script>
     <script src="js/pages/ranglista.js" defer></script>
 </head>
@@ -31,6 +32,11 @@
             <button id="szuro-gomb" onclick="nyisdSzuroModal()" class="gomb-szuro">🔍 Szűrők</button>
             <button id="uj-ital-gomb" onclick="nyisdUjItalModal()" class="gomb-uj-ital">➕ Új ital hozzáadása</button>
         </div>
+    </div>
+
+    <div id="csoport-szuro-hianyzik" class="szuro-hianyzik" hidden>
+        <p>A csoport még nem választotta ki, mely italok jelenjenek meg a ranglistán.</p>
+        <button type="button" id="csoport-szuro-beallitas-gomb" class="gomb-szuro">Beállítás most</button>
     </div>
 
     <div class="ranglista-fo-tarolo">
@@ -77,18 +83,7 @@
 
             <div class="floating-group">
                 <select id="uj-ital-kategoria" class="floating-select" onchange="kategoriaValtozasCheck()">
-                    <option value="vodka">Vodka</option>
-                    <option value="rum">Rum</option>
-                    <option value="whiskey">Whiskey</option>
-                    <option value="likor">Likőr</option>
-                    <option value="bitter">Bitter</option>
-                    <option value="cider">Cider</option>
-                    <option value="sor">Sör</option>
-                    <option value="bor">Bor</option>
-                    <option value="froccs">Fröccs</option>
-                    <option value="energiaital">Energiaital</option>
-                    <option value="koktel">Koktél</option>
-                    <option value="egyeb">Egyéb</option>
+                    <!-- a lehetőségeket a ranglista.js tölti fel a public.ital_kategoriak táblából -->
                 </select>
                 <label class="floating-label">Ital Fajta</label>
             </div>
@@ -129,23 +124,41 @@
     </div>
 
     <div id="szuro-modal" class="modal-hatter-ui" hidden>
-        <div class="modal-doboz-ui szuro-modal-doboz">
-            <h3 class="szuro-modal-cim">🔍 Ranglista Szűrők</h3>
+        <div class="modal-doboz-ui szuro-modal-doboz" role="dialog" aria-modal="true" aria-labelledby="szuro-modal-cim">
+            <h3 id="szuro-modal-cim" class="szuro-modal-cim">🔍 Ranglista szűrők</h3>
 
-            <label class="sm-label szuro-label">📂 Kategóriák megjelenítése:</label>
-            <div id="kategoria-szuro-list" class="szuro-pill-kontener"></div>
-
-            <label class="sm-label szuro-label szuro-label-top">🚫 Márka / Név kizárása:</label>
-            <div class="szuro-input-sor">
-                <input type="text" id="kizart-kulcsszo-input" class="sm-input szuro-input"
-                    placeholder="Pl. Royal" onkeydown="kezeldTagEnter(event)">
-                <button type="button" onclick="hozzaadKizartTag()" class="sm-btn gomb-plusz">+</button>
+            <div class="szuro-fulek" role="tablist">
+                <button type="button" id="szuro-ful-sajat" class="szuro-ful aktiv" role="tab" aria-selected="true" aria-controls="szuro-panel-sajat">Saját nézet</button>
+                <button type="button" id="szuro-ful-csoport" class="szuro-ful" role="tab" aria-selected="false" aria-controls="szuro-panel-csoport">Csoport beállítás</button>
             </div>
 
-            <div id="kizart-tagek-kontener" class="tag-kontener"></div>
+            <!-- Saját nézet: csak ebben a böngészőablakban él, nem mentjük el sehova -->
+            <div id="szuro-panel-sajat" class="szuro-panel" role="tabpanel">
+                <p class="szuro-leiras">Csak neked és csak most: újratöltéskor visszaáll a csoport beállítására.</p>
+                <div id="sajat-szuro-kategoriak" class="szuro-kategoria-lista"></div>
 
-            <div class="szuro-footer">
-                <button onclick="zardSzuroModal()" class="sm-btn gomb-kesz">Kész</button>
+                <label class="sm-label szuro-label szuro-label-top" for="kizart-kulcsszo-input">🚫 Márka / név elrejtése:</label>
+                <div class="szuro-input-sor">
+                    <input type="text" id="kizart-kulcsszo-input" class="sm-input szuro-input" placeholder="Pl. Royal" maxlength="40">
+                    <button type="button" id="kizart-hozzaad-gomb" class="sm-btn gomb-plusz" aria-label="Hozzáadás">+</button>
+                </div>
+                <div id="kizart-tagek-kontener" class="tag-kontener"></div>
+
+                <div class="szuro-footer">
+                    <button type="button" id="sajat-szuro-alaphelyzet" class="sm-btn gomb-masodlagos">Alaphelyzet</button>
+                    <button type="button" class="sm-btn gomb-kesz szuro-bezar">Kész</button>
+                </div>
+            </div>
+
+            <!-- Csoport beállítás: elmentjük, a csoport minden tagjánál ez az alap -->
+            <div id="szuro-panel-csoport" class="szuro-panel" role="tabpanel" hidden>
+                <p class="szuro-leiras">Ezek az italok jelennek meg a csoport minden tagjánál. A mentés után érvényes.</p>
+                <div id="csoport-szuro-kategoriak" class="szuro-kategoria-lista"></div>
+                <p id="csoport-szuro-allapot" class="szuro-allapot" role="status" aria-live="polite"></p>
+                <div class="szuro-footer">
+                    <button type="button" class="sm-btn gomb-masodlagos szuro-bezar">Mégse</button>
+                    <button type="button" id="csoport-szuro-mentes" class="sm-btn gomb-kesz">Mentés</button>
+                </div>
             </div>
         </div>
     </div>

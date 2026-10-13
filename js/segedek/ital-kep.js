@@ -92,6 +92,11 @@
         return maradek || teljes;
     }
 
+    // Az ital ikonja: a kategóriatábla ikon mezője (ital.ikon), ha van; különben a kategória kódja alapján
+    function ikonNev(ital) {
+        return /^[a-z0-9-]{1,30}$/.test(String(ital.ikon || '')) ? ital.ikon : ikonFajl(ital.kategoria);
+    }
+
     function ikonFajl(kategoria) {
         return KATEGORIA_IKON[String(kategoria || '').toLowerCase()] || 'egyeb';
     }
@@ -127,7 +132,7 @@
         s.className = 'ital-ikon';
         s.setAttribute('role', 'img');
         s.setAttribute('aria-label', ital.nev || '');
-        s.classList.add('ikon-' + ikonFajl(ital.kategoria));
+        s.classList.add('ikon-' + ikonNev(ital));
         return s;
     }
 
@@ -153,12 +158,12 @@
     // Egyetlen URL a nagy nézethez (modal). Ikonnál az SVG fájl útvonala.
     function elsoUrl(ital) {
         const jeloltek = kepJeloltek(ital);
-        return jeloltek[0] || `img/ikonok/${ikonFajl(ital.kategoria)}.svg`;
+        return jeloltek[0] || `img/ikonok/${ikonNev(ital)}.svg`;
     }
 
     // Az összes jelölt URL a nagy nézethez, a végén a kategória-ikonnal (onerror-láncoláshoz)
     function osszesUrl(ital) {
-        return [...kepJeloltek(ital), `img/ikonok/${ikonFajl(ital.kategoria)}.svg`];
+        return [...kepJeloltek(ital), `img/ikonok/${ikonNev(ital)}.svg`];
     }
 
     window.italKep = { elemLetrehoz, elsoUrl, osszesUrl, markaNevbol, nevMarkaNelkul, ikonFajl, nevSzlug };
