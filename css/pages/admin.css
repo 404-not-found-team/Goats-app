@@ -164,6 +164,119 @@
     opacity: 0.6;
 }
 
+/* Italkategóriák szekció: választó, űrlapok, italok besorolása */
+.admin-alcim {
+    margin: 18px 0 8px;
+    font-size: var(--fs-base);
+    color: var(--text-primary);
+}
+
+.admin-mezo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 0 4px;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+}
+
+.admin-bemenet {
+    min-width: 0;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: var(--fs-sm);
+}
+
+.admin-szam {
+    width: 70px;
+}
+
+.admin-kereso {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 8px;
+}
+
+.admin-urlap {
+    margin-top: 6px;
+}
+
+.admin-urlap-sor {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+}
+
+.admin-urlap-sor > .admin-bemenet:first-child {
+    flex: 1 1 140px;
+}
+
+.admin-gomb {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent-color);
+    color: var(--on-accent);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-gomb.masodlagos {
+    background: var(--inner-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.admin-gomb.veszelyes {
+    background: transparent;
+    color: var(--hiba-color);
+    border: 1px solid var(--hiba-color);
+}
+
+.admin-sor-gombok {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.admin-sor.szerkesztes {
+    display: block;
+}
+
+.admin-ures {
+    color: var(--text-secondary);
+    font-size: var(--fs-sm);
+}
+
+.admin-italok {
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+@media (max-width: 600px) {
+    .admin-sor.admin-ital,
+    .admin-sor.admin-alkategoria {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-sor-gombok {
+        justify-content: flex-start;
+    }
+
+    .admin-sor-gombok .admin-bemenet {
+        flex: 1 1 100%;
+    }
+}
+
 @media (max-width: 600px) {
     .admin-oldal {
         padding: 16px 12px;

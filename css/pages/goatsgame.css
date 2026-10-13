@@ -235,6 +235,7 @@
 }
 
 .goatsgame-modal-card {
+    position: relative; /* az egységes X (modals.css) a kártya sarkában ül */
     width: 380px;
     max-width: 92vw;
     background: var(--card-bg);
@@ -252,6 +253,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    min-height: var(--modal-bezar-meret);
+    padding-right: calc(var(--modal-bezar-meret) + 8px);
     margin-bottom: 18px;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 12px;
@@ -260,21 +263,6 @@
 .goatsgame-modal-header h3 {
     margin: 0;
     font-size: var(--fs-lg);
-    color: var(--text-primary);
-}
-
-.goatsgame-modal-close {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: var(--fs-xl);
-    cursor: pointer;
-    line-height: 1;
-    padding: 0 4px;
-    transition: color 0.2s ease;
-}
-
-.goatsgame-modal-close:hover {
     color: var(--text-primary);
 }
 

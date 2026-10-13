@@ -375,6 +375,25 @@
     margin: 0 auto 15px auto;
 }
 
+/* Kép híján a kategória-ikon (maszkolt span), az ablakban nagyobb méretben */
+#modal-kep.ital-ikon {
+    width: 180px;
+    height: 240px;
+    max-width: 100%;
+}
+
+.modal-jelvenyek {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.modal-jelvenyek .alkohol-badge {
+    margin-bottom: 0;
+}
+
 .modal-ital-cim {
     color: var(--text-primary);
     font-size: var(--fs-xl);
@@ -566,6 +585,213 @@
     padding: 10px 24px !important;
 }
 
+/* Szűrő ablak: fülek (Saját nézet / Csoport beállítás), kategória-sorok, alkategóriák, zero */
+.szuro-modal-doboz {
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.szuro-fulek {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    padding: 4px;
+    border-radius: 12px;
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+}
+
+.szuro-ful {
+    flex: 1;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.szuro-ful.aktiv {
+    background: var(--accent-color);
+    color: var(--on-accent);
+}
+
+.szuro-leiras {
+    margin: 0 0 12px;
+    color: var(--text-secondary);
+    font-size: var(--fs-xs);
+}
+
+.szuro-kategoria-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.szuro-kategoria-sor.teljes {
+    flex-basis: 100%;
+    width: 100%;
+}
+
+.szuro-kategoria-sor {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+/* Alkategóriák és zero egy panelben a főkategória alatt: címke + vezérlő soronként */
+.szuro-reszletek {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+}
+
+.szuro-reszlet-sor {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.szuro-reszlet-cimke {
+    flex: 0 0 86px;
+    font-size: var(--fs-xs);
+    color: var(--text-secondary);
+}
+
+.szuro-alkategoriak {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* Az alkategória-pirula szerényebb: nincs ragyogás, finom kiemelés */
+.szuro-pill.kicsi {
+    padding: 4px 12px;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    box-shadow: none;
+    background: transparent;
+}
+
+.szuro-pill.kicsi.aktiv {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(99, 102, 241, 0.6);
+    box-shadow: none;
+}
+
+.szuro-zero {
+    display: inline-flex;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.szuro-zero-gomb {
+    padding: 4px 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.szuro-zero-gomb + .szuro-zero-gomb {
+    border-left: 1px solid var(--border-color);
+}
+
+.szuro-zero-gomb.aktiv {
+    background: rgba(99, 102, 241, 0.18);
+    color: var(--text-primary);
+}
+
+@media (max-width: 480px) {
+    .szuro-reszlet-sor {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .szuro-reszlet-cimke {
+        flex-basis: auto;
+    }
+}
+
+.szuro-kategoria-lista.csak-olvashato button {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.szuro-allapot {
+    min-height: 1.2em;
+    margin: 12px 0 0;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+}
+
+.szuro-allapot.ok {
+    color: var(--ok-color);
+}
+
+.szuro-allapot.hiba {
+    color: var(--hiba-color);
+}
+
+.gomb-masodlagos {
+    width: auto !important;
+    padding: 10px 18px !important;
+    background: var(--inner-bg) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* A csoport még nem állította be a szűrőt */
+.szuro-hianyzik {
+    margin: 0 auto 20px;
+    max-width: 640px;
+    padding: 16px 20px;
+    border-radius: 14px;
+    border: 1px dashed var(--accent-color);
+    background: var(--card-bg);
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.szuro-hianyzik p {
+    margin: 0 0 12px;
+}
+
+/* Alkategória-csoportok a forrásdobozban (pl. Energiaitalok -> Hell, Monster, Egyéb) */
+.ital-lista.van-alcsoport {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+}
+
+.ital-alcsoport-cim {
+    margin: 0 0 8px;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 4px;
+}
+
+.ital-alcsoport-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
 /* ==========================================================================
    6. ALKOHOL BADGE & FLOATING LABELS
    ========================================================================== */
@@ -596,6 +822,12 @@
     background: rgba(34, 197, 94, 0.15);
     color: #22c55e;
     border-color: rgba(34, 197, 94, 0.3);
+}
+
+.alkohol-badge.cukormentes {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.3);
 }
 
 .toggle-mode-container {

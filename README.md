@@ -19,6 +19,7 @@
 - [Technológiai stack](#️-technológiai-stack)
 - [Képek](#️-képek)
 - [Admin oldal és globális kapcsolók](#️-admin-oldal-és-globális-kapcsolók)
+- [Italkatalógus és szűrés](#-italkatalógus-és-szűrés)
 - [PWA támogatás](#-pwa-támogatás)
 - [Mappa- és fájlszerkezet](#-mappa--és-fájlszerkezet)
 - [Helyi indítás](#-helyi-indítás)
@@ -66,9 +67,9 @@ A **Goats App** egy reszponzív webes alkalmazás baráti csoportok számára: k
    - Közös bakancslista: hozzáadás, pipálás, törlés, ki vette fel.
 
 6. **Ranglista (`ranglista.html`)**
-   - Italok besorolása kategóriás tier-listába (kategóriánként saját szekció).
-   - Új ital javaslata (admin jóváhagyással kerül be a katalógusba), saját kép vagy márka-kép/kategória-ikon megjelenítéssel.
-   - Szűrés, keresés, koktél-összetevők megadása.
+   - Italok besorolása S–D tier-listába; a forrásdobozok főkategóriánként, azon belül alkategóriánként (pl. Energiaitalok → Hell, Monster, Egyéb).
+   - Új ital javaslata (admin jóváhagyással kerül be a katalógusba), márka-kép/kategória-ikon megjelenítéssel; koktélnál és fröccsnél recept (arány vagy pontos mennyiség).
+   - Szűrés két szinten, lásd [Italkatalógus és szűrés](#-italkatalógus-és-szűrés).
 
 7. **Goats Game (`goatsgame.html`)**
    - Önálló mini-játék a csoporttagoknak.
@@ -148,6 +149,7 @@ Az `admin.html` (`js/pages/admin.js`, `css/pages/admin.css`) csak a superadminok
 | `funkcio_uj_csoport` | Új csoport létrehozása |
 | `funkcio_tartozas_felvetel` | Új tartozás felvétele |
 | `funkcio_csoportcsatlakozas` | Csatlakozás csoportkóddal |
+| `csoportszuro_csak_admin` | Beállítás (alapból ki): bekapcsolva a Ranglista csoportszűrőjét csak a csoport adminja módosíthatja |
 
 **A superadminokra egyik kapcsoló sem vonatkozik**: minden oldalt látnak és minden funkciót használhatnak.
 
@@ -158,6 +160,25 @@ Az `admin.html` (`js/pages/admin.js`, `css/pages/admin.css`) csak a superadminok
 - Közvetlen megnyitás: a kapcsolható oldalak `<body data-oldal="...">` attribútuma alapján a `js/segedek/oldal-orzo.js` az `app.html`-re irányít („Ez az oldal jelenleg nem elérhető.”). Kijelentkezve a kapcsolók nem olvashatók, ezért a publikus Ranglistát ilyenkor nem korlátozza.
 - Funkciók: a `js/segedek/funkcio-kapcsolo.js` letiltja a gombot, és mellé írja: „Ez a funkció jelenleg ki van kapcsolva.”
 - **Szerveroldali kikényszerítés** (a felület elrejtése csak kozmetika): `public.funkcio_engedelyezve(kulcs)` (superadminnak mindig igaz). A képfeltöltést, az italjavaslatot és a tartozás felvételét RESTRICTIVE INSERT policyk ellenőrzik (`storage.objects` a `kepek` bucketre, `kepek`, `ital_katalogus`, `tartozasok`), a csoportlétrehozást és a csatlakozást a `create_new_group` és a `join_group_with_code` RPC.
+
+---
+
+## 🍹 Italkatalógus és szűrés
+**Táblák**
+
+| Tábla | Tartalom |
+|---|---|
+| `public.ital_kategoriak` | Fő- és alkategóriák: `kod`, `nev`, `szulo_id` (alkategóriánál a főkategória), `sorrend`, szabály (`szabaly_marka` = márka egyezik, vagy `szabaly_nev` = a név eleje). A főkategória tulajdonságai a felületet vezérlik: `ikon`, `recept` (koktél, fröccs), `kiszereles` (sör), `alkoholos`, `zero_szuro` (energiaital). |
+| `public.italok` | A katalógus: `id`, `marka`, `nev`, `kategoria_id`, `alkategoria_id` + `alkategoria_kezi` (kézi felülírás; kézi és üres = egyik sem), `zero` (üres = automatikus a névből: zero, sugar free, cukormentes; a Ranglistán „Cukormentes” jelvény), `alkohol_fok`, `kiszereles`, `recept_mod` (`arany`/`pontos`), `jovahagyva`, `javasolta_id`, `created_at`. Az azonosítók a régi `ital_katalogus` azonosítói, így a mentett ranglisták (`ital_ranglista.id = 'ital-<id>'`) érvényesek. |
+| `public.ital_osszetevok` | Koktél/fröccs recept: egy sor egy hozzávaló (`ital_id`, `sorrend`, `nev`, `mennyiseg`, `egyseg`). |
+
+Az alkategória-szabály és a zero felismerése egy helyen van: `js/segedek/ital-kategoriak.js` (a Ranglista és az admin oldal is ezt használja). Jogosultság: olvasni mindenki tudja (a jóvá nem hagyott italt csak a javasló, a csoporttársai és a superadmin), új italt bejelentkezett felhasználó javasolhat (a `funkcio_italjavaslat` kapcsoló mellett), kategóriát és besorolást csak a superadmin módosíthat (RLS).
+
+**Admin oldal → Italkategóriák**: alkategória létrehozása, szerkesztése, törlése egy főkategórián belül (szabály: márka vagy névkezdet), és italonként az alkategória és a zero kézi felülírása.
+
+**Szűrés (Ranglista)**
+- **Csoport beállítás** (mentett, `groups.filter_settings`, `save_filter_settings` RPC): mely fő- és alkategóriák látszanak, és energiaitalnál mind / csak zero / nem zero. Amíg a csoport nem állította be, egyetlen ital sem látszik, és az oldal felkínálja a beállítást. Alapból bármelyik tag módosíthatja; a `csoportszuro_csak_admin` kapcsolóval csak a csoport adminja.
+- **Saját nézet** (nem mentett): a csoport beállításán belül tovább szűkít (kategóriák, zero, márka/név elrejtése); újratöltéskor visszaáll.
 
 ---
 
@@ -187,8 +208,8 @@ js/
   main.js              # modul-aggregator a bejelentkezett oldalakhoz
   elemek/              # ujrafelhasznalhato UI-komponensek (naptar, nav-bar, galeria, kep-kivago, beallitasok-modal, tartozasok-egyenlitese.js)
     beallitasok/        # a beallitasok-modal al-nezetei (belepes-modal, profil-modal, csoport-adatok, tema-valaszto, ital-moderacio, beallitasok-sablonok, tos-ujraelfogadas)
-  pages/               # egy-egy HTML oldalhoz tartozo belepesi script (bejelentkezes-oldal.js, app-orzo.js, tartozasok.js, tervek.js, kepek.js, admin.js, ranglista.js, goatsgame.js)
-  segedek/             # altalanos segedfuggvenyek (ital-kep, modal-fokusz, szin-osztaly, csoport-kepek, csoport-kod, kep-tomorites, kep-gyorsitotar, oldalak, oldal-orzo, funkcio-kapcsolo, keslelteto, teljesitmeny, tema)
+  pages/               # egy-egy HTML oldalhoz tartozo belepesi script (bejelentkezes-oldal.js, app-orzo.js, tartozasok.js, tervek.js, kepek.js, admin.js, admin-kategoriak.js, ranglista.js, goatsgame.js)
+  segedek/             # altalanos segedfuggvenyek (ital-kep, modal-fokusz, szin-osztaly, csoport-kepek, csoport-kod, kep-tomorites, kep-gyorsitotar, oldalak, oldal-orzo, funkcio-kapcsolo, ital-kategoriak, keslelteto, teljesitmeny, tema)
 img/
   icon-*.png           # PWA ikonok (a manifest.json hivatkozza)
   ikonok/              # ital-kategoria SVG ikonok (CSS maszkkal szinezve)
