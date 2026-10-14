@@ -87,6 +87,7 @@
         'monster-energy': [
             ['ultra', 'monster_ultra'],
             ['rehab', 'monster_rehab'],
+            ['juiced', 'monster_juiced'],
         ],
     };
 
