@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (csoportOldalai && !csoportOldalai.includes(o.kulcs)) return false;
         return oldalEngedelyezett(o.kulcs);
     };
-    const menuOldalak = OLDALAK.filter(lathato);
+    const menuOldalak = OLDALAK.filter(o => o.navban !== false && lathato(o));
     if (superadmin) menuOldalak.push(ADMIN_OLDAL);
 
     const aktualisUtvonal = window.location.pathname.split('/').pop() || "index.html";
