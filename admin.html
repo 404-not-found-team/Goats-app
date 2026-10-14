@@ -42,6 +42,22 @@
             <ul id="adminOldalak" class="admin-lista"></ul>
         </section>
 
+        <section class="admin-szekcio" aria-labelledby="adminCsoportOldalakCim">
+            <h2 id="adminCsoportOldalakCim">Csoportonkénti oldal-engedélyezés</h2>
+            <p class="admin-szekcio-leiras">
+                Melyik csoport mely oldalakat látja (a fenti globális kapcsolók mellett, azoktól függetlenül —
+                mindkettőnek engednie kell ahhoz, hogy egy tag lássa az oldalt). A Kezdőlap itt sem kapcsolható.
+            </p>
+
+            <div class="admin-mezo">
+                <label for="adminCsoportValaszto">Csoport</label>
+                <select id="adminCsoportValaszto" class="admin-bemenet"></select>
+            </div>
+
+            <p id="adminCsoportOldalakAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
+            <ul id="adminCsoportOldalak" class="admin-lista"></ul>
+        </section>
+
         <section class="admin-szekcio" aria-labelledby="adminFunkciokCim">
             <h2 id="adminFunkciokCim">Funkciók</h2>
             <p class="admin-szekcio-leiras">A kikapcsolt funkció gombja letiltva jelenik meg, és a szerver is elutasítja.</p>
