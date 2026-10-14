@@ -551,15 +551,22 @@ function alkalmazSzurot() {
     frissitsSzamlalokat();
 }
 
-// Darabszámok és az üres dobozok/alcsoportok elrejtése
+// Darabszámok és az üres dobozok/alcsoportok elrejtése.
+// A nevező a kategória TELJES darabszáma (a mar rangsorolt, tier-dobozokba athelyezett kartyakkal
+// egyutt), nem csak a meg a forras-dobozban levoke - igy a szam tenyleg a rangsorolasi haladast
+// mutatja, nem csak azt, hogy a szurés hany darabot rejt el a (ranggal mar csokkent) poolbol.
 function frissitsSzamlalokat() {
     document.querySelectorAll('.forras-doboz').forEach(doboz => {
         const lista = doboz.querySelector('.ital-lista');
         if (!lista) return;
+        const kategoria = lista.dataset.kategoria;
         const kartyak = Array.from(lista.getElementsByClassName('ital-kartya'));
         const lathato = kartyak.filter(k => !k.hidden).length;
+        const osszesen = kategoria
+            ? document.querySelectorAll(`.ital-kartya[data-kategoria="${kategoria}"]`).length
+            : kartyak.length;
         const szamlalo = doboz.querySelector('.ital-szamlalo');
-        if (szamlalo) szamlalo.textContent = `${lathato} / ${kartyak.length}`;
+        if (szamlalo) szamlalo.textContent = `${lathato} / ${osszesen}`;
         doboz.hidden = lathato === 0;
         lista.querySelectorAll('.ital-alcsoport').forEach(cs => {
             cs.hidden = !cs.querySelector('.ital-kartya:not([hidden])');
