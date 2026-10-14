@@ -23,6 +23,7 @@ const blank = () => ({
   groupRole: null,   // 'admin' | 'member'
   members: [],       // [{ user_id, display_name, group_role }]
   beallitasok: {},   // globális kapcsolók (public.app_kapcsolok): { kulcs: boolean }, FELADAT15
+  allapotHiba: false, // igaz, ha a profil/csoport lekérdezése hibázott: a group=null ekkor NEM jelenti biztosan, hogy nincs csoportja
 });
 
 const state = blank();
@@ -168,13 +169,18 @@ export async function refresh() {
   if (kapcsoloRes) state.beallitasok = kapcsoloRes;
 
   if (profileRes.error || memberRes.error) {
-    // Hálózati/szerver hiba: a user ismert, de a csoportállapotot nem írjuk felül
+    // Hálózati/szerver hiba: a user ismert, de a csoportállapotot nem írjuk felül.
+    // allapotHiba=true jelzi, hogy a jelenlegi group=null emiatt NEM megbízható "nincs csoportja"
+    // jelentés (lásd beallitasok-modal.js: a csatlakozás-felajánlás ezt ellenőrzi).
     console.error('Állapot lekérési hiba:', profileRes.error || memberRes.error);
     state.session = session;
     state.user = session.user;
+    state.allapotHiba = true;
     emit();
     return state;
   }
+
+  state.allapotHiba = false;
 
   const profile = profileRes.data ?? null;
   const membership = memberRes.data ?? null;
