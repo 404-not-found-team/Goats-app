@@ -89,6 +89,14 @@
             ['rehab', 'monster_rehab'],
             ['juiced', 'monster_juiced'],
         ],
+        'hell': [
+            ['ice coffee', 'hell_ice_coffe'],
+            ['New Gen', 'hell_new_gen'],
+            ['500 ml', 'hell_500'],
+        ],
+        'red-bull': [
+            ['edition', 'red-bull_edition'],
+        ],
     };
 
     function markaKepFajl(marka) {
