@@ -375,6 +375,8 @@
 
 #modal-kep {
     max-height: 350px;
+    max-width: 100%;
+    width: auto;
     display: block;
     margin: 0 auto 15px auto;
 }
