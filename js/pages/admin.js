@@ -191,6 +191,59 @@ async function csoportOldalValtozas(input, oldal) {
     csoportAllapot(`${csoport.group_name}: ${oldal.nev} ${input.checked ? 'engedélyezve' : 'letiltva'}.`, 'ok');
 }
 
+// Egy oldal bekapcsolása egyszerre minden csoportnak (pl. egy most felvett oldal megosztásához)
+function gyorsMuveletSor(oldal) {
+    const li = document.createElement('li');
+    li.className = 'admin-sor';
+
+    const szoveg = document.createElement('div');
+    szoveg.className = 'admin-sor-szoveg';
+    const cim = document.createElement('span');
+    cim.className = 'admin-sor-nev';
+    cim.textContent = `${oldal.emoji} ${oldal.nev}`;
+    szoveg.appendChild(cim);
+
+    const gomb = document.createElement('button');
+    gomb.type = 'button';
+    gomb.className = 'admin-gomb';
+    gomb.textContent = 'Engedélyezés mindenkinek';
+    gomb.addEventListener('click', () => oldalMindenkinekEngedelyezese(oldal, gomb));
+
+    li.append(szoveg, gomb);
+    return li;
+}
+
+function gyorsMuveletekKirajzolas() {
+    const lista = $('adminCsoportGyorsMuveletek');
+    if (!lista) return;
+    lista.replaceChildren(...CSOPORT_KAPCSOLHATO_OLDALAK.map(gyorsMuveletSor));
+}
+
+async function oldalMindenkinekEngedelyezese(oldal, gomb) {
+    if (csoportok.length === 0) return;
+    if (!confirm(`Biztosan engedélyezed a(z) "${oldal.nev}" oldalt MIND a(z) ${csoportok.length} csoportnak?`)) return;
+
+    gomb.disabled = true;
+    csoportAllapot(`Engedélyezés mindenkinek: ${oldal.nev}…`, null);
+
+    const eredmenyek = await Promise.all(csoportok.map(async (cs) => {
+        const jelenlegi = Array.isArray(cs.enabled_pages) ? cs.enabled_pages : [];
+        if (jelenlegi.includes(oldal.kulcs)) return true; // már engedélyezve, nincs mit menteni
+        const uj = [...new Set(['index', ...jelenlegi, oldal.kulcs])];
+        const ok = await updateEnabledPages(cs.id, uj);
+        if (ok) cs.enabled_pages = uj;
+        return ok;
+    }));
+
+    gomb.disabled = false;
+    const hibaDb = eredmenyek.filter(ok => !ok).length;
+    csoportAllapot(hibaDb === 0
+        ? `${oldal.nev}: minden csoportnak engedélyezve.`
+        : `${oldal.nev}: ${hibaDb} csoportnál nem sikerült.`, hibaDb === 0 ? 'ok' : 'hiba');
+
+    csoportOldalakKirajzolas(); // ha a kijelölt csoportot is érintette, frissül a jelölőnégyzete
+}
+
 async function csoportokBetoltese() {
     const { data, error } = await client.from('groups')
         .select('id, group_name, group_code, enabled_pages')
@@ -211,6 +264,21 @@ async function csoportokBetoltese() {
         kivalasztottCsoportId = e.target.value;
         csoportAllapot('', null);
         csoportOldalakKirajzolas();
+    });
+}
+
+// ---- Fülek (a .sm-tabs/.sm-tab-content a css/elemek/modals.css meglévő, eddig máshol nem
+// használt stílusa - a settings-rendszer modaljaival azonos mintát követi) ----
+function fulekBekotese() {
+    const gombok = document.querySelectorAll('.sm-tab-btn');
+    gombok.forEach(gomb => {
+        gomb.addEventListener('click', () => {
+            gombok.forEach(g => { g.classList.remove('active'); g.setAttribute('aria-selected', 'false'); });
+            document.querySelectorAll('.sm-tab-content').forEach(c => c.classList.remove('active'));
+            gomb.classList.add('active');
+            gomb.setAttribute('aria-selected', 'true');
+            $(gomb.dataset.tab)?.classList.add('active');
+        });
     });
 }
 
@@ -256,7 +324,9 @@ async function mentes(input, k) {
 await ready;
 if (!jogosultsagEllenorzes()) {
     $('adminTartalom').hidden = false;
+    fulekBekotese();
     betoltes();
+    gyorsMuveletekKirajzolas();
     csoportokBetoltese();
     // Italkategóriák és az italok besorolása (csak az ellenőrzés után töltődik be)
     import('./admin-kategoriak.js')
