@@ -3,11 +3,13 @@
 // - kapcsolo: a globális kapcsoló kulcsa a public.app_kapcsolok táblában (null = nem kapcsolható)
 // - fo: mobilon az alsó sávban mindig látszik (a többi a "Több ☰" fiókba kerül)
 // - publikus: csoport nélkül (kijelentkezve) is látszik
+// - navban: false esetén az oldal létezik és kapcsolható (admin be/ki állíthatja), de a nav-bar
+//   nem listázza külön fülként - a Képeknél a főoldali galéria "Összes kép" linkje már odavisz
 export const OLDALAK = [
     { kulcs: 'index', nev: 'Kezdőlap', emoji: '🏠', fajl: 'app.html', kapcsolo: null, fo: true, publikus: true },
     { kulcs: 'tartozasok', nev: 'Tartozások', emoji: '💸', fajl: 'tartozasok.html', kapcsolo: 'oldal_tartozasok', fo: true },
     { kulcs: 'ranglista', nev: 'Ranglista', emoji: '🍹', fajl: 'ranglista.html', kapcsolo: 'oldal_ranglista', fo: true, publikus: true },
-    { kulcs: 'kepek', nev: 'Képek', emoji: '🖼️', fajl: 'kepek.html', kapcsolo: 'oldal_kepek' },
+    { kulcs: 'kepek', nev: 'Képek', emoji: '🖼️', fajl: 'kepek.html', kapcsolo: 'oldal_kepek', navban: false },
     { kulcs: 'tervek', nev: 'Tervek', emoji: '📋', fajl: 'tervek.html', kapcsolo: 'oldal_tervek' },
     { kulcs: 'goatsgame', nev: 'Goats Game', emoji: '🎮', fajl: 'goatsgame.html', kapcsolo: 'oldal_goatsgame' },
 ];
