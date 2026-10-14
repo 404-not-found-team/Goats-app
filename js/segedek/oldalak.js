@@ -12,6 +12,7 @@ export const OLDALAK = [
     { kulcs: 'kepek', nev: 'Képek', emoji: '🖼️', fajl: 'kepek.html', kapcsolo: 'oldal_kepek', navban: false },
     { kulcs: 'tervek', nev: 'Tervek', emoji: '📋', fajl: 'tervek.html', kapcsolo: 'oldal_tervek' },
     { kulcs: 'goatsgame', nev: 'Goats Game', emoji: '🎮', fajl: 'goatsgame.html', kapcsolo: 'oldal_goatsgame' },
+    { kulcs: 'jatekszabalyok', nev: 'Játékszabályok', emoji: '📜', fajl: 'jatekszabalyok.html', kapcsolo: 'oldal_jatekszabalyok' },
 ];
 
 // Csak superadminnak, a csoporttól és a kapcsolóktól függetlenül
