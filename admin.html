@@ -28,81 +28,103 @@
          másnak azonnal továbbirányít. A mentést a szerver is ellenőrzi (admin_beallitas_mentese). -->
     <main id="adminTartalom" class="admin-oldal" hidden>
         <h1>Admin</h1>
-        <p class="admin-bevezeto">
-            Globális kapcsolók: az egész alkalmazásra érvényesek, minden csoportra. A superadminokra egyik sem
-            vonatkozik, ők mindent látnak és használhatnak.
-        </p>
 
         <div id="adminFigyelmeztetes" class="admin-figyelmeztetes" role="status" hidden></div>
         <p id="adminAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
 
-        <section class="admin-szekcio" aria-labelledby="adminOldalakCim">
-            <h2 id="adminOldalakCim">Oldalak</h2>
-            <p class="admin-szekcio-leiras">A kikapcsolt oldal eltűnik a menüből, és közvetlenül sem nyitható meg. A Kezdőlap nem kapcsolható.</p>
-            <ul id="adminOldalak" class="admin-lista"></ul>
-        </section>
+        <div class="sm-tabs" role="tablist">
+            <button type="button" class="sm-tab-btn active" data-tab="tab-globalis" role="tab" aria-selected="true">Globális kapcsolók</button>
+            <button type="button" class="sm-tab-btn" data-tab="tab-csoportok" role="tab" aria-selected="false">Csoportok</button>
+            <button type="button" class="sm-tab-btn" data-tab="tab-kategoriak" role="tab" aria-selected="false">Italkategóriák</button>
+        </div>
 
-        <section class="admin-szekcio" aria-labelledby="adminCsoportOldalakCim">
-            <h2 id="adminCsoportOldalakCim">Csoportonkénti oldal-engedélyezés</h2>
-            <p class="admin-szekcio-leiras">
-                Melyik csoport mely oldalakat látja (a fenti globális kapcsolók mellett, azoktól függetlenül —
-                mindkettőnek engednie kell ahhoz, hogy egy tag lássa az oldalt). A Kezdőlap itt sem kapcsolható.
+        <div id="tab-globalis" class="sm-tab-content active">
+            <p class="admin-bevezeto">
+                Az egész alkalmazásra érvényesek, minden csoportra. A superadminokra egyik sem vonatkozik, ők
+                mindent látnak és használhatnak.
             </p>
 
-            <div class="admin-mezo">
-                <label for="adminCsoportValaszto">Csoport</label>
-                <select id="adminCsoportValaszto" class="admin-bemenet"></select>
-            </div>
+            <section class="admin-szekcio" aria-labelledby="adminOldalakCim">
+                <h2 id="adminOldalakCim">Oldalak</h2>
+                <p class="admin-szekcio-leiras">A kikapcsolt oldal eltűnik a menüből, és közvetlenül sem nyitható meg. A Kezdőlap nem kapcsolható.</p>
+                <ul id="adminOldalak" class="admin-lista"></ul>
+            </section>
 
-            <p id="adminCsoportOldalakAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
-            <ul id="adminCsoportOldalak" class="admin-lista"></ul>
-        </section>
+            <section class="admin-szekcio" aria-labelledby="adminFunkciokCim">
+                <h2 id="adminFunkciokCim">Funkciók</h2>
+                <p class="admin-szekcio-leiras">A kikapcsolt funkció gombja letiltva jelenik meg, és a szerver is elutasítja.</p>
+                <ul id="adminFunkciok" class="admin-lista"></ul>
+            </section>
 
-        <section class="admin-szekcio" aria-labelledby="adminFunkciokCim">
-            <h2 id="adminFunkciokCim">Funkciók</h2>
-            <p class="admin-szekcio-leiras">A kikapcsolt funkció gombja letiltva jelenik meg, és a szerver is elutasítja.</p>
-            <ul id="adminFunkciok" class="admin-lista"></ul>
-        </section>
+            <section class="admin-szekcio" aria-labelledby="adminBeallitasokCim">
+                <h2 id="adminBeallitasokCim">Beállítások</h2>
+                <ul id="adminBeallitasok" class="admin-lista"></ul>
+            </section>
+        </div>
 
-        <section class="admin-szekcio" aria-labelledby="adminBeallitasokCim">
-            <h2 id="adminBeallitasokCim">Beállítások</h2>
-            <ul id="adminBeallitasok" class="admin-lista"></ul>
-        </section>
+        <div id="tab-csoportok" class="sm-tab-content">
+            <section class="admin-szekcio" aria-labelledby="adminGyorsMuveletekCim">
+                <h2 id="adminGyorsMuveletekCim">Gyors műveletek</h2>
+                <p class="admin-szekcio-leiras">
+                    Egy oldal bekapcsolása egyszerre MINDEN csoportnak (pl. egy most felvett oldal megosztásához),
+                    ahelyett hogy csoportonként egyenként kelljen bepipálni.
+                </p>
+                <ul id="adminCsoportGyorsMuveletek" class="admin-lista"></ul>
+            </section>
 
-        <section class="admin-szekcio" aria-labelledby="adminKategoriakCim">
-            <h2 id="adminKategoriakCim">Italkategóriák</h2>
-            <p class="admin-szekcio-leiras">
-                Alkategóriák a főkategóriákon belül (pl. Energiaitalok → Hell). Az ital a szabály szerint kerül az
-                alkategóriába (a márkája vagy a neve eleje alapján), és italonként kézzel felülírható.
-            </p>
-            <p id="adminKategoriakAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
+            <section class="admin-szekcio" aria-labelledby="adminCsoportOldalakCim">
+                <h2 id="adminCsoportOldalakCim">Csoportonkénti oldal-engedélyezés</h2>
+                <p class="admin-szekcio-leiras">
+                    Melyik csoport mely oldalakat látja (a globális kapcsolók mellett, azoktól függetlenül —
+                    mindkettőnek engednie kell ahhoz, hogy egy tag lássa az oldalt). A Kezdőlap itt sem kapcsolható.
+                </p>
 
-            <div class="admin-mezo">
-                <label for="adminFoKategoria">Főkategória</label>
-                <select id="adminFoKategoria" class="admin-bemenet"></select>
-            </div>
-
-            <h3 class="admin-alcim">Alkategóriák</h3>
-            <ul id="adminAlkategoriak" class="admin-lista"></ul>
-
-            <form id="adminUjAlkategoria" class="admin-urlap">
-                <h3 class="admin-alcim">Új alkategória</h3>
-                <div class="admin-urlap-sor">
-                    <input id="adminUjAlNev" class="admin-bemenet" maxlength="40" placeholder="Név (pl. Hell)" aria-label="Az alkategória neve" required>
-                    <select id="adminUjAlSzabaly" class="admin-bemenet" aria-label="A szabály típusa">
-                        <option value="marka">Márka egyezik</option>
-                        <option value="nev">Név eleje</option>
-                        <option value="nincs">Nincs szabály (csak kézi)</option>
-                    </select>
-                    <input id="adminUjAlErtek" class="admin-bemenet" maxlength="40" placeholder="Érték (pl. hell)" aria-label="A szabály értéke">
-                    <button type="submit" class="admin-gomb">Hozzáadás</button>
+                <div class="admin-mezo">
+                    <label for="adminCsoportValaszto">Csoport</label>
+                    <select id="adminCsoportValaszto" class="admin-bemenet"></select>
                 </div>
-            </form>
 
-            <h3 class="admin-alcim">Italok besorolása</h3>
-            <input id="adminItalKereso" class="admin-bemenet admin-kereso" type="search" placeholder="Keresés név szerint…" aria-label="Italok keresése">
-            <ul id="adminItalok" class="admin-lista admin-italok"></ul>
-        </section>
+                <p id="adminCsoportOldalakAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
+                <ul id="adminCsoportOldalak" class="admin-lista"></ul>
+            </section>
+        </div>
+
+        <div id="tab-kategoriak" class="sm-tab-content">
+            <section class="admin-szekcio" aria-labelledby="adminKategoriakCim">
+                <h2 id="adminKategoriakCim">Italkategóriák</h2>
+                <p class="admin-szekcio-leiras">
+                    Alkategóriák a főkategóriákon belül (pl. Energiaitalok → Hell). Az ital a szabály szerint kerül az
+                    alkategóriába (a márkája vagy a neve eleje alapján), és italonként kézzel felülírható.
+                </p>
+                <p id="adminKategoriakAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
+
+                <div class="admin-mezo">
+                    <label for="adminFoKategoria">Főkategória</label>
+                    <select id="adminFoKategoria" class="admin-bemenet"></select>
+                </div>
+
+                <h3 class="admin-alcim">Alkategóriák</h3>
+                <ul id="adminAlkategoriak" class="admin-lista"></ul>
+
+                <form id="adminUjAlkategoria" class="admin-urlap">
+                    <h3 class="admin-alcim">Új alkategória</h3>
+                    <div class="admin-urlap-sor">
+                        <input id="adminUjAlNev" class="admin-bemenet" maxlength="40" placeholder="Név (pl. Hell)" aria-label="Az alkategória neve" required>
+                        <select id="adminUjAlSzabaly" class="admin-bemenet" aria-label="A szabály típusa">
+                            <option value="marka">Márka egyezik</option>
+                            <option value="nev">Név eleje</option>
+                            <option value="nincs">Nincs szabály (csak kézi)</option>
+                        </select>
+                        <input id="adminUjAlErtek" class="admin-bemenet" maxlength="40" placeholder="Érték (pl. hell)" aria-label="A szabály értéke">
+                        <button type="submit" class="admin-gomb">Hozzáadás</button>
+                    </div>
+                </form>
+
+                <h3 class="admin-alcim">Italok besorolása</h3>
+                <input id="adminItalKereso" class="admin-bemenet admin-kereso" type="search" placeholder="Keresés név szerint…" aria-label="Italok keresése">
+                <ul id="adminItalok" class="admin-lista admin-italok"></ul>
+            </section>
+        </div>
     </main>
 </body>
 
