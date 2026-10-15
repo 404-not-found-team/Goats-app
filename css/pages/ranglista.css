@@ -381,6 +381,23 @@
     margin: 0 auto 15px auto;
 }
 
+/* A 0,33 l-es doboz képe valamivel kisebb, mint az alap 0,5 l-esé (a kártyán és a nagy nézetben).
+   Az arány itt állítható; a kép alja a helyén marad, hogy a dobozok egy vonalon álljanak. */
+:root {
+    --kisebb-kiszereles-arany: 0.8;
+}
+
+.kisebb-kiszereles img,
+.kisebb-kiszereles .ital-ikon {
+    transform: scale(var(--kisebb-kiszereles-arany));
+    transform-origin: center bottom;
+}
+
+/* rámutatáskor is arányosan nő (különben a .ital-lista img:hover scale(1.05)-je felülírná) */
+.ital-kartya.kisebb-kiszereles img:hover {
+    transform: scale(calc(var(--kisebb-kiszereles-arany) * 1.05));
+}
+
 /* Kép híján a kategória-ikon (maszkolt span), az ablakban nagyobb méretben */
 #modal-kep.ital-ikon {
     width: 180px;
