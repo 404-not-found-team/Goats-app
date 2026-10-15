@@ -45,6 +45,7 @@ async function inicializalas() {
     }
     epitForrasDobozok();
     epitKategoriaValaszto();
+    epitKiszerelesValaszto();
 
     const [katalogusRes, osszetevoRes] = await Promise.all([
         client.from('italok')
@@ -215,6 +216,18 @@ function epitForrasDobozok() {
         }
         doboz.append(fejlec, lista);
         return doboz;
+    }));
+}
+
+// Az új ital űrlap kiszerelés-legördülője (sörnél; az első, a 0,5 l-es doboz az alap)
+function epitKiszerelesValaszto() {
+    const select = document.getElementById('uj-ital-kiszereles');
+    if (!select) return;
+    select.replaceChildren(...K().KISZERELESEK.map(k => {
+        const opt = document.createElement('option');
+        opt.value = k.kod;
+        opt.textContent = k.nev;
+        return opt;
     }));
 }
 
@@ -580,7 +593,7 @@ function zardUjItalModal() {
     document.getElementById('uj-ital-modal').hidden = true;
     document.getElementById('uj-ital-nev').value = '';
     document.getElementById('uj-ital-szazalek').value = '';
-    document.getElementById('uj-ital-kiszereles').value = 'dobozos';
+    document.getElementById('uj-ital-kiszereles').selectedIndex = 0;
     document.getElementById('hozzavalok-lista').replaceChildren();
 }
 

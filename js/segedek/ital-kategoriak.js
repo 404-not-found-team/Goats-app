@@ -2,6 +2,14 @@
 // szabály és a zero felismerése. A Ranglista és az admin oldal is ezt használja.
 // Klasszikus script (nem modul): window.italKategoriak-on keresztül érhető el.
 (function () {
+    // Kiszerelések (sörnél; az italok.kiszereles értékei). A "dobozos" az alap 0,5 literes doboz.
+    const KISZERELESEK = [
+        { kod: 'dobozos', nev: 'Dobozos (0,5 l)' },
+        { kod: 'dobozos_330', nev: 'Dobozos (0,33 l)' },
+        { kod: 'uveges', nev: 'Üveges' },
+    ];
+    const kiszerelesNev = (kod) => KISZERELESEK.find(k => k.kod === kod)?.nev || '';
+
     // Zero (cukormentes) automatikus felismerése a névből; az italok.zero oszlop felülírja
     const ZERO_MINTA = /\b(zero|sugar\s*free|sugarfree|cukormentes)\b/i;
 
@@ -80,5 +88,7 @@
         zero,
         zeroAutomatikus,
         szlug,
+        KISZERELESEK,
+        kiszerelesNev,
     };
 })();
