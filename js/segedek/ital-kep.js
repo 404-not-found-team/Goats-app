@@ -1,4 +1,6 @@
 // Italkép-feloldás egy helyen. Sorrend:
+//   0) színezett forma (italok.kep_forma + kep_szin_1/kep_szin_2/kep_minta): rétegekből
+//      összerakott kép, a színt a kód adja (lásd img/formak/README.md, css/elemek/ital-szinezes.css),
 //   1) a felhasználó saját képe (kep_url),
 //   2) koktélnál: img/koktelok/<ital-neve-szlugositve>.webp (ha van ilyen fájl),
 //   3) márkakép: img/markak/<marka>.webp (ha a márkához van fájl),
@@ -177,8 +179,107 @@
         return s;
     }
 
-    // Kártyába való elem: kép, vagy ikon, ha nincs használható kép
+    // ---------- Színezett formák ----------
+    // A megrajzolt formák és minták (fájlok: img/formak/<forma>-szin|-sav|-reszletek.webp,
+    // img/mintak/<minta>.webp). Új forma: fájlok be a mappába + egy sor ide.
+    const FORMAK = [
+        ['magas-doboz', 'Magas doboz (0,5 l)'],
+        ['karcsu-doboz', 'Karcsú doboz (0,25 l)'],
+    ];
+    const MINTAK = [
+        ['ecset', 'Ecsetvonások'],
+        ['dekor', 'Díszítés'],
+    ];
+
+    const SZLUG = /^[a-z0-9-]{1,30}$/;
+    const HEX = /^#[0-9a-fA-F]{6}$/;
+
+    // A képek URL-jei CSS-változóként, osztályonként egyszer generált szabállyal (nincs inline stílus,
+    // a CSP style-src-attr 'none' sem blokkolja) - ugyanúgy, mint a szin-osztaly.js
+    const ismertOsztalyok = new Set();
+    let lap = null;
+    function stiluslap() {
+        if (lap) return lap;
+        if ('adoptedStyleSheets' in Document.prototype && typeof CSSStyleSheet === 'function') {
+            lap = new CSSStyleSheet();
+            document.adoptedStyleSheets = [...document.adoptedStyleSheets, lap];
+        } else {
+            lap = document.styleSheets[0];
+        }
+        return lap;
+    }
+    const abszolut = (ut) => new URL(ut, document.baseURI).href;
+
+    function formaOsztaly(forma) {
+        const nev = 'forma-' + forma;
+        if (!ismertOsztalyok.has(nev)) {
+            ismertOsztalyok.add(nev);
+            const sl = stiluslap();
+            sl.insertRule(`.${nev} {
+                --kep-szin: url("${abszolut(`img/formak/${forma}-szin.webp`)}");
+                --kep-sav: url("${abszolut(`img/formak/${forma}-sav.webp`)}");
+                --kep-reszletek: url("${abszolut(`img/formak/${forma}-reszletek.webp`)}");
+            }`, sl.cssRules.length);
+        }
+        return nev;
+    }
+
+    function mintaOsztaly(minta) {
+        const nev = 'minta-' + minta;
+        if (!ismertOsztalyok.has(nev)) {
+            ismertOsztalyok.add(nev);
+            const sl = stiluslap();
+            sl.insertRule(`.${nev} { --kep-minta: url("${abszolut(`img/mintak/${minta}.webp`)}"); }`, sl.cssRules.length);
+        }
+        return nev;
+    }
+
+    function vanSzinezettForma(ital) {
+        return SZLUG.test(String(ital.kep_forma || '')) && HEX.test(String(ital.kep_szin_1 || ''));
+    }
+
+    function reteg(osztaly, szin) {
+        const s = document.createElement('span');
+        s.className = 'ital-reteg ' + osztaly;
+        if (szin && window.szinOsztaly) s.classList.add(window.szinOsztaly(szin));
+        return s;
+    }
+
+    // Rétegek: alapszín, sáv (2. szín), minta (2. szín, vagy ha nincs, az 1.), fix részletek
+    function szinezettElem(ital) {
+        const doboz = document.createElement('span');
+        doboz.className = 'ital-szinezett ' + formaOsztaly(ital.kep_forma);
+        doboz.setAttribute('role', 'img');
+        doboz.setAttribute('aria-label', ital.nev || '');
+
+        const szin2 = HEX.test(String(ital.kep_szin_2 || '')) ? ital.kep_szin_2 : null;
+        doboz.appendChild(reteg('reteg-szin', ital.kep_szin_1));
+        if (szin2) doboz.appendChild(reteg('reteg-sav', szin2));
+        if (SZLUG.test(String(ital.kep_minta || ''))) {
+            doboz.appendChild(reteg('reteg-minta ' + mintaOsztaly(ital.kep_minta), szin2 || ital.kep_szin_1));
+        }
+        doboz.appendChild(reteg('reteg-reszletek'));
+        return doboz;
+    }
+
+    // Kártyába való elem: színezett forma, kép, vagy ikon, ha nincs használható kép
     function elemLetrehoz(ital) {
+        if (vanSzinezettForma(ital)) {
+            const elem = szinezettElem(ital);
+            // Ha a forma fájlja még nincs feltöltve, a régi lánc (márkakép, ikon) veszi át a helyét
+            const proba = new Image();
+            proba.onerror = () => {
+                const tartalek = kepesElem(ital);
+                if (elem.id) tartalek.id = elem.id;
+                elem.replaceWith(tartalek);
+            };
+            proba.src = `img/formak/${ital.kep_forma}-szin.webp`;
+            return elem;
+        }
+        return kepesElem(ital);
+    }
+
+    function kepesElem(ital) {
         const jeloltek = kepJeloltek(ital);
         if (jeloltek.length === 0) return ikonElem(ital);
 
@@ -212,5 +313,8 @@
         return [...kepJeloltek(ital), `img/ikonok/${ikonNev(ital)}.svg`];
     }
 
-    window.italKep = { elemLetrehoz, elsoUrl, osszesUrl, markaNevbol, nevMarkaNelkul, ikonFajl, nevSzlug };
+    window.italKep = {
+        elemLetrehoz, elsoUrl, osszesUrl, markaNevbol, nevMarkaNelkul, ikonFajl, nevSzlug,
+        FORMAK, MINTAK,
+    };
 })();
