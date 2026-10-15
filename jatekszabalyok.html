@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goats - Játékszabályok</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/pages/jatekszabalyok.css">
+
+    <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="modulepreload" href="js/main.js">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
+
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/pages/jatekszabalyok.js"></script>
+</head>
+
+<body data-oldal="jatekszabalyok">
+    <ul id="navBar"></ul>
+
+    <div class="fejlec-gombok-tarolo">
+        <h1>📜 Játékszabályok</h1>
+        <div class="fejlec-gombok">
+            <button type="button" id="uj-jatek-gomb" class="gomb-uj-ital">➕ Új játék</button>
+        </div>
+    </div>
+
+    <div class="jatek-fo-tarolo">
+        <p id="jatek-ures-allapot" class="jatek-ures-allapot" hidden>
+            Még nincs felvéve játékszabály. A csoportod tagjai, és ha megosztod, más csoportok is itt fogják látni.
+        </p>
+        <div id="jatek-lista" class="jatek-lista"></div>
+    </div>
+
+    <!-- Szerkesztő modal: új játék felvétele / saját játék szerkesztése -->
+    <div id="jatek-szerkeszto-modal" class="sm-overlay" hidden>
+        <div class="sm-card jatek-szerkeszto-kartya">
+            <button type="button" id="jatek-szerkeszto-bezar" class="sm-close-btn" aria-label="Bezárás">&times;</button>
+            <div class="sm-header">
+                <h3 id="jatek-szerkeszto-cim">Új játék</h3>
+            </div>
+            <div class="sm-body">
+                <div class="floating-group">
+                    <input type="text" id="jatek-cim-input" class="floating-input" placeholder=" " maxlength="80">
+                    <label class="floating-label" for="jatek-cim-input">Játék neve</label>
+                </div>
+
+                <div class="floating-group">
+                    <textarea id="jatek-leiras-input" class="floating-input floating-textarea" placeholder=" " maxlength="500" rows="3"></textarea>
+                    <label class="floating-label" for="jatek-leiras-input">Rövid leírás (opcionális)</label>
+                </div>
+
+                <div class="jatek-mezo-sor">
+                    <div class="floating-group">
+                        <input type="number" id="jatek-min-jatekosok-input" class="floating-input" placeholder=" " min="1" max="99">
+                        <label class="floating-label" for="jatek-min-jatekosok-input">Min. játékosszám</label>
+                    </div>
+                    <div class="floating-group">
+                        <input type="text" id="jatek-eszkozok-input" class="floating-input" placeholder=" " maxlength="300">
+                        <label class="floating-label" for="jatek-eszkozok-input">Mi kell hozzá?</label>
+                    </div>
+                </div>
+
+                <label class="jatek-kapcsolo-sor">
+                    <input type="checkbox" id="jatek-publikus-input">
+                    <span>Megosztás minden csoporttal (publikus)</span>
+                </label>
+
+                <h4 class="jatek-lepesek-cim">Szabályok, szakaszonként</h4>
+                <div id="jatek-lepesek-szerkeszto" class="jatek-lepesek-szerkeszto"></div>
+                <button type="button" id="jatek-uj-lepes-gomb" class="jatek-uj-lepes-gomb">+ Új szakasz</button>
+            </div>
+            <div class="sm-footer">
+                <p id="jatek-szerkeszto-allapot" class="sm-status" role="status" aria-live="polite"></p>
+                <button type="button" id="jatek-mentes-gomb" class="sm-btn sm-btn-save">Mentés</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Részletek modal -->
+    <div id="jatek-reszletek-modal" class="sm-overlay" hidden>
+        <div class="sm-card jatek-reszletek-kartya">
+            <button type="button" id="jatek-reszletek-bezar" class="sm-close-btn" aria-label="Bezárás">&times;</button>
+            <div class="sm-header">
+                <h3 id="jatek-reszletek-cim"></h3>
+            </div>
+            <div class="sm-body">
+                <div id="jatek-reszletek-badge-sor" class="jatek-reszletek-badge-sor"></div>
+                <p id="jatek-reszletek-leiras" class="jatek-reszletek-leiras"></p>
+                <div id="jatek-reszletek-infok" class="jatek-reszletek-infok"></div>
+
+                <div id="jatek-reszletek-lepesek" class="jatek-reszletek-lepesek"></div>
+
+                <div id="jatek-sajat-muveletek" class="jatek-sajat-muveletek" hidden>
+                    <button type="button" id="jatek-szerkesztes-gomb" class="sm-btn">✏️ Szerkesztés</button>
+                    <button type="button" id="jatek-torles-gomb" class="sm-btn sm-btn-logout">🗑️ Törlés</button>
+                </div>
+
+                <div class="jatek-javaslatok-szekcio">
+                    <h4>Közösségi kiegészítések</h4>
+                    <div id="jatek-javaslatok-lista" class="jatek-javaslatok-lista"></div>
+
+                    <div id="jatek-uj-javaslat-resz" class="jatek-uj-javaslat-resz" hidden>
+                        <div class="floating-group">
+                            <input type="text" id="jatek-javaslat-cim-input" class="floating-input" placeholder=" " maxlength="80">
+                            <label class="floating-label" for="jatek-javaslat-cim-input">Javaslat címe (pl. "B verzió")</label>
+                        </div>
+                        <div class="floating-group">
+                            <textarea id="jatek-javaslat-szoveg-input" class="floating-input floating-textarea" placeholder=" " maxlength="2000" rows="3"></textarea>
+                            <label class="floating-label" for="jatek-javaslat-szoveg-input">A javaslat szövege</label>
+                        </div>
+                        <button type="button" id="jatek-javaslat-kuldes-gomb" class="sm-btn sm-btn-save">Javaslat küldése</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

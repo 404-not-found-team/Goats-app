@@ -42,11 +42,6 @@ function setupGombok() {
         kirajzolNaptar();
     });
 
-    // Új esemény gomb a főoldalon
-    document.getElementById('uj-esemeny-gomb')?.addEventListener('click', () => {
-        const modal = document.getElementById('esemeny-modal');
-        if (modal) modal.hidden = false;
-    });
     document.getElementById('close-esemeny-modal')?.addEventListener('click', () => {
         const modal = document.getElementById('esemeny-modal');
         if (modal) modal.hidden = true;
