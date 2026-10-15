@@ -3,7 +3,7 @@
 //   az admin adatai addig nem töltődnek be. A profil későbbi változásakor (onChange) is.
 // - Globális kapcsolók: public.app_kapcsolok; mentés az admin_beallitas_mentese RPC-vel, amit a
 //   szerver is ellenőriz (csak superadmin). Hiba esetén a kapcsoló visszaáll.
-// - Italkategóriák: js/pages/admin-kategoriak.js.
+// - Italjavaslatok: js/pages/admin-javaslatok.js; italkategóriák: js/pages/admin-kategoriak.js.
 import { client } from '../supabase-client.js';
 import { ready, getState, isSuperadmin, onChange } from '../hitelesites.js';
 import { OLDALAK, FUNKCIOK } from '../segedek/oldalak.js';
@@ -138,7 +138,10 @@ await ready;
 if (!jogosultsagEllenorzes()) {
     $('adminTartalom').hidden = false;
     betoltes();
-    // Italkategóriák és az italok besorolása (csak az ellenőrzés után töltődik be)
+    // Italjavaslatok, italkategóriák és az italok besorolása (csak az ellenőrzés után töltődnek be)
+    import('./admin-javaslatok.js')
+        .then(m => m.indit())
+        .catch(err => console.error('Az italjavaslatok betöltése nem sikerült:', err));
     import('./admin-kategoriak.js')
         .then(m => m.indit())
         .catch(err => console.error('Az italkategóriák betöltése nem sikerült:', err));

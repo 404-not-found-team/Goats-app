@@ -77,7 +77,6 @@ A **Goats App** egy reszponzív webes alkalmazás baráti csoportok számára: k
 8. **Beállítások / Profil** (a fejlécben elérhető menü, minden oldalon)
    - Saját adatok: megjelenített név (automatikus mentéssel), e-mail (csak megjelenítve), fiók törlése.
    - Csoport adatok: tagok listája, admin jog átadása, tag eltávolítása, csoportnév átnevezése, kód újragenerálása, csoport törlése vagy kilépés.
-   - Ital-moderáció (admin): beküldött italjavaslatok jóváhagyása/elutasítása.
    - Téma váltás (sötét, világos és további színsémák).
 
 9. **Admin (`admin.html`)** – csak superadminnak, lásd [Admin oldal és globális kapcsolók](#️-admin-oldal-és-globális-kapcsolók).
@@ -169,10 +168,12 @@ Az `admin.html` (`js/pages/admin.js`, `css/pages/admin.css`) csak a superadminok
 | Tábla | Tartalom |
 |---|---|
 | `public.ital_kategoriak` | Fő- és alkategóriák: `kod`, `nev`, `szulo_id` (alkategóriánál a főkategória), `sorrend`, szabály (`szabaly_marka` = márka egyezik, vagy `szabaly_nev` = a név eleje). A főkategória tulajdonságai a felületet vezérlik: `ikon`, `recept` (koktél, fröccs), `kiszereles` (sör), `alkoholos`, `zero_szuro` (energiaital). |
-| `public.italok` | A katalógus: `id`, `marka`, `nev`, `kategoria_id`, `alkategoria_id` + `alkategoria_kezi` (kézi felülírás; kézi és üres = egyik sem), `zero` (üres = automatikus a névből: zero, sugar free, cukormentes; a Ranglistán „Cukormentes” jelvény), `alkohol_fok`, `kiszereles`, `recept_mod` (`arany`/`pontos`), `jovahagyva`, `javasolta_id`, `created_at`. Az azonosítók a régi `ital_katalogus` azonosítói, így a mentett ranglisták (`ital_ranglista.id = 'ital-<id>'`) érvényesek. |
+| `public.italok` | A katalógus: `id`, `marka`, `nev`, `kategoria_id`, `alkategoria_id` + `alkategoria_kezi` (kézi felülírás; kézi és üres = egyik sem), `zero` (üres = automatikus a névből: zero, sugar free, cukormentes; a Ranglistán „Cukormentes” jelvény), `alkohol_fok`, `kiszereles` (sörnél: `dobozos` = 0,5 l, `dobozos_330` = 0,33 l, `uveges`), `recept_mod` (`arany`/`pontos`), `jovahagyva`, `javasolta_id`, `created_at`. Az azonosítók a régi `ital_katalogus` azonosítói, így a mentett ranglisták (`ital_ranglista.id = 'ital-<id>'`) érvényesek. |
 | `public.ital_osszetevok` | Koktél/fröccs recept: egy sor egy hozzávaló (`ital_id`, `sorrend`, `nev`, `mennyiseg`, `egyseg`). |
 
 Az alkategória-szabály és a zero felismerése egy helyen van: `js/segedek/ital-kategoriak.js` (a Ranglista és az admin oldal is ezt használja). Jogosultság: olvasni mindenki tudja (a jóvá nem hagyott italt csak a javasló, a csoporttársai és a superadmin), új italt bejelentkezett felhasználó javasolhat (a `funkcio_italjavaslat` kapcsoló mellett), kategóriát és besorolást csak a superadmin módosíthat (RLS).
+
+**Admin oldal → Italjavaslatok**: a jóváhagyásra váró italok (kategória, márka, kiszerelés, alkoholfok, recept, javasló), jóváhagyás vagy elutasítás (`list_pending_drinks`, `approve_drink`, `reject_drink` RPC; korábban a beállítások ablakában volt).
 
 **Admin oldal → Italkategóriák**: alkategória létrehozása, szerkesztése, törlése egy főkategórián belül (szabály: márka vagy névkezdet), és italonként az alkategória és a zero kézi felülírása.
 
