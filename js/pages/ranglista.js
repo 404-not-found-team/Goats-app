@@ -851,6 +851,9 @@ async function mentUjItal() {
     zardUjItalModal();
 }
 
+// Kisebb kiszerelés (0,33 l-es doboz): a képe valamivel kisebb az alap 0,5 l-esnél
+const kisebbKiszereles = (ital) => ital.kiszereles === 'dobozos_330';
+
 // Új elem szöveggel és osztállyal, textContent-tel (nincs innerHTML)
 function ujElem(tag, osztaly = '', szoveg = '') {
     const elem = document.createElement(tag);
@@ -883,6 +886,8 @@ function addItalKartyaToUI(ital, rendez = true) {
     kartya.dataset.vanAlcsoport = K().alkategoriai(fo.id).length > 0 ? '1' : '0';
     kartya.dataset.zeroSzuro = fo.zero_szuro ? '1' : '0';
     kartya.dataset.zero = K().zero(ital) ? '1' : '0';
+    // A 0,33 l-es doboz valamivel kisebb képet kap, mint az alap 0,5 l-es (css: .kisebb-kiszereles)
+    kartya.classList.toggle('kisebb-kiszereles', kisebbKiszereles(ital));
     // Teljes név (márkával) a rendezéshez és a név szerinti elrejtéshez; a felirat márka nélküli
     kartya.dataset.nev = ital.nev || '';
 
@@ -920,7 +925,9 @@ function italReszletek(kartya, ital, fo, kepAdat) {
     // Ugyanaz az elem, mint a kártyán: kép (tartalék-sorrenddel), vagy kép híján a színezett kategória-ikon
     const kep = window.italKep.elemLetrehoz(kepAdat);
     kep.id = 'modal-kep';
-    document.getElementById('modal-kep-hely').replaceChildren(kep);
+    const kepHely = document.getElementById('modal-kep-hely');
+    kepHely.replaceChildren(kep);
+    kepHely.classList.toggle('kisebb-kiszereles', kisebbKiszereles(ital));
 
     document.getElementById('modal-nev').textContent = ital.nev;
 
@@ -1015,6 +1022,7 @@ function frissitsItalKartyaDOM(italId, ital) {
     kartya.dataset.vanAlcsoport = K().alkategoriai(fo.id).length > 0 ? '1' : '0';
     kartya.dataset.zeroSzuro = fo.zero_szuro ? '1' : '0';
     kartya.dataset.zero = K().zero(ital) ? '1' : '0';
+    kartya.classList.toggle('kisebb-kiszereles', kisebbKiszereles(ital));
     kartya.dataset.nev = ital.nev || '';
 
     const regiKep = kartya.querySelector('img, .ital-ikon');

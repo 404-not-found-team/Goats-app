@@ -107,7 +107,8 @@
         const valtozatok = MARKA_VALTOZATOK[marka];
         if (!valtozatok) return null;
         const kisbetus = String(nev || '').toLowerCase();
-        const talalat = valtozatok.find(([reszlet]) => kisbetus.includes(reszlet));
+        // kis- és nagybetűtől függetlenül (a listában pl. 'New Gen' is szerepelhet)
+        const talalat = valtozatok.find(([reszlet]) => kisbetus.includes(String(reszlet).toLowerCase()));
         return talalat ? talalat[1] : null;
     }
 
