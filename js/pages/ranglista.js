@@ -47,10 +47,11 @@ async function inicializalas() {
     epitForrasDobozok();
     epitKategoriaValaszto();
     epitKiszerelesValaszto();
+    epitFormaValaszto();
 
     const [katalogusRes, osszetevoRes] = await Promise.all([
         client.from('italok')
-            .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id')
+            .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2')
             .order('nev', { ascending: true })
             .range(0, 1999),
         client.from('ital_osszetevok')
@@ -230,6 +231,67 @@ function epitKiszerelesValaszto() {
         opt.textContent = k.nev;
         return opt;
     }));
+}
+
+// ---------- Színezett kép az űrlapon (italok.kep_forma, kep_minta, kep_szin_1, kep_szin_2) ----------
+
+function epitFormaValaszto() {
+    const opcio = (ertek, szoveg) => {
+        const opt = document.createElement('option');
+        opt.value = ertek;
+        opt.textContent = szoveg;
+        return opt;
+    };
+    const forma = document.getElementById('uj-ital-forma');
+    if (forma) {
+        forma.replaceChildren(opcio('', 'Nincs (márkakép / ikon)'),
+            ...window.italKep.FORMAK.map(([kod, nev]) => opcio(kod, nev)));
+    }
+    const minta = document.getElementById('uj-ital-minta');
+    if (minta) {
+        minta.replaceChildren(opcio('', 'Nincs'),
+            ...window.italKep.MINTAK.map(([kod, nev]) => opcio(kod, nev)));
+    }
+}
+
+// Az űrlap képmezőinek értéke mentéshez; forma nélkül minden mező üres
+function kepAdatokUrlapbol() {
+    const forma = document.getElementById('uj-ital-forma')?.value || '';
+    if (!forma) return { kep_forma: null, kep_minta: null, kep_szin_1: null, kep_szin_2: null };
+    const vanSzin2 = document.getElementById('uj-ital-van-szin-2')?.checked;
+    return {
+        kep_forma: forma,
+        kep_minta: document.getElementById('uj-ital-minta')?.value || null,
+        kep_szin_1: document.getElementById('uj-ital-szin-1')?.value || null,
+        kep_szin_2: vanSzin2 ? (document.getElementById('uj-ital-szin-2')?.value || null) : null,
+    };
+}
+
+// Az űrlap képmezőinek kitöltése (szerkesztéskor az ital adataival, új italnál alaphelyzetbe)
+function kepMezokBeallit(ital = {}) {
+    document.getElementById('uj-ital-forma').value = ital.kep_forma || '';
+    document.getElementById('uj-ital-minta').value = ital.kep_minta || '';
+    document.getElementById('uj-ital-szin-1').value = ital.kep_szin_1 || '#e30613';
+    document.getElementById('uj-ital-van-szin-2').checked = !!ital.kep_szin_2;
+    document.getElementById('uj-ital-szin-2').value = ital.kep_szin_2 || '#111111';
+    kepElonezetFrissit();
+}
+
+function kepElonezetFrissit() {
+    const adatok = kepAdatokUrlapbol();
+    const resz = document.getElementById('kep-szinezes-resz');
+    if (resz) resz.hidden = !adatok.kep_forma;
+    const szin2 = document.getElementById('uj-ital-szin-2');
+    if (szin2) szin2.disabled = !document.getElementById('uj-ital-van-szin-2')?.checked;
+
+    const elonezet = document.getElementById('kep-elonezet');
+    if (!elonezet) return;
+    if (!adatok.kep_forma) {
+        elonezet.replaceChildren();
+        return;
+    }
+    const nev = document.getElementById('uj-ital-nev')?.value || '';
+    elonezet.replaceChildren(window.italKep.elemLetrehoz({ nev, ...adatok }));
 }
 
 // Az új ital űrlap kategória-legördülője (a főkategóriák a táblából)
@@ -595,6 +657,7 @@ function nyisdUjItalModal() {
     }
     document.getElementById('uj-ital-modal').hidden = false;
     kategoriaValtozasCheck();
+    kepMezokBeallit();
 }
 
 function zardUjItalModal() {
@@ -768,7 +831,7 @@ async function mentUjItal() {
     }
 
     const client = kliens();
-    const KIVALASZTANDO = 'id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id';
+    const KIVALASZTANDO = 'id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2';
 
     if (szerkesztettItalId) {
         const italId = szerkesztettItalId;
@@ -779,6 +842,7 @@ async function mentUjItal() {
             alkohol_fok: fo.alkoholos ? (szazalek ? parseFloat(szazalek) : null) : 0,
             kiszereles: fo.kiszereles ? (document.getElementById('uj-ital-kiszereles')?.value || null) : null,
             recept_mod: fo.recept ? aktualisMod : null,
+            ...kepAdatokUrlapbol(),
         };
 
         const { data, error } = await client.from('italok').update(valtozas).eq('id', italId).select(KIVALASZTANDO).single();
@@ -818,6 +882,7 @@ async function mentUjItal() {
         alkohol_fok: fo.alkoholos ? (szazalek ? parseFloat(szazalek) : null) : 0,
         kiszereles: fo.kiszereles ? (document.getElementById('uj-ital-kiszereles')?.value || null) : null,
         recept_mod: fo.recept ? aktualisMod : null,
+        ...kepAdatokUrlapbol(),
         jovahagyva: false,
         javasolta_id: window.goatsAuth?.getState()?.user?.id || null,
     };
@@ -989,6 +1054,7 @@ function nyisdSzerkesztesModal() {
     document.getElementById('uj-ital-kategoria').value = String(ital.kategoria_id);
     document.getElementById('uj-ital-szazalek').value = ital.alkohol_fok ?? '';
     document.getElementById('uj-ital-kiszereles').value = ital.kiszereles || 'dobozos';
+    kepMezokBeallit(ital);
 
     const mod = ital.recept_mod === 'pontos' ? 'pontos' : 'arany';
     aktualisMod = mod;
@@ -1025,7 +1091,7 @@ function frissitsItalKartyaDOM(italId, ital) {
     kartya.classList.toggle('kisebb-kiszereles', kisebbKiszereles(ital));
     kartya.dataset.nev = ital.nev || '';
 
-    const regiKep = kartya.querySelector('img, .ital-ikon');
+    const regiKep = kartya.querySelector('img, .ital-ikon, .ital-szinezett');
     const ujKep = window.italKep.elemLetrehoz(kepAdat);
     if (regiKep) regiKep.replaceWith(ujKep); else kartya.insertBefore(ujKep, kartya.firstChild);
 

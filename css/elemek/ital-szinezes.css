@@ -1,0 +1,53 @@
+/* Színezett italformák (ital-kep.js: szinezettElem).
+   A rétegek képeit a .forma-<forma> és .minta-<minta> osztály adja CSS-változóként,
+   a színt a szin-osztaly.js a --szin változóval. A szürkeárnyalatos réteg a maszkkal kapja
+   meg az alakját, a multiply keverés pedig ráteszi a színt úgy, hogy az árnyékolás megmarad. */
+
+.ital-szinezett {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100px;
+    cursor: grab;
+    transition: transform 0.2s ease;
+}
+
+.ital-reteg {
+    position: absolute;
+    inset: 4px;
+}
+
+.reteg-szin,
+.reteg-sav,
+.reteg-minta {
+    background-color: var(--szin, #cccccc);
+    background-image: var(--reteg-kep);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-blend-mode: multiply;
+    -webkit-mask: var(--reteg-kep) center / contain no-repeat;
+    mask: var(--reteg-kep) center / contain no-repeat;
+}
+
+.reteg-szin {
+    --reteg-kep: var(--kep-szin);
+}
+
+.reteg-sav {
+    --reteg-kep: var(--kep-sav);
+}
+
+.reteg-minta {
+    --reteg-kep: var(--kep-minta);
+}
+
+.reteg-reszletek {
+    background: var(--kep-reszletek) center / contain no-repeat;
+}
+
+@media (max-width: 768px) {
+    .ital-szinezett {
+        height: 90px;
+    }
+}
