@@ -15,6 +15,7 @@ const ELOGYORSITOTT = [
     'kepek.html',
     'admin.html',
     'goatsgame.html',
+    'jatekszabalyok.html',
     'css/main.css',
     'js/main.js',
     'js/supabase-client.js',

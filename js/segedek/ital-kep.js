@@ -75,6 +75,42 @@
         koktel: 'egyeb', egyeb: 'egyeb'
     };
 
+    // Normál esetben a márka-kép fájlneve megegyezik a márka-szluggal (pl. 'red-bull' -> red-bull.webp).
+    // Ahol a feltöltött fájl ettől eltér, itt felülírható.
+    const MARKA_KEP_FAJL = {
+        'monster-energy': 'monster',
+    };
+
+    // Egy márkán belüli változatok (pl. kiadások), külön képpel. A kulcs a márka-szlug, az érték egy
+    // [névrészlet, fájlnév kiterjesztés nélkül] lista - az ital nevében (kisbetűsen) elsőként egyező nyer.
+    const MARKA_VALTOZATOK = {
+        'monster-energy': [
+            ['ultra', 'monster_ultra'],
+            ['rehab', 'monster_rehab'],
+            ['juiced', 'monster_juiced'],
+        ],
+        'hell': [
+            ['ice coffee', 'hell_ice_coffe'],
+            ['New Gen', 'hell_new_gen'],
+            ['500 ml', 'hell_500'],
+        ],
+        'red-bull': [
+            ['edition', 'red-bull_edition'],
+        ],
+    };
+
+    function markaKepFajl(marka) {
+        return MARKA_KEP_FAJL[marka] || marka;
+    }
+
+    function markaValtozatFajl(marka, nev) {
+        const valtozatok = MARKA_VALTOZATOK[marka];
+        if (!valtozatok) return null;
+        const kisbetus = String(nev || '').toLowerCase();
+        const talalat = valtozatok.find(([reszlet]) => kisbetus.includes(reszlet));
+        return talalat ? talalat[1] : null;
+    }
+
     function markaNevbol(nev) {
         const kisbetus = String(nev || '').toLowerCase();
         const talalat = MARKA_MINTAK.find(([minta]) => kisbetus.startsWith(minta.toLowerCase()));
@@ -118,7 +154,11 @@
             if (szlug) jeloltek.push(`img/koktelok/${szlug}.webp`);
         }
         const marka = ital.marka || markaNevbol(ital.nev);
-        if (marka) jeloltek.push(`img/markak/${marka}.webp`);
+        if (marka) {
+            const valtozatFajl = markaValtozatFajl(marka, ital.nev);
+            if (valtozatFajl) jeloltek.push(`img/markak/${valtozatFajl}.webp`);
+            jeloltek.push(`img/markak/${markaKepFajl(marka)}.webp`);
+        }
         // Sörnél márka-kép híján: két generikus kép a kiszerelés szerint (nem kell minden sörnek saját fotó)
         if (String(ital.kategoria || '').toLowerCase() === 'sor' && ital.kiszereles) {
             const fajl = ital.kiszereles === 'uveges' ? 'sor-uveges' : 'sor-doboz';

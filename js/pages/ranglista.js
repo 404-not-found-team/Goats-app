@@ -10,6 +10,7 @@
 let aktivElemId = null;
 let aktivItalAdat = null;
 let aktualisMod = 'arany';
+let szerkesztettItalId = null; // az "Új ital" ablak szerkesztés módban: ennek az italnak az id-ja (null = új felvétel)
 
 const ZERO_ERTEKEK = ['mind', 'zero', 'nem_zero'];
 const ZERO_FELIRAT = { mind: 'Mind', zero: 'Cukormentes', nem_zero: 'Cukros' };
@@ -564,15 +565,22 @@ function alkalmazSzurot() {
     frissitsSzamlalokat();
 }
 
-// Darabszámok és az üres dobozok/alcsoportok elrejtése
+// Darabszámok és az üres dobozok/alcsoportok elrejtése.
+// A nevező a kategória TELJES darabszáma (a mar rangsorolt, tier-dobozokba athelyezett kartyakkal
+// egyutt), nem csak a meg a forras-dobozban levoke - igy a szam tenyleg a rangsorolasi haladast
+// mutatja, nem csak azt, hogy a szurés hany darabot rejt el a (ranggal mar csokkent) poolbol.
 function frissitsSzamlalokat() {
     document.querySelectorAll('.forras-doboz').forEach(doboz => {
         const lista = doboz.querySelector('.ital-lista');
         if (!lista) return;
+        const kategoria = lista.dataset.kategoria;
         const kartyak = Array.from(lista.getElementsByClassName('ital-kartya'));
         const lathato = kartyak.filter(k => !k.hidden).length;
+        const osszesen = kategoria
+            ? document.querySelectorAll(`.ital-kartya[data-kategoria="${kategoria}"]`).length
+            : kartyak.length;
         const szamlalo = doboz.querySelector('.ital-szamlalo');
-        if (szamlalo) szamlalo.textContent = `${lathato} / ${kartyak.length}`;
+        if (szamlalo) szamlalo.textContent = `${lathato} / ${osszesen}`;
         doboz.hidden = lathato === 0;
         lista.querySelectorAll('.ital-alcsoport').forEach(cs => {
             cs.hidden = !cs.querySelector('.ital-kartya:not([hidden])');
@@ -595,6 +603,9 @@ function zardUjItalModal() {
     document.getElementById('uj-ital-szazalek').value = '';
     document.getElementById('uj-ital-kiszereles').selectedIndex = 0;
     document.getElementById('hozzavalok-lista').replaceChildren();
+    szerkesztettItalId = null;
+    document.getElementById('uj-ital-modal-cim').textContent = 'Új ital / koktél felvétele';
+    document.getElementById('uj-ital-mentes-gomb').textContent = 'Hozzáadás';
 }
 
 // A kiválasztott főkategória az új ital űrlapon
@@ -756,6 +767,48 @@ async function mentUjItal() {
         });
     }
 
+    const client = kliens();
+    const KIVALASZTANDO = 'id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id';
+
+    if (szerkesztettItalId) {
+        const italId = szerkesztettItalId;
+        const valtozas = {
+            nev,
+            marka: window.italKep ? window.italKep.markaNevbol(nev) : null,
+            kategoria_id: fo.id,
+            alkohol_fok: fo.alkoholos ? (szazalek ? parseFloat(szazalek) : null) : 0,
+            kiszereles: fo.kiszereles ? (document.getElementById('uj-ital-kiszereles')?.value || null) : null,
+            recept_mod: fo.recept ? aktualisMod : null,
+        };
+
+        const { data, error } = await client.from('italok').update(valtozas).eq('id', italId).select(KIVALASZTANDO).single();
+        if (error) {
+            console.error('Supabase hiba:', error);
+            alert(`Hiba történt a mentéskor: ${error.message}`);
+            return;
+        }
+
+        const { error: delError } = await client.from('ital_osszetevok').delete().eq('ital_id', italId);
+        if (delError) console.error('A régi hozzávalók törlése nem sikerült:', delError);
+
+        if (hozzavalok.length > 0) {
+            const { error: receptHiba } = await client.from('ital_osszetevok').insert(hozzavalok.map(h => ({ ...h, ital_id: italId })));
+            if (receptHiba) {
+                console.error('A recept mentése nem sikerült:', receptHiba);
+                alert('Az ital elmentve, de a hozzávalók mentése nem sikerült.');
+            } else {
+                osszetevokItalonkent.set(italId, hozzavalok);
+            }
+        } else {
+            osszetevokItalonkent.delete(italId);
+        }
+
+        frissitsItalKartyaDOM(italId, data);
+        alkalmazSzurot();
+        zardUjItalModal();
+        return;
+    }
+
     // A kép nélküli új ital: a kép a márkából vagy a kategória-ikonból jön (ital-kep.js),
     // a jóváhagyásig pedig nem látszik a közös katalógusban.
     const ujItalAdat = {
@@ -769,11 +822,10 @@ async function mentUjItal() {
         javasolta_id: window.goatsAuth?.getState()?.user?.id || null,
     };
 
-    const client = kliens();
     const { data, error } = await client
         .from('italok')
         .insert([ujItalAdat])
-        .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id')
+        .select(KIVALASZTANDO)
         .single();
 
     if (error) {
@@ -909,7 +961,80 @@ function italReszletek(kartya, ital, fo, kepAdat) {
     }));
     if (doboz) doboz.hidden = recept.length === 0;
 
+    const szerkesztesGomb = document.getElementById('modal-szerkesztes-gomb');
+    if (szerkesztesGomb) szerkesztesGomb.hidden = !window.goatsAuth?.isSuperadmin?.();
+
     document.getElementById('modal-hatter').hidden = false;
+}
+
+// ---------- Szerkesztés (superadmin): a kinagyított ital adatainak módosítása ----------
+
+function nyisdSzerkesztesModal() {
+    if (!aktivItalAdat || !window.goatsAuth?.isSuperadmin?.()) return;
+    const ital = aktivItalAdat;
+    szerkesztettItalId = ital.id;
+    modalBezár();
+
+    document.getElementById('uj-ital-modal-cim').textContent = 'Ital szerkesztése';
+    document.getElementById('uj-ital-mentes-gomb').textContent = 'Mentés';
+
+    document.getElementById('uj-ital-nev').value = ital.nev || '';
+    document.getElementById('uj-ital-kategoria').value = String(ital.kategoria_id);
+    document.getElementById('uj-ital-szazalek').value = ital.alkohol_fok ?? '';
+    document.getElementById('uj-ital-kiszereles').value = ital.kiszereles || 'dobozos';
+
+    const mod = ital.recept_mod === 'pontos' ? 'pontos' : 'arany';
+    aktualisMod = mod;
+    document.getElementById('mode-arany-btn')?.classList.toggle('active', mod === 'arany');
+    document.getElementById('mode-pontos-btn')?.classList.toggle('active', mod === 'pontos');
+
+    const hozzavalokLista = document.getElementById('hozzavalok-lista');
+    hozzavalokLista.replaceChildren();
+    const recept = osszetevokItalonkent.get(ital.id) || [];
+    recept.forEach(r => ujHozzavaloSor(r.mennyiseg ?? '', r.egyseg || 'dl', r.nev || ''));
+
+    // Beállítja a láthatóságokat (alkoholfok/kiszerelés/recept-rész), és ha recept-es kategória,
+    // de nincs mentett hozzávaló, indít egy üres sorral
+    kategoriaValtozasCheck();
+
+    document.getElementById('uj-ital-modal').hidden = false;
+}
+
+// A kártya adatainak frissítése a meglévő DOM-elemen, helyben - nem mozgatja ki a már rangsorolt
+// italt a tier-dobozból, csak a még a forrás-dobozban lévőket teszi át az (esetleg módosult) kategóriájukba.
+function frissitsItalKartyaDOM(italId, ital) {
+    const kartya = document.getElementById(`ital-${italId}`);
+    if (!kartya) return;
+
+    const fo = K().kategoria(ital.kategoria_id) || K().fo.find(f => f.kod === 'egyeb') || K().fo[0];
+    const al = K().alkategoria(ital);
+    const kepAdat = { ...ital, kategoria: fo.kod, ikon: fo.ikon };
+
+    kartya.dataset.kategoria = fo.kod;
+    kartya.dataset.alkategoria = al ? al.kod : '';
+    kartya.dataset.vanAlcsoport = K().alkategoriai(fo.id).length > 0 ? '1' : '0';
+    kartya.dataset.zeroSzuro = fo.zero_szuro ? '1' : '0';
+    kartya.dataset.zero = K().zero(ital) ? '1' : '0';
+    kartya.dataset.nev = ital.nev || '';
+
+    const regiKep = kartya.querySelector('img, .ital-ikon');
+    const ujKep = window.italKep.elemLetrehoz(kepAdat);
+    if (regiKep) regiKep.replaceWith(ujKep); else kartya.insertBefore(ujKep, kartya.firstChild);
+
+    const felirat = kartya.querySelector('.ital-nev');
+    if (felirat) {
+        felirat.textContent = window.italKep.nevMarkaNelkul(ital.nev);
+        felirat.title = ital.nev || '';
+    }
+
+    // Ha még nincs rangsorolva (a forrás-dobozban van), a kategóriaváltozás miatt a megfelelő helyre kerül
+    if (!kartya.closest('.ranglista-dropzone')) {
+        const ujCel = forrasKontener(kartya);
+        if (ujCel && ujCel !== kartya.parentElement) ujCel.appendChild(kartya);
+        if (kartya.parentElement) rendezKartyakatContainerben(kartya.parentElement);
+    }
+
+    aktivItalAdat = ital;
 }
 
 window.addEventListener('DOMContentLoaded', inicializalas);

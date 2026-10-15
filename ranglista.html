@@ -51,6 +51,7 @@
 
     <div id="modal-hatter" hidden>
         <div id="hatter" class="modal-kis-doboz">
+            <button type="button" id="modal-szerkesztes-gomb" class="modal-szerkesztes-btn" onclick="nyisdSzerkesztesModal()" title="Szerkesztés (superadmin)" hidden>✏️</button>
             <!-- a kép vagy (kép híján) a kategória-ikon, ugyanaz az elem, mint a kártyán (ital-kep.js) -->
             <div id="modal-kep-hely" class="modal-kep-hely"></div>
             <div id="modal-nev" class="modal-ital-cim"></div>
@@ -78,7 +79,7 @@
 
     <div id="uj-ital-modal" class="modal-hatter-ui" hidden>
         <div class="modal-doboz-ui modal-nagy-doboz">
-            <h3 class="modal-alcim">Új ital / koktél felvétele</h3>
+            <h3 id="uj-ital-modal-cim" class="modal-alcim">Új ital / koktél felvétele</h3>
 
             <div class="floating-group">
                 <input type="text" id="uj-ital-nev" class="floating-input" placeholder=" " />
@@ -120,7 +121,7 @@
             </div>
 
             <div class="modal-akcio-gombok">
-                <button onclick="mentUjItal()" class="sm-btn gomb-hozzaadas">Hozzáadás</button>
+                <button id="uj-ital-mentes-gomb" onclick="mentUjItal()" class="sm-btn gomb-hozzaadas">Hozzáadás</button>
                 <button onclick="zardUjItalModal()" class="sm-btn gomb-megse">Mégse</button>
             </div>
         </div>

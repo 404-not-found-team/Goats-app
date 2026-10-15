@@ -84,8 +84,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Bejelentkezett, de csoport nélküli felhasználó: egyszer / fül megkínáljuk a csatlakozást
-  if (state.user && !state.group && !sessionStorage.getItem('goats_auth_prompted')) {
+  // Bejelentkezett, de csoport nélküli felhasználó: egyszer / fül megkínáljuk a csatlakozást.
+  // allapotHiba esetén a group=null NEM megbízható (lehet, hogy csak a lekérdezés hibázott),
+  // ilyenkor nem ugratjuk fel a modalt - inkább a háttérben sikeres frissítésre bízzuk.
+  if (state.user && !state.group && !state.allapotHiba && !sessionStorage.getItem('goats_auth_prompted')) {
     sessionStorage.setItem('goats_auth_prompted', '1');
     get('auth-modal').hidden = false;
   }
