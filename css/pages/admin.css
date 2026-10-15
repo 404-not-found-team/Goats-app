@@ -261,7 +261,24 @@
     overflow-y: auto;
 }
 
+/* Jóváhagyásra váró italok száma a címben */
+.admin-darab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    margin-left: 6px;
+    border-radius: 999px;
+    background: var(--accent-color);
+    color: var(--on-accent);
+    font-size: var(--fs-xs);
+    vertical-align: middle;
+}
+
 @media (max-width: 600px) {
+    .admin-sor.admin-javaslat,
     .admin-sor.admin-ital,
     .admin-sor.admin-alkategoria {
         flex-direction: column;
