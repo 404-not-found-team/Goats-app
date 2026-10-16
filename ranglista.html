@@ -87,6 +87,13 @@
                 <label class="floating-label">Ital neve</label>
             </div>
 
+            <!-- A kártyán/modalban alapból a márka-előtag nélküli név látszik (pl. "Finlandia Mango" ->
+                 "Mango"); néhány névnél (pl. "Kozel Premium") ez félreérthető, ezért itt kikapcsolható -->
+            <label id="teljes-nev-group" class="szuro-kapcsolo-sor" hidden>
+                <input type="checkbox" id="uj-ital-teljes-nev">
+                <span>🏷️ Teljes név mutatása (ne vágja le a márkanevet)</span>
+            </label>
+
             <div class="floating-group">
                 <select id="uj-ital-kategoria" class="floating-select" onchange="kategoriaValtozasCheck()">
                     <!-- a lehetőségeket a ranglista.js tölti fel a public.ital_kategoriak táblából -->
@@ -170,11 +177,6 @@
             <div id="szuro-panel-sajat" class="szuro-panel" role="tabpanel">
                 <p class="szuro-leiras">Csak neked és csak most: újratöltéskor visszaáll a csoport beállítására.</p>
                 <div id="sajat-szuro-kategoriak" class="szuro-kategoria-lista"></div>
-
-                <label class="szuro-kapcsolo-sor" hidden>
-                    <input type="checkbox" id="sajat-szuro-marka-checkbox">
-                    <span>🏷️ Márka mutatása a neveknél</span>
-                </label>
 
                 <label class="sm-label szuro-label szuro-label-top" for="kizart-kulcsszo-input">🚫 Márka / név elrejtése:</label>
                 <div class="szuro-input-sor">
