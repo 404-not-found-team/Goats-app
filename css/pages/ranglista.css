@@ -288,6 +288,23 @@
    4. GOMBOK ÉS MODAL-OK
    ========================================================================== */
 
+.szuro-kapcsolo-sor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--fs-sm);
+    color: var(--text-primary);
+    margin: 10px 0 18px;
+    cursor: pointer;
+}
+
+.szuro-kapcsolo-sor input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-color);
+    cursor: pointer;
+}
+
 .gomb-uj-ital {
     background-color: var(--accent-color);
     color: var(--on-accent);

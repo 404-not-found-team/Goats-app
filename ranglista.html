@@ -73,8 +73,7 @@
                 <button id="elmegy" class="gombok dark" onclick="kategoriatValaszt('B')">B</button>
                 <button id="soha" class="gombok dark" onclick="kategoriatValaszt('C')">C</button>
                 <button id="megjobbansoha" class="gombok dark" onclick="kategoriatValaszt('D')">D</button>
-                <button id="forras" class="gombok" onclick="kategoriatValaszt('forras')">↩️ Vissza</button>
-                <button id="bezar" class="gombok" onclick="modalBezár()">Mégse</button>
+                <button id="forras" class="gombok" onclick="kategoriatValaszt('forras')">Vissza</button>
             </div>
         </div>
     </div>
@@ -171,6 +170,11 @@
             <div id="szuro-panel-sajat" class="szuro-panel" role="tabpanel">
                 <p class="szuro-leiras">Csak neked és csak most: újratöltéskor visszaáll a csoport beállítására.</p>
                 <div id="sajat-szuro-kategoriak" class="szuro-kategoria-lista"></div>
+
+                <label class="szuro-kapcsolo-sor" hidden>
+                    <input type="checkbox" id="sajat-szuro-marka-checkbox">
+                    <span>🏷️ Márka mutatása a neveknél</span>
+                </label>
 
                 <label class="sm-label szuro-label szuro-label-top" for="kizart-kulcsszo-input">🚫 Márka / név elrejtése:</label>
                 <div class="szuro-input-sor">
