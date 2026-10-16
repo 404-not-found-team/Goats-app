@@ -20,7 +20,21 @@ let sajatSzuro = ujSajatSzuro();
 const osszetevokItalonkent = new Map(); // ital id -> [{nev, mennyiseg, egyseg}]
 
 function ujSajatSzuro() {
-    return { kategoriak_ki: [], alkategoriak_ki: [], zero: {}, kizart: [] };
+    return { kategoriak_ki: [], alkategoriak_ki: [], zero: {}, kizart: [], markaLathato: false };
+}
+
+// A kártyán/modalban megjelenő név: alapból márka nélkül (pl. "Finlandia Mango" -> "Mango"),
+// a "Márka mutatása" kapcsolóval (sajátSzuro.markaLathato) a teljes név látszik.
+function megjelenitettNev(nev) {
+    return sajatSzuro.markaLathato ? (nev || '') : window.italKep.nevMarkaNelkul(nev);
+}
+
+// A már kirajzolt kártyák feliratát frissíti a márka-kapcsoló váltásakor (nincs új lekérés/újraépítés)
+function frissitsOsszesKartyaNev() {
+    document.querySelectorAll('.ital-kartya').forEach(kartya => {
+        const felirat = kartya.querySelector('.ital-nev');
+        if (felirat) felirat.textContent = megjelenitettNev(kartya.dataset.nev || '');
+    });
 }
 
 const kliens = () => (typeof _supabase !== 'undefined' ? _supabase : supabase);
@@ -206,7 +220,7 @@ function epitForrasDobozok() {
         const alok = K().alkategoriai(fo.id);
         if (alok.length > 0) {
             lista.classList.add('van-alcsoport');
-            [...alok.map(a => ({ kulcs: a.kod, nev: a.nev })), { kulcs: alKulcs(fo.kod, ''), nev: 'Egyéb' }].forEach(al => {
+            [...alok.map(a => ({ kulcs: a.kod, nev: a.nev })), { kulcs: alKulcs(fo.kod, ''), nev: '' }].forEach(al => {
                 const csoport = ujElem('div', 'ital-alcsoport');
                 csoport.dataset.alkulcs = al.kulcs;
                 const alcim = ujElem('h4', 'ital-alcsoport-cim', al.nev);
@@ -331,6 +345,11 @@ document.addEventListener('DOMContentLoaded', () => {
         sajatSzuro = ujSajatSzuro();
         renderSajatSzuro();
         alkalmazSzurot();
+        frissitsOsszesKartyaNev();
+    });
+    document.getElementById('sajat-szuro-marka-checkbox')?.addEventListener('change', (e) => {
+        sajatSzuro.markaLathato = e.target.checked;
+        frissitsOsszesKartyaNev();
     });
     document.getElementById('csoport-szuro-mentes')?.addEventListener('click', mentCsoportSzuro);
     document.getElementById('csoport-szuro-beallitas-gomb')?.addEventListener('click', () => nyisdSzuroModal('csoport'));
@@ -458,7 +477,7 @@ function kategoriaLista(kontener, beallitas) {
             const alok = K().alkategoriai(fo.id);
             if (alok.length > 0) {
                 const alsor = ujElem('div', 'szuro-alkategoriak');
-                [...alok.map(a => ({ kulcs: a.kod, nev: a.nev })), { kulcs: alKulcs(fo.kod, ''), nev: 'Egyéb' }].forEach(al => {
+                [...alok.map(a => ({ kulcs: a.kod, nev: a.nev })), { kulcs: alKulcs(fo.kod, ''), nev: '' }].forEach(al => {
                     alsor.appendChild(pirula(al.nev, beallitas.alLathato(al.kulcs), () => beallitas.alValt(al.kulcs), 'kicsi'));
                 });
                 reszletek.appendChild(reszletSor('Alkategória', alsor));
@@ -506,6 +525,13 @@ function renderSajatSzuro() {
             zeroValt: (fo, z) => { sajatSzuro.zero[fo.kod] = z; renderSajatSzuro(); alkalmazSzurot(); },
         });
     }
+
+    // A márka mutatása/elrejtése kapcsoló: csak superadminnak látszik
+    const markaSor = document.getElementById('sajat-szuro-marka-checkbox')?.closest('.szuro-kapcsolo-sor');
+    if (markaSor) markaSor.hidden = !window.goatsAuth?.isSuperadmin?.();
+    const markaCheckbox = document.getElementById('sajat-szuro-marka-checkbox');
+    if (markaCheckbox) markaCheckbox.checked = sajatSzuro.markaLathato;
+
     renderKizartTagek();
 }
 
@@ -960,7 +986,7 @@ function addItalKartyaToUI(ital, rendez = true) {
 
     const felirat = document.createElement('span');
     felirat.className = 'ital-nev';
-    felirat.textContent = window.italKep.nevMarkaNelkul(ital.nev);
+    felirat.textContent = megjelenitettNev(ital.nev);
     felirat.title = ital.nev || '';
 
     kartya.appendChild(kep);
@@ -1097,7 +1123,7 @@ function frissitsItalKartyaDOM(italId, ital) {
 
     const felirat = kartya.querySelector('.ital-nev');
     if (felirat) {
-        felirat.textContent = window.italKep.nevMarkaNelkul(ital.nev);
+        felirat.textContent = megjelenitettNev(ital.nev);
         felirat.title = ital.nev || '';
     }
 
