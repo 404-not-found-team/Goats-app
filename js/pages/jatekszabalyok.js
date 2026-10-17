@@ -9,7 +9,6 @@ let aktivJatek = null;
 let aktivLepesek = [];
 let aktivJavaslatok = [];
 let aktivLepesIndex = 0;
-let lepesoLathato = false; // a "Szabályok megtekintése" gombra kattintva válik true-vá, játékonként resetelve
 let szerkesztettJatekId = null;
 
 function esc(s) {
@@ -69,7 +68,6 @@ function kirajzolasLista() {
 async function megnyitasReszletek(jatek) {
     aktivJatek = jatek;
     aktivLepesIndex = 0;
-    lepesoLathato = false;
 
     const [lepesekRes, javaslatokRes] = await Promise.all([
         client.from('jatek_lepesek').select('*').eq('jatek_id', jatek.id).order('sorrend', { ascending: true }),
@@ -107,7 +105,12 @@ function kirajzolasReszletek() {
     if (jatek.eszkozok) infok.insertAdjacentHTML('beforeend', `<span>🧰 ${esc(jatek.eszkozok)}</span>`);
 
     document.getElementById('jatek-sajat-muveletek').hidden = !sajat;
-    kirajzolasLepeso();
+
+    const vanLepes = aktivLepesek.length > 0;
+    document.getElementById('jatek-lepesek-ures').hidden = vanLepes;
+    const szabalyokGomb = document.getElementById('jatek-szabalyok-mutat-gomb');
+    szabalyokGomb.hidden = !vanLepes;
+    if (vanLepes) szabalyokGomb.textContent = `📜 Szabályok megtekintése (${aktivLepesek.length})`;
 
     const javaslatLista = document.getElementById('jatek-javaslatok-lista');
     javaslatLista.innerHTML = aktivJavaslatok.map(j => `
@@ -159,28 +162,10 @@ function kimenetHTML(sor) {
     return `<li><span class="jatek-kimenet-cimke">${esc(cimke)}</span>${tobbi ? ` ${esc(tobbi)}` : ''}</li>`;
 }
 
-// A szabály-szakaszok egyesével, léptetővel (nem egy hosszú, görgetendő lista)
+// A szabály-szakaszok egyesével, léptetővel (nem egy hosszú, görgetendő lista) - a külön
+// "Szabályok" modalban (#jatek-szabalyok-modal), csak amíg az nyitva van.
 function kirajzolasLepeso() {
-    const kontener = document.getElementById('jatek-lepeso');
-    const ures = document.getElementById('jatek-lepesek-ures');
-    const gomb = document.getElementById('jatek-szabalyok-mutat-gomb');
-
-    if (aktivLepesek.length === 0) {
-        kontener.hidden = true;
-        gomb.hidden = true;
-        ures.hidden = false;
-        return;
-    }
-    ures.hidden = true;
-
-    if (!lepesoLathato) {
-        kontener.hidden = true;
-        gomb.hidden = false;
-        gomb.textContent = `📜 Szabályok megtekintése (${aktivLepesek.length})`;
-        return;
-    }
-    gomb.hidden = true;
-    kontener.hidden = false;
+    if (aktivLepesek.length === 0) return;
 
     if (aktivLepesIndex > aktivLepesek.length - 1) aktivLepesIndex = aktivLepesek.length - 1;
     if (aktivLepesIndex < 0) aktivLepesIndex = 0;
@@ -207,8 +192,16 @@ function kirajzolasLepeso() {
 }
 
 function szabalyokMegnyitasa() {
-    lepesoLathato = true;
+    document.getElementById('jatek-szabalyok-modal-cim').textContent = aktivJatek ? `📜 ${aktivJatek.cim}` : 'Szabályok';
+    aktivLepesIndex = 0;
     kirajzolasLepeso();
+    document.getElementById('jatek-reszletek-modal').hidden = true;
+    document.getElementById('jatek-szabalyok-modal').hidden = false;
+}
+
+function szabalyokBezarasa() {
+    document.getElementById('jatek-szabalyok-modal').hidden = true;
+    document.getElementById('jatek-reszletek-modal').hidden = false;
 }
 
 function lepesoVissza() {
@@ -422,12 +415,14 @@ function esemenyekBekotese() {
     document.getElementById('jatek-javaslat-kuldes-gomb').addEventListener('click', javaslatKuldese);
 
     document.getElementById('jatek-szabalyok-mutat-gomb').addEventListener('click', szabalyokMegnyitasa);
+    document.getElementById('jatek-szabalyok-bezar').addEventListener('click', szabalyokBezarasa);
     document.getElementById('jatek-lepeso-vissza').addEventListener('click', lepesoVissza);
     document.getElementById('jatek-lepeso-elore').addEventListener('click', lepesoElore);
     document.addEventListener('keydown', (e) => {
-        if (document.getElementById('jatek-reszletek-modal').hidden) return;
+        if (document.getElementById('jatek-szabalyok-modal').hidden) return;
         if (e.key === 'ArrowLeft') lepesoVissza();
         else if (e.key === 'ArrowRight') lepesoElore();
+        else if (e.key === 'Escape') szabalyokBezarasa();
     });
 }
 
