@@ -836,7 +836,7 @@
     margin: 0 0 12px;
 }
 
-/* Alkategória-csoportok a forrásdobozban (pl. Energiaitalok -> Hell, Monster, Egyéb) */
+/* Alkategória-csoportok a forrásdobozban (pl. Energiaitalok -> Hell, Monster, Red Bull) */
 .ital-lista.van-alcsoport {
     flex-direction: column;
     align-items: stretch;

@@ -193,7 +193,8 @@ function epitTierek() {
 }
 
 // Főkategóriánként egy lenyitható doboz; ha vannak alkategóriái, azokon belül alcsoportok
-// (alkategóriánként egy, a végén "Egyéb" az alkategória nélkülieknek)
+// (alkategóriánként egy; az alkategória nélküli italok simán a lista szintjén maradnak, nincs
+// külön "Egyéb" csoport)
 function epitForrasDobozok() {
     const forrasKontenerElem = document.getElementById('forras-dobozok-kontener');
     if (!forrasKontenerElem) return;
@@ -213,12 +214,12 @@ function epitForrasDobozok() {
         const alok = K().alkategoriai(fo.id);
         if (alok.length > 0) {
             lista.classList.add('van-alcsoport');
-            [...alok.map(a => ({ kulcs: a.kod, nev: a.nev })), { kulcs: alKulcs(fo.kod, ''), nev: '' }].forEach(al => {
+            alok.forEach(a => {
                 const csoport = ujElem('div', 'ital-alcsoport');
-                csoport.dataset.alkulcs = al.kulcs;
-                const alcim = ujElem('h4', 'ital-alcsoport-cim', al.nev);
+                csoport.dataset.alkulcs = a.kod;
+                const alcim = ujElem('h4', 'ital-alcsoport-cim', a.nev);
                 const allista = ujElem('div', 'ital-alcsoport-lista');
-                allista.dataset.alkulcs = al.kulcs;
+                allista.dataset.alkulcs = a.kod;
                 csoport.append(alcim, allista);
                 lista.appendChild(csoport);
             });
@@ -465,8 +466,8 @@ function kategoriaLista(kontener, beallitas) {
             const alok = K().alkategoriai(fo.id);
             if (alok.length > 0) {
                 const alsor = ujElem('div', 'szuro-alkategoriak');
-                [...alok.map(a => ({ kulcs: a.kod, nev: a.nev })), { kulcs: alKulcs(fo.kod, ''), nev: '' }].forEach(al => {
-                    alsor.appendChild(pirula(al.nev, beallitas.alLathato(al.kulcs), () => beallitas.alValt(al.kulcs), 'kicsi'));
+                alok.forEach(a => {
+                    alsor.appendChild(pirula(a.nev, beallitas.alLathato(a.kod), () => beallitas.alValt(a.kod), 'kicsi'));
                 });
                 reszletek.appendChild(reszletSor('Alkategória', alsor));
             }
