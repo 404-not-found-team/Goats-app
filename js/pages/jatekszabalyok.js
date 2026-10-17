@@ -149,7 +149,6 @@ function kirajzolasLepeso() {
     const lepes = aktivLepesek[aktivLepesIndex];
     document.getElementById('jatek-lepeso-szamlalo').textContent = `${aktivLepesIndex + 1} / ${aktivLepesek.length}`;
     document.getElementById('jatek-lepeso-kartya').innerHTML = `
-        <div class="jatek-lepes-szam">${aktivLepesIndex + 1}</div>
         <div class="jatek-lepes-tartalom">
             ${lepes.cim ? `<h5>${esc(lepes.cim)}</h5>` : ''}
             <p>${esc(lepes.szoveg)}</p>

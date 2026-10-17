@@ -216,26 +216,11 @@
 }
 
 .jatek-lepes {
-    display: flex;
-    gap: 12px;
     background: var(--inner-bg);
     border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-color);
     border-radius: 12px;
-    padding: 12px 14px;
-}
-
-.jatek-lepes-szam {
-    flex-shrink: 0;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: var(--accent-color);
-    color: var(--on-accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: var(--fs-xs);
+    padding: 16px 18px;
 }
 
 .jatek-lepes-tartalom {
@@ -243,15 +228,17 @@
 }
 
 .jatek-lepes-tartalom h5 {
-    margin: 0 0 4px 0;
+    margin: 0 0 8px 0;
     color: var(--text-primary);
-    font-size: var(--fs-sm);
+    font-size: var(--fs-base);
+    font-weight: 700;
 }
 
 .jatek-lepes-tartalom p {
     margin: 0;
     font-size: var(--fs-sm);
-    color: var(--text-primary);
+    color: var(--text-secondary);
+    line-height: 1.6;
     white-space: pre-wrap;
     word-break: break-word;
 }
@@ -328,22 +315,40 @@
     flex-shrink: 0;
     width: 36px;
     height: 36px;
+    padding: 0;
     border-radius: 50%;
     border: 1px solid var(--border-color);
     background: var(--inner-bg);
-    color: var(--text-primary);
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+.jatek-lepeso-nyil::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-style: solid;
+    border-color: var(--text-primary);
+    border-width: 0 2px 2px 0;
+    box-sizing: border-box;
+}
+
+.jatek-lepeso-nyil-balra::before {
+    transform: translateX(2px) rotate(135deg);
+}
+
+.jatek-lepeso-nyil-jobbra::before {
+    transform: translateX(-2px) rotate(-45deg);
+}
+
 .jatek-lepeso-nyil:hover:not(:disabled) {
     border-color: var(--accent-color);
-    color: var(--accent-text);
+}
+
+.jatek-lepeso-nyil:hover:not(:disabled)::before {
+    border-color: var(--accent-text);
 }
 
 .jatek-lepeso-nyil:disabled {
