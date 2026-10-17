@@ -197,7 +197,10 @@
 #jatek-szabalyok-modal .sm-body {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+}
+
+#jatek-szabalyok-modal .jatek-lepeso-navigacio {
+    flex-shrink: 0;
 }
 
 #jatek-szabalyok-modal .jatek-lepeso-szamlalo {
@@ -314,12 +317,13 @@
 /* Fix magasság: enélkül a hosszabb/rövidebb szakaszok közt lapozva ugrált volna a
    nyíl/pont-sor pozíciója - így mindig ugyanott van, a hosszabb szöveg belül görget. */
 .jatek-lepeso-kartya {
-    height: 200px;
+    flex: 1;
+    min-height: 0;
     background: var(--inner-bg);
     border: 1px solid var(--border-color);
     border-left: 3px solid var(--accent-color);
     border-radius: 12px;
-    padding: 16px 18px;
+    padding: 18px 20px;
     overflow-y: auto;
     box-sizing: border-box;
 }
