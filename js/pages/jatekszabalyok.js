@@ -143,8 +143,18 @@ function lepesSzovegHTML(szoveg) {
 
     let html = '';
     if (bekezdes.length) html += `<p>${bekezdes.map(esc).join('<br>')}</p>`;
-    if (lista.length) html += `<ul class="jatek-lepes-lista">${lista.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`;
+    if (lista.length) html += `<ul class="jatek-lepes-lista">${lista.map(kimenetHTML).join('')}</ul>`;
     return html || `<p>${esc(szoveg)}</p>`;
+}
+
+// Egy kimenet-sor: ha van benne kérdőjel, a kérdés-rész ("Helyes?") kiemelt címkeként jelenik meg,
+// a többi (a következmény, pl. "Szuper.") sima szövegként - ha nincs "?", az egész sima marad.
+function kimenetHTML(sor) {
+    const i = sor.indexOf('?');
+    if (i === -1) return `<li>${esc(sor)}</li>`;
+    const cimke = sor.slice(0, i + 1);
+    const tobbi = sor.slice(i + 1).trim();
+    return `<li><span class="jatek-kimenet-cimke">${esc(cimke)}</span>${tobbi ? ` ${esc(tobbi)}` : ''}</li>`;
 }
 
 // A szabály-szakaszok egyesével, léptetővel (nem egy hosszú, görgetendő lista)
