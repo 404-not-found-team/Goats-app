@@ -183,8 +183,12 @@
     // A megrajzolt formák és minták (fájlok: img/formak/<forma>-szin|-sav|-reszletek.webp,
     // img/mintak/<minta>.webp). Új forma: fájlok be a mappába + egy sor ide.
     const FORMAK = [
-        ['magas-doboz', 'Magas doboz (0,5 l)'],
-        ['karcsu-doboz', 'Karcsú doboz (0,25 l)'],
+        ['nagy-doboz', 'Nagy doboz (500 ml)'],
+        ['kozep-doboz', 'Közepes doboz (330 ml)'],
+        ['karcsu-doboz', 'Kis doboz (250 ml)'],
+        ['uveg', 'Üveg (330 ml)'],
+        ['whiskey', 'Whiskey'],
+        ['jager', 'Jager'],
     ];
     const MINTAK = [
         ['ecset', 'Ecsetvonások'],
