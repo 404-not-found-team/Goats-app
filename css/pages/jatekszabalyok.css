@@ -239,8 +239,42 @@
     font-size: var(--fs-sm);
     color: var(--text-secondary);
     line-height: 1.6;
-    white-space: pre-wrap;
     word-break: break-word;
+}
+
+.jatek-lepes-tartalom p + .jatek-lepes-lista {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border-color);
+}
+
+.jatek-lepes-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.jatek-lepes-lista li {
+    position: relative;
+    padding-left: 20px;
+    font-size: var(--fs-sm);
+    color: var(--text-primary);
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.jatek-lepes-lista li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-color);
 }
 
 .jatek-sajat-muveletek {
