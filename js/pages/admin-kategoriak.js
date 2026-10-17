@@ -149,7 +149,7 @@ async function alkategoriaMentes(a, { nev, tipus, ertek, sorrend }) {
 }
 
 async function alkategoriaTorles(a) {
-    if (!confirm(`Biztosan törlöd a(z) „${a.nev}” alkategóriát? Az italai az „Egyéb” csoportba kerülnek.`)) return;
+    if (!confirm(`Biztosan törlöd a(z) „${a.nev}” alkategóriát? Az italai alkategória nélkül maradnak.`)) return;
     // A kézzel ide sorolt italok visszakerülnek a szabály szerinti besorolásra
     const { error: italHiba } = await client
         .from('italok')
@@ -212,9 +212,9 @@ function italSor(ital) {
         const szabaly = K().szabalySzerint(ital);
         const select = ujElem('select', 'admin-bemenet');
         select.setAttribute('aria-label', `${ital.nev}: alkategória`);
-        select.append(opcio('auto', `Szabály szerint (${szabaly ? szabaly.nev : 'Egyéb'})`, !ital.alkategoria_kezi));
+        select.append(opcio('auto', szabaly ? `Szabály szerint (${szabaly.nev})` : 'Szabály szerint (nincs egyezés)', !ital.alkategoria_kezi));
         alok.forEach(a => select.append(opcio(String(a.id), a.nev, ital.alkategoria_kezi && ital.alkategoria_id === a.id)));
-        select.append(opcio('nincs', 'Egyik sem (Egyéb)', ital.alkategoria_kezi && !ital.alkategoria_id));
+        select.append(opcio('nincs', 'Nincs alkategória', ital.alkategoria_kezi && !ital.alkategoria_id));
         select.addEventListener('change', () => {
             const v = select.value;
             italMentes(ital, v === 'auto'
