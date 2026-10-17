@@ -188,15 +188,16 @@
    ========================================================================== */
 
 #jatek-reszletek-modal .sm-card,
-#jatek-szerkeszto-modal .sm-card {
+#jatek-szerkeszto-modal .sm-card,
+#jatek-szabalyok-modal .sm-card {
     --modal-height: 640px;
     width: 440px;
 }
 
-#jatek-szabalyok-modal .sm-card {
-    --modal-height: 360px;
-    width: 440px;
-    justify-content: flex-start;
+#jatek-szabalyok-modal .sm-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 #jatek-szabalyok-modal .jatek-lepeso-szamlalo {
