@@ -102,19 +102,6 @@
 
                 <button type="button" id="jatek-szabalyok-mutat-gomb" class="jatek-uj-lepes-gomb" hidden>📜 Szabályok megtekintése</button>
 
-                <div id="jatek-lepeso" class="jatek-lepeso" hidden>
-                    <div class="jatek-lepeso-fejlec">
-                        <h4>Szabályok</h4>
-                        <span id="jatek-lepeso-szamlalo" class="jatek-lepeso-szamlalo"></span>
-                    </div>
-                    <div id="jatek-lepeso-kartya" class="jatek-lepeso-kartya"></div>
-                    <div class="jatek-lepeso-navigacio">
-                        <button type="button" id="jatek-lepeso-vissza" class="jatek-lepeso-nyil jatek-lepeso-nyil-balra" aria-label="Előző szakasz"></button>
-                        <div id="jatek-lepeso-pontok" class="jatek-lepeso-pontok"></div>
-                        <button type="button" id="jatek-lepeso-elore" class="jatek-lepeso-nyil jatek-lepeso-nyil-jobbra" aria-label="Következő szakasz"></button>
-                    </div>
-                </div>
-
                 <div class="jatek-javaslatok-szekcio">
                     <h4>Közösségi kiegészítések</h4>
                     <div id="jatek-javaslatok-lista" class="jatek-javaslatok-lista"></div>
@@ -130,6 +117,25 @@
                         </div>
                         <button type="button" id="jatek-javaslat-kuldes-gomb" class="sm-btn sm-btn-save">Javaslat küldése</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Szabályok modal: a léptető, külön ablakban (a "Szabályok megtekintése" gombra nyílik) -->
+    <div id="jatek-szabalyok-modal" class="sm-overlay" hidden>
+        <div class="sm-card jatek-szabalyok-kartya">
+            <button type="button" id="jatek-szabalyok-bezar" class="sm-close-btn" aria-label="Bezárás">&times;</button>
+            <div class="sm-header">
+                <h3 id="jatek-szabalyok-modal-cim">Szabályok</h3>
+                <span id="jatek-lepeso-szamlalo" class="jatek-lepeso-szamlalo"></span>
+            </div>
+            <div class="sm-body">
+                <div id="jatek-lepeso-kartya" class="jatek-lepeso-kartya"></div>
+                <div class="jatek-lepeso-navigacio">
+                    <button type="button" id="jatek-lepeso-vissza" class="jatek-lepeso-nyil jatek-lepeso-nyil-balra" aria-label="Előző szakasz"></button>
+                    <div id="jatek-lepeso-pontok" class="jatek-lepeso-pontok"></div>
+                    <button type="button" id="jatek-lepeso-elore" class="jatek-lepeso-nyil jatek-lepeso-nyil-jobbra" aria-label="Következő szakasz"></button>
                 </div>
             </div>
         </div>

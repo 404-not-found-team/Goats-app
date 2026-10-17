@@ -193,6 +193,16 @@
     width: 440px;
 }
 
+#jatek-szabalyok-modal .sm-card {
+    --modal-height: 360px;
+    width: 440px;
+    justify-content: flex-start;
+}
+
+#jatek-szabalyok-modal .jatek-lepeso-szamlalo {
+    flex-shrink: 0;
+}
+
 .jatek-reszletek-leiras {
     color: var(--text-secondary);
     font-size: var(--fs-sm);
@@ -289,23 +299,6 @@
 }
 
 /* ---------- Lépés-léptető (egyesével mutatja a szabály-szakaszokat) ---------- */
-
-.jatek-lepeso {
-    margin-bottom: 20px;
-}
-
-.jatek-lepeso-fejlec {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.jatek-lepeso-fejlec h4 {
-    margin: 0;
-    color: var(--text-primary);
-    font-size: var(--fs-base);
-}
 
 .jatek-lepeso-szamlalo {
     font-size: var(--fs-xs);
