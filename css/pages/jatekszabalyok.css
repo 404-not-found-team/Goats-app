@@ -258,23 +258,20 @@
 }
 
 .jatek-lepes-lista li {
-    position: relative;
-    padding-left: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px 14px;
     font-size: var(--fs-sm);
     color: var(--text-primary);
     line-height: 1.5;
     word-break: break-word;
 }
 
-.jatek-lepes-lista li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 7px;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--accent-color);
+.jatek-kimenet-cimke {
+    color: var(--accent-text);
+    font-weight: 700;
+    margin-right: 2px;
 }
 
 .jatek-sajat-muveletek {
