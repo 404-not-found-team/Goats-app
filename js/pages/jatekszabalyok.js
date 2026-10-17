@@ -9,6 +9,7 @@ let aktivJatek = null;
 let aktivLepesek = [];
 let aktivJavaslatok = [];
 let aktivLepesIndex = 0;
+let lepesoLathato = false; // a "Szabályok megtekintése" gombra kattintva válik true-vá, játékonként resetelve
 let szerkesztettJatekId = null;
 
 function esc(s) {
@@ -68,6 +69,7 @@ function kirajzolasLista() {
 async function megnyitasReszletek(jatek) {
     aktivJatek = jatek;
     aktivLepesIndex = 0;
+    lepesoLathato = false;
 
     const [lepesekRes, javaslatokRes] = await Promise.all([
         client.from('jatek_lepesek').select('*').eq('jatek_id', jatek.id).order('sorrend', { ascending: true }),
@@ -161,13 +163,23 @@ function kimenetHTML(sor) {
 function kirajzolasLepeso() {
     const kontener = document.getElementById('jatek-lepeso');
     const ures = document.getElementById('jatek-lepesek-ures');
+    const gomb = document.getElementById('jatek-szabalyok-mutat-gomb');
 
     if (aktivLepesek.length === 0) {
         kontener.hidden = true;
+        gomb.hidden = true;
         ures.hidden = false;
         return;
     }
     ures.hidden = true;
+
+    if (!lepesoLathato) {
+        kontener.hidden = true;
+        gomb.hidden = false;
+        gomb.textContent = `📜 Szabályok megtekintése (${aktivLepesek.length})`;
+        return;
+    }
+    gomb.hidden = true;
     kontener.hidden = false;
 
     if (aktivLepesIndex > aktivLepesek.length - 1) aktivLepesIndex = aktivLepesek.length - 1;
@@ -192,6 +204,11 @@ function kirajzolasLepeso() {
 
     document.getElementById('jatek-lepeso-vissza').disabled = aktivLepesIndex === 0;
     document.getElementById('jatek-lepeso-elore').disabled = aktivLepesIndex === aktivLepesek.length - 1;
+}
+
+function szabalyokMegnyitasa() {
+    lepesoLathato = true;
+    kirajzolasLepeso();
 }
 
 function lepesoVissza() {
@@ -404,6 +421,7 @@ function esemenyekBekotese() {
     document.getElementById('jatek-torles-gomb').addEventListener('click', jatekTorlese);
     document.getElementById('jatek-javaslat-kuldes-gomb').addEventListener('click', javaslatKuldese);
 
+    document.getElementById('jatek-szabalyok-mutat-gomb').addEventListener('click', szabalyokMegnyitasa);
     document.getElementById('jatek-lepeso-vissza').addEventListener('click', lepesoVissza);
     document.getElementById('jatek-lepeso-elore').addEventListener('click', lepesoElore);
     document.addEventListener('keydown', (e) => {
