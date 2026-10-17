@@ -8,6 +8,7 @@ let jatekok = [];
 let aktivJatek = null;
 let aktivLepesek = [];
 let aktivJavaslatok = [];
+let aktivLepesIndex = 0;
 let szerkesztettJatekId = null;
 
 function esc(s) {
@@ -47,14 +48,15 @@ function kirajzolasLista() {
         kartya.className = 'jatek-kartya';
         kartya.innerHTML = `
             <div class="jatek-kartya-fejlec">
-                <span class="jatek-kartya-cim">🎲 ${esc(jatek.cim)}</span>
+                <span class="jatek-kartya-ikon">🎲</span>
+                <div class="jatek-kartya-fejlec-szoveg">
+                    <span class="jatek-kartya-cim">${esc(jatek.cim)}</span>
+                    <span class="jatek-kartya-csoport">${sajat ? 'Saját csoport' : `Megosztotta: ${esc(jatek.csoport_nev || 'másik csoport')}`}</span>
+                </div>
                 ${jatek.publikus ? '<span class="jatek-badge jatek-badge-publikus">Publikus</span>' : ''}
             </div>
             ${jatek.leiras ? `<p class="jatek-kartya-leiras">${esc(jatek.leiras)}</p>` : ''}
-            <div class="jatek-kartya-meta">
-                ${jatek.min_jatekosok ? `<span>👥 min. ${jatek.min_jatekosok} fő</span>` : '<span></span>'}
-                <span class="jatek-kartya-csoport">${sajat ? 'Saját csoport' : `Megosztotta: ${esc(jatek.csoport_nev || 'másik csoport')}`}</span>
-            </div>
+            ${jatek.min_jatekosok ? `<div class="jatek-kartya-meta"><span>👥 min. ${jatek.min_jatekosok} fő</span></div>` : ''}
         `;
         kartya.addEventListener('click', () => megnyitasReszletek(jatek));
         lista.appendChild(kartya);
@@ -65,6 +67,7 @@ function kirajzolasLista() {
 
 async function megnyitasReszletek(jatek) {
     aktivJatek = jatek;
+    aktivLepesIndex = 0;
 
     const [lepesekRes, javaslatokRes] = await Promise.all([
         client.from('jatek_lepesek').select('*').eq('jatek_id', jatek.id).order('sorrend', { ascending: true }),
@@ -101,18 +104,8 @@ function kirajzolasReszletek() {
     if (jatek.min_jatekosok) infok.insertAdjacentHTML('beforeend', `<span>👥 min. ${jatek.min_jatekosok} fő</span>`);
     if (jatek.eszkozok) infok.insertAdjacentHTML('beforeend', `<span>🧰 ${esc(jatek.eszkozok)}</span>`);
 
-    const lepesekKontener = document.getElementById('jatek-reszletek-lepesek');
-    lepesekKontener.innerHTML = aktivLepesek.map((lepes, idx) => `
-        <div class="jatek-lepes">
-            <div class="jatek-lepes-szam">${idx + 1}</div>
-            <div class="jatek-lepes-tartalom">
-                ${lepes.cim ? `<h5>${esc(lepes.cim)}</h5>` : ''}
-                <p>${esc(lepes.szoveg)}</p>
-            </div>
-        </div>
-    `).join('') || '<p class="jatek-ures-reszletek">Ehhez a játékhoz még nincs felvéve szabály-szakasz.</p>';
-
     document.getElementById('jatek-sajat-muveletek').hidden = !sajat;
+    kirajzolasLepeso();
 
     const javaslatLista = document.getElementById('jatek-javaslatok-lista');
     javaslatLista.innerHTML = aktivJavaslatok.map(j => `
@@ -135,6 +128,56 @@ function kirajzolasReszletek() {
     document.getElementById('jatek-uj-javaslat-resz').hidden = sajat;
     document.getElementById('jatek-javaslat-cim-input').value = '';
     document.getElementById('jatek-javaslat-szoveg-input').value = '';
+}
+
+// A szabály-szakaszok egyesével, léptetővel (nem egy hosszú, görgetendő lista)
+function kirajzolasLepeso() {
+    const kontener = document.getElementById('jatek-lepeso');
+    const ures = document.getElementById('jatek-lepesek-ures');
+
+    if (aktivLepesek.length === 0) {
+        kontener.hidden = true;
+        ures.hidden = false;
+        return;
+    }
+    ures.hidden = true;
+    kontener.hidden = false;
+
+    if (aktivLepesIndex > aktivLepesek.length - 1) aktivLepesIndex = aktivLepesek.length - 1;
+    if (aktivLepesIndex < 0) aktivLepesIndex = 0;
+
+    const lepes = aktivLepesek[aktivLepesIndex];
+    document.getElementById('jatek-lepeso-szamlalo').textContent = `${aktivLepesIndex + 1} / ${aktivLepesek.length}`;
+    document.getElementById('jatek-lepeso-kartya').innerHTML = `
+        <div class="jatek-lepes-szam">${aktivLepesIndex + 1}</div>
+        <div class="jatek-lepes-tartalom">
+            ${lepes.cim ? `<h5>${esc(lepes.cim)}</h5>` : ''}
+            <p>${esc(lepes.szoveg)}</p>
+        </div>
+    `;
+
+    const pontok = document.getElementById('jatek-lepeso-pontok');
+    pontok.innerHTML = aktivLepesek.map((_, i) => `
+        <button type="button" class="jatek-lepeso-pont${i === aktivLepesIndex ? ' aktiv' : ''}" data-i="${i}" aria-label="Ugrás a(z) ${i + 1}. szakaszra"></button>
+    `).join('');
+    pontok.querySelectorAll('.jatek-lepeso-pont').forEach(p => {
+        p.addEventListener('click', () => { aktivLepesIndex = Number(p.dataset.i); kirajzolasLepeso(); });
+    });
+
+    document.getElementById('jatek-lepeso-vissza').disabled = aktivLepesIndex === 0;
+    document.getElementById('jatek-lepeso-elore').disabled = aktivLepesIndex === aktivLepesek.length - 1;
+}
+
+function lepesoVissza() {
+    if (aktivLepesIndex <= 0) return;
+    aktivLepesIndex--;
+    kirajzolasLepeso();
+}
+
+function lepesoElore() {
+    if (aktivLepesIndex >= aktivLepesek.length - 1) return;
+    aktivLepesIndex++;
+    kirajzolasLepeso();
 }
 
 // ---------- Szerkesztő (új / saját játék módosítása) ----------
@@ -334,6 +377,14 @@ function esemenyekBekotese() {
     document.getElementById('jatek-szerkesztes-gomb').addEventListener('click', szerkesztesModalMegnyitasa);
     document.getElementById('jatek-torles-gomb').addEventListener('click', jatekTorlese);
     document.getElementById('jatek-javaslat-kuldes-gomb').addEventListener('click', javaslatKuldese);
+
+    document.getElementById('jatek-lepeso-vissza').addEventListener('click', lepesoVissza);
+    document.getElementById('jatek-lepeso-elore').addEventListener('click', lepesoElore);
+    document.addEventListener('keydown', (e) => {
+        if (document.getElementById('jatek-reszletek-modal').hidden) return;
+        if (e.key === 'ArrowLeft') lepesoVissza();
+        else if (e.key === 'ArrowRight') lepesoElore();
+    });
 }
 
 window.onload = async function () {
