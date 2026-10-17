@@ -130,6 +130,23 @@ function kirajzolasReszletek() {
     document.getElementById('jatek-javaslat-szoveg-input').value = '';
 }
 
+// A "-"-tal kezdődő sorokat (pl. kimenetek: "-Tévedtél: iszol.") valódi listává alakítja,
+// az ez előtti sima sorokat (a felvezető kérdés/leírás) bekezdésként hagyja.
+function lepesSzovegHTML(szoveg) {
+    const sorok = String(szoveg || '').split('\n').map(s => s.trim()).filter(Boolean);
+    const bekezdes = [];
+    const lista = [];
+    sorok.forEach(sor => {
+        if (sor.startsWith('-')) lista.push(sor.slice(1).trim());
+        else bekezdes.push(sor);
+    });
+
+    let html = '';
+    if (bekezdes.length) html += `<p>${bekezdes.map(esc).join('<br>')}</p>`;
+    if (lista.length) html += `<ul class="jatek-lepes-lista">${lista.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`;
+    return html || `<p>${esc(szoveg)}</p>`;
+}
+
 // A szabály-szakaszok egyesével, léptetővel (nem egy hosszú, görgetendő lista)
 function kirajzolasLepeso() {
     const kontener = document.getElementById('jatek-lepeso');
@@ -151,7 +168,7 @@ function kirajzolasLepeso() {
     document.getElementById('jatek-lepeso-kartya').innerHTML = `
         <div class="jatek-lepes-tartalom">
             ${lepes.cim ? `<h5>${esc(lepes.cim)}</h5>` : ''}
-            <p>${esc(lepes.szoveg)}</p>
+            ${lepesSzovegHTML(lepes.szoveg)}
         </div>
     `;
 
