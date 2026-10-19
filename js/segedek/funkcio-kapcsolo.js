@@ -2,9 +2,16 @@
 // szerver kényszeríti ki (public.funkcio_engedelyezve() a policykban és az RPC-kben).
 // A superadminra nem vonatkozik (a funkcioEngedelyezett() neki mindig igaz).
 // Modul: a main.js importálja; a klasszikus oldalscriptek a window.goatsKapcsolok-on érik el.
-import { ready, funkcioEngedelyezett, oldalEngedelyezett } from '../hitelesites.js';
+import { ready, onChange, funkcioEngedelyezett, oldalEngedelyezett } from '../hitelesites.js';
 
 export const TILTVA_SZOVEG = 'Ez a funkció jelenleg ki van kapcsolva.';
+
+// A már kezelt gombok: a háttérben érkező friss kapcsolók (onChange) után újra alkalmazzuk őket
+const kezeltGombok = new Map();
+onChange(() => kezeltGombok.forEach((kulcs, gomb) => {
+    if (!gomb.isConnected) kezeltGombok.delete(gomb);
+    else if (gomb.getAttribute('aria-busy') !== 'true') alkalmaz(gomb, kulcs); // folyamatban lévő műveletnél nem
+}));
 
 /**
  * Ha a funkció ki van kapcsolva, a gombot letiltja, és mellé magyarázó szöveget tesz.
@@ -13,6 +20,11 @@ export const TILTVA_SZOVEG = 'Ez a funkció jelenleg ki van kapcsolva.';
  * @returns {boolean} engedélyezett-e a funkció
  */
 export function funkcioGombTiltas(gomb, kulcs) {
+    if (gomb) kezeltGombok.set(gomb, kulcs);
+    return alkalmaz(gomb, kulcs);
+}
+
+function alkalmaz(gomb, kulcs) {
     const engedelyezett = funkcioEngedelyezett(kulcs);
     if (!gomb) return engedelyezett;
     const megjegyzesId = `${gomb.id || kulcs}-tiltva`;

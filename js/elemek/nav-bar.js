@@ -1,13 +1,23 @@
-import { ready, getState, isSuperadmin, oldalEngedelyezett } from '../hitelesites.js';
+import { ready, getState, onChange, isSuperadmin, oldalEngedelyezett } from '../hitelesites.js';
 import { jeloles } from '../segedek/teljesitmeny.js';
 import { OLDALAK, ADMIN_OLDAL } from '../segedek/oldalak.js';
 
+// Az utoljára kirajzolt menü azonosítója: a háttérfrissítés (onChange) csak változáskor rajzol újra
+let kirajzoltMenu = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
+    if (!document.getElementById("navBar")) return;
+
+    // Az állapot a helyben tárolt pillanatképből azonnal megvan (lásd hitelesites.js); a háttérben
+    // érkező friss állapot (csoport, globális kapcsolók) változásakor újrarajzoljuk
+    await ready;
+    rajzol();
+    onChange(rajzol);
+});
+
+function rajzol() {
     const navBar = document.getElementById("navBar");
     if (!navBar) return;
-
-    // Megvárjuk a session + csoport betöltését (nincs külön lekérdezés, nincs villogás)
-    await ready;
     const { user, group } = getState();
 
     // Egy oldal látszik, ha (superadmin) VAGY (a csoport enabled_pages-ében benne van ÉS a globális
@@ -23,6 +33,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     const menuOldalak = OLDALAK.filter(o => o.navban !== false && lathato(o));
     if (superadmin) menuOldalak.push(ADMIN_OLDAL);
+
+    const menuAzonosito = JSON.stringify([!!user, menuOldalak.map(o => o.kulcs)]);
+    if (menuAzonosito === kirajzoltMenu) return;
+    kirajzoltMenu = menuAzonosito;
 
     const aktualisUtvonal = window.location.pathname.split('/').pop() || "index.html";
     navBar.innerHTML = '';
@@ -109,7 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         navBar.appendChild(moreLi);
     }
     jeloles('nav-kirajzolva');
-});
+}
 
 window.toggleNavDrawer = function () {
     const drawer = document.getElementById('nav-more-drawer');

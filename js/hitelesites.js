@@ -9,9 +9,11 @@ import { oldalKulcsbol } from './segedek/oldalak.js';
 
 export const TOS_VERSION = '2026-10';
 const KEEP_KEYS = new Set(['goats_theme', 'goats_tos_pending']);
-// Oldalváltáskor a friss állapot az oldalak között ebben él (sessionStorage), így nem kell
-// minden betöltésnél újra lekérdezni. Csak megjelenítésre szolgál: a jogosultságot az RLS dönti el.
+// Az utoljára ismert állapot (localStorage, az app bezárása után is megmarad): oldalbetöltéskor
+// ebből azonnal kirajzolható a felület, a friss állapot a háttérben érkezik (onChange).
+// Csak megjelenítésre szolgál: a jogosultságot az RLS dönti el. Kijelentkezéskor törlődik.
 const SNAPSHOT_KULCS = 'goats_snapshot';
+// Ennél frissebb pillanatképnél (pl. gyors oldalváltás) csak a globális kapcsolókat kérjük le újra
 const SNAPSHOT_FRISS_MS = 60 * 1000;
 
 const blank = () => ({
@@ -72,13 +74,14 @@ function clearCache() {
   Object.keys(localStorage)
     .filter(k => k.startsWith('goats_') && !KEEP_KEYS.has(k))
     .forEach(k => localStorage.removeItem(k));
+  // A korábbi, sessionStorage-os pillanatkép maradványa
   try { sessionStorage.removeItem(SNAPSHOT_KULCS); } catch { /* nem elérhető tárhely: nincs mit törölni */ }
 }
 
 // Pillanatkép mentése (csak a megjelenítéshez szükséges adat, a token nem kerül bele)
 function saveSnapshot(userId) {
   try {
-    sessionStorage.setItem(SNAPSHOT_KULCS, JSON.stringify({
+    localStorage.setItem(SNAPSHOT_KULCS, JSON.stringify({
       t: Date.now(),
       userId,
       displayName: state.displayName,
@@ -91,11 +94,12 @@ function saveSnapshot(userId) {
   } catch { /* privát módban nem menthető: a következő oldal majd lekérdez */ }
 }
 
-// Ha a pillanatkép friss, és ugyanannak a felhasználónak szól, visszatöltjük (hálózat nélkül)
-function loadFreshSnapshot(userId) {
+// Ha van pillanatkép ugyanannak a felhasználónak, visszatöltjük (hálózat nélkül).
+// Visszaadja a pillanatkép korát (ms), vagy null-t, ha nincs használható pillanatkép.
+function loadSnapshot(userId) {
   try {
-    const s = JSON.parse(sessionStorage.getItem(SNAPSHOT_KULCS) || 'null');
-    if (!s || s.userId !== userId || Date.now() - s.t > SNAPSHOT_FRISS_MS) return false;
+    const s = JSON.parse(localStorage.getItem(SNAPSHOT_KULCS) || 'null');
+    if (!s || s.userId !== userId) return null;
     Object.assign(state, {
       displayName: s.displayName,
       profile: s.profile,
@@ -104,9 +108,9 @@ function loadFreshSnapshot(userId) {
       members: s.members,
       beallitasok: s.beallitasok || {},
     });
-    return true;
+    return Math.max(0, Date.now() - (s.t || 0));
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -155,7 +159,9 @@ export async function refresh() {
 
   await applyPendingTos();
 
-  const [profileRes, memberRes, kapcsoloRes] = await Promise.all([
+  // A taglista (list_group_members a hívó saját csoportját adja) a csoport lekérdezésével párhuzamosan
+  // fut, nem utána: első belépéskor ez egy teljes hálózati kört spórol meg
+  const [profileRes, memberRes, kapcsoloRes, tagokRes] = await Promise.all([
     client.from('profiles')
       .select('id, display_name, system_role, tos_version')
       .eq('id', session.user.id)
@@ -165,6 +171,7 @@ export async function refresh() {
       .eq('user_id', session.user.id)
       .maybeSingle(),
     kapcsolokBetoltese(),
+    client.rpc('list_group_members'),
   ]);
   if (kapcsoloRes) state.beallitasok = kapcsoloRes;
 
@@ -184,6 +191,13 @@ export async function refresh() {
 
   const profile = profileRes.data ?? null;
   const membership = memberRes.data ?? null;
+  const group = membership?.groups ?? null;
+
+  let tagok = [];
+  if (group) {
+    if (tagokRes.error) console.error('Tagok lekérési hiba:', tagokRes.error);
+    tagok = tagokRes.data ?? [];
+  }
 
   state.session = session;
   state.user = session.user;
@@ -193,15 +207,9 @@ export async function refresh() {
     session.user.user_metadata?.full_name ||
     session.user.email?.split('@')[0] ||
     '';
-  state.group = membership?.groups ?? null;
+  state.group = group;
   state.groupRole = membership?.group_role ?? null;
-  state.members = [];
-
-  if (state.group) {
-    const { data: members, error } = await client.rpc('list_group_members');
-    if (error) console.error('Tagok lekérési hiba:', error);
-    state.members = members ?? [];
-  }
+  state.members = tagok;
 
   writeCache();
   saveSnapshot(session.user.id);
@@ -270,24 +278,43 @@ export async function deleteMyAccount() {
 
 // ---------- Inicializálás ----------
 
-// Oldalbetöltéskor: friss pillanatkép esetén nem várunk a hálózatra (a nav azonnal kirajzolódik),
-// egyébként teljes frissítés. A ToS-elfogadás függőben lévő állapotát mindig a teljes frissítés kezeli.
+// Oldalbetöltéskor: ha van pillanatkép, nem várunk a hálózatra (a felület azonnal kirajzolódik),
+// a friss állapotot a háttérben kérjük le, és változás esetén onChange-dzsel jelezzük.
+// Pillanatkép nélkül (első belépés) és függőben lévő ToS-elfogadásnál teljes frissítés.
 async function indit() {
   jeloles('auth-start');
   const { data } = await client.auth.getSession();
   const user = data?.session?.user;
-  if (user && !localStorage.getItem('goats_tos_pending') && loadFreshSnapshot(user.id)) {
+  const kor = user && !localStorage.getItem('goats_tos_pending') ? loadSnapshot(user.id) : null;
+  if (kor !== null) {
     state.session = data.session;
     state.user = user;
-    // A profil/csoport jöhet a pillanatképből, de a kapcsolókat mindig frissen kérjük le (egy kis lekérdezés)
-    const kapcsolok = await kapcsolokBetoltese();
-    if (kapcsolok) state.beallitasok = kapcsolok;
     jeloles('auth-pillanatkep');
+    hatterFrissites(kor < SNAPSHOT_FRISS_MS);
     return state;
   }
   const allapot = await refresh();
   jeloles('auth-kesz');
   return allapot;
+}
+
+// Friss pillanatképnél (gyors oldalváltás) csak a globális kapcsolók, egyébként a teljes állapot.
+// A kapcsolókat így is minden oldalbetöltéskor lekérjük: az admin változása azonnal érvényes.
+async function hatterFrissites(csakKapcsolok) {
+  try {
+    if (!csakKapcsolok) {
+      await refresh(); // a végén emit
+      return;
+    }
+    const kapcsolok = await kapcsolokBetoltese();
+    if (kapcsolok && JSON.stringify(kapcsolok) !== JSON.stringify(state.beallitasok)) {
+      state.beallitasok = kapcsolok;
+      saveSnapshot(state.user?.id);
+      emit();
+    }
+  } catch (err) {
+    console.error('Háttérfrissítési hiba:', err);
+  }
 }
 
 export const ready = indit().catch(err => {
