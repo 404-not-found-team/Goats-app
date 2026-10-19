@@ -159,7 +159,7 @@
 /* Átirányítás oka az app.html-en (pl. "Ez az oldal jelenleg nem elérhető.", js/segedek/oldal-orzo.js) */
 .oldal-uzenet {
     position: fixed;
-    top: 12px;
+    top: calc(12px + env(safe-area-inset-top));
     left: 50%;
     transform: translateX(-50%);
     z-index: 2000;

@@ -20,7 +20,13 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    padding: 20px;
+    /* A rendszer sávjai (állapotsor, navigációs sáv, kivágás) alá nem kerül tartalom: a viewport-fit=cover
+       mellett (Android 15+ teljes képernyős mód) az env(safe-area-inset-*) adja a helyüket, máshol 0 */
+    padding:
+        calc(20px + env(safe-area-inset-top))
+        calc(20px + env(safe-area-inset-right))
+        calc(20px + env(safe-area-inset-bottom))
+        calc(20px + env(safe-area-inset-left));
 }
 
 h1 {
