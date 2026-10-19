@@ -398,3 +398,48 @@
     }
 
 }
+
+.nev-sor {
+    padding: 6px 10px;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: var(--fs-base);
+    transition: background-color 0.2s ease;
+}
+
+.nev-szin-picker {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    cursor: pointer;
+    background: none;
+    padding: 0;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.nev-szin-picker::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.nev-szin-picker::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+.nev-szin-picker::-moz-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+.pontOssz {
+    transition: background-color 0.2s ease;
+}

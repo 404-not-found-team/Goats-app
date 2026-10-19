@@ -1,5 +1,6 @@
 let jatekosok = [];
 let osszPontok = [];
+let jatekosSzinek = []; // Játékosok egyedi színeinek tárolása
 
 window.onload = async function () {
     if (window.goatsAuth) await window.goatsAuth.ready;
@@ -7,13 +8,14 @@ window.onload = async function () {
 };
 
 async function initGoatsGame() {
-    // A tagok forrása az auth-service élő állapota (RPC-ből töltve), nem a nyers localStorage.
     const allapot = window.goatsAuth ? window.goatsAuth.getState() : null;
     jatekosok = allapot?.group
         ? allapot.members.map(m => m.display_name)
         : JSON.parse(localStorage.getItem('goats_group_members') || '[]');
 
     osszPontok = new Array(jatekosok.length).fill(0);
+    // Alapértelmezett színek beállítása
+    jatekosSzinek = jatekosok.map(() => '#4CAF50');
     renderTabellaHeaders();
 }
 
@@ -23,22 +25,55 @@ function renderTabellaHeaders() {
 
     if (nevekContainer) {
         nevekContainer.innerHTML = '<div class="fejlec">Név</div>';
-        jatekosok.forEach(nev => {
+        jatekosok.forEach((nev, index) => {
             const div = document.createElement('div');
-            div.className = 'nev';
-            div.textContent = nev;
+            div.className = 'nev-sor';
+            
+            const nevSpan = document.createElement('span');
+            nevSpan.textContent = nev;
+
+            // Színválasztó bevitele a név mellé
+            const szinPicker = document.createElement('input');
+            szinPicker.type = 'color';
+            szinPicker.className = 'nev-szin-picker';
+            szinPicker.value = jatekosSzinek[index];
+
+            szinPicker.addEventListener('input', (e) => {
+                frissitJatekosSzinet(index, e.target.value);
+            });
+
+            div.append(nevSpan, szinPicker);
+            div.style.backgroundColor = hexToRgba(jatekosSzinek[index], 0.75);
             nevekContainer.appendChild(div);
         });
     }
 
     if (osszContainer) {
         osszContainer.innerHTML = '<div class="fejlec">Összpont</div>';
-        jatekosok.forEach(() => {
+        jatekosok.forEach((_, index) => {
             const div = document.createElement('div');
             div.className = 'pontOssz';
             div.textContent = '0';
+            div.style.backgroundColor = hexToRgba(jatekosSzinek[index], 0.75);
             osszContainer.appendChild(div);
         });
+    }
+}
+
+function frissitJatekosSzinet(index, ujSzin) {
+    jatekosSzinek[index] = ujSzin;
+    const rgbaSzin = hexToRgba(ujSzin, 0.75);
+
+    // Név sor hátterének frissítése
+    const nevekElemek = document.querySelectorAll('#nevekOszlop .nev-sor');
+    if (nevekElemek[index]) {
+        nevekElemek[index].style.backgroundColor = rgbaSzin;
+    }
+
+    // Összpont sor hátterének frissítése
+    const pontOsszElemek = document.querySelectorAll('#osszOszlop .pontOssz');
+    if (pontOsszElemek[index]) {
+        pontOsszElemek[index].style.backgroundColor = rgbaSzin;
     }
 }
 
@@ -177,10 +212,8 @@ function renderOszlop(jatekNev, szin, pontokTombja, gombElem, jatekElem) {
     const kontener = document.getElementById('pontJatekOszlopok');
     const ujOszlop = document.createElement('div');
     ujOszlop.className = 'tablazat szines-jatek-oszlop';
+    ujOszlop.style.backgroundColor = hexToRgba(szin, 0.75);
 
-    ujOszlop.classList.add('szines-oszlop-hatter', szinOsztaly(hexToRgba(szin, 0.75)));
-
-    // A játék neve felhasználói bevitel: textContent-tel kerül be, nem innerHTML-lel (XSS)
     const fejlec = document.createElement('div');
     fejlec.className = 'fejlec';
     fejlec.title = jatekNev;
