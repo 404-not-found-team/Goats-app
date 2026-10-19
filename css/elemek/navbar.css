@@ -37,8 +37,8 @@ ul li.active a {
 /* Jobb felső navigációs gombok / Profilkép */
 .top-user-nav {
     position: fixed;
-    top: 15px;
-    right: 20px;
+    top: calc(15px + env(safe-area-inset-top));
+    right: calc(20px + env(safe-area-inset-right));
     z-index: 9980;
 }
 
@@ -94,23 +94,24 @@ ul li.active a {
    ugyanolyan specifikusak (ul#navBar > ul / #navBar). */
 @media (max-width: 600px) {
     body {
-        padding-bottom: 75px;
+        padding-bottom: calc(75px + env(safe-area-inset-bottom));
     }
 
     .top-user-nav {
-        top: 12px;
-        right: 12px;
+        top: calc(12px + env(safe-area-inset-top));
+        right: calc(12px + env(safe-area-inset-right));
     }
 
     ul#navBar {
         position: fixed;
-        bottom: 15px;
+        /* a navigációs sáv fölé emelve (teljes képernyős módban az env() a sáv magassága) */
+        bottom: calc(15px + env(safe-area-inset-bottom));
         left: 0;
         right: 0;
         top: auto;
         margin: 0 auto;
         width: 90%;
-        padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) 10px;
+        padding: 10px;
         border-radius: 16px;
         border-top: 1px solid var(--border-color);
         background: var(--card-bg);
@@ -166,7 +167,7 @@ ul li.active a {
         background: var(--card-bg);
         border-radius: 20px 20px 0 0;
         border-top: 1px solid var(--border-color);
-        padding: 20px 20px 30px 20px;
+        padding: 20px 20px calc(30px + env(safe-area-inset-bottom)) 20px;
         z-index: 9996;
         transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
