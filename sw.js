@@ -1,10 +1,11 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v25';
+const CACHE_NEV = 'goats-v26';
 
-// Előgyorsítótár: az alkalmazás váza, hogy az első oldalváltás is gyors legyen.
+// Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
+// indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
+// (ha kimarad, az első használatkor a futás közbeni gyorsítótárba kerül, csak lassabban).
 // Egyesével töltjük: ha egy fájl hiányzik, a telepítés attól még sikeres marad.
-// FELADAT8 3. pont: index.html (kijelentkezett) és app.html (bejelentkezett) is itt van.
 const ELOGYORSITOTT = [
     './',
     'index.html',
@@ -16,20 +17,78 @@ const ELOGYORSITOTT = [
     'admin.html',
     'goatsgame.html',
     'jatekszabalyok.html',
+    'jogi.html',
+    'privacy.html',
+    'felhasznalasi-feltetelek.html',
+    'fiok-torles.html',
+    'css/base/segedosztalyok.css',
+    'css/base/valtozok.css',
+    'css/base/visszaallitas.css',
+    'css/elemek/ital-szinezes.css',
+    'css/elemek/lebego-cimke.css',
+    'css/elemek/lenyilo-menu.css',
+    'css/elemek/modals.css',
+    'css/elemek/navbar.css',
+    'css/elemek/tartozasok-egyenlitese.css',
     'css/main.css',
-    'js/main.js',
-    'js/supabase-client.js',
-    'js/hitelesites.js',
+    'css/pages/admin.css',
+    'css/pages/bejelentkezes.css',
+    'css/pages/fooldal.css',
+    'css/pages/goatsgame.css',
+    'css/pages/jatekszabalyok.css',
+    'css/pages/jogi.css',
+    'css/pages/kepek.css',
+    'css/pages/ranglista.css',
+    'css/pages/tartozasok.css',
+    'css/pages/tervek.css',
+    'js/admin-muveletek.js',
+    'js/elemek/beallitasok-modal.js',
+    'js/elemek/beallitasok/beallitasok-sablonok.js',
+    'js/elemek/beallitasok/belepes-modal.js',
+    'js/elemek/beallitasok/csoport-adatok.js',
+    'js/elemek/beallitasok/profil-modal.js',
+    'js/elemek/beallitasok/tema-valaszto.js',
+    'js/elemek/beallitasok/tos-ujraelfogadas.js',
+    'js/elemek/galeria.js',
+    'js/elemek/kep-kivago.js',
+    'js/elemek/naptar.js',
     'js/elemek/nav-bar.js',
-    'js/pages/bejelentkezes-oldal.js',
+    'js/elemek/tartozasok-egyenlitese.js',
+    'js/hitelesites.js',
+    'js/main.js',
+    'js/pages/admin-javaslatok.js',
+    'js/pages/admin-kategoriak.js',
+    'js/pages/admin.js',
     'js/pages/app-orzo.js',
+    'js/pages/bejelentkezes-oldal.js',
+    'js/pages/goatsgame.js',
+    'js/pages/jatekszabalyok.js',
+    'js/pages/kepek.js',
+    'js/pages/ranglista.js',
+    'js/pages/tartozasok.js',
+    'js/pages/tervek.js',
+    'js/segedek/adat-gyorsitotar.js',
+    'js/segedek/csoport-kepek.js',
+    'js/segedek/csoport-kod.js',
+    'js/segedek/funkcio-kapcsolo.js',
+    'js/segedek/gyors-atiranyitas.js',
+    'js/segedek/ital-kategoriak.js',
+    'js/segedek/ital-kep.js',
+    'js/segedek/kep-gyorsitotar.js',
+    'js/segedek/kep-tomorites.js',
+    'js/segedek/keslelteto.js',
+    'js/segedek/modal-fokusz.js',
+    'js/segedek/oldal-orzo.js',
+    'js/segedek/oldalak.js',
+    'js/segedek/szin-osztaly.js',
     'js/segedek/teljesitmeny.js',
     'js/segedek/tema.js',
+    'js/supabase-client.js',
     'manifest.json',
+    'img/icon-192.png',
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
 ];
-
-// Navigációnál a hálózatra várunk ennyit, utána a gyorsítótárt mutatjuk
-const NAVIGACIO_IDOKORLAT_MS = 2000;
 
 // A saját domain és a CDN-ek statikus fájljai: "stale-while-revalidate"
 const STATIKUS_HOSTOK = new Set(['cdn.jsdelivr.net', 'cdnjs.cloudflare.com']);
@@ -55,17 +114,6 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// A hálózati választ időkorláttal kérjük le (navigációhoz)
-function halozatIdokorlattal(keres, ms) {
-    return new Promise((siker, hiba) => {
-        const ido = setTimeout(() => hiba(new Error('időtúllépés')), ms);
-        fetch(keres, { cache: 'no-cache' }).then(
-            (valasz) => { clearTimeout(ido); siker(valasz); },
-            (err) => { clearTimeout(ido); hiba(err); }
-        );
-    });
-}
-
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
@@ -88,18 +136,25 @@ self.addEventListener('fetch', (event) => {
         return; // nincs event.respondWith hívás -> a böngésző a sima, SW nélküli utat követi
     }
 
-    // Oldalnavigáció: a hálózatot 2 másodpercig várjuk, utána a gyorsítótár a válasz
+    // Oldalnavigáció: azonnal a gyorsítótárból (nincs fekete képernyő a hálózatra várva), a háttérben
+    // frissítjük; a friss HTML a következő megnyitáskor látszik. Gyorsítótár nélkül a hálózat a válasz.
     if (event.request.mode === 'navigate') {
         event.respondWith(
-            halozatIdokorlattal(event.request, NAVIGACIO_IDOKORLAT_MS)
-                .then((valasz) => {
-                    if (valasz && valasz.ok) {
-                        const masolat = valasz.clone();
-                        caches.open(CACHE_NEV).then((cache) => cache.put(event.request, masolat));
+            caches.open(CACHE_NEV).then((cache) =>
+                cache.match(event.request, { ignoreSearch: true }).then((gyorsitott) => {
+                    const frissites = fetch(event.request, { cache: 'no-cache' })
+                        .then((valasz) => {
+                            if (valasz && valasz.ok && !valasz.redirected) cache.put(event.request, valasz.clone());
+                            return valasz;
+                        })
+                        .catch(() => null);
+                    if (gyorsitott) {
+                        event.waitUntil(frissites);
+                        return gyorsitott;
                     }
-                    return valasz;
+                    return frissites.then((valasz) => valasz || Response.error());
                 })
-                .catch(() => caches.match(event.request).then((v) => v || fetch(event.request)))
+            )
         );
         return;
     }
