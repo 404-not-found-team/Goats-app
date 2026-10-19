@@ -32,12 +32,17 @@
         });
     }
 
-    async function betolt(client) {
+    // A nyers sorok lekérése (beállítás nélkül), hogy más lekérdezésekkel párhuzamosan futhasson
+    async function lekeres(client) {
         const { data, error } = await client
             .from('ital_kategoriak')
             .select('id, kod, nev, szulo_id, sorrend, szabaly_marka, szabaly_nev, ikon, recept, kiszereles, alkoholos, zero_szuro');
         if (error) throw error;
-        beallit(data);
+        return data || [];
+    }
+
+    async function betolt(client) {
+        beallit(await lekeres(client));
         return kategoriak;
     }
 
@@ -78,6 +83,7 @@
 
     window.italKategoriak = {
         betolt,
+        lekeres,
         beallit,
         get osszes() { return kategoriak; },
         get fo() { return foKategoriak; },

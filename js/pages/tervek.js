@@ -1,29 +1,41 @@
-window.onload = async function () {
+window.addEventListener('load', async function () {
     if (window.goatsAuth) await window.goatsAuth.ready;
-    loadTervek();
-};
+    loadTervek(true);
+});
 
 // aktualisGroupCode(): lásd js/segedek/csoport-kod.js (közös, minden klasszikus oldalscript használja)
 
-async function loadTervek() {
+// Oldalbetöltéskor (elsoBetoltes) előbb az utoljára látott lista jelenik meg azonnal, a friss a háttérben
+// érkezik (js/segedek/adat-gyorsitotar.js); módosítás utáni újratöltésnél csak a friss
+async function loadTervek(elsoBetoltes = false) {
     const groupCode = aktualisGroupCode();
 
-    const { data, error } = await _supabase
-        .from('tervek')
-        .select('*')
-        .eq('group_code', groupCode)
-        .order('id', { ascending: false });
+    const lekero = async () => {
+        const { data, error } = await _supabase
+            .from('tervek')
+            .select('*')
+            .eq('group_code', groupCode)
+            .order('id', { ascending: false });
+        if (error) {
+            console.error('Hiba a betöltéskor:', error);
+            return undefined;
+        }
+        return data || [];
+    };
+    const megjelenito = (data) => {
+        const container = document.querySelector('.tervek');
+        container.innerHTML = '';
+        data.forEach(terv => {
+            renderTervItem(terv.id, terv.text, terv.completed, terv.felvette_id, terv.created_at);
+        });
+    };
 
-    if (error) {
-        console.error('Hiba a betöltéskor:', error);
-        return;
+    if (window.goatsAdatTar) {
+        await window.goatsAdatTar.betolt('tervek', lekero, megjelenito, { taroltElobb: elsoBetoltes });
+    } else {
+        const data = await lekero();
+        if (data !== undefined) megjelenito(data);
     }
-
-    const container = document.querySelector('.tervek');
-    container.innerHTML = '';
-    data.forEach(terv => {
-        renderTervItem(terv.id, terv.text, terv.completed, terv.felvette_id, terv.created_at);
-    });
 }
 
 // A tag neve az azonosítója alapján (a csoporttagok listájából, amit az auth-service már betöltött)

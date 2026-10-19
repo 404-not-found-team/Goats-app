@@ -18,9 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function initNaptar() {
     setupGombok();
+    kirajzolNaptar(); // a hónap rácsa adat nélkül is azonnal látszik
     if (window.goatsAuth) await window.goatsAuth.ready;
     await betoltEsemenyek();
-    kirajzolNaptar();
 }
 
 function setupGombok() {
@@ -75,22 +75,38 @@ function setupGombok() {
     });
 }
 
+// Előbb az utoljára látott események (azonnal), majd a friss lista a háttérben (js/segedek/adat-gyorsitotar.js)
 async function betoltEsemenyek() {
     const groupCode = aktualisGroupCode();
     if (!groupCode) return;
 
-    const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
-    const { data, error } = await client
-        .from('esemenyek')
-        .select('*')
-        .eq('group_code', groupCode);
+    const lekero = async () => {
+        const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
+        const { data, error } = await client
+            .from('esemenyek')
+            .select('*')
+            .eq('group_code', groupCode);
+        if (error) {
+            console.error('Hiba az események betöltésekor:', error);
+            return undefined;
+        }
+        return data || [];
+    };
+    const megjelenito = (adat) => {
+        esemenyekListaja = adat;
+        kirajzolNaptar();
+    };
 
-    if (error) {
-        console.error('Hiba az események betöltésekor:', error);
-        return;
+    if (window.goatsAdatTar) await window.goatsAdatTar.betolt('esemenyek', lekero, megjelenito);
+    else {
+        const adat = await lekero();
+        if (adat !== undefined) megjelenito(adat);
     }
+}
 
-    esemenyekListaja = data || [];
+// Helyi módosítás után a tárolt példány is frissül (a következő betöltés is a mostani állapotot mutatja)
+function esemenyekTarolasa() {
+    window.goatsAdatTar?.ir('esemenyek', esemenyekListaja);
 }
 
 function kirajzolNaptar() {
@@ -249,6 +265,7 @@ async function modositEsemeny() {
         }
 
         document.getElementById('esemeny-reszletek-modal').hidden = true;
+        esemenyekTarolasa();
         kirajzolNaptar();
     } catch (err) {
         console.error('Kivétel történt:', err);
@@ -290,6 +307,7 @@ async function mentUjEsemeny() {
     datumInput.value = '';
     document.getElementById('esemeny-modal').hidden = true;
 
+    esemenyekTarolasa();
     kirajzolNaptar();
 }
 
@@ -306,5 +324,6 @@ async function torolEsemeny(id) {
     }
 
     esemenyekListaja = esemenyekListaja.filter(e => e.id !== id);
+    esemenyekTarolasa();
     kirajzolNaptar();
 }

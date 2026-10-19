@@ -28,38 +28,67 @@ function supabaseKliens() {
 async function initGoatsGame() {
     const allapot = window.goatsAuth?.getState();
     jatekosok = (allapot?.members || []).map(m => ({ user_id: m.user_id, display_name: m.display_name }));
-    await betoltesSupabasebol();
     renderMinden();
+    await betoltesSupabasebol();
 }
 
+// Előbb az utoljára látott tábla jelenik meg azonnal, a friss adat a háttérben érkezik
+// (js/segedek/adat-gyorsitotar.js). A tárolt formátum a nyers lekérdezési eredmény.
 async function betoltesSupabasebol() {
     const groupId = aktualisCsoportId();
     const db = supabaseKliens();
-    if (!groupId || !db) return;
+    if (!groupId || !db || !window.goatsAdatTar) return;
 
-    const [szinRes, jatekRes] = await Promise.all([
-        db.from('goatgame_szinek').select('user_id, szin').eq('group_id', groupId),
-        db.from('goatgame_jatekok')
-            .select('id, nev, szin, created_at, goatgame_meccsek(id, created_at, goatgame_pontok(user_id, pont))')
-            .eq('group_id', groupId)
-            .order('created_at', { ascending: true }),
-    ]);
+    const lekero = async () => {
+        const [szinRes, jatekRes] = await Promise.all([
+            db.from('goatgame_szinek').select('user_id, szin').eq('group_id', groupId),
+            db.from('goatgame_jatekok')
+                .select('id, nev, szin, created_at, goatgame_meccsek(id, created_at, goatgame_pontok(user_id, pont))')
+                .eq('group_id', groupId)
+                .order('created_at', { ascending: true }),
+        ]);
+        if (szinRes.error) console.error('Színek betöltési hiba:', szinRes.error);
+        if (jatekRes.error) {
+            console.error('Játékok betöltési hiba:', jatekRes.error);
+            return undefined;
+        }
+        return { szinek: szinRes.data || [], jatekok: jatekRes.data || [] };
+    };
 
-    if (szinRes.error) console.error('Színek betöltési hiba:', szinRes.error);
-    jatekosSzinek = new Map((szinRes.data || []).map(sor => [sor.user_id, sor.szin]));
+    await window.goatsAdatTar.betolt('goatsgame', lekero, (adat) => {
+        allapotBeallitasa(adat);
+        renderMinden();
+    });
+}
 
-    if (jatekRes.error) {
-        console.error('Játékok betöltési hiba:', jatekRes.error);
-        return;
-    }
-    jatekok = (jatekRes.data || []).map(j => ({
+function allapotBeallitasa({ szinek, jatekok: jatekSorok }) {
+    jatekosSzinek = new Map(szinek.map(sor => [sor.user_id, sor.szin]));
+    jatekok = jatekSorok.map(j => ({
         id: j.id,
         nev: j.nev,
         szin: j.szin,
         meccsek: (j.goatgame_meccsek || [])
+            .slice()
             .sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)))
             .map(m => ({ id: m.id, pontok: new Map((m.goatgame_pontok || []).map(p => [p.user_id, p.pont])) })),
     }));
+}
+
+// Helyi módosítás után a tárolt példány is frissül (a következő betöltés a mostani állapotot mutatja)
+function allapotTarolasa() {
+    window.goatsAdatTar?.ir('goatsgame', {
+        szinek: [...jatekosSzinek].map(([user_id, szin]) => ({ user_id, szin })),
+        jatekok: jatekok.map(j => ({
+            id: j.id,
+            nev: j.nev,
+            szin: j.szin,
+            goatgame_meccsek: j.meccsek.map((m, i) => ({
+                id: m.id,
+                created_at: String(i).padStart(6, '0'),
+                goatgame_pontok: [...m.pontok].map(([user_id, pont]) => ({ user_id, pont })),
+            })),
+        })),
+    });
 }
 
 // --- Megjelenítés: minden az állapotból épül újra, így az összpont sosem csúszik el ---
@@ -240,7 +269,9 @@ async function frissitJatekosSzinet(userId, picker) {
         picker.value = regiSzin;
         document.querySelectorAll(`#nevekOszlop .nev-sor[data-user-id="${userId}"], #osszOszlop .pontOssz[data-user-id="${userId}"]`)
             .forEach(elem => szinBeallitasa(elem, regiSzin));
+        return;
     }
+    allapotTarolasa();
 }
 
 function openUjJatekModal() {
@@ -298,6 +329,7 @@ async function mentUjJatek() {
     }
 
     jatekok.push({ id: data.id, nev: data.nev, szin: data.szin, meccsek: [] });
+    allapotTarolasa();
     renderJatekLista();
     closeUjJatekModal();
 }
@@ -333,6 +365,7 @@ async function ujMeccsHozzaadasa(jatek, gombElem) {
     }
 
     jatek.meccsek.push({ id: meccsId, pontok: new Map(pontok.map(p => [p.user_id, p.pont])) });
+    allapotTarolasa();
     renderMinden();
 }
 
@@ -350,6 +383,7 @@ async function meccsTorlese(jatek, meccs) {
     }
 
     jatek.meccsek = jatek.meccsek.filter(m => m.id !== meccs.id);
+    allapotTarolasa();
     renderMinden();
 }
 
@@ -370,5 +404,6 @@ async function jatekTorlese(jatek, gombElem) {
     }
 
     jatekok = jatekok.filter(j => j.id !== jatek.id);
+    allapotTarolasa();
     renderMinden();
 }

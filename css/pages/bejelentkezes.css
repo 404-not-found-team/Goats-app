@@ -47,6 +47,14 @@
     height: 120px;
 }
 
+/* Amíg a kép (blob URL) nincs meg, ne a helyettesítő szöveg és a törött kép kerete látsszon,
+   hanem egy halvány, helytartó felület (a méret és az elrendezés már a végleges) */
+.kepek img:not([src]) {
+    color: transparent;
+    background-color: var(--inner-bg);
+    box-shadow: none;
+}
+
 .kepek i:hover {
     cursor: pointer;
 }
@@ -117,6 +125,7 @@
 }
 
 .naptar-fejlec h2 {
+    min-height: 1.3em; /* a hónap neve JS-ből kerül be: addig se ugorjon az elrendezés */
     font-size: var(--fs-lg);
     color: var(--text-primary);
 }
