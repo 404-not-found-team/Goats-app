@@ -43,64 +43,105 @@ async function inicializalas() {
     // Globálisan kikapcsolt italjavaslat (FELADAT15): a gomb letiltva, a szerver is elutasítaná
     window.goatsKapcsolok?.funkcioGombTiltas(document.getElementById('uj-ital-gomb'), 'funkcio_italjavaslat');
     const groupCode = aktualisGroupCode();
+    const groupId = window.goatsAuth?.getState()?.group?.id || null;
     const client = kliens();
 
-    try {
-        await K().betolt(client);
-    } catch (err) {
-        console.error('Hiba a kategóriák betöltésekor:', err);
-        return;
+    // Minden lekérdezés párhuzamosan (korábban egymás után futottak)
+    const lekero = async () => {
+        const [kategoriak, katalogusRes, osszetevoRes, rangRes, szuroRes] = await Promise.all([
+            K().lekeres(client).catch(err => ({ hiba: err })),
+            client.from('italok')
+                .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, teljes_nev_mutatasa')
+                .order('nev', { ascending: true })
+                .range(0, 1999),
+            client.from('ital_osszetevok')
+                .select('ital_id, sorrend, nev, mennyiseg, egyseg')
+                .order('sorrend', { ascending: true }),
+            groupCode
+                ? client.from('ital_ranglista').select('*').eq('group_code', groupCode)
+                : Promise.resolve({ data: [], error: null }),
+            groupId
+                ? client.from('groups').select('filter_settings').eq('id', groupId).maybeSingle()
+                : Promise.resolve({ data: null, error: null }),
+        ]);
+
+        if (kategoriak.hiba) {
+            console.error('Hiba a kategóriák betöltésekor:', kategoriak.hiba);
+            return undefined;
+        }
+        if (katalogusRes.error) {
+            console.error('Hiba a katalógus betöltésekor:', katalogusRes.error);
+            return undefined;
+        }
+        if (osszetevoRes.error) console.error('Hiba a receptek betöltésekor:', osszetevoRes.error);
+        if (rangRes.error) console.error('Hiba a ranglista betöltésekor:', rangRes.error);
+        if (szuroRes.error) console.error('Hiba a szűrő beállítások betöltésekor:', szuroRes.error);
+
+        return {
+            kategoriak,
+            katalogus: katalogusRes.data || [],
+            osszetevok: osszetevoRes.data || [],
+            ranglista: rangRes.data || [],
+            filterSettings: szuroRes.data?.filter_settings ?? null,
+        };
+    };
+
+    // Bejelentkezve előbb az utoljára látott állapot jelenik meg azonnal, a friss a háttérben érkezik
+    // (js/segedek/adat-gyorsitotar.js); kijelentkezve nincs tárolás, ott csak a friss adat
+    let frissMegjott = false;
+    const megjelenito = (adat, tarolt) => {
+        teljesKirajzolas(adat);
+        if (!tarolt) frissMegjott = true;
+    };
+    if (window.goatsAdatTar && window.goatsAuth?.getState()?.user) {
+        await window.goatsAdatTar.betolt('ranglista', lekero, megjelenito);
+    } else {
+        const adat = await lekero();
+        if (adat !== undefined) megjelenito(adat, false);
     }
+
+    // A csoport szűrője még nincs beállítva: felkínáljuk (ha a tag módosíthatja). Csak a friss adat
+    // alapján (vagy ha az azonos volt a tárolttal, azzal), hogy egy elavult tárolt állapot ne nyissa meg.
+    if (groupId && !csoportSzuro && csoportSzuroModosithato() && (frissMegjott || window.goatsAdatTar?.olvas('ranglista'))) {
+        nyisdSzuroModal('csoport');
+    }
+}
+
+// Az egész oldal felépítése egy adatcsomagból (tárolt vagy friss). Újrarajzoláskor a nyitott
+// forrásdobozok nyitva maradnak.
+function teljesKirajzolas(adat) {
+    const nyitottDobozok = new Set([...document.querySelectorAll('.forras-doboz:not(.csukva)')].map(d => d.dataset.kategoria));
+
+    K().beallit(adat.kategoriak);
     epitForrasDobozok();
     epitKategoriaValaszto();
     epitKiszerelesValaszto();
     epitFormaValaszto();
+    document.querySelectorAll('.forras-doboz').forEach(d => {
+        if (nyitottDobozok.has(d.dataset.kategoria)) d.classList.remove('csukva');
+    });
 
-    const [katalogusRes, osszetevoRes] = await Promise.all([
-        client.from('italok')
-            .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, teljes_nev_mutatasa')
-            .order('nev', { ascending: true })
-            .range(0, 1999),
-        client.from('ital_osszetevok')
-            .select('ital_id, sorrend, nev, mennyiseg, egyseg')
-            .order('sorrend', { ascending: true }),
-    ]);
-
-    if (katalogusRes.error) {
-        console.error('Hiba a katalógus betöltésekor:', katalogusRes.error);
-        return;
-    }
-    if (osszetevoRes.error) console.error('Hiba a receptek betöltésekor:', osszetevoRes.error);
-    (osszetevoRes.data || []).forEach(o => {
+    document.querySelectorAll('.ranglista-dropzone .ital-kartya').forEach(k => k.remove());
+    osszetevokItalonkent.clear();
+    adat.osszetevok.forEach(o => {
         if (!osszetevokItalonkent.has(o.ital_id)) osszetevokItalonkent.set(o.ital_id, []);
         osszetevokItalonkent.get(o.ital_id).push(o);
     });
 
-    katalogusRes.data.forEach(ital => addItalKartyaToUI(ital, false));
+    adat.katalogus.forEach(ital => addItalKartyaToUI(ital, false));
     document.querySelectorAll('.ital-lista, .ital-alcsoport-lista').forEach(rendezKartyakatContainerben);
 
-    if (groupCode) {
-        const { data: mentettAdatok, error: rangError } = await client
-            .from('ital_ranglista')
-            .select('*')
-            .eq('group_code', groupCode);
-
-        if (rangError) {
-            console.error('Hiba a ranglista betöltésekor:', rangError);
-        } else if (mentettAdatok) {
-            mentettAdatok.forEach(item => {
-                const kartyaElem = document.getElementById(item.id);
-                if (!kartyaElem) return;
-                const celZona = item.kategoria === 'forras' ? forrasKontener(kartyaElem) : tierKontener(item.kategoria);
-                if (celZona) {
-                    celZona.appendChild(kartyaElem);
-                    rendezKartyakatContainerben(celZona);
-                }
-            });
+    adat.ranglista.forEach(item => {
+        const kartyaElem = document.getElementById(item.id);
+        if (!kartyaElem) return;
+        const celZona = item.kategoria === 'forras' ? forrasKontener(kartyaElem) : tierKontener(item.kategoria);
+        if (celZona) {
+            celZona.appendChild(kartyaElem);
+            rendezKartyakatContainerben(celZona);
         }
-    }
+    });
 
-    await betoltCsoportSzuro();
+    alkalmazCsoportSzurot(adat.filterSettings);
 }
 
 /**
@@ -365,7 +406,8 @@ function szuroAtalakitas(regi) {
     return null;
 }
 
-async function betoltCsoportSzuro() {
+// A csoport mentett szűrője (groups.filter_settings) a lekérdezett adatból
+function alkalmazCsoportSzurot(filterSettings) {
     const groupId = window.goatsAuth?.getState()?.group?.id;
     if (!groupId) {
         // Csoport nélkül (vendégként): minden látszik, csoport-beállítás nincs
@@ -374,19 +416,8 @@ async function betoltCsoportSzuro() {
         alkalmazSzurot();
         return;
     }
-
-    const { data, error } = await kliens()
-        .from('groups')
-        .select('filter_settings')
-        .eq('id', groupId)
-        .maybeSingle();
-    if (error) console.error('Hiba a szűrő beállítások betöltésekor:', error);
-
-    csoportSzuro = szuroAtalakitas(data?.filter_settings);
+    csoportSzuro = szuroAtalakitas(filterSettings);
     alkalmazSzurot();
-
-    // Még nincs beállítva: felkínáljuk (ha a tag módosíthatja)
-    if (!csoportSzuro && csoportSzuroModosithato()) nyisdSzuroModal('csoport');
 }
 
 // A csoport szűrőjét alapból bármelyik tag módosíthatja; a csoportszuro_csak_admin kapcsolóval csak

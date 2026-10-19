@@ -3,6 +3,7 @@
 // policy-k) - a kliens csak megjeleníti, amit a szerver visszaad.
 import { client } from '../supabase-client.js';
 import { ready, getState, callRpc } from '../hitelesites.js';
+import { betolt } from '../segedek/adat-gyorsitotar.js';
 
 let jatekok = [];
 let aktivJatek = null;
@@ -21,19 +22,24 @@ function sajatJatekE(jatek) {
 
 // ---------- Lista ----------
 
-async function betoltesJatekok() {
-    const { data, error } = await client
-        .from('jatek_szabalyok')
-        .select('*')
-        .order('letrehozva', { ascending: false });
-
-    if (error) {
-        console.error('Hiba a játékok betöltésekor:', error);
-        return;
-    }
-
-    jatekok = data || [];
-    kirajzolasLista();
+// Oldalbetöltéskor (elsoBetoltes) előbb az utoljára látott lista jelenik meg azonnal, a friss a háttérben
+// érkezik (js/segedek/adat-gyorsitotar.js); módosítás utáni újratöltésnél csak a friss
+async function betoltesJatekok(elsoBetoltes = false) {
+    const lekero = async () => {
+        const { data, error } = await client
+            .from('jatek_szabalyok')
+            .select('*')
+            .order('letrehozva', { ascending: false });
+        if (error) {
+            console.error('Hiba a játékok betöltésekor:', error);
+            return undefined;
+        }
+        return data || [];
+    };
+    await betolt('jatekszabalyok', lekero, (adat) => {
+        jatekok = adat;
+        kirajzolasLista();
+    }, { taroltElobb: elsoBetoltes });
 }
 
 function kirajzolasLista() {
@@ -429,5 +435,5 @@ function esemenyekBekotese() {
 window.onload = async function () {
     await ready;
     esemenyekBekotese();
-    await betoltesJatekok();
+    await betoltesJatekok(true);
 };

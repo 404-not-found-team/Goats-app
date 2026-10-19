@@ -3,7 +3,7 @@ window.onload = async function () {
     // Globálisan kikapcsolt tartozás-felvétel (FELADAT15): a gomb letiltva, a szerver is elutasítaná
     window.goatsKapcsolok?.funkcioGombTiltas(document.getElementById('tartozasHozzaadGomb'), 'funkcio_tartozas_felvetel');
     initMembersAndContainers();
-    loadTartozasok();
+    loadTartozasok(true);
 
     // Közös költség: előnézet és egyedi összegek élő frissítése
     document.getElementById('mennyiertInput')?.addEventListener('input', frissitKozosKoltseg);
@@ -204,32 +204,46 @@ function nyitottOsszeg(adosId, hitelezoId) {
     return sor ? sor.nyitott_osszeg : 0;
 }
 
-async function loadTartozasok() {
+// Oldalbetöltéskor (elsoBetoltes) előbb az utoljára látott tartozások jelennek meg azonnal, a friss
+// adat a háttérben érkezik (js/segedek/adat-gyorsitotar.js); módosítás utáni újratöltésnél csak a friss
+async function loadTartozasok(elsoBetoltes = false) {
     const groupCode = aktualisGroupCode();
+
+    const lekero = async () => {
+        const [osszesitesRes, legacyRes] = await Promise.all([
+            _supabase.rpc('tartozas_osszesites', { p_group: null }),
+            _supabase
+                .from('tartozasok')
+                .select('*')
+                .eq('group_code', groupCode)
+                .or('ados_id.is.null,hitelezo_id.is.null')
+                .order('id', { ascending: false }),
+        ]);
+        if (osszesitesRes.error) {
+            console.error('Hiba az összesítés betöltésekor:', osszesitesRes.error);
+            return undefined;
+        }
+        if (legacyRes.error) {
+            console.error('Hiba a régi tartozások betöltésekor:', legacyRes.error);
+        }
+        return { osszesites: osszesitesRes.data || [], legacy: legacyRes.data || [] };
+    };
+
+    if (window.goatsAdatTar) {
+        await window.goatsAdatTar.betolt('tartozasok', lekero, megjelenitTartozasok, { taroltElobb: elsoBetoltes === true });
+    } else {
+        const adat = await lekero();
+        if (adat !== undefined) megjelenitTartozasok(adat);
+    }
+}
+
+function megjelenitTartozasok(adat) {
     const members = aktualisTagok();
     const tagById = id => members.find(m => m.user_id === id);
     // A migráció előtti, nem párosított sorokhoz: név alapú tartalék
     const tagByName = nev => members.find(m => m.display_name === nev);
 
-    const [osszesitesRes, legacyRes] = await Promise.all([
-        _supabase.rpc('tartozas_osszesites', { p_group: null }),
-        _supabase
-            .from('tartozasok')
-            .select('*')
-            .eq('group_code', groupCode)
-            .or('ados_id.is.null,hitelezo_id.is.null')
-            .order('id', { ascending: false }),
-    ]);
-
-    if (osszesitesRes.error) {
-        console.error('Hiba az összesítés betöltésekor:', osszesitesRes.error);
-        return;
-    }
-    if (legacyRes.error) {
-        console.error('Hiba a régi tartozások betöltésekor:', legacyRes.error);
-    }
-
-    osszesitesAdatok = osszesitesRes.data || [];
+    osszesitesAdatok = adat.osszesites || [];
 
     members.forEach(member => {
         const targetDiv = document.querySelector(`[data-member-id="${CSS.escape(member.user_id)}"]`);
@@ -248,7 +262,7 @@ async function loadTartozasok() {
 
     // Régi, azonosító nélküli sorok (a jelenlegi kód nem tud párba állítani se egyenlítéshez,
     // se összevonáshoz) – ugyanúgy, flat kártyaként jelenítjük meg, mint korábban.
-    (legacyRes.data || []).forEach(item => {
+    (adat.legacy || []).forEach(item => {
         const ados = tagById(item.ados_id) || tagByName(item.kitartozik);
         if (!ados) return; // törölt vagy ismeretlen adós – nincs doboza
 

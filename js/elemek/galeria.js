@@ -23,6 +23,8 @@ function aktualisGroupId() {
 // A korábbi, sessionStorage-os aláírtURL-gyorsítótár maradványa (FELADAT12 óta nem használjuk)
 try { sessionStorage.removeItem('goats_kep_url'); } catch { /* nem kritikus */ }
 
+// Előbb az utoljára látott képlista (azonnal, a képek a helyi gyorsítótárból jönnek), majd a friss
+// lista a háttérben (js/segedek/adat-gyorsitotar.js)
 async function betoltKepek() {
     const groupId = aktualisGroupId();
     const groupCode = aktualisGroupCode();
@@ -33,23 +35,31 @@ async function betoltKepek() {
         return;
     }
 
-    // A csoport mappái: a csoport azonosítója (és átmenetileg a régi, kód alapú mappa)
-    const utak = [];
-    for (const mappa of window.goatsKepek.csoportMappak(groupId, groupCode)) {
-        try {
-            utak.push(...await window.goatsKepek.mappaFajljai(mappa));
-        } catch (error) {
-            console.error('Hiba a képek listázásakor:', error);
+    // A csoport mappái: a csoport azonosítója (és átmenetileg a régi, kód alapú mappa), párhuzamosan
+    const lekero = async () => {
+        let hiba = false;
+        const mappak = await Promise.all(window.goatsKepek.csoportMappak(groupId, groupCode).map(mappa =>
+            window.goatsKepek.mappaFajljai(mappa).catch(error => {
+                console.error('Hiba a képek listázásakor:', error);
+                hiba = true;
+                return [];
+            })
+        ));
+        return hiba ? undefined : mappak.flat();
+    };
+    const megjelenito = (utak) => {
+        kepekLista = utak.map(u => ({ name: u.split('/').pop(), path: u }));
+        if (currentIndex >= kepekLista.length) {
+            currentIndex = Math.max(0, kepekLista.length - 1);
         }
+        frissitGaleria();
+    };
+
+    if (window.goatsAdatTar) await window.goatsAdatTar.betolt('galeria', lekero, megjelenito);
+    else {
+        const utak = await lekero();
+        if (utak !== undefined) megjelenito(utak);
     }
-
-    kepekLista = utak.map(u => ({ name: u.split('/').pop(), path: u }));
-
-    if (currentIndex >= kepekLista.length) {
-        currentIndex = Math.max(0, kepekLista.length - 1);
-    }
-
-    frissitGaleria();
 }
 
 function uresAllapot(lathato) {
@@ -136,5 +146,6 @@ function osszesKepLinkFrissites() {
 document.addEventListener("DOMContentLoaded", async function () {
     if (window.goatsAuth) await window.goatsAuth.ready;
     osszesKepLinkFrissites();
+    window.goatsAuth?.onChange(osszesKepLinkFrissites); // a háttérben érkező friss kapcsolók után is
     betoltKepek();
 });

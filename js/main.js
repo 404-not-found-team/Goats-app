@@ -7,4 +7,5 @@ import './segedek/csoport-kepek.js';
 import './segedek/kep-gyorsitotar.js';
 import './segedek/funkcio-kapcsolo.js';
 import './segedek/oldal-orzo.js';
+import './segedek/adat-gyorsitotar.js';
 import './admin-muveletek.js';

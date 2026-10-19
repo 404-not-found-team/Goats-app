@@ -10,6 +10,7 @@ import { ready, getState, funkcioEngedelyezett } from '../hitelesites.js';
 import { BUCKET, csoportMappak, mappaFajljai } from '../segedek/csoport-kepek.js';
 import { kepUrlek, torolKepGyorsitotarbol } from '../segedek/kep-gyorsitotar.js';
 import { funkcioGombTiltas, TILTVA_SZOVEG } from '../segedek/funkcio-kapcsolo.js';
+import { betolt, ir } from '../segedek/adat-gyorsitotar.js';
 
 const KORLAT_UZENET = 'A csoport elérte a képkorlátot, törölj régebbi képeket.';
 const BETOLTES_KOTEG_MS = 50; // a láthatóvá vált csempéket ennyi ideig gyűjtjük egy aláírás-kötegbe
@@ -48,7 +49,9 @@ function ujElem(tag, osztaly, szoveg) {
 
 // ---------- Listázás ----------
 
-async function betoltKepek() {
+// Oldalbetöltéskor (elsoBetoltes) előbb az utoljára látott lista jelenik meg azonnal (a képek a helyi
+// gyorsítótárból jönnek), a friss a háttérben érkezik (js/segedek/adat-gyorsitotar.js)
+async function betoltKepek(elsoBetoltes = false) {
     const csoport = aktualisCsoport();
     if (!csoport) {
         kepek = [];
@@ -56,33 +59,42 @@ async function betoltKepek() {
         return;
     }
 
-    const utak = [];
-    for (const mappa of csoportMappak(csoport.id, csoport.group_code)) {
-        try {
-            utak.push(...await mappaFajljai(mappa));
-        } catch (err) {
-            console.error('Hiba a képek listázásakor:', err);
+    const lekero = async () => {
+        // A csoport mappái párhuzamosan
+        let hiba = false;
+        const mappak = await Promise.all(csoportMappak(csoport.id, csoport.group_code).map(mappa =>
+            mappaFajljai(mappa).catch(err => {
+                console.error('Hiba a képek listázásakor:', err);
+                hiba = true;
+                return [];
+            })
+        ));
+        if (hiba) return undefined;
+        const utak = mappak.flat();
+
+        // Feltöltő és időpont a public.kepek táblából (FELADAT9); ha egy képnek nincs sora, ezek üresek
+        const adatok = new Map();
+        if (utak.length > 0) {
+            const { data, error } = await client
+                .from('kepek')
+                .select('utvonal, feltoltotte_id, letrehozva')
+                .eq('group_id', csoport.id);
+            if (error) console.error('Hiba a képadatok lekérésekor:', error);
+            (data || []).forEach(s => adatok.set(s.utvonal, s));
         }
-    }
 
-    // Feltöltő és időpont a public.kepek táblából (FELADAT9); ha egy képnek nincs sora, ezek üresek
-    const adatok = new Map();
-    if (utak.length > 0) {
-        const { data, error } = await client
-            .from('kepek')
-            .select('utvonal, feltoltotte_id, letrehozva')
-            .eq('group_id', csoport.id);
-        if (error) console.error('Hiba a képadatok lekérésekor:', error);
-        (data || []).forEach(s => adatok.set(s.utvonal, s));
-    }
+        // A legújabb elöl (a listázás feltöltési sorrendben adja)
+        return utak.reverse().map(path => ({
+            path,
+            feltoltotteId: adatok.get(path)?.feltoltotte_id || null,
+            letrehozva: adatok.get(path)?.letrehozva || null,
+        }));
+    };
 
-    // A legújabb elöl (a listázás feltöltési sorrendben adja)
-    kepek = utak.reverse().map(path => ({
-        path,
-        feltoltotteId: adatok.get(path)?.feltoltotte_id || null,
-        letrehozva: adatok.get(path)?.letrehozva || null,
-    }));
-    racsKirajzolas();
+    await betolt('kepek', lekero, (adat) => {
+        kepek = adat;
+        racsKirajzolas();
+    }, { taroltElobb: elsoBetoltes });
 }
 
 // ---------- Rács ----------
@@ -231,6 +243,7 @@ async function torolKep(kep) {
 
     await torolKepGyorsitotarbol(kep.path);
     kepek = kepek.filter(k => k.path !== kep.path);
+    ir('kepek', kepek); // a következő betöltés se mutassa a törölt képet
     racsKirajzolas();
 }
 
@@ -465,7 +478,7 @@ async function feltoltKepek(event) {
 
 await ready;
 funkcioGombTiltas($('kepFeltoltesGomb'), 'funkcio_kepfeltoltes');
-betoltKepek();
+betoltKepek(true);
 
 $('kepFeltoltesGomb').addEventListener('click', () => $('kepFeltoltesInput').click());
 $('kepFeltoltesInput').addEventListener('change', feltoltKepek);
