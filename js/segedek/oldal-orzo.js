@@ -5,18 +5,23 @@
 // Csak kozmetika: az adatokat a szerver (RLS) védi. Kijelentkezve a kapcsolók nem olvashatók,
 // ezért a publikus oldalakat (pl. Ranglista) ilyenkor nem korlátozza.
 // Modul: a main.js importálja.
-import { ready, getState, oldalEngedelyezett } from '../hitelesites.js';
+import { ready, getState, onChange, oldalEngedelyezett } from '../hitelesites.js';
 
 const UZENET_KULCS = 'goats_oldal_uzenet';
 export const NEM_ELERHETO_SZOVEG = 'Ez az oldal jelenleg nem elérhető.';
 
-async function orzes() {
+function ellenorzes() {
     const oldal = document.body?.dataset.oldal;
-    if (!oldal) return;
-    await ready;
-    if (!getState().user || oldalEngedelyezett(oldal)) return;
+    if (!oldal || !getState().user || oldalEngedelyezett(oldal)) return;
     try { sessionStorage.setItem(UZENET_KULCS, NEM_ELERHETO_SZOVEG); } catch { /* nem kritikus */ }
     location.replace('app.html');
+}
+
+// Előbb a helyben tárolt állapottal, majd a háttérben érkező friss kapcsolókkal is (onChange)
+async function orzes() {
+    await ready;
+    ellenorzes();
+    onChange(ellenorzes);
 }
 
 // Az app.html-en: az átirányítás okának egyszeri kiírása
