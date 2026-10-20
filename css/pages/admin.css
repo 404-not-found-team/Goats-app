@@ -247,6 +247,16 @@
     justify-content: flex-end;
 }
 
+.admin-mozgat-gomb {
+    padding: 8px 10px;
+    min-width: 0;
+}
+
+.admin-mozgat-gomb:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
 .admin-sor.szerkesztes {
     display: block;
 }
