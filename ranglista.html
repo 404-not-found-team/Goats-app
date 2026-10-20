@@ -85,7 +85,7 @@
             <h3 id="uj-ital-modal-cim" class="modal-alcim">Új ital / koktél felvétele</h3>
 
             <div class="floating-group">
-                <input type="text" id="uj-ital-nev" class="floating-input" placeholder=" " />
+                <input type="text" id="uj-ital-nev" class="floating-input" placeholder=" " oninput="kepElonezetFrissit()" />
                 <label class="floating-label">Ital neve</label>
             </div>
 
@@ -114,31 +114,34 @@
 
             <!-- Színezett kép (ital-kep.js): forma + 1-2 szín + opcionális minta; "Nincs" = márkakép vagy ikon -->
             <div class="floating-group">
-                <select id="uj-ital-forma" class="floating-select" onchange="kepElonezetFrissit()">
+                <select id="uj-ital-forma" class="floating-select" onchange="formaValtozott()">
                     <!-- a lehetőségeket a ranglista.js tölti fel (ital-kep.js: FORMAK) -->
                 </select>
                 <label class="floating-label">Kép formája</label>
             </div>
 
             <div id="kep-szinezes-resz" class="kep-szinezes-resz" hidden>
-                <div class="kep-szinezes-mezok">
-                    <label class="kep-szin-mezo">
-                        <input type="color" id="uj-ital-szin-1" value="#e30613" oninput="kepElonezetFrissit()" />
-                        Fő szín
-                    </label>
-                    <label class="kep-szin-mezo">
-                        <input type="checkbox" id="uj-ital-van-szin-2" onchange="kepElonezetFrissit()" />
-                        <input type="color" id="uj-ital-szin-2" value="#111111" oninput="kepElonezetFrissit()" />
-                        Második szín
-                    </label>
-                    <div class="floating-group">
-                        <select id="uj-ital-minta" class="floating-select" onchange="kepElonezetFrissit()">
-                            <!-- ital-kep.js: MINTAK -->
-                        </select>
-                        <label class="floating-label">Minta</label>
+                <div class="kep-szinezes-sor">
+                    <div class="kep-szinezes-mezok">
+                        <label class="kep-szin-mezo">
+                            <input type="color" id="uj-ital-szin-1" value="#e30613" oninput="kepElonezetFrissit()" />
+                            Fő szín
+                        </label>
+                        <label class="kep-szin-mezo">
+                            <input type="checkbox" id="uj-ital-van-szin-2" onchange="kepElonezetFrissit()" />
+                            <input type="color" id="uj-ital-szin-2" value="#111111" oninput="kepElonezetFrissit()" />
+                            Második szín
+                        </label>
+                        <div class="floating-group">
+                            <select id="uj-ital-minta" class="floating-select" onchange="kepElonezetFrissit()">
+                                <!-- ital-kep.js: MINTAK -->
+                            </select>
+                            <label class="floating-label">Minta</label>
+                        </div>
                     </div>
+                    <div id="kep-elonezet" class="kep-elonezet"></div>
                 </div>
-                <div id="kep-elonezet" class="kep-elonezet"></div>
+                <button type="button" id="marka-szin-mentes-gomb" class="marka-szin-mentes-gomb" onclick="markaSzinMentese()" hidden>🎨 Mentés márka színeként</button>
             </div>
             <label id="teljes-nev-group" class="szuro-kapcsolo-sor" hidden>
                 <input type="checkbox" id="uj-ital-teljes-nev">

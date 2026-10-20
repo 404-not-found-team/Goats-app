@@ -48,7 +48,7 @@ async function inicializalas() {
 
     // Minden lekérdezés párhuzamosan (korábban egymás után futottak)
     const lekero = async () => {
-        const [kategoriak, katalogusRes, osszetevoRes, rangRes, szuroRes] = await Promise.all([
+        const [kategoriak, katalogusRes, osszetevoRes, rangRes, szuroRes, markaSzinRes] = await Promise.all([
             K().lekeres(client).catch(err => ({ hiba: err })),
             client.from('italok')
                 .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, teljes_nev_mutatasa')
@@ -63,6 +63,7 @@ async function inicializalas() {
             groupId
                 ? client.from('groups').select('filter_settings').eq('id', groupId).maybeSingle()
                 : Promise.resolve({ data: null, error: null }),
+            client.from('marka_szinek').select('marka, kep_szin_1, kep_szin_2'),
         ]);
 
         if (kategoriak.hiba) {
@@ -76,6 +77,7 @@ async function inicializalas() {
         if (osszetevoRes.error) console.error('Hiba a receptek betöltésekor:', osszetevoRes.error);
         if (rangRes.error) console.error('Hiba a ranglista betöltésekor:', rangRes.error);
         if (szuroRes.error) console.error('Hiba a szűrő beállítások betöltésekor:', szuroRes.error);
+        if (markaSzinRes.error) console.error('Hiba a márkaszínek betöltésekor:', markaSzinRes.error);
 
         return {
             kategoriak,
@@ -83,6 +85,7 @@ async function inicializalas() {
             osszetevok: osszetevoRes.data || [],
             ranglista: rangRes.data || [],
             filterSettings: szuroRes.data?.filter_settings ?? null,
+            markaSzinek: markaSzinRes.data || [],
         };
     };
 
@@ -113,6 +116,7 @@ function teljesKirajzolas(adat) {
     const nyitottDobozok = new Set([...document.querySelectorAll('.forras-doboz:not(.csukva)')].map(d => d.dataset.kategoria));
 
     K().beallit(adat.kategoriak);
+    window.italKep?.setMarkaSzinek(adat.markaSzinek);
     epitForrasDobozok();
     epitKategoriaValaszto();
     epitKiszerelesValaszto();
@@ -334,13 +338,68 @@ function kepElonezetFrissit() {
     if (szin2) szin2.disabled = !document.getElementById('uj-ital-van-szin-2')?.checked;
 
     const elonezet = document.getElementById('kep-elonezet');
-    if (!elonezet) return;
-    if (!adatok.kep_forma) {
-        elonezet.replaceChildren();
+    const nev = document.getElementById('uj-ital-nev')?.value || '';
+    if (elonezet) {
+        if (!adatok.kep_forma) elonezet.replaceChildren();
+        else elonezet.replaceChildren(window.italKep.elemLetrehoz({ nev, ...adatok }));
+    }
+
+    frissitsMarkaSzinGombot(nev, adatok.kep_forma);
+}
+
+// Ha a gépelt névhez felismerhető márka tartozik, és az illető superadmin, megmutatja a
+// "Mentés márka színeként" gombot (a márka nevével), amivel a jelenlegi szín lesz az alapértelmezett.
+function frissitsMarkaSzinGombot(nev, vanForma) {
+    const gomb = document.getElementById('marka-szin-mentes-gomb');
+    if (!gomb) return;
+    const marka = vanForma ? window.italKep?.markaNevbol(nev) : null;
+    const superadmin = window.goatsAuth?.isSuperadmin?.();
+    gomb.hidden = !marka || !superadmin;
+    if (marka) gomb.textContent = `🎨 Mentés márka színeként (${marka})`;
+}
+
+// Ha az új italnál most választottak formát, és a névhez van mentett márkaszín, előtölti vele a
+// színválasztókat (csak még nem létező italnál - szerkesztéskor a saját mentett színe számít).
+function formaValtozott() {
+    const forma = document.getElementById('uj-ital-forma')?.value || '';
+    if (forma && !szerkesztettItalId) {
+        const nev = document.getElementById('uj-ital-nev')?.value || '';
+        const marka = window.italKep?.markaNevbol(nev);
+        const alap = marka ? window.italKep?.markaSzinLekeres(marka) : null;
+        if (alap?.szin1) {
+            document.getElementById('uj-ital-szin-1').value = alap.szin1;
+            document.getElementById('uj-ital-van-szin-2').checked = !!alap.szin2;
+            document.getElementById('uj-ital-szin-2').value = alap.szin2 || '#111111';
+        }
+    }
+    kepElonezetFrissit();
+}
+
+// A jelenlegi szín(eke)t elmenti a felismert márka alapértelmezett színeként (csak superadmin -
+// a szerver az RLS-sel úgyis kikényszeríti, ez csak a felesleges próbálkozást előzi meg).
+async function markaSzinMentese() {
+    const nev = document.getElementById('uj-ital-nev')?.value || '';
+    const marka = window.italKep?.markaNevbol(nev);
+    if (!marka) return;
+
+    const adatok = kepAdatokUrlapbol();
+    const { error } = await kliens().from('marka_szinek').upsert({
+        marka,
+        kep_szin_1: adatok.kep_szin_1,
+        kep_szin_2: adatok.kep_szin_2,
+        modositotta: window.goatsAuth?.getState()?.user?.id || null,
+        modositva: new Date().toISOString(),
+    }, { onConflict: 'marka' });
+
+    if (error) {
+        console.error('Hiba a márkaszín mentésekor:', error);
+        alert('Hiba történt a márkaszín mentésekor: ' + error.message);
         return;
     }
-    const nev = document.getElementById('uj-ital-nev')?.value || '';
-    elonezet.replaceChildren(window.italKep.elemLetrehoz({ nev, ...adatok }));
+
+    const { data } = await kliens().from('marka_szinek').select('marka, kep_szin_1, kep_szin_2');
+    window.italKep?.setMarkaSzinek(data || []);
+    alert(`Elmentve: a(z) "${marka}" márka italai mostantól alapból ezt a színt kapják (ha nincs saját színük beállítva).`);
 }
 
 // Az új ital űrlap kategória-legördülője (a főkategóriák a táblából)

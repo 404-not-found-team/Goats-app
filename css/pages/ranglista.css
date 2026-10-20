@@ -1054,10 +1054,30 @@
 }
 /* Új ital / szerkesztés űrlap: színezett kép mezői és élő előnézet */
 .kep-szinezes-resz {
+    margin-bottom: 15px;
+}
+
+.kep-szinezes-sor {
     display: flex;
     gap: 12px;
     align-items: center;
-    margin-bottom: 15px;
+}
+
+.marka-szin-mentes-gomb {
+    width: 100%;
+    margin-top: 10px;
+    background: var(--inner-bg);
+    border: 1px dashed var(--border-color);
+    color: var(--accent-text);
+    border-radius: 10px;
+    padding: 10px;
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+}
+
+.marka-szin-mentes-gomb:hover {
+    border-color: var(--accent-color);
 }
 
 .kep-szinezes-mezok {
