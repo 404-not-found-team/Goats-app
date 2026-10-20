@@ -70,11 +70,3 @@ export async function regenerateGroupCode(groupId) {
 export function deleteCurrentGroup(groupId) {
   return run(() => callRpc('delete_group', { group_id_input: groupId }));
 }
-
-// 7. Elérhető oldalak ki/be kapcsolása (kizárólag superadmin)
-export function updateEnabledPages(groupId, newPagesArray) {
-  return run(() => callRpc('set_enabled_pages', {
-    group_id_input: groupId,
-    pages: newPagesArray,
-  }));
-}
