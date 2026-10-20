@@ -252,6 +252,27 @@
     min-width: 0;
 }
 
+.admin-szin-szoveg {
+    flex-direction: row !important;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-szin-minta {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: var(--szin, transparent);
+}
+
+.admin-szin-masodik-mezo {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
 .admin-mozgat-gomb:disabled {
     opacity: 0.35;
     cursor: default;
