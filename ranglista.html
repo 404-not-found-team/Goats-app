@@ -121,37 +121,40 @@
             </div>
 
             <div id="kep-szinezes-resz" class="kep-szinezes-resz" hidden>
-                <div class="floating-group">
-                    <select id="uj-ital-szin-paletta" class="floating-select" onchange="palettaSzinValasztva()">
-                        <!-- a lehetőségeket a ranglista.js tölti fel (public.szin_paletta); az admin oldal
-                             Színek fülén vehető fel/szerkeszthető/törölhető új bejegyzés -->
-                    </select>
-                    <label class="floating-label">Szín kiválasztása</label>
+                <div class="szin-hely">
+                    <div class="floating-group">
+                        <select id="uj-ital-szin-1-select" class="floating-select" onchange="szinSlotValtozott(1)">
+                            <!-- a lehetőségeket a ranglista.js tölti fel (public.szin_paletta + "Szín keverés");
+                                 az admin oldal Színek fülén vehető fel/szerkeszthető/törölhető új bejegyzés -->
+                        </select>
+                        <label class="floating-label">Fő szín</label>
+                    </div>
+                    <input type="color" id="uj-ital-szin-1" class="szin-hely-picker" value="#e30613" oninput="kepElonezetFrissit()" hidden />
                 </div>
 
-                <details class="kep-egyeni-szin">
-                    <summary>Egyéni szín megadása</summary>
-                    <div class="kep-szinezes-sor">
-                        <div class="kep-szinezes-mezok">
-                            <label class="kep-szin-mezo">
-                                <input type="color" id="uj-ital-szin-1" value="#e30613" oninput="kepElonezetFrissit()" />
-                                Fő szín
-                            </label>
-                            <label class="kep-szin-mezo">
-                                <input type="checkbox" id="uj-ital-van-szin-2" onchange="kepElonezetFrissit()" />
-                                <input type="color" id="uj-ital-szin-2" value="#111111" oninput="kepElonezetFrissit()" />
-                                Második szín
-                            </label>
-                            <div class="floating-group">
-                                <select id="uj-ital-minta" class="floating-select" onchange="kepElonezetFrissit()">
-                                    <!-- ital-kep.js: MINTAK -->
-                                </select>
-                                <label class="floating-label">Minta</label>
-                            </div>
-                        </div>
-                        <div id="kep-elonezet" class="kep-elonezet"></div>
+                <label class="kep-szin-mezo">
+                    <input type="checkbox" id="uj-ital-van-szin-2" onchange="masodikSzinValtozott()" />
+                    Legyen második szín
+                </label>
+
+                <div id="szin-2-hely" class="szin-hely" hidden>
+                    <div class="floating-group">
+                        <select id="uj-ital-szin-2-select" class="floating-select" onchange="szinSlotValtozott(2)">
+                        </select>
+                        <label class="floating-label">Második szín</label>
                     </div>
-                </details>
+                    <input type="color" id="uj-ital-szin-2" class="szin-hely-picker" value="#111111" oninput="kepElonezetFrissit()" hidden />
+                </div>
+
+                <div class="kep-szinezes-sor">
+                    <div class="floating-group">
+                        <select id="uj-ital-minta" class="floating-select" onchange="kepElonezetFrissit()">
+                            <!-- ital-kep.js: MINTAK -->
+                        </select>
+                        <label class="floating-label">Minta</label>
+                    </div>
+                    <div id="kep-elonezet" class="kep-elonezet"></div>
+                </div>
             </div>
             <label id="teljes-nev-group" class="szuro-kapcsolo-sor" hidden>
                 <input type="checkbox" id="uj-ital-teljes-nev">

@@ -18,7 +18,7 @@ const ZERO_FELIRAT = { mind: 'Mind', zero: 'Cukormentes', nem_zero: 'Cukros' };
 let csoportSzuro = null; // { v: 2, beallitva: true, kategoriak: [kod], alkategoriak_ki: [kulcs], zero: {fokod: ertek} }
 let sajatSzuro = ujSajatSzuro();
 const osszetevokItalonkent = new Map(); // ital id -> [{nev, mennyiseg, egyseg}]
-let szinPaletta = []; // [{id, nev, kep_szin_1, kep_szin_2}] - public.szin_paletta, bármelyik italnál újrahasználható mentett színek
+let szinPaletta = []; // [{id, nev, kep_szin_1}] - public.szin_paletta, bármelyik italnál újrahasználható mentett színek
 
 function ujSajatSzuro() {
     return { kategoriak_ki: [], alkategoriak_ki: [], zero: {}, kizart: [] };
@@ -52,7 +52,7 @@ async function inicializalas() {
         const [kategoriak, katalogusRes, osszetevoRes, rangRes, szuroRes, szinPalettaRes] = await Promise.all([
             K().lekeres(client).catch(err => ({ hiba: err })),
             client.from('italok')
-                .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, teljes_nev_mutatasa')
+                .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, kep_szin_1_id, kep_szin_2_id, teljes_nev_mutatasa')
                 .order('nev', { ascending: true })
                 .range(0, 1999),
             client.from('ital_osszetevok')
@@ -64,7 +64,7 @@ async function inicializalas() {
             groupId
                 ? client.from('groups').select('filter_settings').eq('id', groupId).maybeSingle()
                 : Promise.resolve({ data: null, error: null }),
-            client.from('szin_paletta').select('id, nev, kep_szin_1, kep_szin_2').order('nev', { ascending: true }),
+            client.from('szin_paletta').select('id, nev, kep_szin_1').order('nev', { ascending: true }),
         ]);
 
         if (kategoriak.hiba) {
@@ -118,7 +118,7 @@ function teljesKirajzolas(adat) {
 
     K().beallit(adat.kategoriak);
     szinPaletta = adat.szinPaletta || [];
-    epitSzinPalettaValaszto();
+    epitSzinHelyValasztok();
     epitForrasDobozok();
     epitKategoriaValaszto();
     epitKiszerelesValaszto();
@@ -314,16 +314,31 @@ function epitFormaValaszto() {
     }
 }
 
+// Az adott szín-hely (1 vagy 2) azonosítója, ha épp egy mentett paletta-szín van kiválasztva
+// (nem "Szín keverés"); mentéskor ezt tároljuk el, hogy a paletta-szín később módosítható legyen
+function szinHelyPalettaId(slot) {
+    const ertek = document.getElementById(`uj-ital-szin-${slot}-select`)?.value;
+    return ertek && ertek !== 'EGYEDI' ? Number(ertek) : null;
+}
+
 // Az űrlap képmezőinek értéke mentéshez; forma nélkül minden mező üres
 function kepAdatokUrlapbol() {
     const forma = document.getElementById('uj-ital-forma')?.value || '';
-    if (!forma) return { kep_forma: null, kep_minta: null, kep_szin_1: null, kep_szin_2: null };
+    if (!forma) {
+        return {
+            kep_forma: null, kep_minta: null,
+            kep_szin_1: null, kep_szin_2: null,
+            kep_szin_1_id: null, kep_szin_2_id: null,
+        };
+    }
     const vanSzin2 = document.getElementById('uj-ital-van-szin-2')?.checked;
     return {
         kep_forma: forma,
         kep_minta: document.getElementById('uj-ital-minta')?.value || null,
         kep_szin_1: document.getElementById('uj-ital-szin-1')?.value || null,
         kep_szin_2: vanSzin2 ? (document.getElementById('uj-ital-szin-2')?.value || null) : null,
+        kep_szin_1_id: szinHelyPalettaId(1),
+        kep_szin_2_id: vanSzin2 ? szinHelyPalettaId(2) : null,
     };
 }
 
@@ -331,18 +346,16 @@ function kepAdatokUrlapbol() {
 function kepMezokBeallit(ital = {}) {
     document.getElementById('uj-ital-forma').value = ital.kep_forma || '';
     document.getElementById('uj-ital-minta').value = ital.kep_minta || '';
-    document.getElementById('uj-ital-szin-1').value = ital.kep_szin_1 || '#e30613';
     document.getElementById('uj-ital-van-szin-2').checked = !!ital.kep_szin_2;
-    document.getElementById('uj-ital-szin-2').value = ital.kep_szin_2 || '#111111';
-    kepElonezetFrissit();
+    szinHelyBeallitas(1, ital.kep_szin_1, ital.kep_szin_1_id);
+    szinHelyBeallitas(2, ital.kep_szin_2, ital.kep_szin_2_id);
+    masodikSzinValtozott();
 }
 
 function kepElonezetFrissit() {
     const adatok = kepAdatokUrlapbol();
     const resz = document.getElementById('kep-szinezes-resz');
     if (resz) resz.hidden = !adatok.kep_forma;
-    const szin2 = document.getElementById('uj-ital-szin-2');
-    if (szin2) szin2.disabled = !document.getElementById('uj-ital-van-szin-2')?.checked;
 
     const elonezet = document.getElementById('kep-elonezet');
     const nev = document.getElementById('uj-ital-nev')?.value || '';
@@ -352,32 +365,79 @@ function kepElonezetFrissit() {
     }
 }
 
-// A színpaletta-választó feltöltése (public.szin_paletta - bármelyik italnál újrahasználható,
-// névvel elmentett színek, pl. "Hell piros", nem márkához kötve).
-function epitSzinPalettaValaszto() {
-    const select = document.getElementById('uj-ital-szin-paletta');
-    if (!select) return;
-    const opt0 = document.createElement('option');
-    opt0.value = '';
-    opt0.textContent = '🎨 Mentett szín betöltése…';
-    select.replaceChildren(opt0, ...szinPaletta.map(sz => {
-        const opt = document.createElement('option');
-        opt.value = String(sz.id);
-        opt.textContent = sz.nev;
-        return opt;
-    }));
+// A "Legyen második szín" kapcsoló: mutatja/rejti a 2. szín-helyet
+function masodikSzinValtozott() {
+    const van = document.getElementById('uj-ital-van-szin-2')?.checked;
+    const hely = document.getElementById('szin-2-hely');
+    if (hely) hely.hidden = !van;
+    kepElonezetFrissit();
 }
 
-// A kiválasztott mentett színt beállítja a színválasztókba (a lista marad a kiválasztott színen,
-// hogy látszódjon, melyiket választottuk - az admin oldal Színek fülén vehető fel/törölhető új/régi szín).
-function palettaSzinValasztva() {
-    const select = document.getElementById('uj-ital-szin-paletta');
-    const sz = szinPaletta.find(s => String(s.id) === select?.value);
-    if (!sz) return;
-    document.getElementById('uj-ital-szin-1').value = sz.kep_szin_1;
-    document.getElementById('uj-ital-van-szin-2').checked = !!sz.kep_szin_2;
-    document.getElementById('uj-ital-szin-2').value = sz.kep_szin_2 || '#111111';
+// Egy ital ténylegesen megjelenítendő színei: ha van mentett paletta-id és az a szín még létezik,
+// annak a MOST ÉRVÉNYES hex-értékét adja vissza (így ha a mentett szín RGB-je az admin oldalon
+// módosul, minden rá hivatkozó ital színe is azonnal, mentés nélkül frissül a rendereléskor),
+// különben az italon tárolt hex-et (egyedi "Szín keverés" eset, vagy törölt paletta-szín).
+function effektivSzinek(ital) {
+    const feloldas = (hex, id) => {
+        const sz = id != null && szinPaletta.find(s => s.id === id);
+        return sz ? sz.kep_szin_1 : hex;
+    };
+    return {
+        kep_szin_1: feloldas(ital.kep_szin_1, ital.kep_szin_1_id),
+        kep_szin_2: feloldas(ital.kep_szin_2, ital.kep_szin_2_id),
+    };
+}
+
+// Minden szín-hely (fő szín, második szín) ugyanazt a listát kapja: a mentett színek (public.szin_paletta,
+// az admin oldal Színek fülén vehető fel/szerkeszthető/törölhető), a végén "Szín keverés" egyéni RGB-hez.
+function epitSzinHelyValasztok() {
+    [1, 2].forEach(slot => {
+        const select = document.getElementById(`uj-ital-szin-${slot}-select`);
+        if (!select) return;
+        const egyeni = document.createElement('option');
+        egyeni.value = 'EGYEDI';
+        egyeni.textContent = '🎨 Szín keverés';
+        select.replaceChildren(...szinPaletta.map(sz => {
+            const opt = document.createElement('option');
+            opt.value = String(sz.id);
+            opt.textContent = sz.nev;
+            return opt;
+        }), egyeni);
+    });
+}
+
+// A kiválasztott szín-hely (mentett szín vagy "Szín keverés") alapján mutatja/rejti az RGB-választót,
+// mentett szín esetén annak a hex-értékét adja a (rejtett) color inputnak.
+function szinSlotValtozott(slot) {
+    const select = document.getElementById(`uj-ital-szin-${slot}-select`);
+    const picker = document.getElementById(`uj-ital-szin-${slot}`);
+    if (!select || !picker) return;
+    if (select.value === 'EGYEDI') {
+        picker.hidden = false;
+    } else {
+        const sz = szinPaletta.find(s => String(s.id) === select.value);
+        if (sz) picker.value = sz.kep_szin_1;
+        picker.hidden = true;
+    }
     kepElonezetFrissit();
+}
+
+// Egy szín-hely (1=fő, 2=második) beállítása egy meglévő ital adatával: ha van mentett paletta-id,
+// azt választja ki (élő, friss hex-szel), különben "Szín keverés"-t és az RGB-választóba teszi az értéket.
+function szinHelyBeallitas(slot, hex, palettaId) {
+    const select = document.getElementById(`uj-ital-szin-${slot}-select`);
+    const picker = document.getElementById(`uj-ital-szin-${slot}`);
+    if (!select || !picker) return;
+    picker.value = hex || (slot === 1 ? '#e30613' : '#111111');
+    const talalt = palettaId != null && szinPaletta.find(sz => sz.id === palettaId);
+    if (talalt) {
+        select.value = String(talalt.id);
+        picker.value = talalt.kep_szin_1;
+        picker.hidden = true;
+    } else {
+        select.value = 'EGYEDI';
+        picker.hidden = false;
+    }
 }
 
 // Az új ital űrlap kategória-legördülője (a főkategóriák a táblából)
@@ -743,7 +803,10 @@ function zardUjItalModal() {
     document.getElementById('uj-ital-nev').value = '';
     document.getElementById('uj-ital-szazalek').value = '';
     document.getElementById('uj-ital-kiszereles').selectedIndex = 0;
-    document.getElementById('uj-ital-szin-paletta').selectedIndex = 0;
+    document.getElementById('uj-ital-van-szin-2').checked = false;
+    document.getElementById('szin-2-hely').hidden = true;
+    document.getElementById('uj-ital-szin-1').hidden = true;
+    document.getElementById('uj-ital-szin-2').hidden = true;
     document.getElementById('uj-ital-teljes-nev').checked = false;
     document.getElementById('hozzavalok-lista').replaceChildren();
     szerkesztettItalId = null;
@@ -917,7 +980,7 @@ async function mentUjItal() {
     }
 
     const client = kliens();
-    const KIVALASZTANDO = 'id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, teljes_nev_mutatasa';
+    const KIVALASZTANDO = 'id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, kep_szin_1_id, kep_szin_2_id, teljes_nev_mutatasa';
     const teljesNevMutatva = document.getElementById('uj-ital-teljes-nev')?.checked || false;
 
     if (szerkesztettItalId) {
@@ -1029,8 +1092,8 @@ function addItalKartyaToUI(ital, rendez = true) {
     const fo = K().kategoria(ital.kategoria_id) || K().fo.find(f => f.kod === 'egyeb') || K().fo[0];
     if (!fo) return;
     const al = K().alkategoria(ital);
-    // Az ital-kep.js a kategória kódját és ikonját várja
-    const kepAdat = { ...ital, kategoria: fo.kod, ikon: fo.ikon };
+    // Az ital-kep.js a kategória kódját és ikonját várja; a színeket a paletta jelenlegi állása szerint oldjuk fel
+    const kepAdat = { ...ital, ...effektivSzinek(ital), kategoria: fo.kod, ikon: fo.ikon };
 
     const kartya = document.createElement('div');
     kartya.className = 'ital-kartya';
@@ -1172,7 +1235,7 @@ function frissitsItalKartyaDOM(italId, ital) {
 
     const fo = K().kategoria(ital.kategoria_id) || K().fo.find(f => f.kod === 'egyeb') || K().fo[0];
     const al = K().alkategoria(ital);
-    const kepAdat = { ...ital, kategoria: fo.kod, ikon: fo.ikon };
+    const kepAdat = { ...ital, ...effektivSzinek(ital), kategoria: fo.kod, ikon: fo.ikon };
 
     kartya.dataset.kategoria = fo.kod;
     kartya.dataset.alkategoria = al ? al.kod : '';

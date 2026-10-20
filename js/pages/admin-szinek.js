@@ -1,7 +1,8 @@
 // Admin oldal: Színek fül (public.szin_paletta). Csak superadminnak: az admin.js a jogosultság-
 // ellenőrzés után tölti be; az írást a szerver is ellenőrzi (RLS: is_superadmin()).
-// Névvel elmentett színek (pl. "Hell piros", RGB/színválasztóval megadva) - a Ranglista "Új ital"
-// űrlapján bármelyik italnál ezek közül lehet választani, egyéni szín csak a lista alján adható meg.
+// Névvel elmentett, egyedi színek (pl. "Hell piros", RGB/színválasztóval megadva) - a Ranglista
+// "Új ital" űrlapján minden szín-helyen (fő szín, második szín) ugyanebből a listából lehet
+// választani, "Szín keverés" (egyéni szín) a lista legvégén.
 import { client } from '../supabase-client.js';
 import { getState } from '../hitelesites.js';
 
@@ -33,9 +34,7 @@ function szinMinta(hex) {
 function szinSor(sz) {
     const li = ujElem('li', 'admin-sor admin-szin-sor');
     const szoveg = ujElem('div', 'admin-sor-szoveg admin-szin-szoveg');
-    szoveg.append(szinMinta(sz.kep_szin_1));
-    if (sz.kep_szin_2) szoveg.append(szinMinta(sz.kep_szin_2));
-    szoveg.append(ujElem('span', 'admin-sor-nev', sz.nev));
+    szoveg.append(szinMinta(sz.kep_szin_1), ujElem('span', 'admin-sor-nev', sz.nev));
 
     const gombok = ujElem('div', 'admin-sor-gombok');
     const szerkeszt = ujElem('button', 'admin-gomb masodlagos', 'Szerkesztés');
@@ -59,44 +58,27 @@ function szinSzerkeszto(sz) {
     const szin1 = ujElem('input');
     szin1.type = 'color';
     szin1.value = sz.kep_szin_1;
-    szin1.setAttribute('aria-label', 'Fő szín');
-
-    const vanSzin2 = ujElem('input');
-    vanSzin2.type = 'checkbox';
-    vanSzin2.checked = !!sz.kep_szin_2;
-    vanSzin2.setAttribute('aria-label', 'Legyen második szín');
-    const szin2 = ujElem('input');
-    szin2.type = 'color';
-    szin2.value = sz.kep_szin_2 || '#111111';
-    szin2.disabled = !vanSzin2.checked;
-    szin2.setAttribute('aria-label', 'Második szín');
-    vanSzin2.addEventListener('change', () => { szin2.disabled = !vanSzin2.checked; });
-    const masodikMezo = ujElem('label', 'admin-szin-masodik-mezo');
-    masodikMezo.append(vanSzin2, szin2);
+    szin1.setAttribute('aria-label', 'A szín (RGB)');
 
     const ment = ujElem('button', 'admin-gomb', 'Mentés');
     ment.type = 'button';
-    ment.addEventListener('click', () => szinMentes(sz, {
-        nev: nev.value,
-        szin1: szin1.value,
-        szin2: vanSzin2.checked ? szin2.value : null,
-    }));
+    ment.addEventListener('click', () => szinMentes(sz, { nev: nev.value, szin1: szin1.value }));
     const megse = ujElem('button', 'admin-gomb masodlagos', 'Mégse');
     megse.type = 'button';
     megse.addEventListener('click', kirajzolas);
 
     const sor = ujElem('div', 'admin-urlap-sor');
-    sor.append(nev, szin1, masodikMezo, ment, megse);
+    sor.append(nev, szin1, ment, megse);
     li.appendChild(sor);
     return li;
 }
 
-async function szinMentes(sz, { nev, szin1, szin2 }) {
+async function szinMentes(sz, { nev, szin1 }) {
     const tisztaNev = String(nev || '').trim();
     if (tisztaNev.length < 2 || tisztaNev.length > 40) return allapot('A szín neve 2–40 karakter legyen.', 'hiba');
     const { error } = await client
         .from('szin_paletta')
-        .update({ nev: tisztaNev, kep_szin_1: szin1, kep_szin_2: szin2 })
+        .update({ nev: tisztaNev, kep_szin_1: szin1 })
         .eq('id', sz.id);
     if (error) {
         console.error('A szín mentése nem sikerült:', error);
@@ -121,12 +103,10 @@ async function ujSzinFelvetel(e) {
     e.preventDefault();
     const nev = $('adminUjSzinNev').value.trim();
     if (nev.length < 2 || nev.length > 40) return allapot('Add meg a szín nevét (2–40 karakter).', 'hiba');
-    const vanSzin2 = $('adminUjVanSzin2').checked;
 
     const { error } = await client.from('szin_paletta').insert({
         nev,
         kep_szin_1: $('adminUjSzin1').value,
-        kep_szin_2: vanSzin2 ? $('adminUjSzin2').value : null,
         letrehozta: getState().user?.id || null,
     });
     if (error) {
@@ -134,7 +114,6 @@ async function ujSzinFelvetel(e) {
         return allapot(`A létrehozás nem sikerült: ${error.message}`, 'hiba');
     }
     $('adminUjSzin').reset();
-    $('adminUjSzin2').disabled = true;
     allapot(`${nev}: létrehozva.`, 'ok');
     await ujratoltes();
 }
@@ -148,7 +127,7 @@ function kirajzolas() {
 async function ujratoltes() {
     const { data, error } = await client
         .from('szin_paletta')
-        .select('id, nev, kep_szin_1, kep_szin_2')
+        .select('id, nev, kep_szin_1')
         .order('nev', { ascending: true });
     if (error) {
         console.error('A színek betöltése nem sikerült:', error);
@@ -161,6 +140,5 @@ async function ujratoltes() {
 
 export async function indit() {
     $('adminUjSzin').addEventListener('submit', ujSzinFelvetel);
-    $('adminUjVanSzin2').addEventListener('change', () => { $('adminUjSzin2').disabled = !$('adminUjVanSzin2').checked; });
     await ujratoltes();
 }

@@ -267,12 +267,6 @@
     background: var(--szin, transparent);
 }
 
-.admin-szin-masodik-mezo {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-
 .admin-mozgat-gomb:disabled {
     opacity: 0.35;
     cursor: default;

@@ -115,9 +115,9 @@
             <section class="admin-szekcio" aria-labelledby="adminSzinekCim">
                 <h2 id="adminSzinekCim">Színek</h2>
                 <p class="admin-szekcio-leiras">
-                    Névvel elmentett színek (pl. "Hell piros"), amelyek a Ranglistán bármelyik italnál
-                    kiválaszthatók a színezett kép beállításakor - ott a mentett színek listájából lehet
-                    választani, egyéni színt csak alul, a lista alján lehet megadni.
+                    Névvel elmentett, egyedi színek (pl. "Hell piros", RGB/színválasztóval megadva). A
+                    Ranglistán minden szín-helyen (fő szín, második szín) ebből a listából lehet választani -
+                    "Szín keverés" a lista legvégén nyit egyéni RGB-t.
                 </p>
                 <p id="adminSzinekAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
                 <ul id="adminSzinek" class="admin-lista"></ul>
@@ -126,11 +126,7 @@
                     <h3 class="admin-alcim">Új szín</h3>
                     <div class="admin-urlap-sor">
                         <input id="adminUjSzinNev" class="admin-bemenet" maxlength="40" placeholder="Név (pl. Hell piros)" aria-label="A szín neve" required>
-                        <input id="adminUjSzin1" type="color" value="#e30613" aria-label="Fő szín (RGB)">
-                        <label class="admin-szin-masodik-mezo">
-                            <input type="checkbox" id="adminUjVanSzin2" aria-label="Legyen második szín">
-                            <input id="adminUjSzin2" type="color" value="#111111" aria-label="Második szín" disabled>
-                        </label>
+                        <input id="adminUjSzin1" type="color" value="#e30613" aria-label="A szín (RGB)">
                         <button type="submit" class="admin-gomb">Hozzáadás</button>
                     </div>
                 </form>
