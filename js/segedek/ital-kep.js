@@ -198,32 +198,6 @@
     const SZLUG = /^[a-z0-9-]{1,30}$/;
     const HEX = /^#[0-9a-fA-F]{6}$/;
 
-    // Márkánkénti alapértelmezett szín (pl. "hell" -> piros), hogy ne kelljen minden egyes italnál
-    // újra kiválasztani - ranglista.js tölti be a public.marka_szinek táblából (setMarkaSzinek).
-    let MARKA_SZIN_ALAPERTELMEZETT = {};
-
-    function setMarkaSzinek(sorok) {
-        MARKA_SZIN_ALAPERTELMEZETT = {};
-        (sorok || []).forEach(r => {
-            if (r.marka) MARKA_SZIN_ALAPERTELMEZETT[r.marka] = { szin1: r.kep_szin_1, szin2: r.kep_szin_2 || null };
-        });
-    }
-
-    function markaSzinLekeres(marka) {
-        return marka ? (MARKA_SZIN_ALAPERTELMEZETT[marka] || null) : null;
-    }
-
-    // A ténylegesen használt színek: az ital saját színe, ha be van állítva, különben a márka
-    // alapértelmezett színe (ha van); se-se esetén null (nincs színezett forma).
-    function effektivSzinek(ital) {
-        if (HEX.test(String(ital.kep_szin_1 || ''))) {
-            return { szin1: ital.kep_szin_1, szin2: HEX.test(String(ital.kep_szin_2 || '')) ? ital.kep_szin_2 : null };
-        }
-        const marka = ital.marka || markaNevbol(ital.nev);
-        const alap = markaSzinLekeres(marka);
-        return alap ? { szin1: alap.szin1, szin2: alap.szin2 } : { szin1: null, szin2: null };
-    }
-
     // A képek URL-jei CSS-változóként, osztályonként egyszer generált szabállyal (nincs inline stílus,
     // a CSP style-src-attr 'none' sem blokkolja) - ugyanúgy, mint a szin-osztaly.js
     const ismertOsztalyok = new Set();
@@ -265,7 +239,7 @@
     }
 
     function vanSzinezettForma(ital) {
-        return SZLUG.test(String(ital.kep_forma || '')) && !!effektivSzinek(ital).szin1;
+        return SZLUG.test(String(ital.kep_forma || '')) && HEX.test(String(ital.kep_szin_1 || ''));
     }
 
     function reteg(osztaly, szin) {
@@ -282,11 +256,11 @@
         doboz.setAttribute('role', 'img');
         doboz.setAttribute('aria-label', ital.nev || '');
 
-        const { szin1, szin2 } = effektivSzinek(ital);
-        doboz.appendChild(reteg('reteg-szin', szin1));
+        const szin2 = HEX.test(String(ital.kep_szin_2 || '')) ? ital.kep_szin_2 : null;
+        doboz.appendChild(reteg('reteg-szin', ital.kep_szin_1));
         if (szin2) doboz.appendChild(reteg('reteg-sav', szin2));
         if (SZLUG.test(String(ital.kep_minta || ''))) {
-            doboz.appendChild(reteg('reteg-minta ' + mintaOsztaly(ital.kep_minta), szin2 || szin1));
+            doboz.appendChild(reteg('reteg-minta ' + mintaOsztaly(ital.kep_minta), szin2 || ital.kep_szin_1));
         }
         doboz.appendChild(reteg('reteg-reszletek'));
         return doboz;
@@ -345,6 +319,6 @@
 
     window.italKep = {
         elemLetrehoz, elsoUrl, osszesUrl, markaNevbol, nevMarkaNelkul, ikonFajl, nevSzlug,
-        FORMAK, MINTAK, setMarkaSzinek, markaSzinLekeres,
+        FORMAK, MINTAK,
     };
 })();
