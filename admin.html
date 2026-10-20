@@ -34,7 +34,6 @@
 
         <div class="sm-tabs" role="tablist">
             <button type="button" class="sm-tab-btn active" data-tab="tab-globalis" role="tab" aria-selected="true">Globális kapcsolók</button>
-            <button type="button" class="sm-tab-btn" data-tab="tab-csoportok" role="tab" aria-selected="false">Csoportok</button>
             <button type="button" class="sm-tab-btn" data-tab="tab-javaslatok" role="tab" aria-selected="false">Italjavaslatok <span id="adminJavaslatokDb" class="admin-darab" hidden></span></button>
             <button type="button" class="sm-tab-btn" data-tab="tab-kategoriak" role="tab" aria-selected="false">Italkategóriák</button>
         </div>
@@ -60,33 +59,6 @@
             <section class="admin-szekcio" aria-labelledby="adminBeallitasokCim">
                 <h2 id="adminBeallitasokCim">Beállítások</h2>
                 <ul id="adminBeallitasok" class="admin-lista"></ul>
-            </section>
-        </div>
-
-        <div id="tab-csoportok" class="sm-tab-content">
-            <section class="admin-szekcio" aria-labelledby="adminGyorsMuveletekCim">
-                <h2 id="adminGyorsMuveletekCim">Gyors műveletek</h2>
-                <p class="admin-szekcio-leiras">
-                    Egy oldal bekapcsolása egyszerre MINDEN csoportnak (pl. egy most felvett oldal megosztásához),
-                    ahelyett hogy csoportonként egyenként kelljen bepipálni.
-                </p>
-                <ul id="adminCsoportGyorsMuveletek" class="admin-lista"></ul>
-            </section>
-
-            <section class="admin-szekcio" aria-labelledby="adminCsoportOldalakCim">
-                <h2 id="adminCsoportOldalakCim">Csoportonkénti oldal-engedélyezés</h2>
-                <p class="admin-szekcio-leiras">
-                    Melyik csoport mely oldalakat látja (a globális kapcsolók mellett, azoktól függetlenül —
-                    mindkettőnek engednie kell ahhoz, hogy egy tag lássa az oldalt). A Kezdőlap itt sem kapcsolható.
-                </p>
-
-                <div class="admin-mezo">
-                    <label for="adminCsoportValaszto">Csoport</label>
-                    <select id="adminCsoportValaszto" class="admin-bemenet"></select>
-                </div>
-
-                <p id="adminCsoportOldalakAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
-                <ul id="adminCsoportOldalak" class="admin-lista"></ul>
             </section>
         </div>
 
