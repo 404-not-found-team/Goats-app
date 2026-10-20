@@ -1057,39 +1057,41 @@
     margin-bottom: 15px;
 }
 
+.kep-egyeni-szin {
+    margin-top: 10px;
+}
+
+.kep-egyeni-szin summary {
+    cursor: pointer;
+    color: var(--accent-text);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    list-style: none;
+}
+
+.kep-egyeni-szin summary::-webkit-details-marker {
+    display: none;
+}
+
+.kep-egyeni-szin summary::before {
+    content: '▸';
+    display: inline-block;
+    margin-right: 6px;
+    transition: transform 0.15s ease;
+}
+
+.kep-egyeni-szin[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.kep-egyeni-szin .kep-szinezes-sor {
+    margin-top: 10px;
+}
+
 .kep-szinezes-sor {
     display: flex;
     gap: 12px;
     align-items: center;
-}
-
-.szin-paletta-mentes-sor {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-    margin-bottom: 15px;
-}
-
-.szin-paletta-mentes-sor input {
-    flex: 1;
-    min-width: 0;
-}
-
-.szin-paletta-mentes-sor button {
-    flex-shrink: 0;
-    background: var(--inner-bg);
-    border: 1px dashed var(--border-color);
-    color: var(--accent-text);
-    border-radius: 10px;
-    padding: 0 14px;
-    font-weight: 600;
-    font-size: var(--fs-sm);
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.szin-paletta-mentes-sor button:hover {
-    border-color: var(--accent-color);
 }
 
 .kep-szinezes-mezok {

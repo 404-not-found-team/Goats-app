@@ -350,9 +350,6 @@ function kepElonezetFrissit() {
         if (!adatok.kep_forma) elonezet.replaceChildren();
         else elonezet.replaceChildren(window.italKep.elemLetrehoz({ nev, ...adatok }));
     }
-
-    const mentesSor = document.getElementById('szin-paletta-mentes-sor');
-    if (mentesSor) mentesSor.hidden = !window.goatsAuth?.isSuperadmin?.();
 }
 
 // A színpaletta-választó feltöltése (public.szin_paletta - bármelyik italnál újrahasználható,
@@ -371,8 +368,8 @@ function epitSzinPalettaValaszto() {
     }));
 }
 
-// A kiválasztott mentett színt beállítja a színválasztókba (csak betölti az űrlapra, magát az
-// italt csak a "Mentés"/"Hozzáadás" gombbal menti el a felhasználó).
+// A kiválasztott mentett színt beállítja a színválasztókba (a lista marad a kiválasztott színen,
+// hogy látszódjon, melyiket választottuk - az admin oldal Színek fülén vehető fel/törölhető új/régi szín).
 function palettaSzinValasztva() {
     const select = document.getElementById('uj-ital-szin-paletta');
     const sz = szinPaletta.find(s => String(s.id) === select?.value);
@@ -380,44 +377,7 @@ function palettaSzinValasztva() {
     document.getElementById('uj-ital-szin-1').value = sz.kep_szin_1;
     document.getElementById('uj-ital-van-szin-2').checked = !!sz.kep_szin_2;
     document.getElementById('uj-ital-szin-2').value = sz.kep_szin_2 || '#111111';
-    select.value = '';
     kepElonezetFrissit();
-}
-
-// A jelenlegi szín(eke)t elmenti a megadott névvel a paletta táblába, hogy bármelyik italnál
-// újraválasztható legyen (csak superadmin - a szerver az RLS-sel úgyis kikényszeríti).
-async function szinPalettaMentese() {
-    const nevMezo = document.getElementById('uj-szin-paletta-nev');
-    const nev = nevMezo?.value.trim() || '';
-    if (nev.length < 2 || nev.length > 40) {
-        alert('A szín neve 2–40 karakter legyen.');
-        return;
-    }
-
-    const adatok = kepAdatokUrlapbol();
-    if (!adatok.kep_szin_1) {
-        alert('Előbb válassz formát és színt.');
-        return;
-    }
-
-    const { error } = await kliens().from('szin_paletta').insert({
-        nev,
-        kep_szin_1: adatok.kep_szin_1,
-        kep_szin_2: adatok.kep_szin_2,
-        letrehozta: window.goatsAuth?.getState()?.user?.id || null,
-    });
-
-    if (error) {
-        console.error('Hiba a szín mentésekor:', error);
-        alert('Hiba történt a szín mentésekor: ' + error.message);
-        return;
-    }
-
-    const { data } = await kliens().from('szin_paletta').select('id, nev, kep_szin_1, kep_szin_2').order('nev', { ascending: true });
-    szinPaletta = data || [];
-    epitSzinPalettaValaszto();
-    nevMezo.value = '';
-    alert(`Elmentve: "${nev}" mostantól bármelyik italnál kiválasztható a mentett színek közül.`);
 }
 
 // Az új ital űrlap kategória-legördülője (a főkategóriák a táblából)
@@ -783,6 +743,7 @@ function zardUjItalModal() {
     document.getElementById('uj-ital-nev').value = '';
     document.getElementById('uj-ital-szazalek').value = '';
     document.getElementById('uj-ital-kiszereles').selectedIndex = 0;
+    document.getElementById('uj-ital-szin-paletta').selectedIndex = 0;
     document.getElementById('uj-ital-teljes-nev').checked = false;
     document.getElementById('hozzavalok-lista').replaceChildren();
     szerkesztettItalId = null;
