@@ -161,6 +161,9 @@ if (!jogosultsagEllenorzes()) {
     import('./admin-kategoriak.js')
         .then(m => m.indit())
         .catch(err => console.error('Az italkategóriák betöltése nem sikerült:', err));
+    import('./admin-szinek.js')
+        .then(m => m.indit())
+        .catch(err => console.error('A színek betöltése nem sikerült:', err));
 }
 // Ha a profil később változik (pl. kijelentkezés másik fülön, szerepkör-váltás), újra ellenőrzünk
 onChange(() => {

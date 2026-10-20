@@ -121,38 +121,37 @@
             </div>
 
             <div id="kep-szinezes-resz" class="kep-szinezes-resz" hidden>
-                <div class="kep-szinezes-sor">
-                    <div class="kep-szinezes-mezok">
-                        <label class="kep-szin-mezo">
-                            <input type="color" id="uj-ital-szin-1" value="#e30613" oninput="kepElonezetFrissit()" />
-                            Fő szín
-                        </label>
-                        <label class="kep-szin-mezo">
-                            <input type="checkbox" id="uj-ital-van-szin-2" onchange="kepElonezetFrissit()" />
-                            <input type="color" id="uj-ital-szin-2" value="#111111" oninput="kepElonezetFrissit()" />
-                            Második szín
-                        </label>
-                        <div class="floating-group">
-                            <select id="uj-ital-minta" class="floating-select" onchange="kepElonezetFrissit()">
-                                <!-- ital-kep.js: MINTAK -->
-                            </select>
-                            <label class="floating-label">Minta</label>
-                        </div>
-                    </div>
-                    <div id="kep-elonezet" class="kep-elonezet"></div>
-                </div>
-
                 <div class="floating-group">
                     <select id="uj-ital-szin-paletta" class="floating-select" onchange="palettaSzinValasztva()">
-                        <!-- a lehetőségeket a ranglista.js tölti fel (public.szin_paletta) -->
+                        <!-- a lehetőségeket a ranglista.js tölti fel (public.szin_paletta); az admin oldal
+                             Színek fülén vehető fel/szerkeszthető/törölhető új bejegyzés -->
                     </select>
-                    <label class="floating-label">Mentett szín betöltése</label>
+                    <label class="floating-label">Szín kiválasztása</label>
                 </div>
 
-                <div id="szin-paletta-mentes-sor" class="szin-paletta-mentes-sor" hidden>
-                    <input type="text" id="uj-szin-paletta-nev" class="sm-input" maxlength="40" placeholder="Szín neve (pl. Hell piros)">
-                    <button type="button" id="szin-paletta-mentes-gomb" onclick="szinPalettaMentese()">💾 Mentés</button>
-                </div>
+                <details class="kep-egyeni-szin">
+                    <summary>Egyéni szín megadása</summary>
+                    <div class="kep-szinezes-sor">
+                        <div class="kep-szinezes-mezok">
+                            <label class="kep-szin-mezo">
+                                <input type="color" id="uj-ital-szin-1" value="#e30613" oninput="kepElonezetFrissit()" />
+                                Fő szín
+                            </label>
+                            <label class="kep-szin-mezo">
+                                <input type="checkbox" id="uj-ital-van-szin-2" onchange="kepElonezetFrissit()" />
+                                <input type="color" id="uj-ital-szin-2" value="#111111" oninput="kepElonezetFrissit()" />
+                                Második szín
+                            </label>
+                            <div class="floating-group">
+                                <select id="uj-ital-minta" class="floating-select" onchange="kepElonezetFrissit()">
+                                    <!-- ital-kep.js: MINTAK -->
+                                </select>
+                                <label class="floating-label">Minta</label>
+                            </div>
+                        </div>
+                        <div id="kep-elonezet" class="kep-elonezet"></div>
+                    </div>
+                </details>
             </div>
             <label id="teljes-nev-group" class="szuro-kapcsolo-sor" hidden>
                 <input type="checkbox" id="uj-ital-teljes-nev">
