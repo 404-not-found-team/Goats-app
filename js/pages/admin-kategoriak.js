@@ -60,7 +60,7 @@ function alkategoriaDarab(alId) {
     return italok.filter(i => i.kategoria_id === foId && K().alkategoria(i)?.id === alId).length;
 }
 
-function alkategoriaSor(a) {
+function alkategoriaSor(a, elso, utolso) {
     const li = ujElem('li', 'admin-sor admin-alkategoria');
     const szoveg = ujElem('div', 'admin-sor-szoveg');
     szoveg.append(
@@ -69,16 +69,45 @@ function alkategoriaSor(a) {
     );
 
     const gombok = ujElem('div', 'admin-sor-gombok');
+    const fel = ujElem('button', 'admin-gomb masodlagos admin-mozgat-gomb', '▲');
+    fel.type = 'button';
+    fel.disabled = !!elso;
+    fel.setAttribute('aria-label', `${a.nev} feljebb`);
+    fel.addEventListener('click', () => alkategoriaMozgatasa(a, 'fel'));
+    const le = ujElem('button', 'admin-gomb masodlagos admin-mozgat-gomb', '▼');
+    le.type = 'button';
+    le.disabled = !!utolso;
+    le.setAttribute('aria-label', `${a.nev} lejjebb`);
+    le.addEventListener('click', () => alkategoriaMozgatasa(a, 'le'));
     const szerkeszt = ujElem('button', 'admin-gomb masodlagos', 'Szerkesztés');
     szerkeszt.type = 'button';
     szerkeszt.addEventListener('click', () => li.replaceWith(alkategoriaSzerkeszto(a)));
     const torol = ujElem('button', 'admin-gomb veszelyes', 'Törlés');
     torol.type = 'button';
     torol.addEventListener('click', () => alkategoriaTorles(a));
-    gombok.append(szerkeszt, torol);
+    gombok.append(fel, le, szerkeszt, torol);
 
     li.append(szoveg, gombok);
     return li;
+}
+
+// Két szomszédos alkategória sorrendjét cseréli fel (a megjelenítési sorrend az ital_kategoriak.sorrend
+// szerint van, lásd js/segedek/ital-kategoriak.js: rendez)
+async function alkategoriaMozgatasa(a, irany) {
+    const lista = K().alkategoriai(foId);
+    const idx = lista.findIndex(x => x.id === a.id);
+    const masik = lista[irany === 'fel' ? idx - 1 : idx + 1];
+    if (!masik) return;
+
+    const [r1, r2] = await Promise.all([
+        client.from('ital_kategoriak').update({ sorrend: masik.sorrend }).eq('id', a.id),
+        client.from('ital_kategoriak').update({ sorrend: a.sorrend }).eq('id', masik.id),
+    ]);
+    if (r1.error || r2.error) {
+        console.error('A sorrend mentése nem sikerült:', r1.error || r2.error);
+        return allapot('A sorrend mentése nem sikerült.', 'hiba');
+    }
+    await ujratoltes();
 }
 
 function szabalyMezok(tipus, ertek) {
@@ -276,7 +305,7 @@ function kirajzolas() {
     foValaszto();
     const alok = K().alkategoriai(foId);
     $('adminAlkategoriak').replaceChildren(...(alok.length
-        ? alok.map(alkategoriaSor)
+        ? alok.map((a, i) => alkategoriaSor(a, i === 0, i === alok.length - 1))
         : [ujElem('li', 'admin-sor admin-ures', 'Nincs még alkategória.')]));
     italLista();
 }
