@@ -147,6 +147,26 @@
     background: var(--accent-color);
 }
 
+/* Sok fülnél (pl. admin oldal) keskeny képernyőn nem férnek ki egyenlő szélességgel:
+   vízszintesen görgethető sorrá válik, a gombok a saját szövegük szélességét veszik fel */
+@media (max-width: 600px) {
+    .sm-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .sm-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sm-tab-btn {
+        flex: none;
+        white-space: nowrap;
+    }
+}
+
 .sm-tab-content {
     display: none;
 }
