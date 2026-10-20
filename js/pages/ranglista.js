@@ -270,6 +270,11 @@ function epitForrasDobozok() {
                 csoport.append(alcim, allista);
                 lista.appendChild(csoport);
             });
+            // Alkategória nélküli italoknak egy felirat/keret nélküli wrap-konténer, hogy ugyanúgy
+            // rácsba (nem egymás alá) rendeződjenek, mint az alkategória-csoportok tagjai
+            const egyeb = ujElem('div', 'ital-alcsoport-lista');
+            egyeb.dataset.alkulcs = alKulcs(fo.kod, '');
+            lista.appendChild(egyeb);
         }
         doboz.append(fejlec, lista);
         return doboz;
