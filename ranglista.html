@@ -85,7 +85,7 @@
             <h3 id="uj-ital-modal-cim" class="modal-alcim">Új ital / koktél felvétele</h3>
 
             <div class="floating-group">
-                <input type="text" id="uj-ital-nev" class="floating-input" placeholder=" " oninput="kepElonezetFrissit()" />
+                <input type="text" id="uj-ital-nev" class="floating-input" placeholder=" " />
                 <label class="floating-label">Ital neve</label>
             </div>
 
@@ -114,7 +114,7 @@
 
             <!-- Színezett kép (ital-kep.js): forma + 1-2 szín + opcionális minta; "Nincs" = márkakép vagy ikon -->
             <div class="floating-group">
-                <select id="uj-ital-forma" class="floating-select" onchange="formaValtozott()">
+                <select id="uj-ital-forma" class="floating-select" onchange="kepElonezetFrissit()">
                     <!-- a lehetőségeket a ranglista.js tölti fel (ital-kep.js: FORMAK) -->
                 </select>
                 <label class="floating-label">Kép formája</label>
@@ -141,7 +141,18 @@
                     </div>
                     <div id="kep-elonezet" class="kep-elonezet"></div>
                 </div>
-                <button type="button" id="marka-szin-mentes-gomb" class="marka-szin-mentes-gomb" onclick="markaSzinMentese()" hidden>🎨 Mentés márka színeként</button>
+
+                <div class="floating-group">
+                    <select id="uj-ital-szin-paletta" class="floating-select" onchange="palettaSzinValasztva()">
+                        <!-- a lehetőségeket a ranglista.js tölti fel (public.szin_paletta) -->
+                    </select>
+                    <label class="floating-label">Mentett szín betöltése</label>
+                </div>
+
+                <div id="szin-paletta-mentes-sor" class="szin-paletta-mentes-sor" hidden>
+                    <input type="text" id="uj-szin-paletta-nev" class="sm-input" maxlength="40" placeholder="Szín neve (pl. Hell piros)">
+                    <button type="button" id="szin-paletta-mentes-gomb" onclick="szinPalettaMentese()">💾 Mentés</button>
+                </div>
             </div>
             <label id="teljes-nev-group" class="szuro-kapcsolo-sor" hidden>
                 <input type="checkbox" id="uj-ital-teljes-nev">
