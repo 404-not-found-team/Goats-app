@@ -108,6 +108,29 @@
                 <input id="adminItalKereso" class="admin-bemenet admin-kereso" type="search" placeholder="Keresés név szerint…" aria-label="Italok keresése">
                 <ul id="adminItalok" class="admin-lista admin-italok"></ul>
             </section>
+
+            <section class="admin-szekcio" aria-labelledby="adminSzinPalettaCim">
+                <h2 id="adminSzinPalettaCim">Színpaletta</h2>
+                <p class="admin-szekcio-leiras">
+                    Névvel elmentett színek (pl. "Hell piros"), amelyek a Ranglistán bármelyik italnál
+                    kiválaszthatók a színezett kép beállításakor.
+                </p>
+                <p id="adminSzinPalettaAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
+                <ul id="adminSzinPaletta" class="admin-lista"></ul>
+
+                <form id="adminUjSzin" class="admin-urlap">
+                    <h3 class="admin-alcim">Új szín</h3>
+                    <div class="admin-urlap-sor">
+                        <input id="adminUjSzinNev" class="admin-bemenet" maxlength="40" placeholder="Név (pl. Hell piros)" aria-label="A szín neve" required>
+                        <input id="adminUjSzin1" type="color" value="#e30613" aria-label="Fő szín">
+                        <label class="admin-szin-masodik-mezo">
+                            <input type="checkbox" id="adminUjVanSzin2" aria-label="Legyen második szín">
+                            <input id="adminUjSzin2" type="color" value="#111111" aria-label="Második szín" disabled>
+                        </label>
+                        <button type="submit" class="admin-gomb">Hozzáadás</button>
+                    </div>
+                </form>
+            </section>
         </div>
     </main>
 </body>
