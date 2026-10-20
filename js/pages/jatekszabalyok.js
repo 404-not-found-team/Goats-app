@@ -141,31 +141,47 @@ function kirajzolasReszletek() {
     document.getElementById('jatek-javaslat-szoveg-input').value = '';
 }
 
-// A "-"-tal kezdődő sorokat (pl. kimenetek: "-Tévedtél: iszol.") valódi listává alakítja,
-// az ez előtti sima sorokat (a felvezető kérdés/leírás) bekezdésként hagyja.
-function lepesSzovegHTML(szoveg) {
+// Egy lépés szövegét (a tárolt sortördelt formátumot) értelmezi: a "-"-tal kezdődő sorok
+// kimenetek (feltétel+következmény, "?" választja el őket), a többi a felvezető szöveg.
+// Ugyanezt a formátumot építi vissza a szerkesztő (lásd lepesSzovegEpit).
+function lepesSzovegFelbont(szoveg) {
     const sorok = String(szoveg || '').split('\n').map(s => s.trim()).filter(Boolean);
     const bekezdes = [];
-    const lista = [];
+    const kimenetek = [];
     sorok.forEach(sor => {
-        if (sor.startsWith('-')) lista.push(sor.slice(1).trim());
-        else bekezdes.push(sor);
+        if (!sor.startsWith('-')) { bekezdes.push(sor); return; }
+        const tartalom = sor.slice(1).trim();
+        const i = tartalom.indexOf('?');
+        kimenetek.push(i === -1
+            ? { feltetel: '', kovetkezmeny: tartalom }
+            : { feltetel: tartalom.slice(0, i + 1), kovetkezmeny: tartalom.slice(i + 1).trim() });
     });
-
-    let html = '';
-    if (bekezdes.length) html += `<p>${bekezdes.map(esc).join('<br>')}</p>`;
-    if (lista.length) html += `<ul class="jatek-lepes-lista">${lista.map(kimenetHTML).join('')}</ul>`;
-    return html || `<p>${esc(szoveg)}</p>`;
+    return { bekezdes: bekezdes.join('\n'), kimenetek };
 }
 
-// Egy kimenet-sor: ha van benne kérdőjel, a kérdés-rész ("Helyes?") kiemelt címkeként jelenik meg,
-// a többi (a következmény, pl. "Szuper.") sima szövegként - ha nincs "?", az egész sima marad.
-function kimenetHTML(sor) {
-    const i = sor.indexOf('?');
-    if (i === -1) return `<li>${esc(sor)}</li>`;
-    const cimke = sor.slice(0, i + 1);
-    const tobbi = sor.slice(i + 1).trim();
-    return `<li><span class="jatek-kimenet-cimke">${esc(cimke)}</span>${tobbi ? ` ${esc(tobbi)}` : ''}</li>`;
+// A szerkesztő mezőiből (felvezető szöveg + feltétel/következmény párok) visszaépíti a tárolt
+// sortördelt szöveget - ugyanazt a formátumot, amit a lepesSzovegFelbont vár.
+function lepesSzovegEpit(bekezdes, kimenetek) {
+    const sorok = String(bekezdes || '').split('\n').map(s => s.trim()).filter(Boolean);
+    kimenetek.forEach(({ feltetel, kovetkezmeny }) => {
+        const f = (feltetel || '').trim();
+        const k = (kovetkezmeny || '').trim();
+        if (f || k) sorok.push(`-${[f, k].filter(Boolean).join(' ')}`);
+    });
+    return sorok.join('\n');
+}
+
+function lepesSzovegHTML(szoveg) {
+    const { bekezdes, kimenetek } = lepesSzovegFelbont(szoveg);
+    let html = '';
+    if (bekezdes) html += `<p>${esc(bekezdes).replace(/\n/g, '<br>')}</p>`;
+    if (kimenetek.length) {
+        html += `<ul class="jatek-lepes-lista">${kimenetek.map(({ feltetel, kovetkezmeny }) => {
+            const cimke = feltetel ? `<span class="jatek-kimenet-cimke">${esc(feltetel)}</span>` : '';
+            return `<li>${cimke}${kovetkezmeny ? ` ${esc(kovetkezmeny)}` : ''}</li>`;
+        }).join('')}</ul>`;
+    }
+    return html || `<p>${esc(szoveg)}</p>`;
 }
 
 // A szabály-szakaszok egyesével, léptetővel (nem egy hosszú, görgetendő lista) - a külön
@@ -226,17 +242,61 @@ function lepesoElore() {
 
 function ujLepesSorHozzaadasa(cim = '', szoveg = '') {
     const kontener = document.getElementById('jatek-lepesek-szerkeszto');
+    const { bekezdes, kimenetek } = lepesSzovegFelbont(szoveg);
+
     const sor = document.createElement('div');
     sor.className = 'jatek-lepes-szerkeszto-sor';
     sor.innerHTML = `
-        <input type="text" class="floating-input jatek-lepes-cim-input" maxlength="80" placeholder="Szakasz címe (opcionális)">
-        <textarea class="floating-input jatek-lepes-szoveg-input" maxlength="2000" rows="2" placeholder="Szöveg"></textarea>
-        <button type="button" class="jatek-lepes-torles-gomb" aria-label="Szakasz törlése">🗑️</button>
+        <div class="jatek-lepes-szerkeszto-fejlec">
+            <input type="text" class="floating-input jatek-lepes-cim-input" maxlength="80" placeholder="Szakasz címe (opcionális)">
+            <div class="jatek-lepes-szerkeszto-gombok">
+                <button type="button" class="jatek-lepes-mozgat-gomb" data-irany="fel" aria-label="Szakasz feljebb">▲</button>
+                <button type="button" class="jatek-lepes-mozgat-gomb" data-irany="le" aria-label="Szakasz lejjebb">▼</button>
+                <button type="button" class="jatek-lepes-torles-gomb" aria-label="Szakasz törlése">🗑️</button>
+            </div>
+        </div>
+        <textarea class="floating-input jatek-lepes-szoveg-input" maxlength="2000" rows="2" placeholder="Szöveg / felvezető kérdés"></textarea>
+        <div class="jatek-lepes-kimenetek">
+            <div class="jatek-lepes-kimenetek-lista"></div>
+            <button type="button" class="jatek-kimenet-uj-gomb">+ Kimenet hozzáadása</button>
+        </div>
     `;
     sor.querySelector('.jatek-lepes-cim-input').value = cim;
-    sor.querySelector('.jatek-lepes-szoveg-input').value = szoveg;
+    sor.querySelector('.jatek-lepes-szoveg-input').value = bekezdes;
+
+    const kimenetLista = sor.querySelector('.jatek-lepes-kimenetek-lista');
+    kimenetek.forEach(k => kimenetSorHozzaadasa(kimenetLista, k.feltetel, k.kovetkezmeny));
+
+    sor.querySelector('.jatek-kimenet-uj-gomb').addEventListener('click', () => kimenetSorHozzaadasa(kimenetLista));
     sor.querySelector('.jatek-lepes-torles-gomb').addEventListener('click', () => sor.remove());
+    sor.querySelectorAll('.jatek-lepes-mozgat-gomb').forEach(btn => {
+        btn.addEventListener('click', () => lepesMozgatasa(sor, btn.dataset.irany));
+    });
     kontener.appendChild(sor);
+}
+
+// Egy kimenet (feltétel + következmény) szerkesztő-sora, pl. "Helyes?" / "Szuper."
+function kimenetSorHozzaadasa(lista, feltetel = '', kovetkezmeny = '') {
+    const sor = document.createElement('div');
+    sor.className = 'jatek-kimenet-szerkeszto-sor';
+    sor.innerHTML = `
+        <input type="text" class="jatek-kimenet-feltetel-input" maxlength="80" placeholder="Feltétel (pl. Helyes?)">
+        <input type="text" class="jatek-kimenet-kovetkezmeny-input" maxlength="300" placeholder="Következmény (pl. Szuper.)">
+        <button type="button" class="jatek-kimenet-torles-gomb" aria-label="Kimenet törlése">✕</button>
+    `;
+    sor.querySelector('.jatek-kimenet-feltetel-input').value = feltetel;
+    sor.querySelector('.jatek-kimenet-kovetkezmeny-input').value = kovetkezmeny;
+    sor.querySelector('.jatek-kimenet-torles-gomb').addEventListener('click', () => sor.remove());
+    lista.appendChild(sor);
+}
+
+// Egy szakasz-sor feljebb/lejjebb mozgatása a testvérei között (a mentés a DOM-sorrendet olvassa)
+function lepesMozgatasa(sor, irany) {
+    if (irany === 'fel' && sor.previousElementSibling) {
+        sor.parentElement.insertBefore(sor, sor.previousElementSibling);
+    } else if (irany === 'le' && sor.nextElementSibling) {
+        sor.parentElement.insertBefore(sor.nextElementSibling, sor);
+    }
 }
 
 function szerkesztoUrlapUrites() {
@@ -277,11 +337,17 @@ function szerkesztesModalMegnyitasa() {
 }
 
 function szerkesztoLepesekOsszegyujtese() {
-    return Array.from(document.querySelectorAll('.jatek-lepes-szerkeszto-sor')).map((sor, idx) => ({
-        sorrend: idx,
-        cim: sor.querySelector('.jatek-lepes-cim-input').value.trim() || null,
-        szoveg: sor.querySelector('.jatek-lepes-szoveg-input').value.trim(),
-    })).filter(l => l.szoveg.length > 0);
+    return Array.from(document.querySelectorAll('.jatek-lepes-szerkeszto-sor')).map((sor, idx) => {
+        const kimenetek = Array.from(sor.querySelectorAll('.jatek-kimenet-szerkeszto-sor')).map(ks => ({
+            feltetel: ks.querySelector('.jatek-kimenet-feltetel-input').value.trim(),
+            kovetkezmeny: ks.querySelector('.jatek-kimenet-kovetkezmeny-input').value.trim(),
+        })).filter(k => k.feltetel || k.kovetkezmeny);
+        return {
+            sorrend: idx,
+            cim: sor.querySelector('.jatek-lepes-cim-input').value.trim() || null,
+            szoveg: lepesSzovegEpit(sor.querySelector('.jatek-lepes-szoveg-input').value, kimenetek),
+        };
+    }).filter(l => l.szoveg.length > 0);
 }
 
 async function jatekMentese() {

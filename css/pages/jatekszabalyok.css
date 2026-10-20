@@ -546,41 +546,126 @@
 }
 
 .jatek-lepes-szerkeszto-sor {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 6px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     background: var(--inner-bg);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 10px;
 }
 
-.jatek-lepes-szerkeszto-sor .jatek-lepes-cim-input {
-    grid-column: 1;
+.jatek-lepes-szerkeszto-fejlec {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.jatek-lepes-szerkeszto-fejlec .jatek-lepes-cim-input {
+    flex: 1;
+    min-width: 0;
     padding: 8px 10px;
 }
 
+.jatek-lepes-szerkeszto-gombok {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 2px;
+}
+
+.jatek-lepes-mozgat-gomb,
+.jatek-lepes-torles-gomb {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: var(--fs-sm);
+    padding: 4px 6px;
+    opacity: 0.8;
+    color: var(--text-secondary);
+}
+
+.jatek-lepes-torles-gomb {
+    font-size: var(--fs-base);
+}
+
+.jatek-lepes-mozgat-gomb:hover,
+.jatek-lepes-torles-gomb:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
 .jatek-lepes-szerkeszto-sor .jatek-lepes-szoveg-input {
-    grid-column: 1;
     padding: 8px 10px;
     font-size: var(--fs-sm);
 }
 
-.jatek-lepes-torles-gomb {
-    grid-row: 1 / 3;
-    grid-column: 2;
+.jatek-lepes-kimenetek {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.jatek-lepes-kimenetek-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.jatek-kimenet-szerkeszto-sor {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.jatek-kimenet-feltetel-input,
+.jatek-kimenet-kovetkezmeny-input {
+    min-width: 0;
+    padding: 7px 9px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    font-size: var(--fs-xs);
+}
+
+.jatek-kimenet-feltetel-input {
+    flex: 0 0 38%;
+}
+
+.jatek-kimenet-kovetkezmeny-input {
+    flex: 1;
+}
+
+.jatek-kimenet-torles-gomb {
+    flex-shrink: 0;
     background: none;
     border: none;
     cursor: pointer;
-    font-size: var(--fs-base);
-    align-self: center;
-    padding: 0 4px;
+    color: var(--text-secondary);
+    font-size: var(--fs-sm);
+    padding: 2px 4px;
     opacity: 0.8;
 }
 
-.jatek-lepes-torles-gomb:hover {
+.jatek-kimenet-torles-gomb:hover {
     opacity: 1;
-    transform: scale(1.1);
+    color: var(--hiba-color, #ef4444);
+}
+
+.jatek-kimenet-uj-gomb {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    color: var(--accent-text);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 2px 0;
+}
+
+.jatek-kimenet-uj-gomb:hover {
+    text-decoration: underline;
 }
 
 .jatek-uj-lepes-gomb {
@@ -619,7 +704,8 @@
     }
 
     #jatek-reszletek-modal .sm-card,
-    #jatek-szerkeszto-modal .sm-card {
+    #jatek-szerkeszto-modal .sm-card,
+    #jatek-szabalyok-modal .sm-card {
         width: 94vw;
         --modal-height: 82vh;
     }
@@ -627,5 +713,17 @@
     .jatek-mezo-sor {
         flex-direction: column;
         gap: 0;
+    }
+
+    .jatek-kimenet-szerkeszto-sor {
+        flex-wrap: wrap;
+    }
+
+    .jatek-kimenet-feltetel-input {
+        flex: 1 1 100%;
+    }
+
+    .jatek-kimenet-kovetkezmeny-input {
+        flex: 1 1 auto;
     }
 }
