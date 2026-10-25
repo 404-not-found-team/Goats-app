@@ -1,5 +1,5 @@
 // Italkép-feloldás egy helyen. Sorrend:
-//   0) színezett forma (italok.kep_forma + kep_szin_1/kep_szin_2/kep_minta): rétegekből
+//   0) színezett forma (italok.kep_forma + kep_szin_1/2/3 + kep_minta): rétegekből
 //      összerakott kép, a színt a kód adja (lásd img/formak/README.md, css/elemek/ital-szinezes.css),
 //   1) a felhasználó saját képe (kep_url),
 //   2) koktélnál: img/koktelok/<ital-neve-szlugositve>.webp (ha van ilyen fájl),
@@ -181,7 +181,7 @@
 
     // ---------- Színezett formák ----------
     // A megrajzolt formák és minták (fájlok: img/formak/<forma>-szin|-sav|-reszletek.webp,
-    // img/mintak/<minta>.webp). Új forma: fájlok be a mappába + egy sor ide.
+    // img/mintak/<forma>-<minta>.webp). Új forma: fájlok be a mappába + egy sor ide.
     const FORMAK = [
         ['nagy-doboz', 'Nagy doboz (500 ml)'],
         ['kozep-doboz', 'Közepes doboz (330 ml)'],
@@ -194,10 +194,15 @@
     // a színezéstől függetlenül, mindig ugyanolyan. Új forma logóval: fájl be + a kódja ide.
     const LOGOS_FORMAK = new Set(['karcsu-doboz']);
 
+    // Minták: [kód, név, formák]. A minta formához kötött, mert egy dobozra rajzolt minta más formára
+    // nem illik; a fájl: img/mintak/<forma>-<minta>.webp. Az űrlapon csak az adott formához tartozók jelennek meg.
+    // Új minta: fájl(ok) be az img/mintak/ mappába + egy sor ide (vagy egy forma hozzáadása a listához).
     const MINTAK = [
-        ['ecset', 'Ecsetvonások'],
-        ['dekor', 'Díszítés'],
+        ['ecset', 'Ecsetvonások', ['karcsu-doboz']],
+        ['dekor', 'Díszítés', ['karcsu-doboz']],
     ];
+    const mintakFormahoz = (forma) => MINTAK.filter(([, , formak]) => formak.includes(forma));
+    const vanMinta = (forma, minta) => MINTAK.some(([kod, , formak]) => kod === minta && formak.includes(forma));
 
     const SZLUG = /^[a-z0-9-]{1,30}$/;
     const HEX = /^#[0-9a-fA-F]{6}$/;
@@ -233,12 +238,12 @@
         return nev;
     }
 
-    function mintaOsztaly(minta) {
-        const nev = 'minta-' + minta;
+    function mintaOsztaly(forma, minta) {
+        const nev = `minta-${forma}-${minta}`;
         if (!ismertOsztalyok.has(nev)) {
             ismertOsztalyok.add(nev);
             const sl = stiluslap();
-            sl.insertRule(`.${nev} { --kep-minta: url("${abszolut(`img/mintak/${minta}.webp`)}"); }`, sl.cssRules.length);
+            sl.insertRule(`.${nev} { --kep-minta: url("${abszolut(`img/mintak/${forma}-${minta}.webp`)}"); }`, sl.cssRules.length);
         }
         return nev;
     }
@@ -254,7 +259,7 @@
         return s;
     }
 
-    // Rétegek: alapszín, sáv (2. szín), minta (2. szín, vagy ha nincs, az 1.), fix részletek, app logó
+    // Rétegek: alapszín, sáv (2. szín), minta (3. szín; ha nincs, a 2., végül az 1.), fix részletek, app logó
     function szinezettElem(ital) {
         const doboz = document.createElement('span');
         doboz.className = 'ital-szinezett ' + formaOsztaly(ital.kep_forma);
@@ -262,10 +267,13 @@
         doboz.setAttribute('aria-label', ital.nev || '');
 
         const szin2 = HEX.test(String(ital.kep_szin_2 || '')) ? ital.kep_szin_2 : null;
+        const szin3 = HEX.test(String(ital.kep_szin_3 || '')) ? ital.kep_szin_3 : null;
         doboz.appendChild(reteg('reteg-szin', ital.kep_szin_1));
-        if (szin2) doboz.appendChild(reteg('reteg-sav', szin2));
-        if (SZLUG.test(String(ital.kep_minta || ''))) {
-            doboz.appendChild(reteg('reteg-minta ' + mintaOsztaly(ital.kep_minta), szin2 || ital.kep_szin_1));
+        // második szín híján a sáv is a fő színt kapja, így a doboz egyszínű (pl. New Gen: fehér + minta)
+        doboz.appendChild(reteg('reteg-sav', szin2 || ital.kep_szin_1));
+        if (SZLUG.test(String(ital.kep_minta || '')) && vanMinta(ital.kep_forma, ital.kep_minta)) {
+            doboz.appendChild(reteg('reteg-minta ' + mintaOsztaly(ital.kep_forma, ital.kep_minta),
+                szin3 || szin2 || ital.kep_szin_1));
         }
         doboz.appendChild(reteg('reteg-reszletek'));
         if (LOGOS_FORMAK.has(ital.kep_forma)) doboz.appendChild(reteg('reteg-logo'));
@@ -325,6 +333,6 @@
 
     window.italKep = {
         elemLetrehoz, elsoUrl, osszesUrl, markaNevbol, nevMarkaNelkul, ikonFajl, nevSzlug,
-        FORMAK, MINTAK,
+        FORMAK, MINTAK, mintakFormahoz,
     };
 })();

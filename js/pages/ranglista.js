@@ -52,7 +52,7 @@ async function inicializalas() {
         const [kategoriak, katalogusRes, osszetevoRes, rangRes, szuroRes, szinPalettaRes] = await Promise.all([
             K().lekeres(client).catch(err => ({ hiba: err })),
             client.from('italok')
-                .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, kep_szin_1_id, kep_szin_2_id, teljes_nev_mutatasa')
+                .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, kep_szin_3, kep_szin_1_id, kep_szin_2_id, kep_szin_3_id, teljes_nev_mutatasa')
                 .order('nev', { ascending: true })
                 .range(0, 1999),
             client.from('ital_osszetevok')
@@ -293,7 +293,7 @@ function epitKiszerelesValaszto() {
     }));
 }
 
-// ---------- Színezett kép az űrlapon (italok.kep_forma, kep_minta, kep_szin_1, kep_szin_2) ----------
+// ---------- Színezett kép az űrlapon (italok.kep_forma, kep_minta, kep_szin_1/2/3) ----------
 
 function epitFormaValaszto() {
     const opcio = (ertek, szoveg) => {
@@ -307,11 +307,40 @@ function epitFormaValaszto() {
         forma.replaceChildren(opcio('', 'Nincs (márkakép / ikon)'),
             ...window.italKep.FORMAK.map(([kod, nev]) => opcio(kod, nev)));
     }
+    epitMintaValaszto();
+}
+
+// A minta-legördülő csak a kiválasztott formához rajzolt mintákat mutatja; ha a korábbi minta
+// az új formához nincs meg, "Nincs" lesz
+function epitMintaValaszto(ertek) {
     const minta = document.getElementById('uj-ital-minta');
-    if (minta) {
-        minta.replaceChildren(opcio('', 'Nincs'),
-            ...window.italKep.MINTAK.map(([kod, nev]) => opcio(kod, nev)));
-    }
+    if (!minta) return;
+    const elozo = ertek !== undefined ? ertek : minta.value;
+    const forma = document.getElementById('uj-ital-forma')?.value || '';
+    const opcio = (kod, szoveg) => {
+        const opt = document.createElement('option');
+        opt.value = kod;
+        opt.textContent = szoveg;
+        return opt;
+    };
+    const elerheto = window.italKep.mintakFormahoz(forma);
+    minta.replaceChildren(opcio('', 'Nincs'), ...elerheto.map(([kod, nev]) => opcio(kod, nev)));
+    minta.value = elerheto.some(([kod]) => kod === elozo) ? elozo : '';
+    const csoport = document.getElementById('minta-group');
+    if (csoport) csoport.hidden = elerheto.length === 0;
+}
+
+function formaValtozott() {
+    epitMintaValaszto();
+    mintaValtozott();
+}
+
+// Minta kiválasztásakor jelenik meg a minta saját színe (3. szín)
+function mintaValtozott() {
+    const vanMinta = !!document.getElementById('uj-ital-minta')?.value;
+    const hely = document.getElementById('szin-3-hely');
+    if (hely) hely.hidden = !vanMinta;
+    kepElonezetFrissit();
 }
 
 // Az adott szín-hely (1 vagy 2) azonosítója, ha épp egy mentett paletta-szín van kiválasztva
@@ -327,14 +356,17 @@ function kepAdatokUrlapbol() {
     if (!forma) {
         return {
             kep_forma: null, kep_minta: null,
-            kep_szin_1: null, kep_szin_2: null,
-            kep_szin_1_id: null, kep_szin_2_id: null,
+            kep_szin_1: null, kep_szin_2: null, kep_szin_3: null,
+            kep_szin_1_id: null, kep_szin_2_id: null, kep_szin_3_id: null,
         };
     }
     const vanSzin2 = document.getElementById('uj-ital-van-szin-2')?.checked;
+    const minta = document.getElementById('uj-ital-minta')?.value || null;
     return {
         kep_forma: forma,
-        kep_minta: document.getElementById('uj-ital-minta')?.value || null,
+        kep_minta: minta,
+        kep_szin_3: minta ? (document.getElementById('uj-ital-szin-3')?.value || null) : null,
+        kep_szin_3_id: minta ? szinHelyPalettaId(3) : null,
         kep_szin_1: document.getElementById('uj-ital-szin-1')?.value || null,
         kep_szin_2: vanSzin2 ? (document.getElementById('uj-ital-szin-2')?.value || null) : null,
         kep_szin_1_id: szinHelyPalettaId(1),
@@ -345,10 +377,12 @@ function kepAdatokUrlapbol() {
 // Az űrlap képmezőinek kitöltése (szerkesztéskor az ital adataival, új italnál alaphelyzetbe)
 function kepMezokBeallit(ital = {}) {
     document.getElementById('uj-ital-forma').value = ital.kep_forma || '';
-    document.getElementById('uj-ital-minta').value = ital.kep_minta || '';
+    epitMintaValaszto(ital.kep_minta || '');
     document.getElementById('uj-ital-van-szin-2').checked = !!ital.kep_szin_2;
     szinHelyBeallitas(1, ital.kep_szin_1, ital.kep_szin_1_id);
     szinHelyBeallitas(2, ital.kep_szin_2, ital.kep_szin_2_id);
+    szinHelyBeallitas(3, ital.kep_szin_3, ital.kep_szin_3_id);
+    mintaValtozott();
     masodikSzinValtozott();
 }
 
@@ -385,13 +419,14 @@ function effektivSzinek(ital) {
     return {
         kep_szin_1: feloldas(ital.kep_szin_1, ital.kep_szin_1_id),
         kep_szin_2: feloldas(ital.kep_szin_2, ital.kep_szin_2_id),
+        kep_szin_3: feloldas(ital.kep_szin_3, ital.kep_szin_3_id),
     };
 }
 
 // Minden szín-hely (fő szín, második szín) ugyanazt a listát kapja: a mentett színek (public.szin_paletta,
 // az admin oldal Színek fülén vehető fel/szerkeszthető/törölhető), a végén "Szín keverés" egyéni RGB-hez.
 function epitSzinHelyValasztok() {
-    [1, 2].forEach(slot => {
+    [1, 2, 3].forEach(slot => {
         const select = document.getElementById(`uj-ital-szin-${slot}-select`);
         if (!select) return;
         const egyeni = document.createElement('option');
@@ -428,7 +463,7 @@ function szinHelyBeallitas(slot, hex, palettaId) {
     const select = document.getElementById(`uj-ital-szin-${slot}-select`);
     const picker = document.getElementById(`uj-ital-szin-${slot}`);
     if (!select || !picker) return;
-    picker.value = hex || (slot === 1 ? '#e30613' : '#111111');
+    picker.value = hex || ({ 1: '#e30613', 2: '#111111', 3: '#ffffff' })[slot];
     const talalt = palettaId != null && szinPaletta.find(sz => sz.id === palettaId);
     if (talalt) {
         select.value = String(talalt.id);
@@ -807,6 +842,8 @@ function zardUjItalModal() {
     document.getElementById('szin-2-hely').hidden = true;
     document.getElementById('uj-ital-szin-1').hidden = true;
     document.getElementById('uj-ital-szin-2').hidden = true;
+    document.getElementById('szin-3-hely').hidden = true;
+    document.getElementById('uj-ital-szin-3').hidden = true;
     document.getElementById('uj-ital-teljes-nev').checked = false;
     document.getElementById('hozzavalok-lista').replaceChildren();
     szerkesztettItalId = null;
@@ -980,7 +1017,7 @@ async function mentUjItal() {
     }
 
     const client = kliens();
-    const KIVALASZTANDO = 'id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, kep_szin_1_id, kep_szin_2_id, teljes_nev_mutatasa';
+    const KIVALASZTANDO = 'id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, kep_szin_3, kep_szin_1_id, kep_szin_2_id, kep_szin_3_id, teljes_nev_mutatasa';
     const teljesNevMutatva = document.getElementById('uj-ital-teljes-nev')?.checked || false;
 
     if (szerkesztettItalId) {

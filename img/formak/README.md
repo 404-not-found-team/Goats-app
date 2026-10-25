@@ -12,7 +12,15 @@ Egy formából (pl. magas doboz) bármennyi ital kijön: a színt az adatbázis 
 | `<forma>-reszletek.webp` | tető, perem, körvonal, csillogás – a valódi színükben | nem változik |
 | `<forma>-logo.webp` | csak az app logója, a doboz elején (opcionális) | nem változik |
 
-Mintákhoz: `img/mintak/<minta>.webp`, szintén világos szürkeárnyalatban (a 2. színt kapja, ha nincs, az 1.-t).
+## Minták
+
+- Fájl: `img/mintak/<forma>-<minta>.webp` (pl. `karcsu-doboz-ecset.webp`), szintén világos szürkeárnyalatban,
+  pontosan az adott formára illesztve – ezért formánként külön fájl kell.
+- Saját színe van (`kep_szin_3`, az űrlapon „Minta színe”); ha nincs megadva, a 2., végül az 1. színt kapja.
+- Felvétel: a fájl az `img/mintak/` mappába + a `js/segedek/ital-kep.js` `MINTAK` listájában a minta
+  sorához hozzáadni a forma kódját. Az űrlapon csak az adott formához rajzolt minták jelennek meg.
+- Ha nincs második szín, a sávok is a fő színt kapják, így a doboz egyszínű (pl. New Gen: fehér + színes minta).
+- A jelenlegi `ecset` és `dekor` minta ideiglenes, gépi vázlat.
 
 ## Szabályok a rajzhoz
 
