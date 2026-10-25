@@ -190,6 +190,10 @@
         ['whiskey', 'Whiskey'],
         ['jager', 'Jager'],
     ];
+    // Formák, amelyeknek van saját logó-rétege (<forma>-logo.webp): az app logója a doboz elején,
+    // a színezéstől függetlenül, mindig ugyanolyan. Új forma logóval: fájl be + a kódja ide.
+    const LOGOS_FORMAK = new Set(['karcsu-doboz']);
+
     const MINTAK = [
         ['ecset', 'Ecsetvonások'],
         ['dekor', 'Díszítés'],
@@ -223,6 +227,7 @@
                 --kep-szin: url("${abszolut(`img/formak/${forma}-szin.webp`)}");
                 --kep-sav: url("${abszolut(`img/formak/${forma}-sav.webp`)}");
                 --kep-reszletek: url("${abszolut(`img/formak/${forma}-reszletek.webp`)}");
+                --kep-logo: url("${abszolut(`img/formak/${forma}-logo.webp`)}");
             }`, sl.cssRules.length);
         }
         return nev;
@@ -249,7 +254,7 @@
         return s;
     }
 
-    // Rétegek: alapszín, sáv (2. szín), minta (2. szín, vagy ha nincs, az 1.), fix részletek
+    // Rétegek: alapszín, sáv (2. szín), minta (2. szín, vagy ha nincs, az 1.), fix részletek, app logó
     function szinezettElem(ital) {
         const doboz = document.createElement('span');
         doboz.className = 'ital-szinezett ' + formaOsztaly(ital.kep_forma);
@@ -263,6 +268,7 @@
             doboz.appendChild(reteg('reteg-minta ' + mintaOsztaly(ital.kep_minta), szin2 || ital.kep_szin_1));
         }
         doboz.appendChild(reteg('reteg-reszletek'));
+        if (LOGOS_FORMAK.has(ital.kep_forma)) doboz.appendChild(reteg('reteg-logo'));
         return doboz;
     }
 
