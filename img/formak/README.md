@@ -10,6 +10,7 @@ Egy formából (pl. magas doboz) bármennyi ital kijön: a színt az adatbázis 
 | `<forma>-szin.webp` | a teljes test, **világos szürkeárnyalatban** | `kep_szin_1` |
 | `<forma>-sav.webp` | a sávok / csíkok, **világos szürkeárnyalatban** (opcionális) | `kep_szin_2` |
 | `<forma>-reszletek.webp` | tető, perem, körvonal, csillogás – a valódi színükben | nem változik |
+| `<forma>-logo.webp` | csak az app logója, a doboz elején (opcionális) | nem változik |
 
 Mintákhoz: `img/mintak/<minta>.webp`, szintén világos szürkeárnyalatban (a 2. színt kapja, ha nincs, az 1.-t).
 
@@ -26,5 +27,6 @@ Mintákhoz: `img/mintak/<minta>.webp`, szintén világos szürkeárnyalatban (a 
 
 1. A három fájl ide (`img/formak/`).
 2. Egy sor a `js/segedek/ital-kep.js` `FORMAK` listájába (kód + megjelenő név).
+3. Ha van logó-rétege is, a forma kódja a `LOGOS_FORMAK` listába.
 
 Ha egy forma fájlja hiányzik, az app automatikusan a márkaképet vagy a kategória-ikont mutatja.
