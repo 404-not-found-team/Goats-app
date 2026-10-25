@@ -1,7 +1,7 @@
 {
   "id": "hu.goatsapp.app",
-  "name": "Goats App",
-  "short_name": "Goats",
+  "name": "ATG – All-Time Greats",
+  "short_name": "ATG",
   "description": "Közös elszámolások, ranglisták és feladatok egy helyen a haveri társaságnak.",
   "lang": "hu",
   "start_url": "/Goats-app/",
