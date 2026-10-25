@@ -1,4 +1,4 @@
-# 🐐 Goats App
+# 🏆 ATG – All-Time Greats
 
 <p align="center">
   <b>Supabase-alapú közösségi PWA baráti társaságoknak: közös tartozások/kiadások elszámolása és egyenlítése, italranglista, tervek, galéria, naptár — csoportonként, kóddal csatlakozva.</b>
@@ -29,7 +29,7 @@
 ---
 
 ## 📖 Áttekintés
-A **Goats App** egy reszponzív webes alkalmazás baráti csoportok számára: közös kiadások nyilvántartása és egyenlítése, italok rangsorolása, közös tervek, galéria és naptár egy helyen. Minden adat egy **csoporthoz** (belépőkóddal csatlakozó baráti kör) van kötve, a tárolást és a jogosultságokat a **Supabase** (Postgres + Auth + Storage, row-level security-vel) biztosítja.
+Az **ATG – All-Time Greats** (korábbi nevén Goats App) egy reszponzív webes alkalmazás baráti csoportok számára: közös kiadások nyilvántartása és egyenlítése, italok rangsorolása, közös tervek, galéria és naptár egy helyen. Minden adat egy **csoporthoz** (belépőkóddal csatlakozó baráti kör) van kötve, a tárolást és a jogosultságokat a **Supabase** (Postgres + Auth + Storage, row-level security-vel) biztosítja.
 
 ---
 
