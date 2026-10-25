@@ -46,6 +46,11 @@
     background: var(--kep-reszletek) center / contain no-repeat;
 }
 
+/* Az app logója a doboz elején: nem színeződik, minden színpárnál ugyanolyan */
+.reteg-logo {
+    background: var(--kep-logo) center / contain no-repeat;
+}
+
 @media (max-width: 768px) {
     .ital-szinezett {
         height: 90px;
