@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Security-Policy"
         content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Goats - Ranglista</title>
+    <title>ATG - Ranglista</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/elemek/ital-szinezes.css">
@@ -112,9 +112,9 @@
                 <label class="floating-label">Kiszerelés</label>
             </div>
 
-            <!-- Színezett kép (ital-kep.js): forma + 1-2 szín + opcionális minta; "Nincs" = márkakép vagy ikon -->
+            <!-- Színezett kép (ital-kep.js): forma + 1-2 szín + opcionális minta saját színnel; "Nincs" = márkakép vagy ikon -->
             <div class="floating-group">
-                <select id="uj-ital-forma" class="floating-select" onchange="kepElonezetFrissit()">
+                <select id="uj-ital-forma" class="floating-select" onchange="formaValtozott()">
                     <!-- a lehetőségeket a ranglista.js tölti fel (ital-kep.js: FORMAK) -->
                 </select>
                 <label class="floating-label">Kép formája</label>
@@ -147,13 +147,22 @@
                 </div>
 
                 <div class="kep-szinezes-sor">
-                    <div class="floating-group">
-                        <select id="uj-ital-minta" class="floating-select" onchange="kepElonezetFrissit()">
-                            <!-- ital-kep.js: MINTAK -->
+                    <div id="minta-group" class="floating-group">
+                        <select id="uj-ital-minta" class="floating-select" onchange="mintaValtozott()">
+                            <!-- ital-kep.js: MINTAK, csak a kiválasztott formához rajzoltak -->
                         </select>
                         <label class="floating-label">Minta</label>
                     </div>
                     <div id="kep-elonezet" class="kep-elonezet"></div>
+                </div>
+
+                <div id="szin-3-hely" class="szin-hely" hidden>
+                    <div class="floating-group">
+                        <select id="uj-ital-szin-3-select" class="floating-select" onchange="szinSlotValtozott(3)">
+                        </select>
+                        <label class="floating-label">Minta színe</label>
+                    </div>
+                    <input type="color" id="uj-ital-szin-3" class="szin-hely-picker" value="#ffffff" oninput="kepElonezetFrissit()" hidden />
                 </div>
             </div>
             <label id="teljes-nev-group" class="szuro-kapcsolo-sor" hidden>
