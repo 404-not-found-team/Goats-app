@@ -192,7 +192,7 @@
     ];
     // Formák, amelyeknek van saját logó-rétege (<forma>-logo.webp): az app logója a doboz elején,
     // a színezéstől függetlenül, mindig ugyanolyan. Új forma logóval: fájl be + a kódja ide.
-    const LOGOS_FORMAK = new Set(['karcsu-doboz']);
+    const LOGOS_FORMAK = new Set(['karcsu-doboz', 'nagy-doboz']);
 
     // Minták: [kód, név, formák]. A minta formához kötött, mert egy dobozra rajzolt minta más formára
     // nem illik; a fájl: img/mintak/<forma>-<minta>.webp. Az űrlapon csak az adott formához tartozók jelennek meg.
@@ -200,6 +200,7 @@
     const MINTAK = [
         ['ecset', 'Ecsetvonások', ['karcsu-doboz']],
         ['dekor', 'Díszítés', ['karcsu-doboz']],
+        ['felezett', 'Felezett (jobb fele)', ['karcsu-doboz', 'nagy-doboz']],
     ];
     const mintakFormahoz = (forma) => MINTAK.filter(([, , formak]) => formak.includes(forma));
     const vanMinta = (forma, minta) => MINTAK.some(([kod, , formak]) => kod === minta && formak.includes(forma));
