@@ -201,6 +201,7 @@
         ['ecset', 'Ecsetvonások', ['karcsu-doboz']],
         ['dekor', 'Díszítés', ['karcsu-doboz']],
         ['felezett', 'Felezett (jobb fele)', ['karcsu-doboz', 'nagy-doboz']],
+        ['atlos', 'Átlós (alsó-jobb rész)', ['karcsu-doboz', 'nagy-doboz']],
     ];
     const mintakFormahoz = (forma) => MINTAK.filter(([, , formak]) => formak.includes(forma));
     const vanMinta = (forma, minta) => MINTAK.some(([kod, , formak]) => kod === minta && formak.includes(forma));
@@ -269,9 +270,10 @@
 
         const szin2 = HEX.test(String(ital.kep_szin_2 || '')) ? ital.kep_szin_2 : null;
         const szin3 = HEX.test(String(ital.kep_szin_3 || '')) ? ital.kep_szin_3 : null;
-        doboz.appendChild(reteg('reteg-szin', ital.kep_szin_1));
-        // második szín híján a sáv is a fő színt kapja, így a doboz egyszínű (pl. New Gen: fehér + minta)
+        // A sáv-réteg a teljes testet lefedi, a szín-réteg erre kerül középre (így nincs varrat a határon).
+        // Második szín híján a sáv is a fő színt kapja, így a doboz egyszínű (pl. New Gen: fehér + minta).
         doboz.appendChild(reteg('reteg-sav', szin2 || ital.kep_szin_1));
+        doboz.appendChild(reteg('reteg-szin', ital.kep_szin_1));
         if (SZLUG.test(String(ital.kep_minta || '')) && vanMinta(ital.kep_forma, ital.kep_minta)) {
             doboz.appendChild(reteg('reteg-minta ' + mintaOsztaly(ital.kep_forma, ital.kep_minta),
                 szin3 || szin2 || ital.kep_szin_1));
