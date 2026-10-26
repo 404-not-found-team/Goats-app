@@ -188,12 +188,13 @@
         ['karcsu-doboz', 'Kis doboz (250 ml)'],
         ['uveg', 'Üveg (330 ml, sör / cider) – fő szín: címke, 2. szín: üveg'],
         ['vodka', 'Vodkás üveg – fő szín: címke, 2. szín: üveg'],
+        ['vodka-also', 'Vodkás üveg, színes alj – fő szín: az alja, 2. szín: üveg'],
         ['whiskey', 'Whiskys üveg – fő szín: címke, 2. szín: ital'],
         ['jager', 'Likőrös üveg – fő szín: címke, 2. szín: üveg'],
     ];
     // Formák, amelyeknek van saját logó-rétege (<forma>-logo.webp): az app logója a doboz elején,
     // a színezéstől függetlenül, mindig ugyanolyan. Új forma logóval: fájl be + a kódja ide.
-    const LOGOS_FORMAK = new Set(['karcsu-doboz', 'nagy-doboz', 'kozep-doboz', 'uveg', 'vodka', 'whiskey', 'jager']);
+    const LOGOS_FORMAK = new Set(['karcsu-doboz', 'nagy-doboz', 'kozep-doboz', 'uveg', 'vodka', 'vodka-also', 'whiskey', 'jager']);
 
     // Minták: [kód, név, formák]. A minta formához kötött, mert egy dobozra rajzolt minta más formára
     // nem illik; a fájl: img/mintak/<forma>-<minta>.webp. Az űrlapon csak az adott formához tartozók jelennek meg.
@@ -203,6 +204,8 @@
         ['dekor', 'Díszítés', ['karcsu-doboz']],
         ['felezett', 'Felezett (jobb fele)', ['karcsu-doboz', 'nagy-doboz', 'kozep-doboz']],
         ['atlos', 'Átlós (alsó-jobb rész)', ['karcsu-doboz', 'nagy-doboz', 'kozep-doboz']],
+        ['korok', 'Két kör (íz színe)', ['vodka', 'vodka-also']],
+        ['felso-cimke', 'Felső címke', ['vodka', 'vodka-also']],
     ];
     const mintakFormahoz = (forma) => MINTAK.filter(([, , formak]) => formak.includes(forma));
     const vanMinta = (forma, minta) => MINTAK.some(([kod, , formak]) => kod === minta && formak.includes(forma));
