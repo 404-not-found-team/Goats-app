@@ -1222,10 +1222,72 @@ function italReszletek(kartya, ital, fo, kepAdat) {
     }));
     if (doboz) doboz.hidden = recept.length === 0;
 
+    betoltNaplo(ital);
+
     const szerkesztesGomb = document.getElementById('modal-szerkesztes-gomb');
     if (szerkesztesGomb) szerkesztesGomb.hidden = !window.goatsAuth?.isSuperadmin?.();
 
     document.getElementById('modal-hatter').hidden = false;
+}
+
+// ---------- Ranglista-napló: ki, mikor, hová tette az italt ----------
+// A naplót a szerver írja (public.ital_ranglista_naplo, az ital_ranglista triggere), a kliens csak olvassa.
+
+const NAPLO_KATEGORIA = { S: 'S', A: 'A', B: 'B', C: 'C', D: 'D', forras: 'lista' };
+
+function naploKategoria(kod) {
+    return kod ? (NAPLO_KATEGORIA[kod] || kod) : '–';
+}
+
+function naploIdo(iso) {
+    try {
+        return new Date(iso).toLocaleString('hu-HU', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    } catch {
+        return '';
+    }
+}
+
+function naploNev(userId) {
+    const tag = (window.goatsAuth?.getState()?.members || []).find(m => m.user_id === userId);
+    return tag?.display_name || 'Ismeretlen';
+}
+
+async function betoltNaplo(ital) {
+    const doboz = document.getElementById('modal-naplo-doboz');
+    const utolso = document.getElementById('modal-naplo-utolso');
+    const lista = document.getElementById('modal-naplo-lista');
+    if (!doboz || !utolso || !lista) return;
+    doboz.hidden = true;
+    lista.replaceChildren();
+
+    const groupId = window.goatsAuth?.getState()?.group?.id;
+    if (!groupId || !ital?.id) return;
+
+    const keresettId = ital.id;
+    const { data, error } = await kliens()
+        .from('ital_ranglista_naplo')
+        .select('regi_kategoria, uj_kategoria, user_id, created_at')
+        .eq('group_id', groupId)
+        .eq('ital_id', ital.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+    // közben másik italt nyitottak meg, vagy bezárták az ablakot
+    if (aktivItalAdat?.id !== keresettId) return;
+    if (error) {
+        console.error('Hiba a ranglista-napló betöltésekor:', error);
+        return;
+    }
+    if (!data || data.length === 0) return;
+
+    const elso = data[0];
+    const ki = naploNev(elso.user_id);
+    utolso.textContent = elso.uj_kategoria && elso.uj_kategoria !== 'forras'
+        ? `Ide tette: ${ki} · ${naploIdo(elso.created_at)}`
+        : `Visszarakta a listába: ${ki} · ${naploIdo(elso.created_at)}`;
+
+    lista.replaceChildren(...data.map(sor => ujElem('li', 'modal-naplo-sor',
+        `${naploNev(sor.user_id)}: ${naploKategoria(sor.regi_kategoria)} → ${naploKategoria(sor.uj_kategoria)} · ${naploIdo(sor.created_at)}`)));
+    doboz.hidden = false;
 }
 
 // ---------- Szerkesztés (superadmin): a kinagyított ital adatainak módosítása ----------

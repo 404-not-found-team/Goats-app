@@ -69,6 +69,15 @@
                 <div id="modal-koktel-hozzavalok-lista" class="modal-hozzavalok-lista"></div>
             </div>
 
+            <!-- Ki tette ide és mikor (public.ital_ranglista_naplo, a szerver triggere tölti) -->
+            <div id="modal-naplo-doboz" class="modal-naplo-box" hidden>
+                <div id="modal-naplo-utolso" class="modal-naplo-utolso"></div>
+                <details class="modal-naplo-elozmenyek">
+                    <summary>Előzmények</summary>
+                    <ul id="modal-naplo-lista" class="modal-naplo-lista"></ul>
+                </details>
+            </div>
+
             <div class="modal-gomb-csoport">
                 <button id="legeslegjobb" class="gombok dark" onclick="kategoriatValaszt('S')">S</button>
                 <button id="legjobb" class="gombok dark" onclick="kategoriatValaszt('A')">A</button>
