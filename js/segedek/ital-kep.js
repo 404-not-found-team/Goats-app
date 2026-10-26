@@ -186,14 +186,13 @@
         ['nagy-doboz', 'Nagy doboz (500 ml)'],
         ['kozep-doboz', 'Közepes doboz (330 ml)'],
         ['karcsu-doboz', 'Kis doboz (250 ml)'],
-        ['uveg', 'Üveg (330 ml) – fő szín: címke, 2. szín: üveg'],
-        ['cider-uveg', 'Cideres üveg (330 ml) – fő szín: címke, 2. szín: ital'],
+        ['uveg', 'Üveg (330 ml, sör / cider) – fő szín: címke, 2. szín: üveg'],
         ['whiskey', 'Whiskey'],
         ['jager', 'Jager'],
     ];
     // Formák, amelyeknek van saját logó-rétege (<forma>-logo.webp): az app logója a doboz elején,
     // a színezéstől függetlenül, mindig ugyanolyan. Új forma logóval: fájl be + a kódja ide.
-    const LOGOS_FORMAK = new Set(['karcsu-doboz', 'nagy-doboz', 'kozep-doboz', 'uveg', 'cider-uveg']);
+    const LOGOS_FORMAK = new Set(['karcsu-doboz', 'nagy-doboz', 'kozep-doboz', 'uveg']);
 
     // Minták: [kód, név, formák]. A minta formához kötött, mert egy dobozra rajzolt minta más formára
     // nem illik; a fájl: img/mintak/<forma>-<minta>.webp. Az űrlapon csak az adott formához tartozók jelennek meg.
