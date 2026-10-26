@@ -1113,3 +1113,10 @@
     max-height: 140px;
     cursor: default;
 }
+
+
+/* A 330 ml-es doboz formája (kozep-doboz) eleve kisebbre van rajzolva, azt nem kicsinyítjük tovább */
+.kisebb-kiszereles .ital-szinezett.forma-kozep-doboz,
+.ital-kartya.kisebb-kiszereles .ital-szinezett.forma-kozep-doboz:hover {
+    transform: none;
+}
