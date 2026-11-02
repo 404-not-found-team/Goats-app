@@ -1235,8 +1235,10 @@ function italReszletek(kartya, ital, fo, kepAdat) {
 
 const NAPLO_KATEGORIA = { S: 'S', A: 'A', B: 'B', C: 'C', D: 'D', forras: 'lista' };
 
-function naploKategoria(kod) {
-    return kod ? (NAPLO_KATEGORIA[kod] || kod) : '–';
+// regi = null: előtte nem volt rangsorolva; uj = null: a sort törölték (nem az appból, hanem adatbázisból)
+function naploKategoria(kod, uj = false) {
+    if (!kod) return uj ? 'eltávolítva' : '–';
+    return NAPLO_KATEGORIA[kod] || kod;
 }
 
 function naploIdo(iso) {
@@ -1247,7 +1249,9 @@ function naploIdo(iso) {
     }
 }
 
+// Felhasználó nélküli bejegyzés: nem az appból, hanem adminisztrátori hozzáféréssel (adatbázisból) történt
 function naploNev(userId) {
+    if (!userId) return 'Adminisztrátor (adatbázis)';
     const tag = (window.goatsAuth?.getState()?.members || []).find(m => m.user_id === userId);
     return tag?.display_name || 'Ismeretlen';
 }
@@ -1281,12 +1285,13 @@ async function betoltNaplo(ital) {
 
     const elso = data[0];
     const ki = naploNev(elso.user_id);
-    utolso.textContent = elso.uj_kategoria && elso.uj_kategoria !== 'forras'
-        ? `Ide tette: ${ki} · ${naploIdo(elso.created_at)}`
-        : `Visszarakta a listába: ${ki} · ${naploIdo(elso.created_at)}`;
+    const mikor = naploIdo(elso.created_at);
+    if (!elso.uj_kategoria) utolso.textContent = `Eltávolította a ranglistáról: ${ki} · ${mikor}`;
+    else if (elso.uj_kategoria === 'forras') utolso.textContent = `Visszarakta a listába: ${ki} · ${mikor}`;
+    else utolso.textContent = `Ide tette: ${ki} · ${mikor}`;
 
     lista.replaceChildren(...data.map(sor => ujElem('li', 'modal-naplo-sor',
-        `${naploNev(sor.user_id)}: ${naploKategoria(sor.regi_kategoria)} → ${naploKategoria(sor.uj_kategoria)} · ${naploIdo(sor.created_at)}`)));
+        `${naploNev(sor.user_id)}: ${naploKategoria(sor.regi_kategoria)} → ${naploKategoria(sor.uj_kategoria, true)} · ${naploIdo(sor.created_at)}`)));
     doboz.hidden = false;
 }
 
