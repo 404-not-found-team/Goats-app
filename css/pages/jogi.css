@@ -2,7 +2,10 @@
 .jogi-oldal {
     max-width: 720px;
     margin: 0 auto;
-    padding: 24px 20px 60px;
+    padding: 24px 16px 60px;
+    box-sizing: border-box;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 .jogi-oldal h1 {
@@ -18,6 +21,8 @@
 
 .jogi-oldal .tos-modal-body {
     font-size: var(--fs-base);
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .jogi-oldal .tos-modal-body h4 {
@@ -29,10 +34,14 @@
 .jogi-oldal ol {
     margin: 0 0 12px 0;
     padding-left: 20px;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .jogi-oldal li {
     margin-bottom: 6px;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .jogi-oldal ol li {
@@ -52,7 +61,6 @@
     margin: 16px 0;
 }
 
-/* Semleges, nem figyelmeztető kiemelés (pl. zéró tolerancia, fontos tudnivaló) */
 .info-doboz {
     background: var(--inner-bg);
     border: 1px solid var(--border-color);
@@ -62,7 +70,6 @@
     margin: 16px 0;
 }
 
-/* Jogi hub: oldalankénti kártya/lista nézet */
 .jogi-hub-lista {
     list-style: none;
     margin: 20px 0;
@@ -93,7 +100,8 @@
     border-top: 1px solid var(--border-color);
 }
 
-.tarolt-adat{
-    display: flex;
-    flex-wrap: wrap;
+.tarolt-adat {
+    display: block;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
