@@ -26,14 +26,13 @@
 
     <main class="kepek-oldal">
         <div class="kepek-fejlec">
-            <h1>Képek</h1>
+            <h1 data-i18n="all_picture">Képek</h1>
             <input type="file" id="kepFeltoltesInput" accept="image/*" multiple hidden>
             <button type="button" id="kepFeltoltesGomb" class="kepek-feltolt-gomb">
-                <i class="fa-solid fa-upload" aria-hidden="true"></i> Feltöltés
+                <i class="fa-solid fa-upload" aria-hidden="true"></i> <span data-i18n="add">Feltöltés</span>
             </button>
         </div>
 
-        <!-- Feltöltés állapota: előnézet + szöveg -->
         <div id="kepFeltoltesAllapot" class="kepek-allapot" role="status" aria-live="polite" hidden>
             <img id="kepFeltoltesElonezet" class="kepek-elonezet" alt="A feltöltendő kép előnézete" width="40" height="40" hidden>
             <span id="kepFeltoltesSzoveg"></span>
@@ -47,11 +46,9 @@
             <span class="ures-leiras">Töltsd fel az első képet a Feltöltés gombbal!</span>
         </div>
 
-        <!-- A képek rácsa (a csempéket a js/pages/kepek.js építi, textContent-tel) -->
         <ul id="kepekRacs" class="kepek-racs"></ul>
     </main>
 
-    <!-- Négyzetes kivágás feltöltés előtt (js/elemek/kep-kivago.js) -->
     <dialog id="kivagoDialog" class="kepek-dialog kivago-dialog" aria-labelledby="kivagoCim">
         <h2 id="kivagoCim">Kép igazítása</h2>
         <p class="kepek-dialog-leiras">Húzd a képet, hogy a fontos rész a keretbe kerüljön. Ami a keretben van, az lesz látható.</p>
@@ -71,7 +68,6 @@
         </div>
     </dialog>
 
-    <!-- Kép jelentése (public.jelentesek, cel_tipus = 'kep') -->
     <dialog id="jelentesDialog" class="kepek-dialog" aria-labelledby="jelentesCim">
         <form id="jelentesUrlap" method="dialog">
             <h2 id="jelentesCim">Kép jelentése</h2>
