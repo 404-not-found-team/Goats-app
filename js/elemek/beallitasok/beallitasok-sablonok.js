@@ -213,6 +213,13 @@ const BEALLITASOK_MODAL = `
           <div id="theme-dropdown-options" class="dropdown-options"></div>
         </div>
       </div>
+      <div class="sm-body">
+        <label class="sm-label">Nyelv kiválasztása:</label>
+        <div id="custom-lang-dropdown" class="custom-dropdown">
+          <div class="dropdown-selected"><span id="lang-dropdown-selected-text"> Magyar</span><span class="arrow">▼</span></div>
+          <div id="lang-dropdown-options" class="dropdown-options"></div>
+        </div>
+      </div>
     </div>
   </div>
 `;

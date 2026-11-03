@@ -4,6 +4,7 @@ import { initAuthModal } from './beallitasok/belepes-modal.js';
 import { initProfileModal } from './beallitasok/profil-modal.js';
 import { initGroupDetails } from './beallitasok/csoport-adatok.js';
 import { initThemePicker } from './beallitasok/tema-valaszto.js';
+import { initLangPicker } from './beallitasok/nyelv-valaszto.js';
 import { initTosUjraelfogadas } from './beallitasok/tos-ujraelfogadas.js';
 import { fokuszAllit } from '../segedek/modal-fokusz.js';
 
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initProfileModal();
   initGroupDetails();
   initThemePicker();
+  initLangPicker();
   initTosUjraelfogadas();
 
   const get = id => document.getElementById(id);

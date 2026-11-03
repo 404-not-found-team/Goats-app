@@ -1,3 +1,47 @@
+export function initLangPicker() {
+const get = id => document.getElementById(id);
+  const langDropdown = get('custom-lang-dropdown');
+  const langSelectedText = get('lang-dropdown-selected-text');
+  const langOptionsContainer = get('lang-dropdown-options');
+
+  const langs = [
+    { id: 'hu', name: 'Magyar' },
+    { id: 'en', name: 'English' }
+  ];
+
+  const currentLang = localStorage.getItem('goats_theme') || 'hu';
+  const foundLang = langs.find(t => t.id === currentLang);
+  if (langSelectedText && foundLang) langSelectedText.textContent = foundLang.name;
+
+  if (langOptionsContainer) {
+    langOptionsContainer.innerHTML = '';
+    langs.forEach(t => {
+      const optionDiv = document.createElement('div');
+      optionDiv.className = `dropdown-option ${t.id === currentTheme ? 'selected' : ''}`;
+      optionDiv.textContent = t.name;
+
+      optionDiv.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.documentElement.setAttribute('data-theme', t.id);
+        //localStorage.setItem('goats_theme', t.id);
+        langSelectedText.textContent = t.name;
+        langOptionsContainer.querySelectorAll('.dropdown-option').forEach(o => o.classList.remove('selected'));
+        optionDiv.classList.add('selected');
+        langDropdown.classList.remove('open');
+      });
+
+      langOptionsContainer.appendChild(optionDiv);
+    });
+  }
+
+  langDropdown?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    themeDropdown.classList.toggle('open');
+  });
+
+  document.addEventListener('click', () => langDropdown?.classList.remove('open'));
+}
+
 let aktualisNyelv = 'hu';
 
 async function nyelvetValt(nyelvKod) {
