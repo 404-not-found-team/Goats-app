@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy"
-        content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
+        content="default-src 'self'; script-src 'self'; worker-src 'self' blob:; style-src 'self'; style-src-attr 'none'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://bvositlxbeqztnhdembx.supabase.co wss://bvositlxbeqztnhdembx.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title data-i18n="title_debts">ATG - Tartozások</title>
     <link rel="manifest" href="manifest.json">
@@ -13,15 +13,15 @@
     <link rel="stylesheet" href="css/elemek/tartozasok-egyenlitese.css">
 
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
     <script src="js/segedek/nyelv.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
+    <script src="js/kulso/supabase-js-2.117.2.js"></script>
 
     <script type="module" src="js/main.js"></script>
     <script src="js/segedek/szin-osztaly.js"></script>
     <script src="js/segedek/csoport-kod.js"></script>
     <script src="js/pages/tartozasok.js"></script>
+    <script src="js/segedek/html-esemenyek.js" defer></script>
 </head>
 
 <body data-oldal="tartozasok">
@@ -41,7 +41,7 @@
             </div>
 
             <div class="floating-group custom-dropdown" id="kinekDropdown">
-                <div class="dropdown-btn" onclick="toggleKinekDropdown()">
+                <div class="dropdown-btn" data-katt="toggleKinekDropdown">
                     <span id="kinekDropdownLabel">&nbsp;</span>
                 </div>
                 <label class="floating-label active" data-i18n="who_owes_whom">Kinek tartozik?</label>
@@ -49,15 +49,15 @@
             </div>
 
             <div class="floating-group custom-dropdown" id="kiTartozikDropdown">
-                <div class="dropdown-btn" onclick="toggleDropdown()">
+                <div class="dropdown-btn" data-katt="toggleDropdown">
                     <span id="dropdownBtnLabel">&nbsp;</span>
                 </div>
                 <label class="floating-label active" data-i18n="who_owes">Ki tartozik?</label>
                 <div class="dropdown-content" id="dropdownContent"></div>
             </div>
 
-            <!--<input type="button" id="tartozasHozzaadGomb" value="Hozzáad" onclick="addTartozas()" data-i18n="add_btn">-->
-            <button type="button" id="tartozasHozzaadGomb" class="terv-add-btn" onclick="addTartozas()" data-i18n="add_btn">Hozzáad</button>
+            <!--<input type="button" id="tartozasHozzaadGomb" value="Hozzáad" data-katt="addTartozas" data-i18n="add_btn">-->
+            <button type="button" id="tartozasHozzaadGomb" class="terv-add-btn" data-katt="addTartozas" data-i18n="add_btn">Hozzáad</button>
         </div>
 
         <div class="kozos-koltseg">

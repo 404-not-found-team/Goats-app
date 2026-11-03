@@ -3,6 +3,7 @@ import { torolCsoportKepei } from '../../segedek/csoport-kepek.js';
 import { updateMyDisplayName } from '../../admin-muveletek.js';
 import { debounce } from '../../segedek/keslelteto.js';
 import { fokuszAllit } from '../../segedek/modal-fokusz.js';
+import { leiratkozas } from './ertesitesek.js';
 
 export function initProfileModal() {
   const get = id => document.getElementById(id);
@@ -79,6 +80,8 @@ export function initProfileModal() {
   // Kijelentkezés
   get('logout-btn')?.addEventListener('click', async () => {
     if (!confirm(tr('confirm_logout', 'Biztosan ki szeretnél jelentkezni?'))) return;
+    // az eszköz ne kapja tovább ennek a fióknak az értesítéseit (ha nem sikerül, a kijelentkezés akkor is megy)
+    await leiratkozas().catch(err => console.error('Leiratkozási hiba:', err));
     await signOut();
     location.reload();
   });

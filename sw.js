@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v46';
+const CACHE_NEV = 'goats-v48';
 
 // Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
 // indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
@@ -31,6 +31,9 @@ const ELOGYORSITOTT = [
     'css/elemek/navbar.css',
     'css/elemek/tartozasok-egyenlitese.css',
     'css/elemek/valaszto-kartyak.css',
+    'css/kulso/fontawesome-6.5.1/css/fontawesome.min.css',
+    'css/kulso/fontawesome-6.5.1/css/solid.min.css',
+    'css/kulso/fontawesome-6.5.1/webfonts/fa-solid-900.woff2',
     'css/main.css',
     'css/pages/admin.css',
     'css/pages/bejelentkezes.css',
@@ -50,6 +53,7 @@ const ELOGYORSITOTT = [
     'js/elemek/beallitasok/profil-modal.js',
     'js/elemek/beallitasok/tema-valaszto.js',
     'js/elemek/beallitasok/nyelv-valaszto.js',
+    'js/elemek/beallitasok/ertesitesek.js',
     'js/elemek/beallitasok/tos-ujraelfogadas.js',
     'js/elemek/galeria.js',
     'js/elemek/kep-kivago.js',
@@ -75,6 +79,7 @@ const ELOGYORSITOTT = [
     'js/segedek/csoport-kod.js',
     'js/segedek/funkcio-kapcsolo.js',
     'js/segedek/gyors-atiranyitas.js',
+    'js/segedek/html-esemenyek.js',
     'js/segedek/ital-kategoriak.js',
     'js/segedek/ital-kep.js',
     'js/segedek/kep-gyorsitotar.js',
@@ -84,9 +89,11 @@ const ELOGYORSITOTT = [
     'js/segedek/oldal-orzo.js',
     'js/segedek/nyelv.js',
     'js/segedek/oldalak.js',
+    'js/segedek/sw-regisztracio.js',
     'js/segedek/szin-osztaly.js',
     'js/segedek/teljesitmeny.js',
     'js/segedek/tema.js',
+    'js/kulso/supabase-js-2.117.2.js',
     'js/supabase-client.js',
     'manifest.json',
     'img/icon-192.png',
@@ -94,8 +101,6 @@ const ELOGYORSITOTT = [
     'img/zaszlok/hu.svg',
     'nyelvek/en.json',
     'nyelvek/hu.json',
-    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
 ];
 
 // A saját domain és a CDN-ek statikus fájljai: "stale-while-revalidate"
@@ -184,4 +189,35 @@ self.addEventListener('fetch', (event) => {
         );
     }
     // Minden más (pl. egyéb harmadik fél) a böngésző normál útját követi
+});
+
+// ---------- Push-értesítések (supabase/functions/push-kuldes küldi) ----------
+// A tartalom JSON: { cim, szoveg, url, tag }. Az url az app egyik oldala (relatív, pl. "tartozasok.html").
+self.addEventListener('push', (event) => {
+    let adat = {};
+    try { adat = event.data ? event.data.json() : {}; } catch { adat = { szoveg: event.data?.text() || '' }; }
+    const cim = adat.cim || 'ATG';
+    event.waitUntil(self.registration.showNotification(cim, {
+        body: adat.szoveg || '',
+        icon: 'img/icon-192.png',
+        badge: 'img/icon-192.png',
+        tag: adat.tag || undefined,
+        data: { url: adat.url || 'app.html' },
+    }));
+});
+
+// Koppintásra: ha az app már nyitva van, azt hozza előre és oda navigál; különben új ablakot nyit
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    const cel = new URL(event.notification.data?.url || 'app.html', self.registration.scope).href;
+    event.waitUntil((async () => {
+        const ablakok = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+        const nyitott = ablakok.find(a => a.url.startsWith(self.registration.scope));
+        if (nyitott) {
+            await nyitott.focus();
+            if (nyitott.url !== cel && 'navigate' in nyitott) await nyitott.navigate(cel);
+            return;
+        }
+        await self.clients.openWindow(cel);
+    })());
 });

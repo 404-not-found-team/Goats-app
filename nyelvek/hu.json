@@ -582,5 +582,13 @@
     "legal_contact_prefix": "Jogi kérdés esetén írj a",
     "legal_contact_suffix": " címre.",
     "theme_brown": "Barna",
-    "theme_neon": "Neon"
+    "theme_neon": "Neon",
+    "notifications": "Értesítések:",
+    "push_on": "Bekapcsolva",
+    "push_off": "Kikapcsolva",
+    "push_desc": "Értesítést kapsz, ha valaki tartozást ír fel neked. Eszközönként külön kell bekapcsolni.",
+    "push_denied": "Az értesítések le vannak tiltva. A böngésző vagy a telefon beállításaiban engedélyezheted őket.",
+    "push_ios_hint": "iPhone-on az értesítésekhez előbb tedd ki az appot a kezdőképernyőre (Megosztás → Hozzáadás a kezdőképernyőhöz).",
+    "push_unsupported": "Ez a böngésző nem támogatja az értesítéseket.",
+    "push_enabled_msg": "Ezen az eszközön mostantól kapsz értesítéseket."
 }

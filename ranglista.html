@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy"
-        content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
+        content="default-src 'self'; script-src 'self'; worker-src 'self' blob:; style-src 'self'; style-src-attr 'none'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://bvositlxbeqztnhdembx.supabase.co wss://bvositlxbeqztnhdembx.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title data-i18n="atg_tierlist">ATG - Ranglista</title>
     <link rel="manifest" href="manifest.json">
@@ -13,10 +13,9 @@
     <link rel="stylesheet" href="css/pages/ranglista.css">
 
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
     <script src="js/segedek/nyelv.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
+    <script src="js/kulso/supabase-js-2.117.2.js"></script>
 
     <script type="module" src="js/main.js"></script>
 
@@ -25,6 +24,7 @@
     <script src="js/segedek/ital-kategoriak.js"></script>
     <script src="js/segedek/csoport-kod.js"></script>
     <script src="js/pages/ranglista.js" defer></script>
+    <script src="js/segedek/html-esemenyek.js" defer></script>
 </head>
 
 <body data-oldal="ranglista">
@@ -33,8 +33,8 @@
     <div class="fejlec-gombok-tarolo">
         <h1 data-i18n="drink_tierlist">Ital ranglista</h1>
         <div class="fejlec-gombok">
-            <button id="szuro-gomb" onclick="nyisdSzuroModal()" class="gomb-szuro" data-i18n="filters">Szűrők</button>
-            <button id="uj-ital-gomb" onclick="nyisdUjItalModal()" class="gomb-uj-ital" data-i18n="add_new_drink">Új ital hozzáadása</button>
+            <button id="szuro-gomb" data-katt="nyisdSzuroModal" class="gomb-szuro" data-i18n="filters">Szűrők</button>
+            <button id="uj-ital-gomb" data-katt="nyisdUjItalModal" class="gomb-uj-ital" data-i18n="add_new_drink">Új ital hozzáadása</button>
         </div>
     </div>
 
@@ -56,7 +56,7 @@
     <div id="modal-hatter" hidden>
         <div id="hatter" class="modal-kis-doboz">
             <button type="button" id="modal-szerkesztes-gomb" class="modal-szerkesztes-btn"
-                onclick="nyisdSzerkesztesModal()" title="Szerkesztés (superadmin)" data-i18n-attr="title:edit_superadmin" hidden>✏️</button>
+                data-katt="nyisdSzerkesztesModal" title="Szerkesztés (superadmin)" data-i18n-attr="title:edit_superadmin" hidden>✏️</button>
             <!-- a kép vagy (kép híján) a kategória-ikon, ugyanaz az elem, mint a kártyán (ital-kep.js) -->
             <div id="modal-kep-hely" class="modal-kep-hely"></div>
             <div id="modal-nev" class="modal-ital-cim"></div>
@@ -80,12 +80,12 @@
             </div>
 
             <div class="modal-gomb-csoport">
-                <button id="legeslegjobb" class="gombok dark" onclick="kategoriatValaszt('S')">S</button>
-                <button id="legjobb" class="gombok dark" onclick="kategoriatValaszt('A')">A</button>
-                <button id="elmegy" class="gombok dark" onclick="kategoriatValaszt('B')">B</button>
-                <button id="soha" class="gombok dark" onclick="kategoriatValaszt('C')">C</button>
-                <button id="megjobbansoha" class="gombok dark" onclick="kategoriatValaszt('D')">D</button>
-                <button id="forras" class="gombok" onclick="kategoriatValaszt('forras')" data-i18n="return">Forrás</button>
+                <button id="legeslegjobb" class="gombok dark" data-katt="kategoriatValaszt" data-arg="S">S</button>
+                <button id="legjobb" class="gombok dark" data-katt="kategoriatValaszt" data-arg="A">A</button>
+                <button id="elmegy" class="gombok dark" data-katt="kategoriatValaszt" data-arg="B">B</button>
+                <button id="soha" class="gombok dark" data-katt="kategoriatValaszt" data-arg="C">C</button>
+                <button id="megjobbansoha" class="gombok dark" data-katt="kategoriatValaszt" data-arg="D">D</button>
+                <button id="forras" class="gombok" data-katt="kategoriatValaszt" data-arg="forras" data-i18n="return">Forrás</button>
             </div>
         </div>
     </div>
@@ -104,7 +104,7 @@
 
 
             <div class="floating-group">
-                <select id="uj-ital-kategoria" class="floating-select" onchange="kategoriaValtozasCheck()">
+                <select id="uj-ital-kategoria" class="floating-select" data-valtozas="kategoriaValtozasCheck">
                     <!-- a lehetőségeket a ranglista.js tölti fel a public.ital_kategoriak táblából -->
                 </select>
                 <label class="floating-label" data-i18n="drink_type">Ital Fajta</label>
@@ -124,7 +124,7 @@
 
             <!-- Színezett kép (ital-kep.js): forma + 1-2 szín + opcionális minta saját színnel; "Nincs" = márkakép vagy ikon -->
             <div class="floating-group">
-                <select id="uj-ital-forma" class="floating-select" onchange="formaValtozott()">
+                <select id="uj-ital-forma" class="floating-select" data-valtozas="formaValtozott">
                     <!-- a lehetőségeket a ranglista.js tölti fel (ital-kep.js: FORMAK) -->
                 </select>
                 <label class="floating-label" data-i18n="photo_format">Kép formája</label>
@@ -133,32 +133,32 @@
             <div id="kep-szinezes-resz" class="kep-szinezes-resz" hidden>
                 <div class="szin-hely">
                     <div class="floating-group">
-                        <select id="uj-ital-szin-1-select" class="floating-select" onchange="szinSlotValtozott(1)">
+                        <select id="uj-ital-szin-1-select" class="floating-select" data-valtozas="szinSlotValtozott" data-arg="1">
                             <!-- a lehetőségeket a ranglista.js tölti fel (public.szin_paletta + "Szín keverés");
                                  az admin oldal Színek fülén vehető fel/szerkeszthető/törölhető új bejegyzés -->
                         </select>
                         <label class="floating-label" data-i18n="main_color">Fő szín</label>
                     </div>
-                    <input type="color" id="uj-ital-szin-1" class="szin-hely-picker" value="#e30613" oninput="kepElonezetFrissit()" hidden />
+                    <input type="color" id="uj-ital-szin-1" class="szin-hely-picker" value="#e30613" data-bevitel="kepElonezetFrissit" hidden />
                 </div>
 
                 <label class="kep-szin-mezo">
-                    <input type="checkbox" id="uj-ital-van-szin-2" onchange="masodikSzinValtozott()" />
+                    <input type="checkbox" id="uj-ital-van-szin-2" data-valtozas="masodikSzinValtozott" />
                     <span data-i18n="be_second_color">Legyen második szín</span>
                 </label>
 
                 <div id="szin-2-hely" class="szin-hely" hidden>
                     <div class="floating-group">
-                        <select id="uj-ital-szin-2-select" class="floating-select" onchange="szinSlotValtozott(2)">
+                        <select id="uj-ital-szin-2-select" class="floating-select" data-valtozas="szinSlotValtozott" data-arg="2">
                         </select>
                         <label class="floating-label" data-i18n="second_color">Második szín</label>
                     </div>
-                    <input type="color" id="uj-ital-szin-2" class="szin-hely-picker" value="#111111" oninput="kepElonezetFrissit()" hidden />
+                    <input type="color" id="uj-ital-szin-2" class="szin-hely-picker" value="#111111" data-bevitel="kepElonezetFrissit" hidden />
                 </div>
 
                 <div class="kep-szinezes-sor">
                     <div id="minta-group" class="floating-group">
-                        <select id="uj-ital-minta" class="floating-select" onchange="mintaValtozott()">
+                        <select id="uj-ital-minta" class="floating-select" data-valtozas="mintaValtozott">
                             <!-- ital-kep.js: MINTAK, csak a kiválasztott formához rajzoltak -->
                         </select>
                         <label class="floating-label" data-i18n="sample">Minta</label>
@@ -168,11 +168,11 @@
 
                 <div id="szin-3-hely" class="szin-hely" hidden>
                     <div class="floating-group">
-                        <select id="uj-ital-szin-3-select" class="floating-select" onchange="szinSlotValtozott(3)">
+                        <select id="uj-ital-szin-3-select" class="floating-select" data-valtozas="szinSlotValtozott" data-arg="3">
                         </select>
                         <label class="floating-label" data-i18n="sample_color">Minta színe</label>
                     </div>
-                    <input type="color" id="uj-ital-szin-3" class="szin-hely-picker" value="#ffffff" oninput="kepElonezetFrissit()" hidden />
+                    <input type="color" id="uj-ital-szin-3" class="szin-hely-picker" value="#ffffff" data-bevitel="kepElonezetFrissit" hidden />
                 </div>
             </div>
             <label id="teljes-nev-group" class="szuro-kapcsolo-sor" hidden>
@@ -183,8 +183,8 @@
             <div id="koktel-összeallitas-resz" class="koktel-resz-kontener" hidden>
                 <div class="toggle-mode-container">
                     <button type="button" id="mode-arany-btn" class="toggle-mode-btn active"
-                        onclick="valtsMódot('arany')" data-i18n="based_on_proportions">📐 Arányok alapján</button>
-                    <button type="button" id="mode-pontos-btn" class="toggle-mode-btn" onclick="valtsMódot('pontos')" data-i18n="exact_amount">🧪
+                        data-katt="valtsMódot" data-arg="arany" data-i18n="based_on_proportions">📐 Arányok alapján</button>
+                    <button type="button" id="mode-pontos-btn" class="toggle-mode-btn" data-katt="valtsMódot" data-arg="pontos" data-i18n="exact_amount">🧪
                         Pontos mennyiség</button>
                 </div>
 
@@ -192,12 +192,12 @@
 
                 <div id="hozzavalok-lista"></div>
 
-                <button type="button" class="gomb-uj-hozzavalo" onclick="ujHozzavaloSor()" data-i18n="new_indgridients">+ Új hozzávaló</button>
+                <button type="button" class="gomb-uj-hozzavalo" data-katt="ujHozzavaloSor" data-i18n="new_indgridients">+ Új hozzávaló</button>
             </div>
 
             <div class="modal-akcio-gombok">
-                <button id="uj-ital-mentes-gomb" onclick="mentUjItal()" class="sm-btn gomb-hozzaadas" data-i18n="add">Hozzáadás</button>
-                <button onclick="zardUjItalModal()" class="sm-btn gomb-megse" data-i18n="back">Mégse</button>
+                <button id="uj-ital-mentes-gomb" data-katt="mentUjItal" class="sm-btn gomb-hozzaadas" data-i18n="add">Hozzáadás</button>
+                <button data-katt="zardUjItalModal" class="sm-btn gomb-megse" data-i18n="back">Mégse</button>
             </div>
         </div>
     </div>

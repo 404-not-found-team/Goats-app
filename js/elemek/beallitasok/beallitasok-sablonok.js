@@ -211,6 +211,16 @@ const BEALLITASOK_MODAL = `
 
         <p id="nyelv-cimke" class="sm-label valaszto-kovetkezo">${tr('choose_language', 'Nyelv kiválasztása:')}</p>
         <div id="nyelv-kartyak" class="valaszto-racs" role="radiogroup" aria-labelledby="nyelv-cimke"></div>
+
+        <div id="ertesites-szakasz" hidden>
+          <p id="ertesites-cimke" class="sm-label valaszto-kovetkezo">${tr('notifications', 'Értesítések:')}</p>
+          <button id="ertesites-kapcsolo" type="button" class="ertesites-kapcsolo" role="switch" aria-checked="false" aria-labelledby="ertesites-cimke">
+            <span class="ertesites-kapcsolo-sav" aria-hidden="true"><span class="ertesites-kapcsolo-gomb"></span></span>
+            <span class="ertesites-kapcsolo-szoveg">${tr('push_off', 'Kikapcsolva')}</span>
+          </button>
+          <p class="szoveg-kicsi ertesites-leiras">${tr('push_desc', 'Értesítést kapsz, ha valaki tartozást ír fel neked. Eszközönként külön kell bekapcsolni.')}</p>
+          <p id="ertesites-allapot" class="sm-status sm-status-small" role="status" aria-live="polite"></p>
+        </div>
       </div>
     </div>
   </div>
