@@ -5,10 +5,10 @@ export function initThemePicker() {
   const themeOptionsContainer = get('theme-dropdown-options');
 
   const themes = [
-    { id: 'dark', name: 'Sötét' },
-    { id: 'light', name: 'Világos' },
+    { id: 'dark', name: tr('theme_dark', 'Sötét') },
+    { id: 'light', name: tr('theme_light', 'Világos') },
     { id: 'discord-brown', name: 'Barna' },
-    { id: 'discord-purple', name: 'Mélylila' },
+    { id: 'discord-purple', name: tr('theme_purple', 'Mélylila') },
     { id: 'cyberpunk', name: 'Neon' }
   ];
 

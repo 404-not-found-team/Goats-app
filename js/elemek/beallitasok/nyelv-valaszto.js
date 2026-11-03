@@ -45,7 +45,7 @@ async function szinkronFiokkal() {
     if (helyiValasztasVan()) {
         await mentesFiokba(helyi);
     } else if (NYELVEK.some(n => n.id === fiokNyelve)) {
-        await nyelv()?.valt(fiokNyelve);
+        await nyelv()?.valt(fiokNyelve); // újratölti az oldalt az új nyelvvel
     }
 }
 
@@ -72,9 +72,10 @@ export function initLangPicker() {
             opcio.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 langDropdown?.classList.remove('open');
+                if (n.id === nyelv()?.aktualis()) return;
+                // előbb a fiókba (a valt utána újratölti az oldalt)
+                await mentesFiokba(n.id);
                 await nyelv()?.valt(n.id);
-                frissitValaszto();
-                mentesFiokba(n.id);
             });
             return opcio;
         }));

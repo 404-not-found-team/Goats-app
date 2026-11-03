@@ -14,12 +14,12 @@
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
+    <script src="js/segedek/nyelv.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 
     <script src="js/segedek/ital-kategoriak.js"></script>
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/pages/admin.js"></script>
-    <script src="js/segedek/nyelv.js" defer></script>
 </head>
 
 <body>
@@ -91,19 +91,19 @@
                 <form id="adminUjAlkategoria" class="admin-urlap">
                     <h3 class="admin-alcim" data-i18n="new_subcategory">Új alkategória</h3>
                     <div class="admin-urlap-sor">
-                        <input id="adminUjAlNev" class="admin-bemenet" maxlength="40" placeholder="Név (pl. Hell)" aria-label="Az alkategória neve" required>
-                        <select id="adminUjAlSzabaly" class="admin-bemenet" aria-label="A szabály típusa">
+                        <input id="adminUjAlNev" class="admin-bemenet" maxlength="40" placeholder="Név (pl. Hell)" aria-label="Az alkategória neve" data-i18n-attr="placeholder:subcat_name_ph; aria-label:subcat_name" required>
+                        <select id="adminUjAlSzabaly" class="admin-bemenet" aria-label="A szabály típusa" data-i18n-attr="aria-label:rule_type">
                             <option value="marka" data-i18n="brand_matches">Márka egyezik</option>
                             <option value="nev" data-i18n="name_starts_with">Név eleje</option>
                             <option value="nincs" data-i18n="no_rule">Nincs szabály (csak kézi)</option>
                         </select>
-                        <input id="adminUjAlErtek" class="admin-bemenet" maxlength="40" placeholder="Érték (pl. hell)" aria-label="A szabály értéke">
+                        <input id="adminUjAlErtek" class="admin-bemenet" maxlength="40" placeholder="Érték (pl. hell)" aria-label="A szabály értéke" data-i18n-attr="placeholder:rule_value_ph; aria-label:rule_value">
                         <button type="submit" class="admin-gomb" data-i18n="add">Hozzáadás</button>
                     </div>
                 </form>
 
                 <h3 class="admin-alcim" data-i18n="drink_classification">Italok besorolása</h3>
-                <input id="adminItalKereso" class="admin-bemenet admin-kereso" type="search" placeholder="Keresés név szerint…" aria-label="Italok keresése">
+                <input id="adminItalKereso" class="admin-bemenet admin-kereso" type="search" placeholder="Keresés név szerint…" aria-label="Italok keresése" data-i18n-attr="placeholder:search_by_name; aria-label:search_drinks">
                 <ul id="adminItalok" class="admin-lista admin-italok"></ul>
             </section>
         </div>
@@ -120,8 +120,8 @@
                 <form id="adminUjSzin" class="admin-urlap">
                     <h3 class="admin-alcim" data-i18n="new_color">Új szín</h3>
                     <div class="admin-urlap-sor">
-                        <input id="adminUjSzinNev" class="admin-bemenet" maxlength="40" placeholder="Név (pl. Hell piros)" aria-label="A szín neve" required>
-                        <input id="adminUjSzin1" type="color" value="#e30613" aria-label="A szín (RGB)">
+                        <input id="adminUjSzinNev" class="admin-bemenet" maxlength="40" placeholder="Név (pl. Hell piros)" aria-label="A szín neve" data-i18n-attr="placeholder:color_name_ph; aria-label:color_name" required>
+                        <input id="adminUjSzin1" type="color" value="#e30613" aria-label="A szín (RGB)" data-i18n-attr="aria-label:color_rgb">
                         <button type="submit" class="admin-gomb" data-i18n="add">Hozzáadás</button>
                     </div>
                 </form>

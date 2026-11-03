@@ -53,8 +53,8 @@ function foValaszto() {
 
 // ---------- Alkategóriák ----------
 
-const szabalyLeiras = (a) => a.szabaly_marka ? `márka: ${a.szabaly_marka}`
-    : a.szabaly_nev ? `név eleje: ${a.szabaly_nev}` : 'csak kézi besorolás';
+const szabalyLeiras = (a) => a.szabaly_marka ? tr('brand_x', 'márka: {brand}', { brand: a.szabaly_marka })
+    : a.szabaly_nev ? tr('name_start_x', 'név eleje: {text}', { text: a.szabaly_nev }) : tr('manual_only', 'csak kézi besorolás');
 
 function alkategoriaDarab(alId) {
     return italok.filter(i => i.kategoria_id === foId && K().alkategoria(i)?.id === alId).length;
@@ -79,10 +79,10 @@ function alkategoriaSor(a, elso, utolso) {
     le.disabled = !!utolso;
     le.setAttribute('aria-label', `${a.nev} lejjebb`);
     le.addEventListener('click', () => alkategoriaMozgatasa(a, 'le'));
-    const szerkeszt = ujElem('button', 'admin-gomb masodlagos', 'Szerkesztés');
+    const szerkeszt = ujElem('button', 'admin-gomb masodlagos', tr('edit_btn', 'Szerkesztés'));
     szerkeszt.type = 'button';
     szerkeszt.addEventListener('click', () => li.replaceWith(alkategoriaSzerkeszto(a)));
-    const torol = ujElem('button', 'admin-gomb veszelyes', 'Törlés');
+    const torol = ujElem('button', 'admin-gomb veszelyes', tr('delete', 'Törlés'));
     torol.type = 'button';
     torol.addEventListener('click', () => alkategoriaTorles(a));
     gombok.append(fel, le, szerkeszt, torol);
@@ -105,23 +105,23 @@ async function alkategoriaMozgatasa(a, irany) {
     ]);
     if (r1.error || r2.error) {
         console.error('A sorrend mentése nem sikerült:', r1.error || r2.error);
-        return allapot('A sorrend mentése nem sikerült.', 'hiba');
+        return allapot(tr('err_order_save', 'A sorrend mentése nem sikerült.'), 'hiba');
     }
     await ujratoltes();
 }
 
 function szabalyMezok(tipus, ertek) {
     const select = ujElem('select', 'admin-bemenet');
-    select.setAttribute('aria-label', 'A szabály típusa');
+    select.setAttribute('aria-label', tr('rule_type', 'A szabály típusa'));
     select.append(
-        opcio('marka', 'Márka egyezik', tipus === 'marka'),
-        opcio('nev', 'Név eleje', tipus === 'nev'),
-        opcio('nincs', 'Nincs szabály (csak kézi)', tipus === 'nincs')
+        opcio('marka', tr('brand_matches', 'Márka egyezik'), tipus === 'marka'),
+        opcio('nev', tr('name_starts_with', 'Név eleje'), tipus === 'nev'),
+        opcio('nincs', tr('no_rule', 'Nincs szabály (csak kézi)'), tipus === 'nincs')
     );
     const input = ujElem('input', 'admin-bemenet');
     input.maxLength = 40;
     input.value = ertek || '';
-    input.setAttribute('aria-label', 'A szabály értéke');
+    input.setAttribute('aria-label', tr('rule_value', 'A szabály értéke'));
     const frissit = () => { input.hidden = select.value === 'nincs'; };
     select.addEventListener('change', frissit);
     frissit();
@@ -133,7 +133,7 @@ function alkategoriaSzerkeszto(a) {
     const nev = ujElem('input', 'admin-bemenet');
     nev.value = a.nev;
     nev.maxLength = 40;
-    nev.setAttribute('aria-label', 'Az alkategória neve');
+    nev.setAttribute('aria-label', tr('subcat_name', 'Az alkategória neve'));
     const tipus = a.szabaly_marka ? 'marka' : a.szabaly_nev ? 'nev' : 'nincs';
     const { select, input } = szabalyMezok(tipus, a.szabaly_marka || a.szabaly_nev);
     const sorrend = ujElem('input', 'admin-bemenet admin-szam');
@@ -141,10 +141,10 @@ function alkategoriaSzerkeszto(a) {
     sorrend.value = String(a.sorrend);
     sorrend.setAttribute('aria-label', 'Sorrend');
 
-    const ment = ujElem('button', 'admin-gomb', 'Mentés');
+    const ment = ujElem('button', 'admin-gomb', tr('save', 'Mentés'));
     ment.type = 'button';
     ment.addEventListener('click', () => alkategoriaMentes(a, { nev: nev.value, tipus: select.value, ertek: input.value, sorrend: sorrend.value }));
-    const megse = ujElem('button', 'admin-gomb masodlagos', 'Mégse');
+    const megse = ujElem('button', 'admin-gomb masodlagos', tr('cancel', 'Mégse'));
     megse.type = 'button';
     megse.addEventListener('click', kirajzolas);
 
@@ -163,22 +163,22 @@ function szabalyOszlopok(tipus, ertek) {
 
 async function alkategoriaMentes(a, { nev, tipus, ertek, sorrend }) {
     const tisztaNev = String(nev || '').trim();
-    if (!tisztaNev) return allapot('Add meg az alkategória nevét.', 'hiba');
-    if (tipus !== 'nincs' && !String(ertek || '').trim()) return allapot('Add meg a szabály értékét.', 'hiba');
+    if (!tisztaNev) return allapot(tr('err_subcat_name', 'Add meg az alkategória nevét.'), 'hiba');
+    if (tipus !== 'nincs' && !String(ertek || '').trim()) return allapot(tr('err_rule_value', 'Add meg a szabály értékét.'), 'hiba');
     const { error } = await client
         .from('ital_kategoriak')
         .update({ nev: tisztaNev, sorrend: Number(sorrend) || 0, ...szabalyOszlopok(tipus, ertek) })
         .eq('id', a.id);
     if (error) {
         console.error('Az alkategória mentése nem sikerült:', error);
-        return allapot(`A mentés nem sikerült: ${error.message}`, 'hiba');
+        return allapot(tr('err_save_msg', 'A mentés nem sikerült: {msg}', { msg: error.message }), 'hiba');
     }
     allapot(`${tisztaNev}: elmentve.`, 'ok');
     await ujratoltes();
 }
 
 async function alkategoriaTorles(a) {
-    if (!confirm(`Biztosan törlöd a(z) „${a.nev}” alkategóriát? Az italai alkategória nélkül maradnak.`)) return;
+    if (!confirm(tr('confirm_delete_subcat', 'Biztosan törlöd a(z) „{name}” alkategóriát? Az italai alkategória nélkül maradnak.', { name: a.nev }))) return;
     // A kézzel ide sorolt italok visszakerülnek a szabály szerinti besorolásra
     const { error: italHiba } = await client
         .from('italok')
@@ -186,14 +186,14 @@ async function alkategoriaTorles(a) {
         .eq('alkategoria_id', a.id);
     if (italHiba) {
         console.error('Az italok visszaállítása nem sikerült:', italHiba);
-        return allapot(`A törlés nem sikerült: ${italHiba.message}`, 'hiba');
+        return allapot(tr('err_delete_msg2', 'A törlés nem sikerült: {msg}', { msg: italHiba.message }), 'hiba');
     }
     const { error } = await client.from('ital_kategoriak').delete().eq('id', a.id);
     if (error) {
         console.error('Az alkategória törlése nem sikerült:', error);
-        return allapot(`A törlés nem sikerült: ${error.message}`, 'hiba');
+        return allapot(tr('err_delete_msg2', 'A törlés nem sikerült: {msg}', { msg: error.message }), 'hiba');
     }
-    allapot(`${a.nev}: törölve.`, 'ok');
+    allapot(tr('x_deleted', '{name}: törölve.', { name: a.nev }), 'ok');
     await ujratoltes();
 }
 
@@ -203,8 +203,8 @@ async function ujAlkategoria(e) {
     const nev = $('adminUjAlNev').value.trim();
     const tipus = $('adminUjAlSzabaly').value;
     const ertek = $('adminUjAlErtek').value;
-    if (!fo || !nev) return allapot('Add meg az alkategória nevét.', 'hiba');
-    if (tipus !== 'nincs' && !ertek.trim()) return allapot('Add meg a szabály értékét.', 'hiba');
+    if (!fo || !nev) return allapot(tr('err_subcat_name', 'Add meg az alkategória nevét.'), 'hiba');
+    if (tipus !== 'nincs' && !ertek.trim()) return allapot(tr('err_rule_value', 'Add meg a szabály értékét.'), 'hiba');
     const kod = `${fo.kod}-${K().szlug(nev)}`.slice(0, 40);
     const sorrend = Math.max(0, ...K().alkategoriai(fo.id).map(a => a.sorrend)) + 1;
     const { error } = await client
@@ -213,12 +213,12 @@ async function ujAlkategoria(e) {
     if (error) {
         console.error('Az alkategória létrehozása nem sikerült:', error);
         return allapot(error.code === '23505'
-            ? 'Ilyen nevű alkategória már van ebben a főkategóriában.'
-            : `A létrehozás nem sikerült: ${error.message}`, 'hiba');
+            ? tr('err_subcat_exists', 'Ilyen nevű alkategória már van ebben a főkategóriában.')
+            : tr('err_create_msg', 'A létrehozás nem sikerült: {msg}', { msg: error.message }), 'hiba');
     }
     $('adminUjAlkategoria').reset();
     $('adminUjAlErtek').hidden = false;
-    allapot(`${nev}: létrehozva.`, 'ok');
+    allapot(tr('x_created', '{name}: létrehozva.', { name: nev }), 'ok');
     await ujratoltes();
 }
 
@@ -233,17 +233,17 @@ function italSor(ital) {
     const szoveg = ujElem('div', 'admin-sor-szoveg');
     szoveg.append(
         ujElem('span', 'admin-sor-nev', ital.nev),
-        ujElem('span', 'admin-sor-leiras', [ital.marka ? `márka: ${ital.marka}` : 'márka nélkül', ital.jovahagyva ? '' : 'jóváhagyásra vár'].filter(Boolean).join(' · '))
+        ujElem('span', 'admin-sor-leiras', [ital.marka ? tr('brand_x', 'márka: {brand}', { brand: ital.marka }) : tr('no_brand', 'márka nélkül'), ital.jovahagyva ? '' : tr('pending_approval_lc', 'jóváhagyásra vár')].filter(Boolean).join(' · '))
     );
     const vezerlok = ujElem('div', 'admin-sor-gombok');
 
     if (alok.length > 0) {
         const szabaly = K().szabalySzerint(ital);
         const select = ujElem('select', 'admin-bemenet');
-        select.setAttribute('aria-label', `${ital.nev}: alkategória`);
-        select.append(opcio('auto', szabaly ? `Szabály szerint (${szabaly.nev})` : 'Szabály szerint (nincs egyezés)', !ital.alkategoria_kezi));
+        select.setAttribute('aria-label', tr('x_subcategory', '{name}: alkategória', { name: ital.nev }));
+        select.append(opcio('auto', szabaly ? tr('by_rule_x', 'Szabály szerint ({name})', { name: szabaly.nev }) : tr('by_rule_none', 'Szabály szerint (nincs egyezés)'), !ital.alkategoria_kezi));
         alok.forEach(a => select.append(opcio(String(a.id), a.nev, ital.alkategoria_kezi && ital.alkategoria_id === a.id)));
-        select.append(opcio('nincs', 'Nincs alkategória', ital.alkategoria_kezi && !ital.alkategoria_id));
+        select.append(opcio('nincs', tr('no_subcategory', 'Nincs alkategória'), ital.alkategoria_kezi && !ital.alkategoria_id));
         select.addEventListener('change', () => {
             const v = select.value;
             italMentes(ital, v === 'auto'
@@ -258,9 +258,9 @@ function italSor(ital) {
         const select = ujElem('select', 'admin-bemenet');
         select.setAttribute('aria-label', `${ital.nev}: zero`);
         select.append(
-            opcio('auto', `Automatikus (${auto ? 'zero' : 'nem zero'})`, ital.zero === null),
+            opcio('auto', tr('automatic_x', 'Automatikus ({value})', { value: auto ? 'zero' : tr('not_zero_lc', 'nem zero') }), ital.zero === null),
             opcio('igen', 'Zero', ital.zero === true),
-            opcio('nem', 'Nem zero', ital.zero === false)
+            opcio('nem', tr('not_zero', 'Nem zero'), ital.zero === false)
         );
         select.addEventListener('change', () => {
             italMentes(ital, { zero: select.value === 'auto' ? null : select.value === 'igen' });
@@ -276,7 +276,7 @@ async function italMentes(ital, valtozas) {
     const { error } = await client.from('italok').update(valtozas).eq('id', ital.id);
     if (error) {
         console.error('Az ital besorolásának mentése nem sikerült:', error);
-        allapot(`${ital.nev}: a mentés nem sikerült (${error.message}).`, 'hiba');
+        allapot(tr('err_save_item_msg', '{name}: a mentés nem sikerült ({msg}).', { name: ital.nev, msg: error.message }), 'hiba');
         kirajzolas(); // visszaáll a korábbi értékre
         return;
     }
@@ -293,10 +293,10 @@ function italLista() {
     const fo = K().kategoria(foId);
     const vanMit = K().alkategoriai(foId).length > 0 || fo?.zero_szuro;
     if (!vanMit) {
-        $('adminItalok').replaceChildren(ujElem('li', 'admin-sor admin-ures', 'Ebben a főkategóriában még nincs alkategória: előbb hozz létre egyet.'));
+        $('adminItalok').replaceChildren(ujElem('li', 'admin-sor admin-ures', tr('no_subcat_in_main', 'Ebben a főkategóriában még nincs alkategória: előbb hozz létre egyet.')));
         return;
     }
-    $('adminItalok').replaceChildren(...(lista.length ? lista.map(italSor) : [ujElem('li', 'admin-sor admin-ures', 'Nincs találat.')]));
+    $('adminItalok').replaceChildren(...(lista.length ? lista.map(italSor) : [ujElem('li', 'admin-sor admin-ures', tr('no_results', 'Nincs találat.'))]));
 }
 
 // ---------- Kirajzolás ----------
@@ -306,7 +306,7 @@ function kirajzolas() {
     const alok = K().alkategoriai(foId);
     $('adminAlkategoriak').replaceChildren(...(alok.length
         ? alok.map((a, i) => alkategoriaSor(a, i === 0, i === alok.length - 1))
-        : [ujElem('li', 'admin-sor admin-ures', 'Nincs még alkategória.')]));
+        : [ujElem('li', 'admin-sor admin-ures', tr('no_subcats_yet', 'Nincs még alkategória.'))]));
     italLista();
 }
 
@@ -315,7 +315,7 @@ async function ujratoltes() {
         await adatokBetoltese();
     } catch (err) {
         console.error('Az italkategóriák betöltése nem sikerült:', err);
-        allapot('Az italkategóriák betöltése nem sikerült.', 'hiba');
+        allapot(tr('err_categories_load', 'Az italkategóriák betöltése nem sikerült.'), 'hiba');
         return;
     }
     kirajzolas();

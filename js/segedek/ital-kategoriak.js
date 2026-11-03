@@ -4,10 +4,13 @@
 (function () {
     // Kiszerelések (sörnél; az italok.kiszereles értékei). A "dobozos" az alap 0,5 literes doboz.
     const KISZERELESEK = [
-        { kod: 'dobozos', nev: 'Dobozos (0,5 l)' },
-        { kod: 'dobozos_330', nev: 'Dobozos (0,33 l)' },
-        { kod: 'uveges', nev: 'Üveges' },
+        { kod: 'dobozos', nev: tr('pack_can_05', 'Dobozos (0,5 l)') },
+        { kod: 'dobozos_330', nev: tr('pack_can_033', 'Dobozos (0,33 l)') },
+        { kod: 'uveges', nev: tr('pack_bottle', 'Üveges') },
     ];
+    // Megjelenítéshez: a kóddal rendelkező kategória neve a nyelvi fájlból (cat_<kod>), különben az adatbázisbeli név.
+    // A magyar nyelvi fájlban nincsenek cat_ kulcsok, így magyarul mindig az adatbázisbeli név látszik.
+    const nevForditva = (k) => (k?.kod ? tr(`cat_${k.kod}`, k.nev || '') : (k?.nev || ''));
     const kiszerelesNev = (kod) => KISZERELESEK.find(k => k.kod === kod)?.nev || '';
 
     // Zero (cukormentes) automatikus felismerése a névből; az italok.zero oszlop felülírja
@@ -96,5 +99,6 @@
         szlug,
         KISZERELESEK,
         kiszerelesNev,
+        nevForditva,
     };
 })();

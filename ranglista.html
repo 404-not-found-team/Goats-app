@@ -15,6 +15,7 @@
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
+    <script src="js/segedek/nyelv.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 
     <script type="module" src="js/main.js"></script>
@@ -24,7 +25,6 @@
     <script src="js/segedek/ital-kategoriak.js"></script>
     <script src="js/segedek/csoport-kod.js"></script>
     <script src="js/pages/ranglista.js" defer></script>
-    <script src="js/segedek/nyelv.js" defer></script>
 </head>
 
 <body data-oldal="ranglista">
@@ -56,7 +56,7 @@
     <div id="modal-hatter" hidden>
         <div id="hatter" class="modal-kis-doboz">
             <button type="button" id="modal-szerkesztes-gomb" class="modal-szerkesztes-btn"
-                onclick="nyisdSzerkesztesModal()" title="Szerkesztés (superadmin)" hidden>✏️</button>
+                onclick="nyisdSzerkesztesModal()" title="Szerkesztés (superadmin)" data-i18n-attr="title:edit_superadmin" hidden>✏️</button>
             <!-- a kép vagy (kép híján) a kategória-ikon, ugyanaz az elem, mint a kártyán (ital-kep.js) -->
             <div id="modal-kep-hely" class="modal-kep-hely"></div>
             <div id="modal-nev" class="modal-ital-cim"></div>
@@ -208,42 +208,41 @@
 
             <div class="szuro-fulek" role="tablist">
                 <button type="button" id="szuro-ful-sajat" class="szuro-ful aktiv" role="tab" aria-selected="true"
-                    aria-controls="szuro-panel-sajat">Saját nézet</button>
+                    aria-controls="szuro-panel-sajat" data-i18n="filter_own_view">Saját nézet</button>
                 <button type="button" id="szuro-ful-csoport" class="szuro-ful" role="tab" aria-selected="false"
-                    aria-controls="szuro-panel-csoport">Csoport beállítás</button>
+                    aria-controls="szuro-panel-csoport" data-i18n="filter_group_setting">Csoport beállítás</button>
             </div>
 
             <!-- Saját nézet: csak ebben a böngészőablakban él, nem mentjük el sehova -->
             <div id="szuro-panel-sajat" class="szuro-panel" role="tabpanel">
-                <p class="szuro-leiras">Csak neked és csak most: újratöltéskor visszaáll a csoport beállítására.</p>
+                <p class="szuro-leiras" data-i18n="filter_own_desc">Csak neked és csak most: újratöltéskor visszaáll a csoport beállítására.</p>
                 <div id="sajat-szuro-kategoriak" class="szuro-kategoria-lista"></div>
 
-                <label class="sm-label szuro-label szuro-label-top" for="kizart-kulcsszo-input">🚫 Márka / név
-                    elrejtése:</label>
+                <label class="sm-label szuro-label szuro-label-top" for="kizart-kulcsszo-input" data-i18n="hide_brand_name">🚫 Márka / név elrejtése:</label>
                 <div class="szuro-input-sor">
-                    <input type="text" id="kizart-kulcsszo-input" class="sm-input szuro-input" placeholder="Pl. Royal"
+                    <input type="text" id="kizart-kulcsszo-input" class="sm-input szuro-input" placeholder="Pl. Royal" data-i18n-attr="placeholder:hide_brand_ph"
                         maxlength="40">
                     <button type="button" id="kizart-hozzaad-gomb" class="sm-btn gomb-plusz"
-                        aria-label="Hozzáadás">+</button>
+                        aria-label="Hozzáadás" data-i18n-attr="aria-label:add">+</button>
                 </div>
                 <div id="kizart-tagek-kontener" class="tag-kontener"></div>
 
                 <div class="szuro-footer">
                     <button type="button" id="sajat-szuro-alaphelyzet"
-                        class="sm-btn gomb-masodlagos">Alaphelyzet</button>
-                    <button type="button" class="sm-btn gomb-kesz szuro-bezar">Kész</button>
+                        class="sm-btn gomb-masodlagos" data-i18n="reset_default">Alaphelyzet</button>
+                    <button type="button" class="sm-btn gomb-kesz szuro-bezar" data-i18n="done">Kész</button>
                 </div>
             </div>
 
             <!-- Csoport beállítás: elmentjük, a csoport minden tagjánál ez az alap -->
             <div id="szuro-panel-csoport" class="szuro-panel" role="tabpanel" hidden>
-                <p class="szuro-leiras">Ezek az italok jelennek meg a csoport minden tagjánál. A mentés után érvényes.
+                <p class="szuro-leiras" data-i18n="filter_group_desc">Ezek az italok jelennek meg a csoport minden tagjánál. A mentés után érvényes.
                 </p>
                 <div id="csoport-szuro-kategoriak" class="szuro-kategoria-lista"></div>
                 <p id="csoport-szuro-allapot" class="szuro-allapot" role="status" aria-live="polite"></p>
                 <div class="szuro-footer">
-                    <button type="button" class="sm-btn gomb-masodlagos szuro-bezar">Mégse</button>
-                    <button type="button" id="csoport-szuro-mentes" class="sm-btn gomb-kesz">Mentés</button>
+                    <button type="button" class="sm-btn gomb-masodlagos szuro-bezar" data-i18n="cancel">Mégse</button>
+                    <button type="button" id="csoport-szuro-mentes" class="sm-btn gomb-kesz" data-i18n="save">Mentés</button>
                 </div>
             </div>
         </div>

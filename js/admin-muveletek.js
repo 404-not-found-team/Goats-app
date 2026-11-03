@@ -10,7 +10,7 @@ async function run(fn) {
     await refresh();
     return true;
   } catch (err) {
-    alert('Hiba: ' + (err.message || err));
+    alert(tr('err_prefix', 'Hiba: {msg}', { msg: err.message || err }));
     return false;
   }
 }
@@ -20,7 +20,7 @@ async function run(fn) {
 export function updateMyDisplayName(newDisplayName) {
   const name = (newDisplayName || '').trim();
   if (name.length < 2 || name.length > 30) {
-    alert('A név 2–30 karakter legyen.');
+    alert(tr('err_name_2_30', 'A név 2–30 karakter legyen.'));
     return Promise.resolve(false);
   }
   const userId = getState().user?.id;

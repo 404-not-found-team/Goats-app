@@ -12,7 +12,7 @@ import { kepUrlek, torolKepGyorsitotarbol } from '../segedek/kep-gyorsitotar.js'
 import { funkcioGombTiltas, TILTVA_SZOVEG } from '../segedek/funkcio-kapcsolo.js';
 import { betolt, ir } from '../segedek/adat-gyorsitotar.js';
 
-const KORLAT_UZENET = 'A csoport elérte a képkorlátot, törölj régebbi képeket.';
+const KORLAT_UZENET = tr('err_image_limit', 'A csoport elérte a képkorlátot, törölj régebbi képeket.');
 const BETOLTES_KOTEG_MS = 50; // a láthatóvá vált csempéket ennyi ideig gyűjtjük egy aláírás-kötegbe
 
 let kepek = []; // { path, feltoltotteId, letrehozva }
@@ -31,7 +31,7 @@ function aktualisUserId() {
 function feltoltoNev(userId) {
     if (!userId) return null;
     const tag = getState()?.members?.find(m => m.user_id === userId);
-    return tag ? tag.display_name : 'Törölt tag';
+    return tag ? tag.display_name : tr('deleted_member', 'Törölt tag');
 }
 
 // A saját képét, és az ismeretlen feltöltőjűt (a FELADAT9 előtti képek) törölheti a felületen.
@@ -136,7 +136,7 @@ function csempe(kep) {
     const li = ujElem('li', 'kepek-csempe');
 
     const img = ujElem('img', 'kepek-csempe-kep');
-    img.alt = 'Csoportkép';
+    img.alt = tr('group_picture', 'Csoportkép');
     img.width = 200;
     img.height = 200;
     img.loading = 'lazy';
@@ -149,12 +149,12 @@ function csempe(kep) {
     const nev = feltoltoNev(kep.feltoltotteId);
     // Mobilon csak a név látszik (az előtag a CSS-ben rejtett, a képernyőolvasó felolvassa)
     const feltolto = ujElem('span', 'kepek-feltolto');
-    feltolto.append(ujElem('span', 'kepek-feltolto-elotag', 'Feltöltötte: '), nev || 'ismeretlen');
-    feltolto.title = nev ? `Feltöltötte: ${nev}` : 'A feltöltő nem ismert';
+    feltolto.append(ujElem('span', 'kepek-feltolto-elotag', tr('uploaded_by_prefix', 'Feltöltötte: ')), nev || tr('unknown', 'ismeretlen'));
+    feltolto.title = nev ? tr('uploaded_by', 'Feltöltötte: {name}', { name: nev }) : tr('uploader_unknown', 'A feltöltő nem ismert');
     szoveg.appendChild(feltolto);
     if (kep.letrehozva) {
         const datum = new Date(kep.letrehozva);
-        const ido = ujElem('time', 'kepek-datum', datum.toLocaleDateString('hu-HU'));
+        const ido = ujElem('time', 'kepek-datum', datum.toLocaleDateString(goatsNyelv.locale()));
         ido.dateTime = kep.letrehozva;
         szoveg.appendChild(ido);
     }
@@ -164,8 +164,8 @@ function csempe(kep) {
     const menu = ujElem('div', 'kepek-menu');
     const gomb = ujElem('button', 'kepek-menu-gomb');
     gomb.type = 'button';
-    gomb.title = 'Műveletek';
-    gomb.setAttribute('aria-label', 'Kép műveletei');
+    gomb.title = tr('actions', 'Műveletek');
+    gomb.setAttribute('aria-label', tr('image_actions', 'Kép műveletei'));
     gomb.setAttribute('aria-haspopup', 'menu');
     gomb.setAttribute('aria-expanded', 'false');
     const ikon = ujElem('i', 'fa-solid fa-ellipsis-vertical');
@@ -176,14 +176,14 @@ function csempe(kep) {
     lista.setAttribute('role', 'menu');
     lista.hidden = true;
 
-    const jelentes = ujElem('button', 'kepek-menupont', 'Jelentés');
+    const jelentes = ujElem('button', 'kepek-menupont', tr('report', 'Jelentés'));
     jelentes.type = 'button';
     jelentes.setAttribute('role', 'menuitem');
     jelentes.addEventListener('click', () => { menukBezarasa(); jelentesMegnyitas(kep.path); });
     lista.appendChild(jelentes);
 
     if (torolhetoKep(kep)) {
-        const torles = ujElem('button', 'kepek-menupont veszelyes', 'Törlés');
+        const torles = ujElem('button', 'kepek-menupont veszelyes', tr('delete', 'Törlés'));
         torles.type = 'button';
         torles.setAttribute('role', 'menuitem');
         torles.addEventListener('click', () => { menukBezarasa(); torolKep(kep); });
@@ -217,7 +217,7 @@ function racsKirajzolas() {
     if (!megfigyelo && varakozo.size > 0) kotegBetoltes();
 
     $('kepekUres').hidden = kepek.length > 0;
-    $('kepekSzamlalo').textContent = kepek.length > 0 ? `${kepek.length} kép` : '';
+    $('kepekSzamlalo').textContent = kepek.length > 0 ? tr('n_pictures', '{n} kép', { n: kepek.length }) : '';
 }
 
 function menukBezarasa() {
@@ -228,12 +228,12 @@ function menukBezarasa() {
 // ---------- Törlés ----------
 
 async function torolKep(kep) {
-    if (!confirm('Biztosan törölni szeretnéd ezt a képet?')) return;
+    if (!confirm(tr('confirm_delete_picture', 'Biztosan törölni szeretnéd ezt a képet?'))) return;
 
     const { error } = await client.storage.from(BUCKET).remove([kep.path]);
     if (error) {
         console.error('Hiba a törléskor:', error);
-        alert(`Sikertelen törlés! Hiba: ${error.message}`);
+        alert(tr('err_delete_msg', 'Sikertelen törlés! Hiba: {msg}', { msg: error.message }));
         return;
     }
 
@@ -267,7 +267,7 @@ async function jelentesKuldes(e) {
     const hiba = $('jelentesHiba');
     const csoport = aktualisCsoport();
     if (!ok) {
-        hiba.textContent = 'Válaszd ki a jelentés okát.';
+        hiba.textContent = tr('err_report_reason', 'Válaszd ki a jelentés okát.');
         hiba.hidden = false;
         return;
     }
@@ -287,15 +287,15 @@ async function jelentesKuldes(e) {
         console.error('Hiba a jelentés beküldésekor:', error, kod);
         // A beküldési szabály óránként legfeljebb 20 jelentést enged (a function "korlat" kóddal jelzi)
         hiba.textContent = kod === 'korlat'
-            ? 'Túl sok jelentést küldtél az elmúlt órában, próbáld újra később.'
-            : 'A jelentés beküldése nem sikerült, próbáld újra.';
+            ? tr('err_report_rate', 'Túl sok jelentést küldtél az elmúlt órában, próbáld újra később.')
+            : tr('err_report_send', 'A jelentés beküldése nem sikerült, próbáld újra.');
         hiba.hidden = false;
         return;
     }
 
     $('jelentesDialog').close();
     jelentendoUtvonal = null;
-    allapotMutat('Köszönjük, a jelentést megkaptuk.', 'ok', null);
+    allapotMutat(tr('report_thanks', 'Köszönjük, a jelentést megkaptuk.'), 'ok', null);
     allapotRejtesKesobb(4000);
 }
 
@@ -354,7 +354,7 @@ async function feltoltKepek(event) {
     event.target.value = '';
     if (fajlok.length === 0) return;
     if (!csoport) {
-        alert('Előbb lépj be egy csoportba a beállításoknál!');
+        alert(tr('err_join_group_settings', 'Előbb lépj be egy csoportba a beállításoknál!'));
         return;
     }
 
@@ -375,7 +375,7 @@ async function feltoltKepek(event) {
     let utolsoHiba = null;
 
     try {
-        allapotMutat('Tömörítő betöltése…', null, null);
+        allapotMutat(tr('loading_compressor', 'Tömörítő betöltése…'), null, null);
         const [{ kepBetoltes, kepTomoritesKivagassal, forrasFelszabaditas, KepHiba }, { kivagasValasztas, kozepsoNegyzet }] =
             await Promise.all([import('../segedek/kep-tomorites.js'), import('../elemek/kep-kivago.js')]);
         const korlat = await lekerKepKorlat();
@@ -386,16 +386,16 @@ async function feltoltKepek(event) {
             try {
                 if (korlat !== null && kepek.length + sikeres >= korlat) throw new KepHiba(KORLAT_UZENET);
 
-                allapotMutat(`${elotag}Beolvasás…`, null, null);
+                allapotMutat(elotag + tr('reading', 'Beolvasás…'), null, null);
                 const kep = await kepBetoltes(fajl);
                 let tomoritett;
                 try {
                     // A feltöltő választja ki a négyzetes kivágást (a kép mindenhol négyzetben jelenik meg)
                     let kivagas = kozepsoNegyzet(kep);
                     if (!mindKozepre) {
-                        allapotMutat(`${elotag}Igazítsd a képet…`, null, null);
+                        allapotMutat(elotag + tr('align_picture', 'Igazítsd a képet…'), null, null);
                         const valasz = await kivagasValasztas(kep, {
-                            sorszam: fajlok.length > 1 ? `${i + 1}. kép a ${fajlok.length}-ból` : '',
+                            sorszam: fajlok.length > 1 ? tr('picture_n_of', '{i}. kép a {n}-ból', { i: i + 1, n: fajlok.length }) : '',
                             tobbVanHatra: i < fajlok.length - 1,
                         });
                         if (!valasz) {
@@ -405,13 +405,13 @@ async function feltoltKepek(event) {
                         kivagas = valasz.kivagas;
                         mindKozepre = !!valasz.mindKozepre;
                     }
-                    allapotMutat(`${elotag}Tömörítés…`, null, null);
+                    allapotMutat(elotag + tr('compressing', 'Tömörítés…'), null, null);
                     tomoritett = await kepTomoritesKivagassal(kep, kivagas);
                 } finally {
                     forrasFelszabaditas(kep.forras);
                 }
                 const { blob, kiterjesztes } = tomoritett;
-                allapotMutat(`${elotag}Feltöltés… (${Math.round(blob.size / 1024)} KB)`, null, blob);
+                allapotMutat(elotag + tr('uploading_kb', 'Feltöltés… ({kb} KB)', { kb: Math.round(blob.size / 1024) }), null, blob);
 
                 const eleresiUt = `${csoport.id}/${crypto.randomUUID()}.${kiterjesztes}`;
                 const { error } = await client.storage.from(BUCKET).upload(eleresiUt, blob, {
@@ -425,7 +425,7 @@ async function feltoltKepek(event) {
                         const frissKorlat = await lekerKepKorlat();
                         if (frissKorlat !== null && kepek.length + sikeres >= frissKorlat) throw new KepHiba(KORLAT_UZENET);
                     }
-                    throw new KepHiba(`A feltöltés nem sikerült: ${error.message}`);
+                    throw new KepHiba(tr('err_upload_msg', 'A feltöltés nem sikerült: {msg}', { msg: error.message }));
                 }
 
                 // A sor rögzítése a kepek táblában (FELADAT9); két sikertelen próba után a fájlt
@@ -440,12 +440,12 @@ async function feltoltKepek(event) {
                     console.error('A kepek sor beszúrása másodszorra sem sikerült, a fájl törlése:', sorHiba);
                     const { error: takaritasHiba } = await client.storage.from(BUCKET).remove([eleresiUt]);
                     if (takaritasHiba) console.error('A gazdátlanul maradt fájl törlése is sikertelen:', takaritasHiba, eleresiUt);
-                    throw new KepHiba('A feltöltés nem fejeződött be rendesen, kérlek próbáld újra.');
+                    throw new KepHiba(tr('err_upload_incomplete', 'A feltöltés nem fejeződött be rendesen, kérlek próbáld újra.'));
                 }
                 sikeres++;
             } catch (err) {
                 console.error('Feltöltési hiba:', err, { tipus: fajl.type, nev: fajl.name, meret: fajl.size });
-                const uzenet = err instanceof KepHiba ? err.message : 'Váratlan hiba történt a kép feldolgozásakor.';
+                const uzenet = err instanceof KepHiba ? err.message : tr('err_image_process', 'Váratlan hiba történt a kép feldolgozásakor.');
                 utolsoHiba = `${fajl.name}: ${uzenet}`;
                 allapotMutat(utolsoHiba, 'hiba', null);
                 if (uzenet === KORLAT_UZENET) break;
@@ -453,21 +453,21 @@ async function feltoltKepek(event) {
         }
     } catch (err) {
         console.error('A tömörítő nem tölthető be:', err);
-        utolsoHiba = 'A képfeltöltés most nem érhető el, próbáld újra később.';
+        utolsoHiba = tr('err_upload_unavailable', 'A képfeltöltés most nem érhető el, próbáld újra később.');
     } finally {
         funkcioGombTiltas(gomb, 'funkcio_kepfeltoltes'); // visszaengedélyezés (ha a funkció be van kapcsolva)
         gomb.removeAttribute('aria-busy');
     }
 
     if (utolsoHiba) {
-        allapotMutat(`${sikeres > 0 ? `${sikeres} kép feltöltve. ` : ''}${utolsoHiba}`, 'hiba', null);
+        allapotMutat((sikeres > 0 ? tr('n_uploaded', '{n} kép feltöltve.', { n: sikeres }) + ' ' : '') + utolsoHiba, 'hiba', null);
         allapotRejtesKesobb(10000);
     } else if (sikeres === 0) {
-        allapotMutat('Nem töltöttél fel képet.', null, null);
+        allapotMutat(tr('none_uploaded', 'Nem töltöttél fel képet.'), null, null);
         allapotRejtesKesobb(3000);
     } else {
-        const kihagyva = kihagyott > 0 ? ` (${kihagyott} kihagyva)` : '';
-        allapotMutat(sikeres > 1 ? `${sikeres} kép feltöltve.${kihagyva}` : `Kép feltöltve.${kihagyva}`, 'ok', null);
+        const kihagyva = kihagyott > 0 ? ' ' + tr('n_skipped', '({n} kihagyva)', { n: kihagyott }) : '';
+        allapotMutat((sikeres > 1 ? tr('n_uploaded', '{n} kép feltöltve.', { n: sikeres }) : tr('one_uploaded', 'Kép feltöltve.')) + kihagyva, 'ok', null);
         allapotRejtesKesobb(3000);
     }
 

@@ -8,7 +8,7 @@
 import { ready, getState, onChange, oldalEngedelyezett } from '../hitelesites.js';
 
 const UZENET_KULCS = 'goats_oldal_uzenet';
-export const NEM_ELERHETO_SZOVEG = 'Ez az oldal jelenleg nem elérhető.';
+export const NEM_ELERHETO_SZOVEG = tr('page_unavailable', 'Ez az oldal jelenleg nem elérhető.');
 
 function ellenorzes() {
     const oldal = document.body?.dataset.oldal;
@@ -39,7 +39,7 @@ function uzenetMegjelenites() {
     const bezar = document.createElement('button');
     bezar.type = 'button';
     bezar.className = 'oldal-uzenet-bezar';
-    bezar.setAttribute('aria-label', 'Üzenet bezárása');
+    bezar.setAttribute('aria-label', tr('close_message', 'Üzenet bezárása'));
     bezar.textContent = '×';
     bezar.addEventListener('click', () => sav.remove());
     sav.appendChild(bezar);

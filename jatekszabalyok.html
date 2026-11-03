@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ATG - Játékszabályok</title>
+    <title data-i18n="title_rules">ATG - Játékszabályok</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/pages/jatekszabalyok.css">
@@ -13,11 +13,11 @@
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
+    <script src="js/segedek/nyelv.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/pages/jatekszabalyok.js"></script>
-    <script src="js/segedek/nyelv.js" defer></script>
 </head>
 
 <body data-oldal="jatekszabalyok">
@@ -40,7 +40,7 @@
     <!-- Szerkesztő modal: új játék felvétele / saját játék szerkesztése -->
     <div id="jatek-szerkeszto-modal" class="sm-overlay" hidden>
         <div class="sm-card jatek-szerkeszto-kartya">
-            <button type="button" id="jatek-szerkeszto-bezar" class="sm-close-btn" aria-label="Bezárás">&times;</button>
+            <button type="button" id="jatek-szerkeszto-bezar" class="sm-close-btn" aria-label="Bezárás" data-i18n-attr="aria-label:close">&times;</button>
             <div class="sm-header">
                 <h3 id="jatek-szerkeszto-cim" data-i18n="new_game_modal">Új játék</h3>
             </div>
@@ -85,7 +85,7 @@
     <!-- Részletek modal -->
     <div id="jatek-reszletek-modal" class="sm-overlay" hidden>
         <div class="sm-card jatek-reszletek-kartya">
-            <button type="button" id="jatek-reszletek-bezar" class="sm-close-btn" aria-label="Bezárás">&times;</button>
+            <button type="button" id="jatek-reszletek-bezar" class="sm-close-btn" aria-label="Bezárás" data-i18n-attr="aria-label:close">&times;</button>
             <div class="sm-header">
                 <h3 id="jatek-reszletek-cim"></h3>
             </div>
@@ -126,7 +126,7 @@
     <!-- Szabályok modal -->
     <div id="jatek-szabalyok-modal" class="sm-overlay" hidden>
         <div class="sm-card jatek-szabalyok-kartya">
-            <button type="button" id="jatek-szabalyok-bezar" class="sm-close-btn" aria-label="Bezárás">&times;</button>
+            <button type="button" id="jatek-szabalyok-bezar" class="sm-close-btn" aria-label="Bezárás" data-i18n-attr="aria-label:close">&times;</button>
             <div class="sm-header">
                 <h3 id="jatek-szabalyok-modal-cim" data-i18n="rules_title">Szabályok</h3>
                 <span id="jatek-lepeso-szamlalo" class="jatek-lepeso-szamlalo"></span>
@@ -134,9 +134,9 @@
             <div class="sm-body">
                 <div id="jatek-lepeso-kartya" class="jatek-lepeso-kartya"></div>
                 <div class="jatek-lepeso-navigacio">
-                    <button type="button" id="jatek-lepeso-vissza" class="jatek-lepeso-nyil jatek-lepeso-nyil-balra" aria-label="Előző szakasz"></button>
+                    <button type="button" id="jatek-lepeso-vissza" class="jatek-lepeso-nyil jatek-lepeso-nyil-balra" aria-label="Előző szakasz" data-i18n-attr="aria-label:previous_section"></button>
                     <div id="jatek-lepeso-pontok" class="jatek-lepeso-pontok"></div>
-                    <button type="button" id="jatek-lepeso-elore" class="jatek-lepeso-nyil jatek-lepeso-nyil-jobbra" aria-label="Következő szakasz"></button>
+                    <button type="button" id="jatek-lepeso-elore" class="jatek-lepeso-nyil jatek-lepeso-nyil-jobbra" aria-label="Következő szakasz" data-i18n-attr="aria-label:next_section"></button>
                 </div>
             </div>
         </div>

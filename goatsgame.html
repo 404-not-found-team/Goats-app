@@ -14,12 +14,12 @@
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
+    <script src="js/segedek/nyelv.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 
     <script type="module" src="js/main.js"></script>
     <script src="js/segedek/szin-osztaly.js"></script>
     <script src="js/pages/goatsgame.js"></script>
-    <script src="js/segedek/nyelv.js" defer></script>
 </head>
 
 <body data-oldal="goatsgame">
@@ -55,12 +55,12 @@
         <div class="goatsgame-modal-card">
             <div class="goatsgame-modal-header">
                 <h3 data-i18n="add_new_game_modal_title">Új játék hozzáadása</h3>
-                <button type="button" aria-label="Bezárás" class="goatsgame-modal-close" onclick="closeUjJatekModal()">&times;</button>
+                <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close" class="goatsgame-modal-close" onclick="closeUjJatekModal()">&times;</button>
             </div>
             <div class="goatsgame-modal-body">
                 <div class="input-group">
                     <label for="ujJatekNevInput" data-i18n="game_name">Játék neve:</label>
-                    <input type="text" id="ujJatekNevInput" class="goats-input" maxlength="40" placeholder="Pl.: Csocsó, Darts..." />
+                    <input type="text" id="ujJatekNevInput" class="goats-input" maxlength="40" placeholder="Pl.: Csocsó, Darts..." data-i18n-attr="placeholder:game_name_ph" />
                 </div>
                 <div class="input-group">
                     <label for="ujJatekSzinInput" data-i18n="column_color">Oszlop színe:</label>

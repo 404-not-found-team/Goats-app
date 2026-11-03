@@ -41,7 +41,7 @@ async function loadTervek(elsoBetoltes = false) {
 // A tag neve az azonosítója alapján (a csoporttagok listájából, amit az auth-service már betöltött)
 function tagNevId(userId) {
     const tag = window.goatsAuth?.getState()?.members?.find(m => m.user_id === userId);
-    return tag ? tag.display_name : 'Törölt tag';
+    return tag ? tag.display_name : tr('deleted_member', 'Törölt tag');
 }
 
 async function add() {
@@ -81,7 +81,7 @@ async function deleteTerv(id) {
 
     if (error) {
         console.error('Hiba a törléskor:', error);
-        alert('Hiba történt a törlés során!');
+        alert(tr('err_deleting', 'Hiba történt a törlés során!'));
         return;
     }
 
@@ -110,8 +110,8 @@ function renderTervItem(id, text, isCompleted, felvetteId, createdAt) {
     if (felvetteId) {
         const meta = document.createElement('div');
         meta.className = 'meta-szoveg';
-        const mikor = createdAt ? ' · ' + new Date(createdAt).toLocaleDateString('hu-HU') : '';
-        meta.textContent = `Felvette: ${tagNevId(felvetteId)}${mikor}`;
+        const mikor = createdAt ? ' · ' + new Date(createdAt).toLocaleDateString(goatsNyelv.locale()) : '';
+        meta.textContent = tr('added_by', 'Felvette: {who}', { who: tagNevId(felvetteId) }) + mikor;
         szovegSor.appendChild(meta);
     }
 
@@ -119,7 +119,7 @@ function renderTervItem(id, text, isCompleted, felvetteId, createdAt) {
     const deleteSpan = document.createElement('span');
     deleteSpan.textContent = '🗑️';
     deleteSpan.className = 'delete-btn';
-    deleteSpan.title = 'Törlés';
+    deleteSpan.title = tr('delete', 'Törlés');
     deleteSpan.addEventListener('click', function(e) {
         e.stopPropagation();
         deleteTerv(id);

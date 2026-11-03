@@ -72,10 +72,10 @@ function uresAllapot(lathato) {
         ikon.textContent = '🖼️';
         const cim = document.createElement('p');
         cim.className = 'ures-cim';
-        cim.textContent = 'Még nincsenek képek';
+        cim.textContent = tr('no_pictures_yet', 'Még nincsenek képek');
         const leiras = document.createElement('span');
         leiras.className = 'ures-leiras';
-        leiras.textContent = 'Képet a Képek oldalon tölthetsz fel.';
+        leiras.textContent = tr('upload_on_pictures_page', 'Képet a Képek oldalon tölthetsz fel.');
         placeholder.append(ikon, cim, leiras);
     }
 }
