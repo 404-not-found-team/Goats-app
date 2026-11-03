@@ -48,6 +48,7 @@ const ELOGYORSITOTT = [
     'js/elemek/beallitasok/csoport-adatok.js',
     'js/elemek/beallitasok/profil-modal.js',
     'js/elemek/beallitasok/tema-valaszto.js',
+    'js/elemek/beallitasok/nyelv-valaszto.js',
     'js/elemek/beallitasok/tos-ujraelfogadas.js',
     'js/elemek/galeria.js',
     'js/elemek/kep-kivago.js',
@@ -87,6 +88,8 @@ const ELOGYORSITOTT = [
     'js/supabase-client.js',
     'manifest.json',
     'img/icon-192.png',
+    'nyelvek/en.json',
+    'nyelvek/hu.json',
     'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
 ];

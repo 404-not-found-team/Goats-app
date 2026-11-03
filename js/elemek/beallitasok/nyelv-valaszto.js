@@ -43,7 +43,7 @@ export function initLangPicker() {
     document.addEventListener('click', () => langDropdown?.classList.remove('open'));
 }
 
-let aktualisNyelv = 'hu';
+let aktualisNyelv;
 
 async function nyelvetValt(nyelvKod) {
     try {
@@ -65,8 +65,8 @@ async function nyelvetValt(nyelvKod) {
         const { data: { user } } = await window._supabase.auth.getUser();
         const currentUserId = user ? user.id : null;
 
-        if (window.supabaseClient && currentUserId) {
-            const { error } = await window.supabaseClient
+        if (window._supabase && currentUserId) {
+            const { error } = await window._supabase
                 .from('profiles')
                 .update({ language: nyelvKod })
                 .eq('id', currentUserId);
@@ -82,12 +82,12 @@ async function nyelvetValt(nyelvKod) {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-    if (window.supabaseClient) {
+    if (window._supabase) {
         const { data: { user } } = await window._supabase.auth.getUser();
         const currentUserId = user ? user.id : null;
 
         if (currentUserId) {
-            const { data, error } = await window.supabaseClient
+            const { data, error } = await window._supabase
                 .from('profiles')
                 .select('language')
                 .eq('id', currentUserId)
@@ -100,5 +100,4 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    nyelvetValt('hu');
 });
