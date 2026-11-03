@@ -12,7 +12,7 @@ export function initThemePicker() {
     { id: 'cyberpunk', name: 'Neon' }
   ];
 
-  const currentTheme = localStorage.getItem('goats_theme') || 'dark';
+  const currentTheme = localStorage.getItem('goats_theme') || 'discord-purple';
   const foundTheme = themes.find(t => t.id === currentTheme);
   if (themeSelectedText && foundTheme) themeSelectedText.textContent = foundTheme.name;
 

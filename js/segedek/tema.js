@@ -1,4 +1,4 @@
-const savedTheme = localStorage.getItem('goats_theme') || 'dark';
+const savedTheme = localStorage.getItem('goats_theme') || 'discord-purple';
 document.documentElement.setAttribute('data-theme', savedTheme);
 
 function setTheme(themeName) {

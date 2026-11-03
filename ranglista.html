@@ -33,8 +33,8 @@
     <div class="fejlec-gombok-tarolo">
         <h1 data-i18n="drink_tierlist">Ital ranglista</h1>
         <div class="fejlec-gombok">
-            <button id="szuro-gomb" onclick="nyisdSzuroModal()" class="gomb-szuro" data-i18n="filters">🔍 Szűrők</button>
-            <button id="uj-ital-gomb" onclick="nyisdUjItalModal()" class="gomb-uj-ital" data-i18n="add_new_drink">➕ Új ital hozzáadása</button>
+            <button id="szuro-gomb" onclick="nyisdSzuroModal()" class="gomb-szuro" data-i18n="filters">Szűrők</button>
+            <button id="uj-ital-gomb" onclick="nyisdUjItalModal()" class="gomb-uj-ital" data-i18n="add_new_drink">Új ital hozzáadása</button>
         </div>
     </div>
 
@@ -85,7 +85,7 @@
                 <button id="elmegy" class="gombok dark" onclick="kategoriatValaszt('B')">B</button>
                 <button id="soha" class="gombok dark" onclick="kategoriatValaszt('C')">C</button>
                 <button id="megjobbansoha" class="gombok dark" onclick="kategoriatValaszt('D')">D</button>
-                <button id="forras" class="gombok" onclick="kategoriatValaszt('forras')" data-i18n="return">Vissza</button>
+                <button id="forras" class="gombok" onclick="kategoriatValaszt('forras')" data-i18n="return">Forrás</button>
             </div>
         </div>
     </div>
@@ -204,7 +204,7 @@
 
     <div id="szuro-modal" class="modal-hatter-ui" hidden>
         <div class="modal-doboz-ui szuro-modal-doboz" role="dialog" aria-modal="true" aria-labelledby="szuro-modal-cim">
-            <h3 id="szuro-modal-cim" class="szuro-modal-cim" data-i18n="tierlist_filters">🔍 Ranglista szűrők</h3>
+            <h3 id="szuro-modal-cim" class="szuro-modal-cim" data-i18n="tierlist_filters">Ranglista szűrők</h3>
 
             <div class="szuro-fulek" role="tablist">
                 <button type="button" id="szuro-ful-sajat" class="szuro-ful aktiv" role="tab" aria-selected="true"
@@ -218,7 +218,7 @@
                 <p class="szuro-leiras" data-i18n="filter_own_desc">Csak neked és csak most: újratöltéskor visszaáll a csoport beállítására.</p>
                 <div id="sajat-szuro-kategoriak" class="szuro-kategoria-lista"></div>
 
-                <label class="sm-label szuro-label szuro-label-top" for="kizart-kulcsszo-input" data-i18n="hide_brand_name">🚫 Márka / név elrejtése:</label>
+                <label class="sm-label szuro-label szuro-label-top" for="kizart-kulcsszo-input" data-i18n="hide_brand_name">Márka / név elrejtése:</label>
                 <div class="szuro-input-sor">
                     <input type="text" id="kizart-kulcsszo-input" class="sm-input szuro-input" placeholder="Pl. Royal" data-i18n-attr="placeholder:hide_brand_ph"
                         maxlength="40">
