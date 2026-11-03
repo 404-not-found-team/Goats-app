@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; worker-src 'self' blob:; style-src 'self'; style-src-attr 'none'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://bvositlxbeqztnhdembx.supabase.co wss://bvositlxbeqztnhdembx.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title data-i18n="title_rules">ATG - Játékszabályok</title>
     <link rel="manifest" href="manifest.json">
@@ -11,10 +12,9 @@
     <link rel="stylesheet" href="css/pages/jatekszabalyok.css">
 
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
     <script src="js/segedek/nyelv.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
+    <script src="js/kulso/supabase-js-2.117.2.js"></script>
 
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/pages/jatekszabalyok.js"></script>

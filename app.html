@@ -3,18 +3,19 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; worker-src 'self' blob:; style-src 'self'; style-src-attr 'none'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://bvositlxbeqztnhdembx.supabase.co wss://bvositlxbeqztnhdembx.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ATG</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/kulso/fontawesome-6.5.1/css/fontawesome.min.css">
+    <link rel="stylesheet" href="css/kulso/fontawesome-6.5.1/css/solid.min.css">
     <link rel="stylesheet" href="css/main.css">
 
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
     <script src="js/segedek/nyelv.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
+    <script src="js/kulso/supabase-js-2.117.2.js"></script>
 
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/pages/app-orzo.js"></script>
@@ -22,6 +23,7 @@
     <script src="js/segedek/csoport-kod.js"></script>
     <script defer src="js/elemek/galeria.js"></script>
     <script defer src="js/elemek/naptar.js"></script>
+    <script src="js/segedek/html-esemenyek.js" defer></script>
 </head>
 
 <body>
@@ -32,13 +34,13 @@
         <div class="kepek">
             <!-- Feltöltés, törlés, jelentés: a Képek oldalon (csak ha a csoportnál engedélyezett) -->
             <a href="kepek.html" id="osszesKepLink" class="galeria-osszes-link" hidden data-i18n="all_picture">Összes kép &rarr;</a>
-            <i class="fa-solid fa-caret-left nyil" onclick="eloKep()"></i>
+            <i class="fa-solid fa-caret-left nyil" data-katt="eloKep"></i>
 
             <img id="kepBal" class="galeria-kep hatrebb" alt="Előző kép" width="120" height="120" loading="lazy" decoding="async">
             <img id="kepKozep" class="galeria-kep" alt="Aktuális kép" width="180" height="180" loading="lazy" decoding="async">
             <img id="kepJobb" class="galeria-kep hatrebb" alt="Következő kép" width="120" height="120" loading="lazy" decoding="async">
 
-            <i class="fa-solid fa-caret-right nyil" onclick="kovKep()"></i>
+            <i class="fa-solid fa-caret-right nyil" data-katt="kovKep"></i>
 
             <div id="galeria-placeholder" class="galeria-ures" hidden></div>
         </div>
@@ -112,15 +114,7 @@
             </div>
         </div>
     </div>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('Service Worker sikeresen betöltve!', reg))
-                    .catch(err => console.error('Service Worker hiba:', err));
-            });
-        }
-    </script>
+    <script src="js/segedek/sw-regisztracio.js" defer></script>
 </body>
 
 </html>

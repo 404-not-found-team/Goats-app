@@ -62,7 +62,7 @@ function kirajzolasLista() {
                 ${jatek.publikus ? `<span class="jatek-badge jatek-badge-publikus">${tr('public', 'Publikus')}</span>` : ''}
             </div>
             ${jatek.leiras ? `<p class="jatek-kartya-leiras">${esc(jatek.leiras)}</p>` : ''}
-            ${jatek.min_jatekosok ? `<div class="jatek-kartya-meta"><span>👥 ${tr('min_players_n', 'min. {n} fő', { n: jatek.min_jatekosok })}</span></div>` : ''}
+            ${jatek.min_jatekosok ? `<div class="jatek-kartya-meta"><span>👥 ${tr('min_players_n', 'min. {n} fő', { n: esc(jatek.min_jatekosok) })}</span></div>` : ''}
         `;
         kartya.addEventListener('click', () => megnyitasReszletek(jatek));
         lista.appendChild(kartya);
@@ -107,7 +107,7 @@ function kirajzolasReszletek() {
 
     const infok = document.getElementById('jatek-reszletek-infok');
     infok.innerHTML = '';
-    if (jatek.min_jatekosok) infok.insertAdjacentHTML('beforeend', `<span>👥 ${tr('min_players_n', 'min. {n} fő', { n: jatek.min_jatekosok })}</span>`);
+    if (jatek.min_jatekosok) infok.insertAdjacentHTML('beforeend', `<span>👥 ${tr('min_players_n', 'min. {n} fő', { n: esc(jatek.min_jatekosok) })}</span>`);
     if (jatek.eszkozok) infok.insertAdjacentHTML('beforeend', `<span>🧰 ${esc(jatek.eszkozok)}</span>`);
 
     document.getElementById('jatek-sajat-muveletek').hidden = !sajat;
@@ -128,7 +128,7 @@ function kirajzolasReszletek() {
             <p>${esc(j.szoveg)}</p>
             ${j.elfogadva
             ? `<span class="jatek-badge jatek-badge-publikus">✓ ${tr('accepted', 'Elfogadva')}</span>`
-            : (sajat ? `<button type="button" class="jatek-javaslat-elfogad-gomb" data-id="${j.id}">${tr('accept', 'Elfogadás')}</button>` : `<span class="jatek-badge">${tr('awaiting_decision', 'Döntésre vár')}</span>`)}
+            : (sajat ? `<button type="button" class="jatek-javaslat-elfogad-gomb" data-id="${esc(j.id)}">${tr('accept', 'Elfogadás')}</button>` : `<span class="jatek-badge">${tr('awaiting_decision', 'Döntésre vár')}</span>`)}
         </div>
     `).join('') || `<p class="jatek-ures-reszletek">${tr('no_proposals_yet', 'Még nincs beküldött javaslat.')}</p>`;
 

@@ -20,7 +20,8 @@ const MIN_MINOSEG = 0.4;
 const MINOSEG_LEPES = 0.05;
 const MERET_LEPES = 0.9;
 
-const HEIC_FALLBACK_URL = 'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
+// saját tárhelyről (js/kulso/), nem CDN-ről: így a CSP script-src 'self' marad
+const HEIC_FALLBACK_URL = 'js/kulso/heic2any-0.0.4.min.js';
 
 // Felhasználónak szóló hiba (a hívó a message-et mutatja)
 export class KepHiba extends Error {}

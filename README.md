@@ -86,7 +86,10 @@ Az **ATG – All-Time Greats** (korábbi nevén Goats App) egy reszponzív webes
 ## 🛠️ Technológiai stack
 
 * **Frontend:**
-  - HTML5 / CSS3 (reszponzív, CSP-vel védett — nincs inline stílus)
+  - HTML5 / CSS3 (reszponzív, CSP-vel védett — nincs inline stílus, inline script és inline eseménykezelő sem;
+    a HTML-ből kötött kezelők `data-katt` / `data-valtozas` / `data-bevitel` attribútummal mennek, lásd `js/segedek/html-esemenyek.js`)
+  - Külső könyvtárak saját tárhelyről (`js/kulso/`, `css/kulso/`): supabase-js 2.117.2, heic2any 0.0.4, Font Awesome 6.5.1 (solid); CDN-ről semmi nem töltődik.
+    A CSP `script-src 'self'`; kivétel a `kepek.html` `'unsafe-eval'`-ja, mert a HEIC-átalakító `new Function()`-t használ.
   - Vanilla JavaScript (ES6+ modulok a keretrendszerhez, klasszikus scriptek az egyes oldalaknál)
 * **Backend & adatbázis:**
   - Supabase: Postgres adatbázis row-level security policy-kkal, `SECURITY DEFINER` RPC-k az összetettebb/jogosultság-érzékeny műveletekhez, Supabase Storage a galéria képeihez, Supabase Auth (Google OAuth) a bejelentkezéshez.
@@ -186,7 +189,7 @@ Az alkategória-szabály és a zero felismerése egy helyen van: `js/segedek/ita
 ## 📲 PWA támogatás
 Az alkalmazás telepíthető asztali és mobil böngészőkből is ("Telepítés" / "Hozzáadás a kezdőképernyőhöz").
 - A `sw.js` előgyorsítótárazza az alkalmazás vázát (a bejelentkezési és a legfontosabb belépési fájlokat), hogy az első/ismételt betöltés gyors legyen, és navigációnál 2 másodperces hálózati időkorlát után a gyorsítótárra vált.
-- A saját domain és a CDN-es (jsDelivr, cdnjs) statikus fájlok "stale-while-revalidate" stratégiával töltődnek: azonnal a gyorsítótárból, a háttérben frissülve.
+- A saját domain statikus fájljai "stale-while-revalidate" stratégiával töltődnek: azonnal a gyorsítótárból, a háttérben frissülve.
 - A Supabase API- és Storage-kéréseket a service worker sosem gyorsítótárazza (ezek mindig frissek/felhasználó-specifikusak kell legyenek). A galériaképeket külön, a [Képek](#️-képek) szakaszban leírt helyi gyorsítótár tárolja.
 - **Verziózás:** lásd a [Mappa- és fájlszerkezet](#-mappa--és-fájlszerkezet) szakasz alján.
 
