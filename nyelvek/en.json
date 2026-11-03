@@ -595,5 +595,6 @@
     "crop_preview": "Crop preview. Move it with the arrow keys, zoom with the plus and minus keys.",
     "zoom": "Zoom",
     "legal_contact_prefix": "For legal questions, write to",
-    "legal_contact_suffix": "."
+    "legal_contact_suffix": ".",
+    "lang_auto": "Automatic ({lang})"
 }
