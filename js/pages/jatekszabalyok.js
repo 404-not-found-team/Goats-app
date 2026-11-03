@@ -57,12 +57,12 @@ function kirajzolasLista() {
                 <span class="jatek-kartya-ikon">🎲</span>
                 <div class="jatek-kartya-fejlec-szoveg">
                     <span class="jatek-kartya-cim">${esc(jatek.cim)}</span>
-                    <span class="jatek-kartya-csoport">${sajat ? 'Saját csoport' : `Megosztotta: ${esc(jatek.csoport_nev || 'másik csoport')}`}</span>
+                    <span class="jatek-kartya-csoport">${sajat ? tr('own_group', 'Saját csoport') : tr('shared_by', 'Megosztotta: {group}', { group: esc(jatek.csoport_nev || tr('other_group', 'másik csoport')) })}</span>
                 </div>
-                ${jatek.publikus ? '<span class="jatek-badge jatek-badge-publikus">Publikus</span>' : ''}
+                ${jatek.publikus ? `<span class="jatek-badge jatek-badge-publikus">${tr('public', 'Publikus')}</span>` : ''}
             </div>
             ${jatek.leiras ? `<p class="jatek-kartya-leiras">${esc(jatek.leiras)}</p>` : ''}
-            ${jatek.min_jatekosok ? `<div class="jatek-kartya-meta"><span>👥 min. ${jatek.min_jatekosok} fő</span></div>` : ''}
+            ${jatek.min_jatekosok ? `<div class="jatek-kartya-meta"><span>👥 ${tr('min_players_n', 'min. {n} fő', { n: jatek.min_jatekosok })}</span></div>` : ''}
         `;
         kartya.addEventListener('click', () => megnyitasReszletek(jatek));
         lista.appendChild(kartya);
@@ -101,13 +101,13 @@ function kirajzolasReszletek() {
     leirasEl.hidden = !jatek.leiras;
 
     document.getElementById('jatek-reszletek-badge-sor').innerHTML = `
-        ${jatek.publikus ? '<span class="jatek-badge jatek-badge-publikus">Publikus</span>' : '<span class="jatek-badge">Csak a csoportnak</span>'}
-        <span class="jatek-badge jatek-badge-csoport">${sajat ? 'Saját csoport' : `Megosztotta: ${esc(jatek.csoport_nev || 'másik csoport')}`}</span>
+        ${jatek.publikus ? `<span class="jatek-badge jatek-badge-publikus">${tr('public', 'Publikus')}</span>` : `<span class="jatek-badge">${tr('group_only', 'Csak a csoportnak')}</span>`}
+        <span class="jatek-badge jatek-badge-csoport">${sajat ? tr('own_group', 'Saját csoport') : tr('shared_by', 'Megosztotta: {group}', { group: esc(jatek.csoport_nev || tr('other_group', 'másik csoport')) })}</span>
     `;
 
     const infok = document.getElementById('jatek-reszletek-infok');
     infok.innerHTML = '';
-    if (jatek.min_jatekosok) infok.insertAdjacentHTML('beforeend', `<span>👥 min. ${jatek.min_jatekosok} fő</span>`);
+    if (jatek.min_jatekosok) infok.insertAdjacentHTML('beforeend', `<span>👥 ${tr('min_players_n', 'min. {n} fő', { n: jatek.min_jatekosok })}</span>`);
     if (jatek.eszkozok) infok.insertAdjacentHTML('beforeend', `<span>🧰 ${esc(jatek.eszkozok)}</span>`);
 
     document.getElementById('jatek-sajat-muveletek').hidden = !sajat;
@@ -116,21 +116,21 @@ function kirajzolasReszletek() {
     document.getElementById('jatek-lepesek-ures').hidden = vanLepes;
     const szabalyokGomb = document.getElementById('jatek-szabalyok-mutat-gomb');
     szabalyokGomb.hidden = !vanLepes;
-    if (vanLepes) szabalyokGomb.textContent = `📜 Szabályok megtekintése (${aktivLepesek.length})`;
+    if (vanLepes) szabalyokGomb.textContent = `📜 ${tr('view_rules_n', 'Szabályok megtekintése ({n})', { n: aktivLepesek.length })}`;
 
     const javaslatLista = document.getElementById('jatek-javaslatok-lista');
     javaslatLista.innerHTML = aktivJavaslatok.map(j => `
         <div class="jatek-javaslat ${j.elfogadva ? 'jatek-javaslat-elfogadva' : ''}">
             <div class="jatek-javaslat-fejlec">
                 <strong>${esc(j.cim)}</strong>
-                <span class="jatek-javaslat-csoport">${esc(j.csoport_nev || 'ismeretlen csoport')}</span>
+                <span class="jatek-javaslat-csoport">${esc(j.csoport_nev || tr('unknown_group', 'ismeretlen csoport'))}</span>
             </div>
             <p>${esc(j.szoveg)}</p>
             ${j.elfogadva
-            ? '<span class="jatek-badge jatek-badge-publikus">✓ Elfogadva</span>'
-            : (sajat ? `<button type="button" class="jatek-javaslat-elfogad-gomb" data-id="${j.id}">Elfogadás</button>` : '<span class="jatek-badge">Döntésre vár</span>')}
+            ? `<span class="jatek-badge jatek-badge-publikus">✓ ${tr('accepted', 'Elfogadva')}</span>`
+            : (sajat ? `<button type="button" class="jatek-javaslat-elfogad-gomb" data-id="${j.id}">${tr('accept', 'Elfogadás')}</button>` : `<span class="jatek-badge">${tr('awaiting_decision', 'Döntésre vár')}</span>`)}
         </div>
-    `).join('') || '<p class="jatek-ures-reszletek">Még nincs beküldött javaslat.</p>';
+    `).join('') || `<p class="jatek-ures-reszletek">${tr('no_proposals_yet', 'Még nincs beküldött javaslat.')}</p>`;
 
     javaslatLista.querySelectorAll('.jatek-javaslat-elfogad-gomb').forEach(btn => {
         btn.addEventListener('click', () => javaslatElfogadasa(btn.dataset.id));
@@ -203,7 +203,7 @@ function kirajzolasLepeso() {
 
     const pontok = document.getElementById('jatek-lepeso-pontok');
     pontok.innerHTML = aktivLepesek.map((_, i) => `
-        <button type="button" class="jatek-lepeso-pont${i === aktivLepesIndex ? ' aktiv' : ''}" data-i="${i}" aria-label="Ugrás a(z) ${i + 1}. szakaszra"></button>
+        <button type="button" class="jatek-lepeso-pont${i === aktivLepesIndex ? ' aktiv' : ''}" data-i="${i}" aria-label="${tr('go_to_section', 'Ugrás a(z) {n}. szakaszra', { n: i + 1 })}"></button>
     `).join('');
     pontok.querySelectorAll('.jatek-lepeso-pont').forEach(p => {
         p.addEventListener('click', () => { aktivLepesIndex = Number(p.dataset.i); kirajzolasLepeso(); });
@@ -214,7 +214,7 @@ function kirajzolasLepeso() {
 }
 
 function szabalyokMegnyitasa() {
-    document.getElementById('jatek-szabalyok-modal-cim').textContent = aktivJatek ? `📜 ${aktivJatek.cim}` : 'Szabályok';
+    document.getElementById('jatek-szabalyok-modal-cim').textContent = aktivJatek ? `📜 ${aktivJatek.cim}` : tr('rules', 'Szabályok');
     aktivLepesIndex = 0;
     kirajzolasLepeso();
     document.getElementById('jatek-reszletek-modal').hidden = true;
@@ -248,17 +248,17 @@ function ujLepesSorHozzaadasa(cim = '', szoveg = '') {
     sor.className = 'jatek-lepes-szerkeszto-sor';
     sor.innerHTML = `
         <div class="jatek-lepes-szerkeszto-fejlec">
-            <input type="text" class="floating-input jatek-lepes-cim-input" maxlength="80" placeholder="Szakasz címe (opcionális)">
+            <input type="text" class="floating-input jatek-lepes-cim-input" maxlength="80" placeholder="${tr('section_title_optional', 'Szakasz címe (opcionális)')}">
             <div class="jatek-lepes-szerkeszto-gombok">
-                <button type="button" class="jatek-lepes-mozgat-gomb" data-irany="fel" aria-label="Szakasz feljebb">▲</button>
-                <button type="button" class="jatek-lepes-mozgat-gomb" data-irany="le" aria-label="Szakasz lejjebb">▼</button>
-                <button type="button" class="jatek-lepes-torles-gomb" aria-label="Szakasz törlése">🗑️</button>
+                <button type="button" class="jatek-lepes-mozgat-gomb" data-irany="fel" aria-label="${tr('section_up', 'Szakasz feljebb')}">▲</button>
+                <button type="button" class="jatek-lepes-mozgat-gomb" data-irany="le" aria-label="${tr('section_down', 'Szakasz lejjebb')}">▼</button>
+                <button type="button" class="jatek-lepes-torles-gomb" aria-label="${tr('section_delete', 'Szakasz törlése')}">🗑️</button>
             </div>
         </div>
-        <textarea class="floating-input jatek-lepes-szoveg-input" maxlength="2000" rows="2" placeholder="Szöveg / felvezető kérdés"></textarea>
+        <textarea class="floating-input jatek-lepes-szoveg-input" maxlength="2000" rows="2" placeholder="${tr('section_text_ph', 'Szöveg / felvezető kérdés')}"></textarea>
         <div class="jatek-lepes-kimenetek">
             <div class="jatek-lepes-kimenetek-lista"></div>
-            <button type="button" class="jatek-kimenet-uj-gomb">+ Kimenet hozzáadása</button>
+            <button type="button" class="jatek-kimenet-uj-gomb">+ ${tr('add_outcome', 'Kimenet hozzáadása')}</button>
         </div>
     `;
     sor.querySelector('.jatek-lepes-cim-input').value = cim;
@@ -280,9 +280,9 @@ function kimenetSorHozzaadasa(lista, feltetel = '', kovetkezmeny = '') {
     const sor = document.createElement('div');
     sor.className = 'jatek-kimenet-szerkeszto-sor';
     sor.innerHTML = `
-        <input type="text" class="jatek-kimenet-feltetel-input" maxlength="80" placeholder="Feltétel (pl. Helyes?)">
-        <input type="text" class="jatek-kimenet-kovetkezmeny-input" maxlength="300" placeholder="Következmény (pl. Szuper.)">
-        <button type="button" class="jatek-kimenet-torles-gomb" aria-label="Kimenet törlése">✕</button>
+        <input type="text" class="jatek-kimenet-feltetel-input" maxlength="80" placeholder="${tr('condition_ph', 'Feltétel (pl. Helyes?)')}">
+        <input type="text" class="jatek-kimenet-kovetkezmeny-input" maxlength="300" placeholder="${tr('consequence_ph', 'Következmény (pl. Szuper.)')}">
+        <button type="button" class="jatek-kimenet-torles-gomb" aria-label="${tr('outcome_delete', 'Kimenet törlése')}">✕</button>
     `;
     sor.querySelector('.jatek-kimenet-feltetel-input').value = feltetel;
     sor.querySelector('.jatek-kimenet-kovetkezmeny-input').value = kovetkezmeny;
@@ -312,7 +312,7 @@ function szerkesztoUrlapUrites() {
 function ujJatekModalMegnyitasa() {
     szerkesztettJatekId = null;
     szerkesztoUrlapUrites();
-    document.getElementById('jatek-szerkeszto-cim').textContent = 'Új játék';
+    document.getElementById('jatek-szerkeszto-cim').textContent = tr('new_game', 'Új játék');
     ujLepesSorHozzaadasa();
     document.getElementById('jatek-szerkeszto-modal').hidden = false;
 }
@@ -321,7 +321,7 @@ function szerkesztesModalMegnyitasa() {
     const jatek = aktivJatek;
     szerkesztettJatekId = jatek.id;
     szerkesztoUrlapUrites();
-    document.getElementById('jatek-szerkeszto-cim').textContent = 'Játék szerkesztése';
+    document.getElementById('jatek-szerkeszto-cim').textContent = tr('edit_game_title', 'Játék szerkesztése');
     document.getElementById('jatek-cim-input').value = jatek.cim || '';
     document.getElementById('jatek-leiras-input').value = jatek.leiras || '';
     document.getElementById('jatek-min-jatekosok-input').value = jatek.min_jatekosok || '';
@@ -354,7 +354,7 @@ async function jatekMentese() {
     const allapot = document.getElementById('jatek-szerkeszto-allapot');
     const cim = document.getElementById('jatek-cim-input').value.trim();
     if (cim.length < 2 || cim.length > 80) {
-        allapot.textContent = 'A játék neve 2–80 karakter legyen.';
+        allapot.textContent = tr('err_game_name_2_80', 'A játék neve 2–80 karakter legyen.');
         return;
     }
 
@@ -366,17 +366,17 @@ async function jatekMentese() {
     const lepesek = szerkesztoLepesekOsszegyujtese();
 
     if (lepesek.length === 0) {
-        allapot.textContent = 'Adj hozzá legalább egy szabály-szakaszt.';
+        allapot.textContent = tr('err_need_section', 'Adj hozzá legalább egy szabály-szakaszt.');
         return;
     }
 
     const sajatGroup = getState().group;
     if (!sajatGroup) {
-        allapot.textContent = 'Nincs csoportod, így nem menthetsz játékot.';
+        allapot.textContent = tr('err_no_group_game', 'Nincs csoportod, így nem menthetsz játékot.');
         return;
     }
 
-    allapot.textContent = 'Mentés...';
+    allapot.textContent = tr('saving', 'Mentés...');
 
     try {
         let jatekId = szerkesztettJatekId;
@@ -410,18 +410,18 @@ async function jatekMentese() {
         if (frissJatek) await megnyitasReszletek(frissJatek);
     } catch (err) {
         console.error('Hiba a játék mentésekor:', err);
-        allapot.textContent = 'Hiba történt a mentés során.';
+        allapot.textContent = tr('err_saving', 'Hiba történt a mentéskor!');
     }
 }
 
 async function jatekTorlese() {
     const jatek = aktivJatek;
-    if (!confirm(`Biztosan törlöd a "${jatek.cim}" játékot? Ez nem vonható vissza.`)) return;
+    if (!confirm(tr('confirm_delete_game_x', 'Biztosan törlöd a "{name}" játékot? Ez nem vonható vissza.', { name: jatek.cim }))) return;
 
     const { error } = await client.from('jatek_szabalyok').delete().eq('id', jatek.id);
     if (error) {
         console.error('Hiba a törléskor:', error);
-        alert('Hiba történt a törlés során.');
+        alert(tr('err_deleting', 'Hiba történt a törlés során!'));
         return;
     }
 
@@ -437,11 +437,11 @@ async function javaslatKuldese() {
     const cim = document.getElementById('jatek-javaslat-cim-input').value.trim();
     const szoveg = document.getElementById('jatek-javaslat-szoveg-input').value.trim();
 
-    if (cim.length < 2 || cim.length > 80) { alert('A javaslat címe 2–80 karakter legyen.'); return; }
-    if (szoveg.length === 0) { alert('Írd le a javaslatot.'); return; }
+    if (cim.length < 2 || cim.length > 80) { alert(tr('err_proposal_title', 'A javaslat címe 2–80 karakter legyen.')); return; }
+    if (szoveg.length === 0) { alert(tr('err_proposal_text', 'Írd le a javaslatot.')); return; }
 
     const sajatGroup = getState().group;
-    if (!sajatGroup) { alert('Nincs csoportod, így nem küldhetsz javaslatot.'); return; }
+    if (!sajatGroup) { alert(tr('err_no_group_proposal', 'Nincs csoportod, így nem küldhetsz javaslatot.')); return; }
 
     const { error } = await client.from('jatek_javaslatok').insert([{
         jatek_id: jatek.id,
@@ -452,7 +452,7 @@ async function javaslatKuldese() {
 
     if (error) {
         console.error('Hiba a javaslat küldésekor:', error);
-        alert('Hiba történt a javaslat küldésekor.');
+        alert(tr('err_proposal_send', 'Hiba történt a javaslat küldésekor.'));
         return;
     }
 
@@ -465,7 +465,7 @@ async function javaslatElfogadasa(javaslatId) {
         await megnyitasReszletek(aktivJatek);
     } catch (err) {
         console.error('Hiba a javaslat elfogadásakor:', err);
-        alert('Hiba történt az elfogadás során: ' + (err.message || err));
+        alert(tr('err_accept', 'Hiba történt az elfogadás során: {msg}', { msg: err.message || err }));
     }
 }
 

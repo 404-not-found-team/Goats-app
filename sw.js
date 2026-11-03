@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v41';
+const CACHE_NEV = 'goats-v44';
 
 // Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
 // indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
@@ -48,6 +48,7 @@ const ELOGYORSITOTT = [
     'js/elemek/beallitasok/csoport-adatok.js',
     'js/elemek/beallitasok/profil-modal.js',
     'js/elemek/beallitasok/tema-valaszto.js',
+    'js/elemek/beallitasok/nyelv-valaszto.js',
     'js/elemek/beallitasok/tos-ujraelfogadas.js',
     'js/elemek/galeria.js',
     'js/elemek/kep-kivago.js',
@@ -80,6 +81,7 @@ const ELOGYORSITOTT = [
     'js/segedek/keslelteto.js',
     'js/segedek/modal-fokusz.js',
     'js/segedek/oldal-orzo.js',
+    'js/segedek/nyelv.js',
     'js/segedek/oldalak.js',
     'js/segedek/szin-osztaly.js',
     'js/segedek/teljesitmeny.js',
@@ -87,6 +89,8 @@ const ELOGYORSITOTT = [
     'js/supabase-client.js',
     'manifest.json',
     'img/icon-192.png',
+    'nyelvek/en.json',
+    'nyelvek/hu.json',
     'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
 ];

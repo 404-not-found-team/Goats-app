@@ -17,8 +17,8 @@ const KAPCSOLOK = [
     // Beállítás (nem tiltás): alapból kikapcsolt, ezért nem kerül a "Jelenleg kikapcsolva" sorba
     {
         kulcs: 'csoportszuro_csak_admin',
-        nev: 'A csoportszűrőt csak a csoport adminja módosíthatja',
-        leiras: 'Kikapcsolva a csoport bármelyik tagja beállíthatja, mely italok jelenjenek meg a Ranglistán.',
+        nev: tr('sw_filter_admin_only', 'A csoportszűrőt csak a csoport adminja módosíthatja'),
+        leiras: tr('sw_filter_admin_only_desc', 'Kikapcsolva a csoport bármelyik tagja beállíthatja, mely italok jelenjenek meg a Ranglistán.'),
         csoport: 'adminBeallitasok',
         figyelmeztet: false,
     },
@@ -49,7 +49,7 @@ function figyelmeztetesFrissites() {
     const kikapcsolt = KAPCSOLOK.filter(k => k.figyelmeztet !== false && ertekek[k.kulcs] === false).map(k => k.nev);
     const doboz = $('adminFigyelmeztetes');
     doboz.hidden = kikapcsolt.length === 0;
-    doboz.textContent = kikapcsolt.length ? `Jelenleg kikapcsolva: ${kikapcsolt.join(', ')}` : '';
+    doboz.textContent = kikapcsolt.length ? tr('currently_off', 'Jelenleg kikapcsolva: {list}', { list: kikapcsolt.join(', ') }) : '';
 }
 
 function sor(k) {
@@ -115,19 +115,19 @@ async function betoltes() {
     const { data, error } = await client.from('app_kapcsolok').select('kulcs, ertek');
     if (error) {
         console.error('A kapcsolók betöltése nem sikerült:', error);
-        allapot('A kapcsolók betöltése nem sikerült. Lefutott már a FELADAT15 SQL-je?', 'hiba');
+        allapot(tr('err_switches_load', 'A kapcsolók betöltése nem sikerült. Lefutott már a FELADAT15 SQL-je?'), 'hiba');
         return;
     }
     ertekek = Object.fromEntries((data || []).map(r => [r.kulcs, r.ertek]));
     const hianyzo = KAPCSOLOK.filter(k => !(k.kulcs in ertekek)).map(k => k.kulcs);
-    if (hianyzo.length) allapot(`Hiányzó beállítás a táblában: ${hianyzo.join(', ')}`, 'hiba');
+    if (hianyzo.length) allapot(tr('err_missing_setting', 'Hiányzó beállítás a táblában: {list}', { list: hianyzo.join(', ') }), 'hiba');
     kirajzolas();
 }
 
 async function mentes(input, k) {
     const uj = input.checked;
     input.disabled = true;
-    allapot(`Mentés: ${k.nev}…`, null);
+    allapot(tr('saving_item', 'Mentés: {name}…', { name: k.nev }), null);
     const { error } = await client.rpc('admin_beallitas_mentese', { kulcs_in: k.kulcs, ertek_in: uj });
     input.disabled = false;
 
@@ -135,8 +135,8 @@ async function mentes(input, k) {
         console.error('A beállítás mentése nem sikerült:', error);
         input.checked = !uj; // visszaáll a szerver szerinti állapotra
         allapot(error.code === '42501'
-            ? 'Nincs jogosultságod a beállítások módosításához.'
-            : `A mentés nem sikerült (${k.nev}). Próbáld újra.`, 'hiba');
+            ? tr('err_no_permission_settings', 'Nincs jogosultságod a beállítások módosításához.')
+            : tr('err_save_item', 'A mentés nem sikerült ({name}). Próbáld újra.', { name: k.nev }), 'hiba');
         return;
     }
 

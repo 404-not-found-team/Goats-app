@@ -196,7 +196,7 @@
         ['rum', 'Rumos üveg – fő szín: címke, 2. szín: ital'],
         ['bor', 'Boros üveg (0,75 l) – fő szín: címke, 2. szín: üveg'],
         ['froccs', 'Fröccsös pohár – fő szín: ital, 2. szín: üveg'],
-    ];
+    ].map(([kod, nev]) => [kod, tr(`form_${kod}`, nev)]);
     // Formák, amelyeknek van saját logó-rétege (<forma>-logo.webp): az app logója a doboz elején,
     // a színezéstől függetlenül, mindig ugyanolyan. Új forma logóval: fájl be + a kódja ide.
     const LOGOS_FORMAK = new Set(['karcsu-doboz', 'nagy-doboz', 'kozep-doboz', 'uveg', 'vodka', 'vodka-also', 'whiskey', 'whiskey-szogletes', 'jager',
@@ -212,7 +212,7 @@
         ['atlos', 'Átlós (alsó-jobb rész)', ['karcsu-doboz', 'nagy-doboz', 'kozep-doboz']],
         ['korok', 'Két kör (íz színe)', ['vodka', 'vodka-also']],
         ['felso-cimke', 'Felső címke', ['vodka', 'vodka-also']],
-    ];
+    ].map(([kod, nev, formak]) => [kod, tr(`pattern_${kod}`, nev), formak]);
     const mintakFormahoz = (forma) => MINTAK.filter(([, , formak]) => formak.includes(forma));
     const vanMinta = (forma, minta) => MINTAK.some(([kod, , formak]) => kod === minta && formak.includes(forma));
 

@@ -56,7 +56,7 @@ function dekodolasImg(blob) {
         const url = URL.createObjectURL(blob);
         const img = new Image();
         img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
-        img.onerror = () => { URL.revokeObjectURL(url); reject(new KepHiba('A böngésző nem tudta beolvasni a képet.')); };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new KepHiba(tr('err_img_read', 'A böngésző nem tudta beolvasni a képet.'))); };
         img.src = url;
     });
 }
@@ -75,7 +75,7 @@ function heicKonvertalo() {
         const script = document.createElement('script');
         script.src = HEIC_FALLBACK_URL;
         script.onload = () => resolve(window.heic2any);
-        script.onerror = () => reject(new KepHiba('A HEIC-kép átalakítója nem tölthető be.'));
+        script.onerror = () => reject(new KepHiba(tr('err_heic', 'A HEIC-kép átalakítója nem tölthető be.')));
         document.head.appendChild(script);
     });
 }
@@ -137,18 +137,18 @@ async function webpKodolhato() {
  * @throws {KepHiba} érthető magyar üzenettel, ha a kép nem tölthető fel
  */
 export async function kepBetoltes(fajl) {
-    if (!fajl || fajl.size === 0) throw new KepHiba('A fájl üres vagy sérült.');
-    if (!kepTipusE(fajl)) throw new KepHiba('Csak képfájl tölthető fel.');
+    if (!fajl || fajl.size === 0) throw new KepHiba(tr('err_file_empty', 'A fájl üres vagy sérült.'));
+    if (!kepTipusE(fajl)) throw new KepHiba(tr('err_only_images', 'Csak képfájl tölthető fel.'));
     if (fajl.size > MAX_BEMENET) {
-        throw new KepHiba(`A kép túl nagy (${(fajl.size / 1048576).toFixed(1)} MB). Legfeljebb 15 MB-os képet válassz.`);
+        throw new KepHiba(tr('err_img_too_big', 'A kép túl nagy ({mb} MB). Legfeljebb 15 MB-os képet válassz.', { mb: (fajl.size / 1048576).toFixed(1) }));
     }
     if (await animaltGifE(fajl)) {
-        throw new KepHiba('Animált GIF nem tölthető fel (csak az első képkocka maradna meg).');
+        throw new KepHiba(tr('err_gif', 'Animált GIF nem tölthető fel (csak az első képkocka maradna meg).'));
     }
     const forras = await forrasBetoltes(fajl);
     const szelesseg = forras.naturalWidth || forras.width;
     const magassag = forras.naturalHeight || forras.height;
-    if (!szelesseg || !magassag) throw new KepHiba('A kép mérete nem olvasható.');
+    if (!szelesseg || !magassag) throw new KepHiba(tr('err_img_size', 'A kép mérete nem olvasható.'));
     return { forras, szelesseg, magassag };
 }
 
@@ -177,7 +177,7 @@ export async function kepTomoritesKivagassal(kep, kivagas) {
         const vaszon = vaszonra(kep.forras, ki, hosszabbOldal);
         for (let minoseg = kezdoMinoseg; minoseg >= MIN_MINOSEG - 1e-9; minoseg -= MINOSEG_LEPES) {
             const blob = await kodolas(vaszon, tipus, minoseg);
-            if (!blob || blob.size === 0) throw new KepHiba('A kép tömörítése nem sikerült.');
+            if (!blob || blob.size === 0) throw new KepHiba(tr('err_img_compress', 'A kép tömörítése nem sikerült.'));
             legjobb = { blob, szelesseg: vaszon.width, magassag: vaszon.height };
             if (blob.size <= CEL_MERET) break;
         }
@@ -186,7 +186,7 @@ export async function kepTomoritesKivagassal(kep, kivagas) {
     }
 
     if (legjobb.blob.size > KEMENY_KORLAT) {
-        throw new KepHiba('A kép tömörítés után is túl nagy (legfeljebb 150 KB lehet), ezért nem töltöttük fel.');
+        throw new KepHiba(tr('err_img_still_big', 'A kép tömörítés után is túl nagy (legfeljebb 150 KB lehet), ezért nem töltöttük fel.'));
     }
     return { ...legjobb, kiterjesztes: webp ? 'webp' : 'jpg' };
 }

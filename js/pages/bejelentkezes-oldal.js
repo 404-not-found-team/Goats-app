@@ -45,11 +45,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     btn?.addEventListener('click', async () => {
         btn.disabled = true;
-        setStatus('Átirányítás a Google bejelentkezéshez...');
+        setStatus(tr('redirect_google', 'Átirányítás a Google bejelentkezéshez...'));
         try {
             await signInWithGoogle(); // az oldal elnavigál, ha sikeres
         } catch (err) {
-            setStatus(err.message || 'Nem sikerült elindítani a bejelentkezést.', true);
+            setStatus(err.message || tr('err_login_start', 'Nem sikerült elindítani a bejelentkezést.'), true);
             btn.disabled = false;
         }
     });

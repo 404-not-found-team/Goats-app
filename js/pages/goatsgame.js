@@ -118,13 +118,13 @@ function renderTabellaFejlecek() {
     const osszContainer = document.getElementById('osszOszlop');
     if (!nevekContainer || !osszContainer) return;
 
-    nevekContainer.innerHTML = '<div class="fejlec">Név</div>';
-    osszContainer.innerHTML = '<div class="fejlec">Összpont</div>';
+    nevekContainer.innerHTML = `<div class="fejlec">${tr('name', 'Név')}</div>`;
+    osszContainer.innerHTML = `<div class="fejlec">${tr('total_score', 'Összpont')}</div>`;
 
     if (jatekosok.length === 0) {
         const uzenet = document.createElement('div');
         uzenet.className = 'nev-sor ures-uzenet';
-        uzenet.textContent = 'A csoport tagjai nem tölthetők be.';
+        uzenet.textContent = tr('err_members_load', 'A csoport tagjai nem tölthetők be.');
         nevekContainer.appendChild(uzenet);
         return;
     }
@@ -143,7 +143,7 @@ function renderTabellaFejlecek() {
         szinPicker.type = 'color';
         szinPicker.className = 'nev-szin-picker';
         szinPicker.value = jatekosSzine(jatekos.user_id);
-        szinPicker.setAttribute('aria-label', `${jatekos.display_name} színe`);
+        szinPicker.setAttribute('aria-label', tr('color_of', '{name} színe', { name: jatekos.display_name }));
         szinPicker.addEventListener('change', (e) => frissitJatekosSzinet(jatekos.user_id, e.target));
 
         sor.append(nevSpan, szinPicker);
@@ -186,8 +186,8 @@ function renderOszlopok() {
         const torlesGomb = document.createElement('button');
         torlesGomb.type = 'button';
         torlesGomb.className = 'torles-gomb';
-        torlesGomb.title = 'Meccs törlése';
-        torlesGomb.setAttribute('aria-label', `${jatek.nev}: meccs törlése`);
+        torlesGomb.title = tr('delete_match', 'Meccs törlése');
+        torlesGomb.setAttribute('aria-label', tr('delete_match_of', '{game}: meccs törlése', { game: jatek.nev }));
         torlesGomb.textContent = '🗑️';
         torlesGomb.addEventListener('click', () => meccsTorlese(jatek, meccs));
 
@@ -225,15 +225,15 @@ function renderJatekLista() {
         const pontGomb = document.createElement('button');
         pontGomb.type = 'button';
         pontGomb.className = 'teljesit-gomb';
-        pontGomb.textContent = lejatszva ? 'Kész ✓' : 'Kész';
+        pontGomb.textContent = lejatszva ? tr('done_check', 'Kész ✓') : tr('done', 'Kész');
         pontGomb.disabled = lejatszva;
         pontGomb.addEventListener('click', () => ujMeccsHozzaadasa(jatek, pontGomb));
 
         const torlesGomb = document.createElement('button');
         torlesGomb.type = 'button';
         torlesGomb.className = 'torles-gomb';
-        torlesGomb.title = 'Játék törlése';
-        torlesGomb.setAttribute('aria-label', `${jatek.nev} törlése`);
+        torlesGomb.title = tr('delete_game_title', 'Játék törlése');
+        torlesGomb.setAttribute('aria-label', tr('delete_of', '{name} törlése', { name: jatek.nev }));
         torlesGomb.textContent = '🗑️';
         torlesGomb.addEventListener('click', () => jatekTorlese(jatek, torlesGomb));
 
@@ -264,7 +264,7 @@ async function frissitJatekosSzinet(userId, picker) {
 
     if (error) {
         console.error('Hiba a szín mentésekor:', error);
-        alert('Nem sikerült menteni a színt: ' + error.message);
+        alert(tr('err_color_save', 'Nem sikerült menteni a színt: {msg}', { msg: error.message }));
         jatekosSzinek.set(userId, regiSzin);
         picker.value = regiSzin;
         document.querySelectorAll(`#nevekOszlop .nev-sor[data-user-id="${userId}"], #osszOszlop .pontOssz[data-user-id="${userId}"]`)
@@ -305,14 +305,14 @@ async function mentUjJatek() {
     const szin = SZIN_MINTA.test(szinInput.value) ? szinInput.value.toLowerCase() : ALAP_SZIN;
 
     if (!jatekNev) {
-        alert('Kérlek add meg a játék nevét!');
+        alert(tr('err_game_name', 'Kérlek add meg a játék nevét!'));
         return;
     }
 
     const groupId = aktualisCsoportId();
     const db = supabaseKliens();
     if (!groupId || !db) {
-        alert('A játék felvételéhez csoporttagság és internetkapcsolat kell.');
+        alert(tr('err_game_add_need', 'A játék felvételéhez csoporttagság és internetkapcsolat kell.'));
         return;
     }
 
@@ -324,7 +324,7 @@ async function mentUjJatek() {
 
     if (error) {
         console.error('Hiba a játék mentésekor:', error);
-        alert('Hiba történt a játék felvételekor: ' + error.message);
+        alert(tr('err_game_add', 'Hiba történt a játék felvételekor: {msg}', { msg: error.message }));
         return;
     }
 
@@ -336,13 +336,13 @@ async function mentUjJatek() {
 
 async function ujMeccsHozzaadasa(jatek, gombElem) {
     if (jatekosok.length === 0) {
-        alert('Nincsenek betöltve játékosok!');
+        alert(tr('err_no_players', 'Nincsenek betöltve játékosok!'));
         return;
     }
 
     const pontok = [];
     for (const jatekos of jatekosok) {
-        const bekeres = prompt(`Hány pontot ért el ${jatekos.display_name} (${jatek.nev})?`, '0');
+        const bekeres = prompt(tr('prompt_points', 'Hány pontot ért el {name} ({game})?', { name: jatekos.display_name, game: jatek.nev }), '0');
         if (bekeres === null) return;
 
         let pont = Math.round(Number(bekeres));
@@ -359,7 +359,7 @@ async function ujMeccsHozzaadasa(jatek, gombElem) {
     const { data: meccsId, error } = await db.rpc('goatgame_meccs_mentese', { p_jatek_id: jatek.id, p_pontok: pontok });
     if (error) {
         console.error('Hiba a pontok mentésekor:', error);
-        alert('Hiba történt a pontok mentése során: ' + error.message);
+        alert(tr('err_points_save', 'Hiba történt a pontok mentése során: {msg}', { msg: error.message }));
         gombElem.disabled = false;
         return;
     }
@@ -370,7 +370,7 @@ async function ujMeccsHozzaadasa(jatek, gombElem) {
 }
 
 async function meccsTorlese(jatek, meccs) {
-    if (!confirm(`Biztosan törlöd ezt a meccset (${jatek.nev})?`)) return;
+    if (!confirm(tr('confirm_delete_match', 'Biztosan törlöd ezt a meccset ({game})?', { game: jatek.nev }))) return;
 
     const db = supabaseKliens();
     if (!db) return;
@@ -378,7 +378,7 @@ async function meccsTorlese(jatek, meccs) {
     const { error } = await db.from('goatgame_meccsek').delete().eq('id', meccs.id);
     if (error) {
         console.error('Hiba a meccs törlésekor:', error);
-        alert('Nem sikerült törölni a meccset: ' + error.message);
+        alert(tr('err_match_delete', 'Nem sikerült törölni a meccset: {msg}', { msg: error.message }));
         return;
     }
 
@@ -388,7 +388,7 @@ async function meccsTorlese(jatek, meccs) {
 }
 
 async function jatekTorlese(jatek, gombElem) {
-    if (!confirm('Biztosan törölni szeretnéd ezt a játékot és a hozzá tartozó adatokat?')) return;
+    if (!confirm(tr('confirm_delete_game', 'Biztosan törölni szeretnéd ezt a játékot és a hozzá tartozó adatokat?'))) return;
 
     const db = supabaseKliens();
     if (!db) return;
@@ -398,7 +398,7 @@ async function jatekTorlese(jatek, gombElem) {
     const { error } = await db.from('goatgame_jatekok').delete().eq('id', jatek.id);
     if (error) {
         console.error('Hiba a játék törlésekor:', error);
-        alert('Nem sikerült törölni a játékot: ' + error.message);
+        alert(tr('err_game_delete', 'Nem sikerült törölni a játékot: {msg}', { msg: error.message }));
         gombElem.disabled = false;
         return;
     }
