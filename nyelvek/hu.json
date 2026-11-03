@@ -620,5 +620,6 @@
     "switch_on_x": "{name}: bekapcsolva.",
     "switch_off_x": "{name}: kikapcsolva.",
     "recipe_x": "recept: {list}",
-    "suggested_by": "javasolta: {name}"
+    "suggested_by": "javasolta: {name}",
+    "open_full_size": "Megnyitás teljes méretben"
 }
