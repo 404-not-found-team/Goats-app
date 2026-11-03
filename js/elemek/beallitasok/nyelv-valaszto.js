@@ -1,20 +1,20 @@
 // Nyelvválasztó a beállításokban + a választás szinkronizálása a fiókkal (public.profiles.language).
 // Maga a nyelvváltás a js/segedek/nyelv.js-ben van (window.goatsNyelv), ami minden oldalon fut.
-// - A helyi választás (localStorage) azonnal érvényes; az adatbázis csak a háttérben szinkronizál.
-// - Ha ezen az eszközön még nem választottak nyelvet, a fiókban mentett nyelv érvényes (másik eszközről).
-// - Ha itt már választottak, és a fiókban más van, a helyi választás kerül a fiókba.
+// - "Automatikus": nincs kézi választás, a készülék (böngésző/telefon) nyelve dönt; a fiókban null.
+// - Kézi választás (Magyar / English): helyben (localStorage) azonnal érvényes, és a fiókba is mentjük.
+// - Ha ezen az eszközön automatikus a nyelv, de a fiókban van kézi választás (másik eszközről), az érvényes.
+// - Ha itt kézzel választottak, és a fiókban más van, a helyi választás kerül a fiókba.
 
 const NYELVEK = [
     { id: 'hu', name: 'Magyar' },
     { id: 'en', name: 'English' },
 ];
+const AUTO = 'auto';
 
 const nyelv = () => window.goatsNyelv;
 const kliens = () => window._supabase || null;
-
-function helyiValasztasVan() {
-    try { return !!localStorage.getItem('goats_lang'); } catch { return false; }
-}
+const nyelvNeve = (kod) => NYELVEK.find(n => n.id === kod)?.name || kod;
+const autoFelirat = () => tr('lang_auto', 'Automatikus ({lang})', { lang: nyelvNeve(nyelv()?.eszkozNyelve?.() || 'hu') });
 
 // getSession: helyi munkamenet, nem hív hálózatot (a getUser minden hívásnál a szerverhez fordul)
 async function felhasznaloId() {
@@ -24,6 +24,7 @@ async function felhasznaloId() {
     return data?.session?.user?.id || null;
 }
 
+// kod = null: automatikus (nincs kézi választás a fiókban)
 async function mentesFiokba(kod) {
     const userId = await felhasznaloId();
     if (!userId) return;
@@ -39,14 +40,14 @@ async function szinkronFiokkal() {
         console.error('Hiba a fiók nyelvének lekérdezésekor:', error.message);
         return;
     }
-    const fiokNyelve = data?.language;
-    const helyi = nyelv()?.aktualis();
-    if (!fiokNyelve || !helyi || fiokNyelve === helyi) return;
-    if (helyiValasztasVan()) {
-        await mentesFiokba(helyi);
-    } else if (NYELVEK.some(n => n.id === fiokNyelve)) {
-        await nyelv()?.valt(fiokNyelve); // újratölti az oldalt az új nyelvvel
+    const fiokNyelve = NYELVEK.some(n => n.id === data?.language) ? data.language : null;
+    if (nyelv()?.automatikus()) {
+        // másik eszközön kézzel választott nyelv: ezen az eszközön is az legyen (újratölt, ha más)
+        if (fiokNyelve && fiokNyelve !== nyelv().aktualis()) await nyelv().valt(fiokNyelve);
+        return;
     }
+    const helyi = nyelv()?.aktualis();
+    if (helyi && fiokNyelve !== helyi) await mentesFiokba(helyi);
 }
 
 export function initLangPicker() {
@@ -55,27 +56,44 @@ export function initLangPicker() {
     const langSelectedText = get('lang-dropdown-selected-text');
     const langOptionsContainer = get('lang-dropdown-options');
 
+    const kivalasztott = () => (nyelv()?.automatikus() ? AUTO : (nyelv()?.aktualis() || 'hu'));
+
     function frissitValaszto() {
-        const aktualis = nyelv()?.aktualis() || 'hu';
-        const talalt = NYELVEK.find(n => n.id === aktualis);
-        if (langSelectedText && talalt) langSelectedText.textContent = talalt.name;
+        const k = kivalasztott();
+        if (langSelectedText) langSelectedText.textContent = k === AUTO ? autoFelirat() : nyelvNeve(k);
         langOptionsContainer?.querySelectorAll('.dropdown-option').forEach(o =>
-            o.classList.toggle('selected', o.dataset.nyelv === aktualis));
+            o.classList.toggle('selected', o.dataset.nyelv === k));
+    }
+
+    async function valaszt(id) {
+        if (id === kivalasztott()) return;
+        if (id === AUTO) {
+            await mentesFiokba(null);
+            nyelv()?.automatikusra(); // újratölt, ha a készülék nyelve más
+            frissitValaszto();
+            return;
+        }
+        // előbb a fiókba (a valt utána újratölti az oldalt, ha más a nyelv)
+        await mentesFiokba(id);
+        if (id === nyelv()?.aktualis()) {
+            nyelv().valt(id, { ujratoltes: false }); // ugyanaz a nyelv, csak mostantól kézi választás
+            frissitValaszto();
+        } else {
+            await nyelv()?.valt(id);
+        }
     }
 
     if (langOptionsContainer) {
-        langOptionsContainer.replaceChildren(...NYELVEK.map(n => {
+        const opciok = [{ id: AUTO, name: autoFelirat() }, ...NYELVEK];
+        langOptionsContainer.replaceChildren(...opciok.map(n => {
             const opcio = document.createElement('div');
             opcio.className = 'dropdown-option';
             opcio.dataset.nyelv = n.id;
             opcio.textContent = n.name;
-            opcio.addEventListener('click', async (e) => {
+            opcio.addEventListener('click', (e) => {
                 e.stopPropagation();
                 langDropdown?.classList.remove('open');
-                if (n.id === nyelv()?.aktualis()) return;
-                // előbb a fiókba (a valt utána újratölti az oldalt)
-                await mentesFiokba(n.id);
-                await nyelv()?.valt(n.id);
+                valaszt(n.id);
             });
             return opcio;
         }));

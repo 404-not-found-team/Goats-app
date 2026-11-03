@@ -1,6 +1,6 @@
 // Nyelvkezelés minden oldalon (klasszikus, szinkron script a <head> elején, Supabase nélkül; defer NEM kell,
 // mert a többi klasszikus script (pl. ital-kep.js) már futáskor a tr()-t hívja).
-// - Betöltéskor AZONNAL alkalmazza a kiválasztott nyelvet (localStorage: goats_lang) a helyben eltárolt
+// - Betöltéskor AZONNAL alkalmazza a kiválasztott nyelvet (localStorage: goats_lang; ha nincs, a készülék nyelvét) a helyben eltárolt
 //   fordításból, hálózatra várás nélkül; utána a háttérben frissíti a nyelvi fájlt (nyelvek/<kod>.json).
 // - A [data-i18n="kulcs"] elemek szövegét cseréli, a [data-i18n-attr="placeholder:kulcs"] elemek attribútumát. Ha a fordításban HTML van (pl. <strong>, <i>, <a>),
 //   csak engedélyezett elemeket és attribútumokat enged át (nincs nyers innerHTML).
@@ -19,7 +19,19 @@
     const olvas = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
     const ir = (k, v) => { try { localStorage.setItem(k, v); } catch { /* privát mód, tele tár: nem kritikus */ } };
 
-    let aktualis = NYELVEK.includes(olvas(TAROLO_NYELV)) ? olvas(TAROLO_NYELV) : ALAP;
+    // Automatikus nyelv: ha ezen az eszközön még nem választottak, a böngésző/telefon nyelvi beállítása
+    // (navigator.languages) dönt: az első támogatott nyelv a listából; ha egyik sem támogatott, angol.
+    function eszkozNyelve() {
+        const lista = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ''];
+        for (const nyelv of lista) {
+            const kod = String(nyelv || '').toLowerCase().split('-')[0];
+            if (NYELVEK.includes(kod)) return kod;
+        }
+        return 'en';
+    }
+
+    const valasztott = () => (NYELVEK.includes(olvas(TAROLO_NYELV)) ? olvas(TAROLO_NYELV) : null);
+    let aktualis = valasztott() || eszkozNyelve();
     let forditasok = null;
     const figyelok = [];
 
@@ -129,8 +141,18 @@
     }
 
 
+    // Vissza az automatikus nyelvre: a helyi választás törlése; ha ettől más nyelv jön, újratöltés
+    function automatikusra() {
+        try { localStorage.removeItem(TAROLO_NYELV); } catch { /* nem elérhető tár */ }
+        if (eszkozNyelve() !== aktualis) location.reload();
+    }
+
     window.goatsNyelv = {
         aktualis: () => aktualis,
+        // true, ha ezen az eszközön nincs kézi választás (a nyelv a készülék beállításából jön)
+        automatikus: () => !valasztott(),
+        eszkozNyelve,
+        automatikusra,
         valt,
         t,
         // dátum- és számformázáshoz (toLocaleString, Intl): a kiválasztott nyelv szerint

@@ -580,5 +580,6 @@
     "crop_preview": "A kivágás előnézete. Nyilakkal mozgathatod, a plusz és mínusz billentyűvel nagyíthatsz.",
     "zoom": "Nagyítás",
     "legal_contact_prefix": "Jogi kérdés esetén írj a",
-    "legal_contact_suffix": " címre."
+    "legal_contact_suffix": " címre.",
+    "lang_auto": "Automatikus ({lang})"
 }
