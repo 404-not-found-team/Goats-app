@@ -14,6 +14,7 @@
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
+    <script src="js/segedek/nyelv.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 
     <script type="module" src="js/main.js"></script>
@@ -27,7 +28,7 @@
         <div class="tabella">
             <div class="bal-oldal">
                 <div class="tablazat nevek" id="nevekOszlop">
-                    <div class="fejlec">Név</div>
+                    <div class="fejlec" data-i18n="name">Név</div>
                 </div>
 
                 <div class="tablazat-pontok" id="pontJatekOszlopok">
@@ -35,14 +36,14 @@
             </div>
 
             <div class="tablazat ossz" id="osszOszlop">
-                <div class="fejlec">Összpont</div>
+                <div class="fejlec" data-i18n="total_score">Összpont</div>
             </div>
         </div>
 
         <div class="jatekok" id="jatekokKontener">
             <div class="jatek-fejlec">
-                <h2>Játékok</h2>
-                <button class="gomb-uj-jatek" onclick="openUjJatekModal()">+ Új játék felvétele</button>
+                <h2 data-i18n="games">Játékok</h2>
+                <button class="gomb-uj-jatek" onclick="openUjJatekModal()" data-i18n="add_new_game">+ Új játék felvétele</button>
             </div>
 
             <div class="jatek-lista" id="jatekLista">
@@ -53,22 +54,22 @@
     <div id="ujJatekModal" class="goatsgame-modal-overlay" hidden>
         <div class="goatsgame-modal-card">
             <div class="goatsgame-modal-header">
-                <h3>Új játék hozzáadása</h3>
-                <button type="button" aria-label="Bezárás" class="goatsgame-modal-close" onclick="closeUjJatekModal()">&times;</button>
+                <h3 data-i18n="add_new_game_modal_title">Új játék hozzáadása</h3>
+                <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close" class="goatsgame-modal-close" onclick="closeUjJatekModal()">&times;</button>
             </div>
             <div class="goatsgame-modal-body">
                 <div class="input-group">
-                    <label for="ujJatekNevInput">Játék neve:</label>
-                    <input type="text" id="ujJatekNevInput" class="goats-input" maxlength="40" placeholder="Pl.: Csocsó, Darts..." />
+                    <label for="ujJatekNevInput" data-i18n="game_name">Játék neve:</label>
+                    <input type="text" id="ujJatekNevInput" class="goats-input" maxlength="40" placeholder="Pl.: Csocsó, Darts..." data-i18n-attr="placeholder:game_name_ph" />
                 </div>
                 <div class="input-group">
-                    <label for="ujJatekSzinInput">Oszlop színe:</label>
+                    <label for="ujJatekSzinInput" data-i18n="column_color">Oszlop színe:</label>
                     <input type="color" id="ujJatekSzinInput" class="goats-color-input" value="#4CAF50" />
                 </div>
             </div>
             <div class="goatsgame-modal-footer">
-                <button class="goatsgame-btn-cancel" onclick="closeUjJatekModal()">Mégse</button>
-                <button class="goatsgame-btn-save" onclick="mentUjJatek()">Hozzáadás</button>
+                <button class="goatsgame-btn-cancel" onclick="closeUjJatekModal()" data-i18n="back">Mégse</button>
+                <button class="goatsgame-btn-save" onclick="mentUjJatek()" data-i18n="add">Hozzáadás</button>
             </div>
         </div>
     </div>

@@ -3,9 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
+    <meta http-equiv="Content-Security-Policy"
+        content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ATG</title>
+    <script src="js/segedek/nyelv.js"></script>
     <script src="js/segedek/gyors-atiranyitas.js"></script>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -23,25 +25,28 @@
 <body>
     <div id="kijelentkezett-nezet" class="index-container">
         <header class="hero-section">
-            <h1>Üdvözöl az ATG-ben! 🏆</h1>
-            <p class="hero-subtitle">
+            <h1 data-i18n="welcome_title">Üdvözöl az ATG-ben! 🏆</h1>
+            <p class="hero-subtitle" data-i18n="hero-subtitle">
                 A legegyszerűbb alkalmazás közös tartozások, tervek és ital ranglisták kezelésére baráti
                 társaságoknak.
             </p>
         </header>
 
         <section class="login-guide-card">
-            <h2>Kezdjük!</h2>
+            <h2 data-i18n="lets_start">Kezdjük!</h2>
             <button id="google-login-btn" class="gomb-uj-ital gomb-google">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" class="ikon-20">
-                Bejelentkezés Google-fiókkal
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo"
+                    class="ikon-20">
+                <span data-i18n="login_google">Bejelentkezés Google-fiókkal</span>
             </button>
             <p class="notice-text">
-                A bejelentkezéssel elfogadod a
-                <a href="felhasznalasi-feltetelek.html" target="_blank" rel="noopener" class="link-akcent">Felhasználási feltételeket</a>
-                és az
-                <a href="privacy.html" target="_blank" rel="noopener" class="link-akcent">Adatvédelmi tájékoztatót</a>,
-                és kijelented, hogy elmúltál 18 éves.
+                <span data-i18n="login_agreement_prefix">A bejelentkezéssel elfogadod a</span>
+                <a href="felhasznalasi-feltetelek.html" target="_blank" rel="noopener" class="link-akcent"
+                    data-i18n="the_terms_link">Felhasználási feltételeket</a>
+                <span data-i18n="login_agreement_middle">és az</span>
+                <a href="privacy.html" target="_blank" rel="noopener" class="link-akcent"
+                    data-i18n="the_privacy_link">Adatvédelmi tájékoztatót</a>
+                <span data-i18n="login_agreement_suffix">, és kijelented, hogy elmúltál 18 éves.</span>
             </p>
             <p id="login-status" class="sm-status sm-status-small"></p>
         </section>
@@ -50,15 +55,16 @@
             <div class="install-content">
                 <div class="install-icon">📲</div>
                 <div class="install-text">
-                    <h3>Telepítsd az alkalmazást!</h3>
-                    <p>Töltsd le az ATG-t a kezdőképernyődre a gyorsabb elérésért és az alkalmazás-élményért.</p>
-                    <p id="ios-notice" class="ios-notice hidden">
+                    <h3 data-i18n="download_app">Telepítsd az alkalmazást!</h3>
+                    <p data-i18n="download_app_description">Töltsd le az ATG-t a kezdőképernyődre a gyorsabb elérésért
+                        és az alkalmazás-élményért.</p>
+                    <p id="ios-notice" class="ios-notice hidden" data-i18n="ios_notice_text">
                         💡 <strong>iOS (iPhone) esetén:</strong> Nyomj a Safari <strong>Megosztás</strong> gombjára
                         (<i class="fa-solid fa-share-from-square"></i>), majd válaszd a <strong>"Hozzáadás a
                             kezdőképernyőhöz"</strong> lehetőséget!
                     </p>
                 </div>
-                <button id="pwa-install-btn" class="gomb-uj-ital install-btn">
+                <button id="pwa-install-btn" class="gomb-uj-ital install-btn" data-i18n="download_app_btn">
                     <i class="fa-solid fa-download"></i> App Telepítése
                 </button>
             </div>
@@ -67,36 +73,36 @@
         <section class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">💸</div>
-                <h3>Tartozások</h3>
-                <p>Vezessétek átláthatóan, hogy ki kinek és mennyivel tartozik a társaságban.</p>
+                <h3 data-i18n="debts">Tartozások</h3>
+                <p data-i18n="debts_description">Vezessétek átláthatóan, hogy ki kinek és mennyivel tartozik a társaságban.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📋</div>
-                <h3>Tervek & Ötletek</h3>
-                <p>Gyűjtsétek egy helyen a közös programötleteket, bulikat és utazásokat.</p>
+                <h3 data-i18n="plans_ideas">Tervek & Ötletek</h3>
+                <p data-i18n="plans_ideas_description">Gyűjtsétek egy helyen a közös programötleteket, bulikat és utazásokat.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🍹</div>
-                <h3>Ital ranglista</h3>
-                <p>Állítsátok össze a közös tier listátokat és rangsoroljátok a kedvenc italaitokat.</p>
+                <h3 data-i18n="drink_tierlist">Ital ranglista</h3>
+                <p data-i18n="drink_tierlist_description">Állítsátok össze a közös tier listátokat és rangsoroljátok a kedvenc italaitokat.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🎨</div>
-                <h3>Egyedi témák</h3>
-                <p>Szabd személyre az app megjelenését a saját stílusodhoz illő témákkal.</p>
+                <h3 data-i18n="unique_themes">Egyedi témák</h3>
+                <p data-i18n="unique_themes_description">Szabd személyre az app megjelenését a saját stílusodhoz illő témákkal.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">✨</div>
-                <h3>És sok minden más...</h3>
-                <p>Közös naptár, galéria és folyamatosan érkező új funkciók!</p>
+                <h3 data-i18n="and_much_more">És sok minden más...</h3>
+                <p data-i18n="and_much_more_description">Közös naptár, galéria és folyamatosan érkező új funkciók!</p>
             </div>
         </section>
 
         <p class="jogi-oldal-lablec szoveg-kicsi">
-            <a href="jogi.html">Jogi információk</a> &middot;
-            <a href="privacy.html">Adatvédelmi tájékoztató</a> &middot;
-            <a href="felhasznalasi-feltetelek.html">Felhasználási feltételek</a> &middot;
-            <a href="fiok-torles.html">Fiók törlése</a> &middot;
+            <a href="jogi.html" data-i18n="legal_information">Jogi információk</a> &middot;
+            <a href="privacy.html" data-i18n="privacy_link">Adatvédelmi tájékoztató</a> &middot;
+            <a href="felhasznalasi-feltetelek.html" data-i18n="terms_link">Felhasználási feltételek</a> &middot;
+            <a href="fiok-torles.html" data-i18n="delete_profile">Fiók törlése</a> &middot;
         </p>
     </div>
 

@@ -49,7 +49,7 @@ function rajzol() {
         drawer.className = 'nav-more-drawer';
         drawer.innerHTML = `
             <div class="drawer-header">
-                <span>További menüpontok</span>
+                <span>${tr('more_menu_items', 'További menüpontok')}</span>
                 <span class="drawer-close">&times;</span>
             </div>
             <ul id="drawer-list" class="drawer-list"></ul>
@@ -113,7 +113,7 @@ function rajzol() {
         moreLi.innerHTML = `
             <a href="#">
                 <span class="rovid-szoveg">☰</span>
-                <span class="teljes-szoveg">Több</span>
+                <span class="teljes-szoveg">${tr('more', 'Több')}</span>
             </a>
         `;
         moreLi.querySelector('a').addEventListener('click', (e) => {

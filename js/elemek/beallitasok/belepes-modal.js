@@ -30,8 +30,8 @@ export function initAuthModal() {
     const { user } = getState();
     if (el.stepLogin) el.stepLogin.hidden = !!user;
     if (el.stepGroup) el.stepGroup.hidden = !user;
-    if (el.title) el.title.textContent = user ? 'Csoport' : 'Belépés';
-    if (el.userLine) el.userLine.textContent = user ? `Bejelentkezve: ${user.email}` : '';
+    if (el.title) el.title.textContent = user ? tr('group', 'Csoport') : tr('login', 'Belépés');
+    if (el.userLine) el.userLine.textContent = user ? tr('logged_in_as', 'Bejelentkezve: {email}', { email: user.email }) : '';
     // Globálisan kikapcsolt csatlakozás / csoportlétrehozás (FELADAT15); a szerver is elutasítaná
     funkcioGombTiltas(el.joinBtn, 'funkcio_csoportcsatlakozas');
     funkcioGombTiltas(el.createBtn, 'funkcio_uj_csoport');
@@ -46,11 +46,11 @@ export function initAuthModal() {
   // történik (lásd hitelesites.js signInWithGoogle / applyPendingTos).
   el.googleBtn?.addEventListener('click', async () => {
     setBusy(el.googleBtn, true);
-    setStatus('Átirányítás a Google bejelentkezéshez...', 'info');
+    setStatus(tr('redirect_google', 'Átirányítás a Google bejelentkezéshez...'), 'info');
     try {
       await signInWithGoogle(); // az oldal elnavigál, ha sikeres
     } catch (err) {
-      setStatus(err.message || 'Nem sikerült elindítani a bejelentkezést.', 'error');
+      setStatus(err.message || tr('err_login_start', 'Nem sikerült elindítani a bejelentkezést.'), 'error');
       setBusy(el.googleBtn, false);
     }
   });
@@ -58,17 +58,17 @@ export function initAuthModal() {
   // ---- 2. Csatlakozás meglévő csoporthoz ----
   async function doJoin() {
     const code = (el.codeInput?.value || '').trim();
-    if (!code) return setStatus('Írd be a csoportkódot!', 'error');
+    if (!code) return setStatus(tr('enter_group_code', 'Írd be a csoportkódot!'), 'error');
     if (!funkcioEngedelyezett('funkcio_csoportcsatlakozas')) return setStatus(TILTVA_SZOVEG, 'error');
 
     setBusy(el.joinBtn, true);
-    setStatus('Csatlakozás...', 'info');
+    setStatus(tr('joining', 'Csatlakozás...'), 'info');
     try {
       await joinGroup(code);
-      setStatus('Sikeresen csatlakoztál!', 'ok');
+      setStatus(tr('joined_ok', 'Sikeresen csatlakoztál!'), 'ok');
       setTimeout(() => location.reload(), 600);
     } catch (err) {
-      setStatus(err.message || 'Érvénytelen csoportkód!', 'error');
+      setStatus(err.message || tr('err_invalid_code', 'Érvénytelen csoportkód!'), 'error');
       setBusy(el.joinBtn, false);
       funkcioGombTiltas(el.joinBtn, 'funkcio_csoportcsatlakozas');
     }
@@ -80,19 +80,19 @@ export function initAuthModal() {
   async function doCreate() {
     const name = (el.nameInput?.value || '').trim();
     if (name.length < 2 || name.length > 40) {
-      return setStatus('A csoport neve 2–40 karakter legyen!', 'error');
+      return setStatus(tr('err_group_name_2_40', 'A csoport neve 2–40 karakter legyen!'), 'error');
     }
     if (!funkcioEngedelyezett('funkcio_uj_csoport')) return setStatus(TILTVA_SZOVEG, 'error');
 
     setBusy(el.createBtn, true);
-    setStatus('Új csoport létrehozása...', 'info');
+    setStatus(tr('creating_group', 'Új csoport létrehozása...'), 'info');
     try {
       const data = await createGroup(name);
       try { await navigator.clipboard?.writeText(data.join_code); } catch { /* nem kritikus */ }
-      setStatus(`Csoport létrehozva! Csoportkódod: ${data.join_code} (a vágólapra másoltuk, később a Csoport adatoknál is megtalálod)`, 'ok');
+      setStatus(tr('group_created', 'Csoport létrehozva! Csoportkódod: {code} (a vágólapra másoltuk, később a Csoport adatoknál is megtalálod)', { code: data.join_code }), 'ok');
       setTimeout(() => location.reload(), 3500);
     } catch (err) {
-      setStatus(err.message || 'Hiba a csoport létrehozásakor!', 'error');
+      setStatus(err.message || tr('err_group_create', 'Hiba a csoport létrehozásakor!'), 'error');
       setBusy(el.createBtn, false);
       funkcioGombTiltas(el.createBtn, 'funkcio_uj_csoport');
     }

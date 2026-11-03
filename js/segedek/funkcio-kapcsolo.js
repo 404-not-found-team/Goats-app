@@ -4,7 +4,7 @@
 // Modul: a main.js importálja; a klasszikus oldalscriptek a window.goatsKapcsolok-on érik el.
 import { ready, onChange, funkcioEngedelyezett, oldalEngedelyezett } from '../hitelesites.js';
 
-export const TILTVA_SZOVEG = 'Ez a funkció jelenleg ki van kapcsolva.';
+export const TILTVA_SZOVEG = tr('feature_disabled', 'Ez a funkció jelenleg ki van kapcsolva.');
 
 // A már kezelt gombok: a háttérben érkező friss kapcsolók (onChange) után újra alkalmazzuk őket
 const kezeltGombok = new Map();

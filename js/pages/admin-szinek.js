@@ -37,10 +37,10 @@ function szinSor(sz) {
     szoveg.append(szinMinta(sz.kep_szin_1), ujElem('span', 'admin-sor-nev', sz.nev));
 
     const gombok = ujElem('div', 'admin-sor-gombok');
-    const szerkeszt = ujElem('button', 'admin-gomb masodlagos', 'Szerkesztés');
+    const szerkeszt = ujElem('button', 'admin-gomb masodlagos', tr('edit_btn', 'Szerkesztés'));
     szerkeszt.type = 'button';
     szerkeszt.addEventListener('click', () => li.replaceWith(szinSzerkeszto(sz)));
-    const torol = ujElem('button', 'admin-gomb veszelyes', 'Törlés');
+    const torol = ujElem('button', 'admin-gomb veszelyes', tr('delete', 'Törlés'));
     torol.type = 'button';
     torol.addEventListener('click', () => szinTorles(sz));
     gombok.append(szerkeszt, torol);
@@ -53,17 +53,17 @@ function szinSzerkeszto(sz) {
     const li = ujElem('li', 'admin-sor admin-szin-sor szerkesztes');
     const nev = ujElem('input', 'admin-bemenet');
     nev.value = sz.nev;
-    nev.setAttribute('aria-label', 'A szín neve');
+    nev.setAttribute('aria-label', tr('color_name', 'A szín neve'));
 
     const szin1 = ujElem('input');
     szin1.type = 'color';
     szin1.value = sz.kep_szin_1;
-    szin1.setAttribute('aria-label', 'A szín (RGB)');
+    szin1.setAttribute('aria-label', tr('color_rgb', 'A szín (RGB)'));
 
-    const ment = ujElem('button', 'admin-gomb', 'Mentés');
+    const ment = ujElem('button', 'admin-gomb', tr('save', 'Mentés'));
     ment.type = 'button';
     ment.addEventListener('click', () => szinMentes(sz, { nev: nev.value, szin1: szin1.value }));
-    const megse = ujElem('button', 'admin-gomb masodlagos', 'Mégse');
+    const megse = ujElem('button', 'admin-gomb masodlagos', tr('cancel', 'Mégse'));
     megse.type = 'button';
     megse.addEventListener('click', kirajzolas);
 
@@ -75,34 +75,34 @@ function szinSzerkeszto(sz) {
 
 async function szinMentes(sz, { nev, szin1 }) {
     const tisztaNev = String(nev || '').trim();
-    if (tisztaNev.length < 2 || tisztaNev.length > 40) return allapot('A szín neve 2–40 karakter legyen.', 'hiba');
+    if (tisztaNev.length < 2 || tisztaNev.length > 40) return allapot(tr('err_color_name', 'A szín neve 2–40 karakter legyen.'), 'hiba');
     const { error } = await client
         .from('szin_paletta')
         .update({ nev: tisztaNev, kep_szin_1: szin1 })
         .eq('id', sz.id);
     if (error) {
         console.error('A szín mentése nem sikerült:', error);
-        return allapot(`A mentés nem sikerült: ${error.message}`, 'hiba');
+        return allapot(tr('err_save_msg', 'A mentés nem sikerült: {msg}', { msg: error.message }), 'hiba');
     }
     allapot(`${tisztaNev}: elmentve.`, 'ok');
     await ujratoltes();
 }
 
 async function szinTorles(sz) {
-    if (!confirm(`Biztosan törlöd a(z) „${sz.nev}” színt?`)) return;
+    if (!confirm(tr('confirm_delete_color', 'Biztosan törlöd a(z) „{name}” színt?', { name: sz.nev }))) return;
     const { error } = await client.from('szin_paletta').delete().eq('id', sz.id);
     if (error) {
         console.error('A szín törlése nem sikerült:', error);
-        return allapot(`A törlés nem sikerült: ${error.message}`, 'hiba');
+        return allapot(tr('err_delete_msg2', 'A törlés nem sikerült: {msg}', { msg: error.message }), 'hiba');
     }
-    allapot(`${sz.nev}: törölve.`, 'ok');
+    allapot(tr('x_deleted', '{name}: törölve.', { name: sz.nev }), 'ok');
     await ujratoltes();
 }
 
 async function ujSzinFelvetel(e) {
     e.preventDefault();
     const nev = $('adminUjSzinNev').value.trim();
-    if (nev.length < 2 || nev.length > 40) return allapot('Add meg a szín nevét (2–40 karakter).', 'hiba');
+    if (nev.length < 2 || nev.length > 40) return allapot(tr('err_color_name_enter', 'Add meg a szín nevét (2–40 karakter).'), 'hiba');
 
     const { error } = await client.from('szin_paletta').insert({
         nev,
@@ -111,17 +111,17 @@ async function ujSzinFelvetel(e) {
     });
     if (error) {
         console.error('A szín létrehozása nem sikerült:', error);
-        return allapot(`A létrehozás nem sikerült: ${error.message}`, 'hiba');
+        return allapot(tr('err_create_msg', 'A létrehozás nem sikerült: {msg}', { msg: error.message }), 'hiba');
     }
     $('adminUjSzin').reset();
-    allapot(`${nev}: létrehozva.`, 'ok');
+    allapot(tr('x_created', '{name}: létrehozva.', { name: nev }), 'ok');
     await ujratoltes();
 }
 
 function kirajzolas() {
     $('adminSzinek').replaceChildren(...(szinek.length
         ? szinek.map(szinSor)
-        : [ujElem('li', 'admin-sor admin-ures', 'Nincs még elmentett szín.')]));
+        : [ujElem('li', 'admin-sor admin-ures', tr('no_colors_yet', 'Nincs még elmentett szín.'))]));
 }
 
 async function ujratoltes() {
@@ -131,7 +131,7 @@ async function ujratoltes() {
         .order('nev', { ascending: true });
     if (error) {
         console.error('A színek betöltése nem sikerült:', error);
-        allapot('A színek betöltése nem sikerült.', 'hiba');
+        allapot(tr('err_colors_load', 'A színek betöltése nem sikerült.'), 'hiba');
         return;
     }
     szinek = data || [];

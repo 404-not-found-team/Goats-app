@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Security-Policy"
         content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ATG - Tartozások</title>
+    <title data-i18n="title_debts">ATG - Tartozások</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/pages/tartozasok.css">
@@ -15,6 +15,7 @@
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
+    <script src="js/segedek/nyelv.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 
     <script type="module" src="js/main.js"></script>
@@ -27,23 +28,23 @@
     <ul id="navBar"></ul>
 
     <div class="container-tartozasok">
-        <h1>Tartozások</h1>
+        <h1 data-i18n="debts_title">Tartozások</h1>
 
         <div class="input-tartozasok">
             <div class="floating-group">
                 <input type="text" id="miertInput" class="floating-input" placeholder=" " />
-                <label class="floating-label">Miért?</label>
+                <label class="floating-label" data-i18n="why">Miért?</label>
             </div>
             <div class="floating-group">
                 <input type="number" min="1" id="mennyiertInput" class="floating-input" placeholder=" " />
-                <label class="floating-label">Mennyiért?</label>
+                <label class="floating-label" data-i18n="how_much">Mennyiért?</label>
             </div>
 
             <div class="floating-group custom-dropdown" id="kinekDropdown">
                 <div class="dropdown-btn" onclick="toggleKinekDropdown()">
                     <span id="kinekDropdownLabel">&nbsp;</span>
                 </div>
-                <label class="floating-label active">Kinek tartozik?</label>
+                <label class="floating-label active" data-i18n="who_owes_whom">Kinek tartozik?</label>
                 <div class="dropdown-content" id="kinekDropdownContent"></div>
             </div>
 
@@ -51,25 +52,25 @@
                 <div class="dropdown-btn" onclick="toggleDropdown()">
                     <span id="dropdownBtnLabel">&nbsp;</span>
                 </div>
-                <label class="floating-label active">Ki tartozik?</label>
+                <label class="floating-label active" data-i18n="who_owes">Ki tartozik?</label>
                 <div class="dropdown-content" id="dropdownContent"></div>
             </div>
 
-            <input type="button" id="tartozasHozzaadGomb" value="Hozzáad" onclick="addTartozas()">
+            <!--<input type="button" id="tartozasHozzaadGomb" value="Hozzáad" onclick="addTartozas()" data-i18n="add_btn">-->
+            <button type="button" id="tartozasHozzaadGomb" class="terv-add-btn" onclick="addTartozas()" data-i18n="add_btn">Hozzáad</button>
         </div>
 
-        <!-- Közös költség: a fenti űrlap alatt, teljes szélességben -->
         <div class="kozos-koltseg">
             <div class="kozos-koltseg-infok">
                 <fieldset class="elosztas-mod">
-                    <legend>Összeg elosztása</legend>
+                    <legend data-i18n="shared_expense_distribution">Összeg elosztása</legend>
                     <label class="kapcsolo-sor">
                         <input type="radio" name="elosztasMod" value="egyenlo" checked>
-                        Egyenlő elosztás
+                        <span data-i18n="equal_distribution">Egyenlő elosztás</span>
                     </label>
                     <label class="kapcsolo-sor">
                         <input type="radio" name="elosztasMod" value="egyedi">
-                        Egyedi összegek
+                        <span data-i18n="custom_amounts">Egyedi összegek</span>
                     </label>
                 </fieldset>
                 <p id="elosztasElonezet" class="elosztas-elonezet" aria-live="polite"></p>

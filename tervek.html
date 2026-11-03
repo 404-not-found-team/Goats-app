@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ATG - Tervek</title>
+    <title data-i18n="title_plans">ATG - Tervek</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/pages/tervek.css">
@@ -13,6 +13,7 @@
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
+    <script src="js/segedek/nyelv.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 
     <script type="module" src="js/main.js"></script>
@@ -25,13 +26,13 @@
     <ul id="navBar"></ul>
 
     <div class="container">
-        <h1>Tervek / Ötletek</h1>
+        <h1 data-i18n="plans_ideas_title">Tervek / Ötletek</h1>
         <div class="terv-input-sor">
             <div class="floating-group">
                 <input type="text" id="tervInput" class="floating-input" placeholder=" " />
-                <label class="floating-label">Írd be a tervet...</label>
+                <label class="floating-label" data-i18n="enter_plan">Írd be a tervet...</label>
             </div>
-            <button type="button" id="hozzaadTervBtn" class="terv-add-btn" onclick="add()">Hozzáad</button>
+            <button type="button" id="hozzaadTervBtn" class="terv-add-btn" onclick="add()" data-i18n="add_btn">Hozzáad</button>
         </div>
         <div class="tervek">
         </div>

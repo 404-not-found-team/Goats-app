@@ -13,7 +13,7 @@ let aktualisMod = 'arany';
 let szerkesztettItalId = null; // az "Új ital" ablak szerkesztés módban: ennek az italnak az id-ja (null = új felvétel)
 
 const ZERO_ERTEKEK = ['mind', 'zero', 'nem_zero'];
-const ZERO_FELIRAT = { mind: 'Mind', zero: 'Cukormentes', nem_zero: 'Cukros' };
+const ZERO_FELIRAT = { mind: tr('zero_all', 'Mind'), zero: tr('sugar_free_label', 'Cukormentes'), nem_zero: tr('with_sugar', 'Cukros') };
 
 let csoportSzuro = null; // { v: 2, beallitva: true, kategoriak: [kod], alkategoriak_ki: [kulcs], zero: {fokod: ertek} }
 let sajatSzuro = ujSajatSzuro();
@@ -251,7 +251,7 @@ function epitForrasDobozok() {
         const fejlec = ujElem('div', 'forras-fejlec');
         fejlec.addEventListener('click', () => doboz.classList.toggle('csukva'));
         const cim = ujElem('h3');
-        cim.append(document.createTextNode(`${fo.nev} `));
+        cim.append(document.createTextNode(`${K().nevForditva(fo)} `));
         cim.appendChild(ujElem('span', 'nyil-ikon', '▼'));
         const szamlalo = ujElem('span', 'ital-szamlalo', '0 / 0');
         fejlec.append(cim, szamlalo);
@@ -264,7 +264,7 @@ function epitForrasDobozok() {
             alok.forEach(a => {
                 const csoport = ujElem('div', 'ital-alcsoport');
                 csoport.dataset.alkulcs = a.kod;
-                const alcim = ujElem('h4', 'ital-alcsoport-cim', a.nev);
+                const alcim = ujElem('h4', 'ital-alcsoport-cim', K().nevForditva(a));
                 const allista = ujElem('div', 'ital-alcsoport-lista');
                 allista.dataset.alkulcs = a.kod;
                 csoport.append(alcim, allista);
@@ -304,7 +304,7 @@ function epitFormaValaszto() {
     };
     const forma = document.getElementById('uj-ital-forma');
     if (forma) {
-        forma.replaceChildren(opcio('', 'Nincs (márkakép / ikon)'),
+        forma.replaceChildren(opcio('', tr('form_none', 'Nincs (márkakép / ikon)')),
             ...window.italKep.FORMAK.map(([kod, nev]) => opcio(kod, nev)));
     }
     epitMintaValaszto();
@@ -431,7 +431,7 @@ function epitSzinHelyValasztok() {
         if (!select) return;
         const egyeni = document.createElement('option');
         egyeni.value = 'EGYEDI';
-        egyeni.textContent = '🎨 Szín keverés';
+        egyeni.textContent = tr('color_mix', '🎨 Szín keverés');
         select.replaceChildren(...szinPaletta.map(sz => {
             const opt = document.createElement('option');
             opt.value = String(sz.id);
@@ -482,7 +482,7 @@ function epitKategoriaValaszto() {
     select.replaceChildren(...K().fo.map(fo => {
         const opt = document.createElement('option');
         opt.value = String(fo.id);
-        opt.textContent = fo.nev;
+        opt.textContent = K().nevForditva(fo);
         return opt;
     }));
 }
@@ -602,7 +602,7 @@ function pirula(felirat, aktiv, valtas, extraOsztaly = '') {
 function zeroValaszto(ertek, valtas) {
     const sor = ujElem('div', 'szuro-zero');
     sor.setAttribute('role', 'radiogroup');
-    sor.setAttribute('aria-label', 'Zero energiaitalok');
+    sor.setAttribute('aria-label', tr('zero_energy_drinks', 'Zero energiaitalok'));
     ZERO_ERTEKEK.forEach(z => {
         const gomb = ujElem('button', 'szuro-zero-gomb', ZERO_FELIRAT[z]);
         gomb.type = 'button';
@@ -621,7 +621,7 @@ function kategoriaLista(kontener, beallitas) {
     const sorok = K().fo.filter(fo => !beallitas.csakEzek || beallitas.csakEzek(fo)).map(fo => {
         const sor = ujElem('div', 'szuro-kategoria-sor');
         const foAktiv = beallitas.foLathato(fo);
-        sor.appendChild(pirula(fo.nev, foAktiv, () => beallitas.foValt(fo)));
+        sor.appendChild(pirula(K().nevForditva(fo), foAktiv, () => beallitas.foValt(fo)));
 
         if (foAktiv) {
             // Alkategóriák és zero: egy felcímkézett panelben a főkategória alatt
@@ -630,12 +630,12 @@ function kategoriaLista(kontener, beallitas) {
             if (alok.length > 0) {
                 const alsor = ujElem('div', 'szuro-alkategoriak');
                 alok.forEach(a => {
-                    alsor.appendChild(pirula(a.nev, beallitas.alLathato(a.kod), () => beallitas.alValt(a.kod), 'kicsi'));
+                    alsor.appendChild(pirula(K().nevForditva(a), beallitas.alLathato(a.kod), () => beallitas.alValt(a.kod), 'kicsi'));
                 });
-                reszletek.appendChild(reszletSor('Alkategória', alsor));
+                reszletek.appendChild(reszletSor(tr('subcategory', 'Alkategória'), alsor));
             }
             if (fo.zero_szuro) {
-                reszletek.appendChild(reszletSor('Cukor', zeroValaszto(beallitas.zero(fo), (z) => beallitas.zeroValt(fo, z))));
+                reszletek.appendChild(reszletSor(tr('sugar', 'Cukor'), zeroValaszto(beallitas.zero(fo), (z) => beallitas.zeroValt(fo, z))));
             }
             if (reszletek.children.length) sor.appendChild(reszletek);
         }
@@ -662,7 +662,7 @@ function renderSajatSzuro() {
     if (!kontener) return;
     const cs = csoportSzuro || { kategoriak: [], alkategoriak_ki: [], zero: {} };
     if (!csoportSzuro) {
-        kontener.replaceChildren(ujElem('p', 'szuro-leiras', 'Előbb a csoport beállításban válaszd ki, mely italok jelenjenek meg.'));
+        kontener.replaceChildren(ujElem('p', 'szuro-leiras', tr('filter_group_first', 'Előbb a csoport beállításban válaszd ki, mely italok jelenjenek meg.')));
     } else {
         kategoriaLista(kontener, {
             csakEzek: (fo) => cs.kategoriak.includes(fo.kod),
@@ -699,7 +699,7 @@ function renderKizartTagek() {
     kontener.replaceChildren(...sajatSzuro.kizart.map(tag => {
         const gomb = ujElem('button', 'kizart-tag', `${tag} `);
         gomb.type = 'button';
-        gomb.setAttribute('aria-label', `${tag} elrejtésének törlése`);
+        gomb.setAttribute('aria-label', tr('unhide_x', '{name} elrejtésének törlése', { name: tag }));
         gomb.appendChild(ujElem('span', 'torles-x', '✕'));
         gomb.addEventListener('click', () => {
             sajatSzuro.kizart = sajatSzuro.kizart.filter(t => t !== tag);
@@ -735,7 +735,7 @@ function renderCsoportSzuro() {
     const allapot = document.getElementById('csoport-szuro-allapot');
     if (allapot && !modosithato) {
         allapot.className = 'szuro-allapot';
-        allapot.textContent = 'A csoport szűrőjét csak a csoport adminja módosíthatja.';
+        allapot.textContent = tr('filter_admin_only', 'A csoport szűrőjét csak a csoport adminja módosíthatja.');
     }
 }
 
@@ -748,14 +748,14 @@ async function mentCsoportSzuro() {
     const beallitas = { ...csoportVazlat, v: 2, beallitva: true };
     gomb.disabled = true;
     allapot.className = 'szuro-allapot';
-    allapot.textContent = 'Mentés…';
+    allapot.textContent = tr('filter_saving', 'Mentés…');
     try {
         // A groups tábla kliens felől csak olvasható (RLS), az írás RPC-n megy.
         await window.goatsAuth.callRpc('save_filter_settings', { group_id_input: groupId, settings: beallitas });
     } catch (err) {
         console.error('Hiba a szűrő beállítások mentésekor:', err);
         allapot.className = 'szuro-allapot hiba';
-        allapot.textContent = err.message || 'A mentés nem sikerült, próbáld újra.';
+        allapot.textContent = err.message || tr('err_save_retry', 'A mentés nem sikerült, próbáld újra.');
         gomb.disabled = false;
         return;
     }
@@ -763,7 +763,7 @@ async function mentCsoportSzuro() {
     csoportSzuro = beallitas;
     csoportVazlat = null;
     allapot.className = 'szuro-allapot ok';
-    allapot.textContent = 'Elmentve, a csoport minden tagjánál ez érvényes.';
+    allapot.textContent = tr('filter_saved_group', 'Elmentve, a csoport minden tagjánál ez érvényes.');
     renderSajatSzuro();
     alkalmazSzurot();
     setTimeout(zardSzuroModal, 900);
@@ -847,8 +847,8 @@ function zardUjItalModal() {
     document.getElementById('uj-ital-teljes-nev').checked = false;
     document.getElementById('hozzavalok-lista').replaceChildren();
     szerkesztettItalId = null;
-    document.getElementById('uj-ital-modal-cim').textContent = 'Új ital / koktél felvétele';
-    document.getElementById('uj-ital-mentes-gomb').textContent = 'Hozzáadás';
+    document.getElementById('uj-ital-modal-cim').textContent = tr('add_new_drink_cocktail', 'Új ital / koktél felvétele');
+    document.getElementById('uj-ital-mentes-gomb').textContent = tr('add', 'Hozzáadás');
 }
 
 // A "Teljes név mutatása" kapcsoló csak superadminnak látszik az űrlapon
@@ -935,8 +935,8 @@ function keszitTorlesGomb() {
 function keszitSorElemek(m, e, n) {
     if (aktualisMod === 'arany') {
         return [
-            keszitInput('hozzavalo-mennyiseg', '1', 'Mennyiség', m),
-            keszitInput('hozzavalo-nev', '2', 'Hozzávaló neve', n),
+            keszitInput('hozzavalo-mennyiseg', '1', tr('amount', 'Mennyiség'), m),
+            keszitInput('hozzavalo-nev', '2', tr('ingredient_name', 'Hozzávaló neve'), n),
             keszitTorlesGomb()
         ];
     }
@@ -954,8 +954,8 @@ function keszitSorElemek(m, e, n) {
     });
 
     return [
-        keszitInput('hozzavalo-nev', '2', 'Hozzávaló neve', n),
-        keszitInput('hozzavalo-mennyiseg', '1', 'Mennyiség', m, 'number'),
+        keszitInput('hozzavalo-nev', '2', tr('ingredient_name', 'Hozzávaló neve'), n),
+        keszitInput('hozzavalo-mennyiseg', '1', tr('amount', 'Mennyiség'), m, 'number'),
         select,
         keszitTorlesGomb()
     ];
@@ -998,11 +998,11 @@ async function mentUjItal() {
     const szazalek = document.getElementById('uj-ital-szazalek').value.trim();
 
     if (!nev) {
-        alert('Kérlek add meg az ital nevét!');
+        alert(tr('err_drink_name', 'Kérlek add meg az ital nevét!'));
         return;
     }
     if (!fo) {
-        alert('Válassz kategóriát!');
+        alert(tr('err_choose_category', 'Válassz kategóriát!'));
         return;
     }
 
@@ -1036,7 +1036,7 @@ async function mentUjItal() {
         const { data, error } = await client.from('italok').update(valtozas).eq('id', italId).select(KIVALASZTANDO).single();
         if (error) {
             console.error('Supabase hiba:', error);
-            alert(`Hiba történt a mentéskor: ${error.message}`);
+            alert(tr('err_saving_msg', 'Hiba történt a mentéskor: {msg}', { msg: error.message }));
             return;
         }
 
@@ -1047,7 +1047,7 @@ async function mentUjItal() {
             const { error: receptHiba } = await client.from('ital_osszetevok').insert(hozzavalok.map(h => ({ ...h, ital_id: italId })));
             if (receptHiba) {
                 console.error('A recept mentése nem sikerült:', receptHiba);
-                alert('Az ital elmentve, de a hozzávalók mentése nem sikerült.');
+                alert(tr('err_ingredients_save', 'Az ital elmentve, de a hozzávalók mentése nem sikerült.'));
             } else {
                 osszetevokItalonkent.set(italId, hozzavalok);
             }
@@ -1084,7 +1084,7 @@ async function mentUjItal() {
 
     if (error) {
         console.error('Supabase hiba:', error);
-        alert(`Hiba történt a mentéskor: ${error.message}`);
+        alert(tr('err_saving_msg', 'Hiba történt a mentéskor: {msg}', { msg: error.message }));
         return;
     }
 
@@ -1094,7 +1094,7 @@ async function mentUjItal() {
             .insert(hozzavalok.map(h => ({ ...h, ital_id: data.id })));
         if (receptHiba) {
             console.error('A recept mentése nem sikerült:', receptHiba);
-            alert('Az ital elmentve, de a hozzávalók mentése nem sikerült.');
+            alert(tr('err_ingredients_save', 'Az ital elmentve, de a hozzávalók mentése nem sikerült.'));
         } else {
             osszetevokItalonkent.set(data.id, hozzavalok);
         }
@@ -1160,7 +1160,7 @@ function addItalKartyaToUI(ital, rendez = true) {
         && ital.javasolta_id === window.goatsAuth?.getState()?.user?.id;
     if (sajatJavaslat) {
         kartya.classList.add('sajat-javaslat');
-        kartya.appendChild(ujElem('span', 'jovahagyasra-var', 'Jóváhagyásra vár'));
+        kartya.appendChild(ujElem('span', 'jovahagyasra-var', tr('pending_approval', 'Jóváhagyásra vár')));
     }
 
     kartya.addEventListener('click', () => italReszletek(kartya, ital, fo, kepAdat));
@@ -1189,15 +1189,15 @@ function italReszletek(kartya, ital, fo, kepAdat) {
     if (badge) {
         if (fo.recept) {
             badge.className = 'alkohol-badge valtozo';
-            badgeSzoveg(badge, 'Alkoholfok: ', 'Változó');
+            badgeSzoveg(badge, tr('abv_prefix', 'Alkoholfok: '), tr('variable', 'Változó'));
             badge.hidden = false;
         } else if (!fo.alkoholos) {
             badge.className = 'alkohol-badge mentes';
-            badgeSzoveg(badge, '', 'Alkoholmentes');
+            badgeSzoveg(badge, '', tr('alcohol_free', 'Alkoholmentes'));
             badge.hidden = false;
         } else if (ital.alkohol_fok !== null && ital.alkohol_fok !== undefined) {
             badge.className = 'alkohol-badge';
-            badgeSzoveg(badge, 'Alkoholfok: ', `${ital.alkohol_fok}%`);
+            badgeSzoveg(badge, tr('abv_prefix', 'Alkoholfok: '), `${ital.alkohol_fok}%`);
             badge.hidden = false;
         } else {
             badge.hidden = true;
@@ -1213,7 +1213,7 @@ function italReszletek(kartya, ital, fo, kepAdat) {
     const recept = fo.recept ? (osszetevokItalonkent.get(ital.id) || []) : [];
     kontener.replaceChildren(...recept.map((item, index) => {
         const sor = ujElem('div', 'koktel-sor' + (index < recept.length - 1 ? ' koktel-sor-elvalaszto' : ''));
-        const egyseg = item.egyseg || (ital.recept_mod === 'arany' ? 'rész' : '');
+        const egyseg = item.egyseg || (ital.recept_mod === 'arany' ? tr('part_unit', 'rész') : '');
         sor.append(
             ujElem('span', 'koktel-nev', item.nev),
             ujElem('span', 'koktel-mennyiseg', `${item.mennyiseg ?? ''} ${egyseg}`.trim())
@@ -1233,17 +1233,17 @@ function italReszletek(kartya, ital, fo, kepAdat) {
 // ---------- Ranglista-napló: ki, mikor, hová tette az italt ----------
 // A naplót a szerver írja (public.ital_ranglista_naplo, az ital_ranglista triggere), a kliens csak olvassa.
 
-const NAPLO_KATEGORIA = { S: 'S', A: 'A', B: 'B', C: 'C', D: 'D', forras: 'lista' };
+const NAPLO_KATEGORIA = { S: 'S', A: 'A', B: 'B', C: 'C', D: 'D', forras: tr('log_list', 'lista') };
 
 // regi = null: előtte nem volt rangsorolva; uj = null: a sort törölték (nem az appból, hanem adatbázisból)
 function naploKategoria(kod, uj = false) {
-    if (!kod) return uj ? 'eltávolítva' : '–';
+    if (!kod) return uj ? tr('log_removed', 'eltávolítva') : '–';
     return NAPLO_KATEGORIA[kod] || kod;
 }
 
 function naploIdo(iso) {
     try {
-        return new Date(iso).toLocaleString('hu-HU', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        return new Date(iso).toLocaleString(goatsNyelv.locale(), { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     } catch {
         return '';
     }
@@ -1251,9 +1251,9 @@ function naploIdo(iso) {
 
 // Felhasználó nélküli bejegyzés: nem az appból, hanem adminisztrátori hozzáféréssel (adatbázisból) történt
 function naploNev(userId) {
-    if (!userId) return 'Adminisztrátor (adatbázis)';
+    if (!userId) return tr('log_admin_db', 'Adminisztrátor (adatbázis)');
     const tag = (window.goatsAuth?.getState()?.members || []).find(m => m.user_id === userId);
-    return tag?.display_name || 'Ismeretlen';
+    return tag?.display_name || tr('unknown_cap', 'Ismeretlen');
 }
 
 async function betoltNaplo(ital) {
@@ -1286,9 +1286,9 @@ async function betoltNaplo(ital) {
     const elso = data[0];
     const ki = naploNev(elso.user_id);
     const mikor = naploIdo(elso.created_at);
-    if (!elso.uj_kategoria) utolso.textContent = `Eltávolította a ranglistáról: ${ki} · ${mikor}`;
-    else if (elso.uj_kategoria === 'forras') utolso.textContent = `Visszarakta a listába: ${ki} · ${mikor}`;
-    else utolso.textContent = `Ide tette: ${ki} · ${mikor}`;
+    if (!elso.uj_kategoria) utolso.textContent = tr('log_removed_by', 'Eltávolította a ranglistáról: {who} · {when}', { who: ki, when: mikor });
+    else if (elso.uj_kategoria === 'forras') utolso.textContent = tr('log_returned_by', 'Visszarakta a listába: {who} · {when}', { who: ki, when: mikor });
+    else utolso.textContent = tr('log_placed_by', 'Ide tette: {who} · {when}', { who: ki, when: mikor });
 
     lista.replaceChildren(...data.map(sor => ujElem('li', 'modal-naplo-sor',
         `${naploNev(sor.user_id)}: ${naploKategoria(sor.regi_kategoria)} → ${naploKategoria(sor.uj_kategoria, true)} · ${naploIdo(sor.created_at)}`)));
@@ -1303,8 +1303,8 @@ function nyisdSzerkesztesModal() {
     szerkesztettItalId = ital.id;
     modalBezár();
 
-    document.getElementById('uj-ital-modal-cim').textContent = 'Ital szerkesztése';
-    document.getElementById('uj-ital-mentes-gomb').textContent = 'Mentés';
+    document.getElementById('uj-ital-modal-cim').textContent = tr('edit_drink', 'Ital szerkesztése');
+    document.getElementById('uj-ital-mentes-gomb').textContent = tr('save', 'Mentés');
 
     document.getElementById('uj-ital-nev').value = ital.nev || '';
     document.getElementById('uj-ital-kategoria').value = String(ital.kategoria_id);

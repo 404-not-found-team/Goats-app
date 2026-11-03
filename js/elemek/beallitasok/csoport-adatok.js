@@ -135,7 +135,7 @@ export function initGroupDetails() {
   // A csoport képeinek törlése a csoport törlése/utolsó tag kilépése ELŐTT (utána már nincs jogunk)
   async function csoportKepeinekTorlese(group) {
     const hibak = await torolCsoportKepei(group.id, group.group_code);
-    if (hibak.length) setStatus('Néhány kép törlése nem sikerült, de a művelet folytatódik.', '#ef4444');
+    if (hibak.length) setStatus(tr('err_some_images_delete', 'Néhány kép törlése nem sikerült, de a művelet folytatódik.'), '#ef4444');
   }
 
   // Kód mutatása/elrejtése, másolása
@@ -170,15 +170,15 @@ export function initGroupDetails() {
     const name = (get('group-name-display')?.value || '').trim();
     if (name === utolsoMentettCsoportnev) return;
     if (name.length < 2 || name.length > 40) {
-      return setNameStatus('A név 2–40 karakter legyen.', '#ef4444');
+      return setNameStatus(tr('err_name_2_40', 'A név 2–40 karakter legyen.'), '#ef4444');
     }
-    setNameStatus('Mentés...', '#3b82f6');
+    setNameStatus(tr('saving', 'Mentés...'), '#3b82f6');
     const ok = await renameGroup(group.id, name);
     if (ok) {
       utolsoMentettCsoportnev = name;
-      setNameStatus('Mentve ✓', '#10b981');
+      setNameStatus(tr('saved_check', 'Mentve ✓'), '#10b981');
     } else {
-      setNameStatus('A mentés nem sikerült.', '#ef4444');
+      setNameStatus(tr('err_save', 'A mentés nem sikerült.'), '#ef4444');
     }
   }
   const mentCsoportnevetKesleltetve = debounce(mentCsoportnevet, 800);
@@ -234,11 +234,11 @@ export function initGroupDetails() {
   }
 
   get('indit-eltavolitas-btn')?.addEventListener('click', () => {
-    inditsdKivalasztast('eltavolitas', 'Jelöld be, kiket távolítasz el a csoportból, majd nyomd meg a Végrehajtást.');
+    inditsdKivalasztast('eltavolitas', tr('select_members_remove', 'Jelöld be, kiket távolítasz el a csoportból, majd nyomd meg a Végrehajtást.'));
   });
 
   get('indit-atadas-btn')?.addEventListener('click', () => {
-    inditsdKivalasztast('atadas', 'Válaszd ki, kire ruházod át az admin jogot, majd nyomd meg a Végrehajtást.');
+    inditsdKivalasztast('atadas', tr('select_member_transfer', 'Válaszd ki, kire ruházod át az admin jogot, majd nyomd meg a Végrehajtást.'));
   });
 
   get('muveletek-megse-btn')?.addEventListener('click', () => zarjMuveletMod());
@@ -250,49 +250,49 @@ export function initGroupDetails() {
     if (kivalasztasMod === 'eltavolitas') {
       const kijeloltek = [...document.querySelectorAll('#group-members-list .tag-eltavolitas-cb:checked')]
         .map(cb => cb.value);
-      if (kijeloltek.length === 0) return setStatus('Jelölj be legalább egy tagot.', '#ef4444');
+      if (kijeloltek.length === 0) return setStatus(tr('err_select_one_member', 'Jelölj be legalább egy tagot.'), '#ef4444');
       const nevek = kijeloltek
         .map(id => members.find(m => m.user_id === id)?.display_name || id)
         .join(', ');
-      if (!confirm(`Eltávolítod a csoportból: ${nevek}?`)) return;
+      if (!confirm(tr('confirm_remove_members', 'Eltávolítod a csoportból: {names}?', { names: nevek }))) return;
 
-      setStatus('Eltávolítás...', '#3b82f6');
+      setStatus(tr('removing', 'Eltávolítás...'), '#3b82f6');
       // Párhuzamosan, nem egyenként: a tagok eltávolítása egymástól független művelet
       const eredmenyek = await Promise.all(kijeloltek.map(userId => removeMember(userId, group.id)));
       const hibaDb = eredmenyek.filter(ok => !ok).length;
-      setStatus(hibaDb === 0 ? 'A kiválasztott tagok eltávolítva.' : `${hibaDb} tag eltávolítása nem sikerült.`, hibaDb === 0 ? '#10b981' : '#ef4444');
+      setStatus(hibaDb === 0 ? tr('members_removed', 'A kiválasztott tagok eltávolítva.') : tr('err_members_remove', '{n} tag eltávolítása nem sikerült.', { n: hibaDb }), hibaDb === 0 ? '#10b981' : '#ef4444');
       zarjMuveletMod();
       return;
     }
 
     if (kivalasztasMod === 'atadas') {
       const kijelolt = document.querySelector('#group-members-list .tag-atadas-radio:checked');
-      if (!kijelolt) return setStatus('Válassz ki egy tagot.', '#ef4444');
+      if (!kijelolt) return setStatus(tr('err_select_member', 'Válassz ki egy tagot.'), '#ef4444');
       const nev = members.find(m => m.user_id === kijelolt.value)?.display_name || '';
-      if (!confirm(`Átadod az admin jogot neki: ${nev}? Utána te sima tag leszel.`)) return;
+      if (!confirm(tr('confirm_transfer_admin', 'Átadod az admin jogot neki: {name}? Utána te sima tag leszel.', { name: nev }))) return;
 
-      setStatus('Mentés...', '#3b82f6');
+      setStatus(tr('saving', 'Mentés...'), '#3b82f6');
       const ok = await transferOwnership(kijelolt.value, group.id);
-      setStatus(ok ? 'Az admin jog átadva.' : 'Az átadás nem sikerült.', ok ? '#10b981' : '#ef4444');
+      setStatus(ok ? tr('admin_transferred', 'Az admin jog átadva.') : tr('err_transfer', 'Az átadás nem sikerült.'), ok ? '#10b981' : '#ef4444');
       zarjMuveletMod();
     }
   });
 
   // Új kód (admin)
   get('regenerate-code-btn')?.addEventListener('click', async () => {
-    if (!confirm('Új csoportkódot generálsz. A régi kód azonnal érvénytelen lesz, a meglévő tagok bent maradnak. Az új kódot MEG KELL OSZTANOD a tagokkal, mert a régivel már nem tudnak csatlakozni. A csoport képei nem változnak. Folytatod?')) return;
+    if (!confirm(tr('confirm_new_code', 'Új csoportkódot generálsz. A régi kód azonnal érvénytelen lesz, a meglévő tagok bent maradnak. Az új kódot MEG KELL OSZTANOD a tagokkal, mert a régivel már nem tudnak csatlakozni. A csoport képei nem változnak. Folytatod?'))) return;
     const code = await regenerateGroupCode(getState().group.id);
-    if (code) setStatus(`Új csoportkód: ${code}`, '#10b981');
+    if (code) setStatus(tr('new_group_code', 'Új csoportkód: {code}', { code }), '#10b981');
   });
 
   // Csoport törlése (admin) – a csoport nevét kell begépelni
   get('delete-group-btn')?.addEventListener('click', async () => {
     const { group } = getState();
     const typed = prompt(
-      `A csoport és MINDEN adata (tartozások, tervek, események...) véglegesen törlődik.\n\nA megerősítéshez írd be a csoport nevét: ${group.group_name}`
+      tr('confirm_delete_group', 'A csoport és MINDEN adata (tartozások, tervek, események...) véglegesen törlődik.\n\nA megerősítéshez írd be a csoport nevét: {name}', { name: group.group_name })
     );
     if (typed === null) return;
-    if (typed.trim() !== group.group_name) return setStatus('A név nem egyezik, a csoport nem lett törölve.', '#ef4444');
+    if (typed.trim() !== group.group_name) return setStatus(tr('err_group_name_mismatch', 'A név nem egyezik, a csoport nem lett törölve.'), '#ef4444');
     await csoportKepeinekTorlese(group);
     const ok = await deleteCurrentGroup(group.id);
     if (ok) location.reload();
@@ -300,7 +300,7 @@ export function initGroupDetails() {
 
   // Kilépés (mindenkinek, nem csak adminnak)
   get('leave-group-btn')?.addEventListener('click', async () => {
-    if (!confirm('Biztosan kilépsz a csoportból?')) return;
+    if (!confirm(tr('confirm_leave_group', 'Biztosan kilépsz a csoportból?'))) return;
     try {
       const { group, members } = getState();
       if (members.length === 1) await csoportKepeinekTorlese(group);

@@ -25,11 +25,13 @@ function aktualisTagok() {
 
 function tagNev(userId, tartalekNev) {
     const tag = aktualisTagok().find(m => m.user_id === userId);
-    return tag ? tag.display_name : (tartalekNev || 'Törölt tag');
+    return tag ? tag.display_name : (tartalekNev || tr('deleted_member', 'Törölt tag'));
 }
 
+// Magyar részeshatározó-rag (-nak/-nek); más nyelven a név változatlan (a mondatot a fordítás adja)
 function getNakNek(name) {
     if (!name) return '';
+    if (window.goatsNyelv && goatsNyelv.aktualis() !== 'hu') return name;
 
     const lowerName = name.toLowerCase().trim();
     const melyMgh = ['a', 'á', 'o', 'ó', 'u', 'ú'];
@@ -126,11 +128,11 @@ function updateDropdownLabel() {
     if (!label) return;
 
     if (checkedBoxes.length === 0) {
-        label.textContent = 'Ki tartozik?';
+        label.textContent = tr('who_owes', 'Ki tartozik?');
     } else if (checkedBoxes.length === 1) {
-        label.textContent = checkedBoxes[0].parentElement.querySelector('span')?.textContent || 'Ki tartozik?';
+        label.textContent = checkedBoxes[0].parentElement.querySelector('span')?.textContent || tr('who_owes', 'Ki tartozik?');
     } else {
-        label.textContent = `${checkedBoxes.length} ember kiválasztva`;
+        label.textContent = tr('n_people_selected', '{n} ember kiválasztva', { n: checkedBoxes.length });
     }
 }
 
@@ -270,7 +272,7 @@ function megjelenitTartozasok(adat) {
         if (!targetDiv) return;
 
         const hitelezo = tagById(item.hitelezo_id) || tagByName(item.kinek);
-        const hitelezoNev = hitelezo ? hitelezo.display_name : (item.kinek || 'Törölt tag');
+        const hitelezoNev = hitelezo ? hitelezo.display_name : (item.kinek || tr('deleted_member', 'Törölt tag'));
         const felvette = tagById(item.felvette_id);
         const memberIndex = members.indexOf(ados);
 
@@ -282,11 +284,11 @@ function megjelenitTartozasok(adat) {
         row.className = 'tartozas-sor';
 
         const textSpan = document.createElement('span');
-        textSpan.textContent = `${getNakNek(hitelezoNev)} ${item.mennyiert} Ft-tal - ${item.miert}`;
+        textSpan.textContent = tr('debt_row', '{name} {amount} Ft-tal - {why}', { name: getNakNek(hitelezoNev), amount: item.mennyiert, why: item.miert });
 
         const deleteSpan = document.createElement('span');
         deleteSpan.textContent = '🗑️';
-        deleteSpan.title = 'Törlés';
+        deleteSpan.title = tr('delete', 'Törlés');
         deleteSpan.className = 'torles-jel';
         deleteSpan.addEventListener('click', () => deleteTartozas(item.id));
 
@@ -298,9 +300,9 @@ function megjelenitTartozasok(adat) {
             const meta = document.createElement('div');
             meta.className = 'meta-szoveg';
             const mikor = item.felvetel_ideje
-                ? ' · ' + new Date(item.felvetel_ideje).toLocaleDateString('hu-HU')
+                ? ' · ' + new Date(item.felvetel_ideje).toLocaleDateString(goatsNyelv.locale())
                 : '';
-            meta.textContent = `Felvette: ${felvette ? felvette.display_name : 'Törölt tag'}${mikor}`;
+            meta.textContent = tr('added_by', 'Felvette: {who}', { who: felvette ? felvette.display_name : tr('deleted_member', 'Törölt tag') }) + mikor;
             card.appendChild(meta);
         }
 
@@ -313,7 +315,7 @@ function megjelenitTartozasok(adat) {
         if (targetDiv && targetDiv.children.length === 0) {
             const emptyMsg = document.createElement('p');
             emptyMsg.className = 'empty-msg ures-tartozas';
-            emptyMsg.textContent = 'Még nincs tartozás';
+            emptyMsg.textContent = tr('no_debts_yet', 'Még nincs tartozás');
             targetDiv.appendChild(emptyMsg);
         }
     });
@@ -324,7 +326,7 @@ window.loadTartozasok = loadTartozasok; // a dinamikusan importált egyenlítés
 // és egy üres, lazán betöltött részletek-konténer.
 function epitsOsszevontKartyat(sor, ados, memberIndex, members) {
     const hitelezo = members.find(m => m.user_id === sor.hitelezo_id);
-    const hitelezoNev = hitelezo ? hitelezo.display_name : 'Törölt tag';
+    const hitelezoNev = hitelezo ? hitelezo.display_name : tr('deleted_member', 'Törölt tag');
 
     const card = document.createElement('div');
     card.className = 'tartozas-osszevont tagkartya';
@@ -343,7 +345,7 @@ function epitsOsszevontKartyat(sor, ados, memberIndex, members) {
 
     const osszegSpan = document.createElement('span');
     osszegSpan.className = 'tartozas-osszevont-osszeg';
-    osszegSpan.textContent = `Tartozik ${getNakNek(hitelezoNev)}: ${formatFt(sor.nyitott_osszeg)}`;
+    osszegSpan.textContent = tr('owes_to', 'Tartozik {name}: {amount}', { name: getNakNek(hitelezoNev), amount: formatFt(sor.nyitott_osszeg) });
 
     fejlec.appendChild(nyilBtn);
     fejlec.appendChild(osszegSpan);
@@ -354,7 +356,7 @@ function epitsOsszevontKartyat(sor, ados, memberIndex, members) {
         const egyenlitBtn = document.createElement('button');
         egyenlitBtn.type = 'button';
         egyenlitBtn.className = 'gomb-egyenlit';
-        egyenlitBtn.textContent = 'Tartozások egyenlítése';
+        egyenlitBtn.textContent = tr('settle_debts', 'Tartozások egyenlítése');
         fejlec.appendChild(egyenlitBtn);
     }
 
@@ -399,9 +401,9 @@ async function kezeldTartozasKattintast(e) {
         const modul = await import('../elemek/tartozasok-egyenlitese.js');
         modul.nyitEgyenlitesModal({
             aId: adosId,
-            aNev: ados ? ados.display_name : 'Törölt tag',
+            aNev: ados ? ados.display_name : tr('deleted_member', 'Törölt tag'),
             bId: hitelezoId,
-            bNev: hitelezo ? hitelezo.display_name : 'Törölt tag',
+            bNev: hitelezo ? hitelezo.display_name : tr('deleted_member', 'Törölt tag'),
             aTartozikBnek: nyitottOsszeg(adosId, hitelezoId),
             bTartozikAnak: nyitottOsszeg(hitelezoId, adosId),
             beszamithato: Math.min(nyitottOsszeg(adosId, hitelezoId), nyitottOsszeg(hitelezoId, adosId)),
@@ -418,7 +420,7 @@ async function deleteTartozas(id) {
         .eq('group_code', groupCode);
 
     if (error) {
-        alert('Hiba történt a törlés során!');
+        alert(tr('err_deleting', 'Hiba történt a törlés során!'));
         return;
     }
 
@@ -494,7 +496,7 @@ function egyediMezok(osszeg, resztvevok) {
         input.min = '0';
         input.className = 'egyedi-input';
         input.dataset.id = id;
-        input.setAttribute('aria-label', `${tagNeve(id)} összege`);
+        input.setAttribute('aria-label', tr('amount_of', '{name} összege', { name: tagNeve(id) }));
         input.value = elozo[id] !== undefined ? elozo[id] : alap;
         sor.append(nev, input);
         return sor;
@@ -514,10 +516,10 @@ function frissitOsszesen() {
         elonezet.textContent = ``;
         //elonezet.classList.add('ok');
     } else if (kulonbseg > 0) {
-        elonezet.textContent = `Még ${formatFt(kulonbseg)} hiányzik`;
+        elonezet.textContent = tr('amount_missing', 'Még {amount} hiányzik', { amount: formatFt(kulonbseg) });
         elonezet.classList.add('hiba');
     } else {
-        elonezet.textContent = `${formatFt(-kulonbseg)} többet osztottál be a kelleténél`;
+        elonezet.textContent = tr('amount_over', '{amount} többet osztottál be a kelleténél', { amount: formatFt(-kulonbseg) });
         elonezet.classList.add('hiba');
     }
 }
@@ -542,7 +544,7 @@ function frissitKozosKoltseg() {
 
     if (egyenlo) {
         const { n, resz, maradek } = egyenloAdatok(osszeg, resztvevok, selectedKinek);
-        let szoveg = `${n} fő × ${formatFt(resz)}`;
+        let szoveg = tr('n_people_times', '{n} fő × {amount}', { n, amount: formatFt(resz) });
         if (maradek > 0) szoveg += ` `;
         elonezet.textContent = szoveg;
     } else {
@@ -559,7 +561,7 @@ function tartozasSorok(osszeg, resztvevok, hitelezo) {
     const map = egyediOsszegekOlvas();
     const sum = resztvevok.reduce((a, id) => a + (map[id] || 0), 0);
     if (sum !== osszeg) {
-        return { hiba: `Az egyedi összegek összege (${formatFt(sum)}) nem egyezik a teljes összeggel (${formatFt(osszeg)}).` };
+        return { hiba: tr('err_custom_sum', 'Az egyedi összegek összege ({sum}) nem egyezik a teljes összeggel ({total}).', { sum: formatFt(sum), total: formatFt(osszeg) }) };
     }
     const sorok = resztvevok
         .filter(id => id !== hitelezo && (map[id] || 0) > 0)
@@ -571,12 +573,12 @@ function tartozasSorok(osszeg, resztvevok, hitelezo) {
 function tartozasHiba(error) {
     const uzenet = error?.message || '';
     if (/row-level security|policy/i.test(uzenet)) {
-        return 'Ehhez nincs jogosultságod: csak a csoport tagjai rögzíthetnek tartozást.';
+        return tr('err_debt_no_permission', 'Ehhez nincs jogosultságod: csak a csoport tagjai rögzíthetnek tartozást.');
     }
     if (/foreign key|violates/i.test(uzenet)) {
-        return 'A kiválasztott tag nem tagja ennek a csoportnak.';
+        return tr('err_member_not_in_group', 'A kiválasztott tag nem tagja ennek a csoportnak.');
     }
-    return 'Hiba történt a mentés során!';
+    return tr('err_saving', 'Hiba történt a mentéskor!');
 }
 
 async function addTartozas() {
@@ -591,13 +593,13 @@ async function addTartozas() {
     const osszeg = osszegErtek();
 
     if (!miert || !osszeg || !kinek || resztvevok.length === 0) {
-        alert('Kérlek töltsd ki az összes mezőt és válassz ki legalább egy résztvevőt!');
+        alert(tr('err_fill_all_debt', 'Kérlek töltsd ki az összes mezőt és válassz ki legalább egy résztvevőt!'));
         return;
     }
 
     const felvevoId = window.goatsAuth?.getState()?.user?.id;
     if (!felvevoId) {
-        alert('A tartozás felvételéhez be kell jelentkezned!');
+        alert(tr('err_login_for_debt', 'A tartozás felvételéhez be kell jelentkezned!'));
         return;
     }
 
@@ -607,7 +609,7 @@ async function addTartozas() {
         return;
     }
     if (sorok.length === 0) {
-        alert('Legalább egy adósnak kell lennie a hitelezőn kívül.');
+        alert(tr('err_need_debtor', 'Legalább egy adósnak kell lennie a hitelezőn kívül.'));
         return;
     }
 
@@ -640,7 +642,7 @@ async function addTartozas() {
     document.getElementById('mennyiertInput').value = '';
 
     selectedKinek = '';
-    document.getElementById('kinekDropdownLabel').textContent = 'Kinek tartozik?';
+    document.getElementById('kinekDropdownLabel').textContent = tr('who_owes_whom', 'Kinek tartozik?');
     document.querySelectorAll('#kinekDropdownContent .dropdown-item').forEach(i => i.classList.remove('selected'));
 
     document.querySelectorAll('#dropdownContent input[type="checkbox"]:checked').forEach(cb => cb.checked = false);

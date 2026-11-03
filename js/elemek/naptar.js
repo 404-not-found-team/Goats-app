@@ -8,7 +8,7 @@ let kivalasztottDatumString = '';
 const honapNevek = [
     "Január", "Február", "Március", "Április", "Május", "Június",
     "Július", "Augusztus", "Szeptember", "Október", "November", "December"
-];
+].map((nev, i) => tr(`month_${i + 1}`, nev));
 
 document.addEventListener('DOMContentLoaded', () => {
     initNaptar();
@@ -68,7 +68,7 @@ function setupGombok() {
 
     document.getElementById('modosit-esemeny-btn')?.addEventListener('click', modositEsemeny);
     document.getElementById('torol-esemeny-btn')?.addEventListener('click', () => {
-        if (aktivEsemeny && confirm(`Biztosan törlöd ezt az eseményt: "${aktivEsemeny.cim}"?`)) {
+        if (aktivEsemeny && confirm(tr('confirm_delete_event', 'Biztosan törlöd ezt az eseményt: "{title}"?', { title: aktivEsemeny.cim }))) {
             torolEsemeny(aktivEsemeny.id);
             document.getElementById('esemeny-reszletek-modal').hidden = true;
         }
@@ -178,14 +178,14 @@ function nyisdNapiEsemenyeket(dString, napiEsemenyek) {
     const cimElem = document.getElementById('napi-modal-cím');
     const listaDiv = document.getElementById('napi-esemenyek-lista');
 
-    if (cimElem) cimElem.textContent = `${dString} eseményei`;
+    if (cimElem) cimElem.textContent = tr('events_of_day', '{date} eseményei', { date: dString });
     if (listaDiv) {
         listaDiv.innerHTML = '';
 
         if (napiEsemenyek.length === 0) {
             const uzenet = document.createElement('p');
             uzenet.className = 'ures-uzenet';
-            uzenet.textContent = 'Nincsenek események ezen a napon.';
+            uzenet.textContent = tr('no_events_day', 'Nincsenek események ezen a napon.');
             listaDiv.replaceChildren(uzenet);
         } else {
             napiEsemenyek.forEach(es => {
@@ -197,7 +197,7 @@ function nyisdNapiEsemenyeket(dString, napiEsemenyek) {
 
                 const szerkesztesSpan = document.createElement('span');
                 szerkesztesSpan.className = 'szerkesztes-jel';
-                szerkesztesSpan.textContent = 'Szerkesztés ✏️';
+                szerkesztesSpan.textContent = tr('edit_pencil', 'Szerkesztés ✏️');
 
                 elem.appendChild(cimSpan);
                 elem.appendChild(szerkesztesSpan);
@@ -240,7 +240,7 @@ async function modositEsemeny() {
     const ujDatum = datumInput ? datumInput.value : '';
 
     if (!ujCim || !ujDatum) {
-        return alert('Adj meg címet és dátumot!');
+        return alert(tr('err_title_date', 'Adj meg címet és dátumot!'));
     }
 
     try {
@@ -254,7 +254,7 @@ async function modositEsemeny() {
 
         if (error) {
             console.error('❌ Supabase frissítési hiba:', error);
-            alert(`Hiba a módosításkor: ${error.message}`);
+            alert(tr('err_modify', 'Hiba a módosításkor: {msg}', { msg: error.message }));
             return;
         }
 
@@ -269,7 +269,7 @@ async function modositEsemeny() {
         kirajzolNaptar();
     } catch (err) {
         console.error('Kivétel történt:', err);
-        alert('Váratlan hiba történt a módosítás során!');
+        alert(tr('err_modify_unexpected', 'Váratlan hiba történt a módosítás során!'));
     }
 }
 
@@ -278,9 +278,9 @@ async function mentUjEsemeny() {
     const cimInput = document.getElementById('esemeny-cim-input');
     const datumInput = document.getElementById('esemeny-datum-input');
 
-    if (!groupCode) return alert('Lépj be egy csoportba!');
+    if (!groupCode) return alert(tr('err_join_group_first', 'Lépj be egy csoportba!'));
     if (!cimInput.value.trim() || !datumInput.value) {
-        return alert('Adj meg címet és dátumot!');
+        return alert(tr('err_title_date', 'Adj meg címet és dátumot!'));
     }
 
     const újEsemeny = {
@@ -297,7 +297,7 @@ async function mentUjEsemeny() {
 
     if (error) {
         console.error('Hiba a mentésnél:', error);
-        alert('Hiba történt a mentéskor!');
+        alert(tr('err_saving', 'Hiba történt a mentéskor!'));
         return;
     }
 
@@ -319,7 +319,7 @@ async function torolEsemeny(id) {
         .eq('id', id);
 
     if (error) {
-        alert('Hiba a törlésnél!');
+        alert(tr('err_deleting', 'Hiba történt a törlés során!'));
         return;
     }
 

@@ -15,7 +15,7 @@ function fmt(szam) {
 }
 
 function nev(id) {
-  return window.tagNev ? window.tagNev(id) : 'Törölt tag';
+  return window.tagNev ? window.tagNev(id) : tr('deleted_member', 'Törölt tag');
 }
 
 function nak(nevSzoveg) {
@@ -25,7 +25,7 @@ function nak(nevSzoveg) {
 // A megadott ados–hitelező pár egyedi tartozás-tételeit és az egyenlítési előzményeket
 // tölti be, és a kontener elembe rajzolja.
 export async function toltsReszleteket(kontener, adosId, hitelezoId) {
-  kontener.innerHTML = '<p class="empty-msg">Betöltés...</p>';
+  kontener.innerHTML = `<p class="empty-msg">${tr('loading', 'Betöltés...')}</p>`;
 
   const [reszletekRes, elozmenyekRes] = await Promise.all([
     _supabase.rpc('tartozas_reszletek', { p_a: adosId, p_b: hitelezoId }),
@@ -37,7 +37,7 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
   ]);
 
   if (reszletekRes.error || elozmenyekRes.error) {
-    kontener.innerHTML = '<p class="empty-msg">A részletek betöltése nem sikerült.</p>';
+    kontener.innerHTML = `<p class="empty-msg">${tr('err_details_load', 'A részletek betöltése nem sikerült.')}</p>`;
     console.error('Tartozás-részletek hiba:', reszletekRes.error || elozmenyekRes.error);
     return;
   }
@@ -49,7 +49,7 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
   lista.className = 'tartozas-reszlet-lista';
 
   if (tetelek.length === 0) {
-    lista.innerHTML = '<p class="empty-msg">Nincs megjeleníthető tétel.</p>';
+    lista.innerHTML = `<p class="empty-msg">${tr('no_items', 'Nincs megjeleníthető tétel.')}</p>`;
   } else {
     tetelek.forEach(t => {
       const sor = document.createElement('div');
@@ -81,7 +81,7 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
 
       const torlesSpan = document.createElement('span');
       torlesSpan.textContent = '🗑️';
-      torlesSpan.title = 'Törlés (kifizetve)';
+      torlesSpan.title = tr('delete_paid', 'Törlés (kifizetve)');
       torlesSpan.className = 'torles-jel';
       torlesSpan.addEventListener('click', () => window.deleteTartozas?.(t.id));
 
@@ -92,7 +92,7 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
       if (t.nyitott_osszeg <= 0) {
         const jelzes = document.createElement('span');
         jelzes.className = 'tartozas-reszlet-allapot';
-        jelzes.textContent = 'egyenlítve';
+        jelzes.textContent = tr('settled', 'egyenlítve');
         sor.appendChild(jelzes);
       }
 
@@ -112,7 +112,7 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
   elozmenyGomb.type = 'button';
   elozmenyGomb.className = 'tartozas-egyenlites-elozmenyek-gomb';
   elozmenyGomb.setAttribute('aria-expanded', 'false');
-  elozmenyGomb.textContent = `› Egyenlítési előzmények (${elozmenyek.length})`;
+  elozmenyGomb.textContent = `› ${tr('settle_history', 'Egyenlítési előzmények ({n})', { n: elozmenyek.length })}`;
 
   const elozmenyBlokk = document.createElement('div');
   elozmenyBlokk.className = 'tartozas-egyenlites-elozmenyek';
@@ -122,7 +122,7 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
     const nyitva = !elozmenyBlokk.hidden;
     elozmenyBlokk.hidden = nyitva;
     elozmenyGomb.setAttribute('aria-expanded', String(!nyitva));
-    elozmenyGomb.textContent = `${nyitva ? '›' : '⌄'} Egyenlítési előzmények (${elozmenyek.length})`;
+    elozmenyGomb.textContent = `${nyitva ? '›' : '⌄'} ${tr('settle_history', 'Egyenlítési előzmények ({n})', { n: elozmenyek.length })}`;
   });
 
   elozmenyek.forEach(e => {
@@ -130,24 +130,24 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
     sor.className = 'tartozas-egyenlites-elozmeny-sor';
     if (e.visszavonva) sor.classList.add('visszavonva');
 
-    const datum = e.letrehozva ? new Date(e.letrehozva).toLocaleDateString('hu-HU') : '';
+    const datum = e.letrehozva ? new Date(e.letrehozva).toLocaleDateString(goatsNyelv.locale()) : '';
     const szoveg = document.createElement('span');
     szoveg.textContent = e.visszavonva
-      ? `${fmt(e.osszeg)} beszámítva (${datum}, ${nev(e.letrehozta)}) – visszavonva`
-      : `${fmt(e.osszeg)} beszámítva (${datum}, ${nev(e.letrehozta)})`;
+      ? tr('settle_entry_reverted', '{amount} beszámítva ({date}, {who}) – visszavonva', { amount: fmt(e.osszeg), date: datum, who: nev(e.letrehozta) })
+      : tr('settle_entry', '{amount} beszámítva ({date}, {who})', { amount: fmt(e.osszeg), date: datum, who: nev(e.letrehozta) });
     sor.appendChild(szoveg);
 
     if (!e.visszavonva && (admin || sajat === e.fel_a || sajat === e.fel_b)) {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'tartozas-egyenlites-visszavon-btn';
-      btn.textContent = 'Visszavonás';
+      btn.textContent = tr('revert', 'Visszavonás');
       btn.addEventListener('click', async () => {
-        if (!confirm('Biztosan visszavonod ezt az egyenlítést? Az érintett tartozások nyitott összege visszaáll.')) return;
+        if (!confirm(tr('confirm_revert_settle', 'Biztosan visszavonod ezt az egyenlítést? Az érintett tartozások nyitott összege visszaáll.'))) return;
         btn.disabled = true;
         const { error } = await _supabase.rpc('tartozas_egyenlites_visszavonasa', { p_egyenlites: e.id });
         if (error) {
-          alert(error.message || 'A visszavonás nem sikerült.');
+          alert(error.message || tr('err_revert', 'A visszavonás nem sikerült.'));
           btn.disabled = false;
           return;
         }
@@ -172,15 +172,15 @@ function bizonyosodjModalRol() {
     <div id="tartozas-egyenlites-modal" class="sm-overlay" role="dialog" aria-modal="true" aria-labelledby="tartozas-egyenlites-title" hidden>
       <div class="sm-card tartozas-egyenlites-kartya">
         <div class="sm-header">
-          <h3 id="tartozas-egyenlites-title">Tartozások egyenlítése</h3>
-          <button aria-label="Bezárás" id="tartozas-egyenlites-close-btn" class="sm-close-btn" type="button">&times;</button>
+          <h3 id="tartozas-egyenlites-title">${tr('settle_debts', 'Tartozások egyenlítése')}</h3>
+          <button aria-label="${tr('close', 'Bezárás')}" id="tartozas-egyenlites-close-btn" class="sm-close-btn" type="button">&times;</button>
         </div>
         <div class="sm-body">
           <p id="tartozas-egyenlites-elotte" class="tartozas-egyenlites-sor"></p>
           <p id="tartozas-egyenlites-utana" class="tartozas-egyenlites-sor"></p>
         </div>
         <div class="sm-footer">
-          <button id="tartozas-egyenlites-ok-btn" class="sm-btn sm-btn-save sm-btn-lg" type="button">Egyenlítés</button>
+          <button id="tartozas-egyenlites-ok-btn" class="sm-btn sm-btn-save sm-btn-lg" type="button">${tr('settle', 'Egyenlítés')}</button>
         </div>
       </div>
     </div>
@@ -207,9 +207,9 @@ export function nyitEgyenlitesModal({ aId, aNev, bId, bNev, aTartozikBnek, bTart
   const utanaB = Math.max(bTartozikAnak - beszamithato, 0);
 
   document.getElementById('tartozas-egyenlites-elotte').textContent =
-    `${aNev} tartozása: ${fmt(aTartozikBnek)} => ${fmt(utanaA)}.`;
+    tr('debt_of_change', '{name} tartozása: {from} => {to}.', { name: aNev, from: fmt(aTartozikBnek), to: fmt(utanaA) });
   document.getElementById('tartozas-egyenlites-utana').textContent =
-    `${bNev} tartozása: ${fmt(bTartozikAnak)} => ${fmt(utanaB)}.`;
+    tr('debt_of_change', '{name} tartozása: {from} => {to}.', { name: bNev, from: fmt(bTartozikAnak), to: fmt(utanaB) });
 
   const okBtn = document.getElementById('tartozas-egyenlites-ok-btn');
   const ujOkBtn = okBtn.cloneNode(true); // az előző megnyitás kattintás-figyelőjének eltávolítása
@@ -219,7 +219,7 @@ export function nyitEgyenlitesModal({ aId, aNev, bId, bNev, aTartozikBnek, bTart
     const { error } = await _supabase.rpc('tartozasok_egyenlitese', { p_a: aId, p_b: bId });
     ujOkBtn.disabled = false;
     if (error) {
-      alert(error.message || 'Az egyenlítés nem sikerült.');
+      alert(error.message || tr('err_settle', 'Az egyenlítés nem sikerült.'));
       return;
     }
     modal.hidden = true;

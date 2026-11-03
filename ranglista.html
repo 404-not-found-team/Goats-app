@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Security-Policy"
         content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ATG - Ranglista</title>
+    <title data-i18n="atg_tierlist">ATG - Ranglista</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/elemek/ital-szinezes.css">
@@ -15,6 +15,7 @@
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
+    <script src="js/segedek/nyelv.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 
     <script type="module" src="js/main.js"></script>
@@ -30,16 +31,16 @@
     <ul id="navBar"></ul>
 
     <div class="fejlec-gombok-tarolo">
-        <h1>Ital ranglista</h1>
+        <h1 data-i18n="drink_tierlist">Ital ranglista</h1>
         <div class="fejlec-gombok">
-            <button id="szuro-gomb" onclick="nyisdSzuroModal()" class="gomb-szuro">🔍 Szűrők</button>
-            <button id="uj-ital-gomb" onclick="nyisdUjItalModal()" class="gomb-uj-ital">➕ Új ital hozzáadása</button>
+            <button id="szuro-gomb" onclick="nyisdSzuroModal()" class="gomb-szuro" data-i18n="filters">🔍 Szűrők</button>
+            <button id="uj-ital-gomb" onclick="nyisdUjItalModal()" class="gomb-uj-ital" data-i18n="add_new_drink">➕ Új ital hozzáadása</button>
         </div>
     </div>
 
     <div id="csoport-szuro-hianyzik" class="szuro-hianyzik" hidden>
-        <p>A csoport még nem választotta ki, mely italok jelenjenek meg a ranglistán.</p>
-        <button type="button" id="csoport-szuro-beallitas-gomb" class="gomb-szuro">Beállítás most</button>
+        <p data-i18n="not_selected_drink_filter">A csoport még nem választotta ki, mely italok jelenjenek meg a ranglistán.</p>
+        <button type="button" id="csoport-szuro-beallitas-gomb" class="gomb-szuro" data-i18n="set_now">Beállítás most</button>
     </div>
 
     <div class="ranglista-fo-tarolo">
@@ -55,17 +56,17 @@
     <div id="modal-hatter" hidden>
         <div id="hatter" class="modal-kis-doboz">
             <button type="button" id="modal-szerkesztes-gomb" class="modal-szerkesztes-btn"
-                onclick="nyisdSzerkesztesModal()" title="Szerkesztés (superadmin)" hidden>✏️</button>
+                onclick="nyisdSzerkesztesModal()" title="Szerkesztés (superadmin)" data-i18n-attr="title:edit_superadmin" hidden>✏️</button>
             <!-- a kép vagy (kép híján) a kategória-ikon, ugyanaz az elem, mint a kártyán (ital-kep.js) -->
             <div id="modal-kep-hely" class="modal-kep-hely"></div>
             <div id="modal-nev" class="modal-ital-cim"></div>
             <div class="modal-jelvenyek">
                 <div id="modal-alkohol-badge" class="alkohol-badge" hidden></div>
-                <div id="modal-cukor-badge" class="alkohol-badge cukormentes" hidden>Cukormentes</div>
+                <div id="modal-cukor-badge" class="alkohol-badge cukormentes" hidden data-i18n="sugar_free">Cukormentes</div>
             </div>
 
             <div id="modal-koktel-hozzavalok-doboz" class="modal-hozzavalok-box" hidden>
-                <div class="modal-hozzavalok-fejlec">🍹 Hozzávalók és Arányok:</div>
+                <div class="modal-hozzavalok-fejlec" data-i18n="ingredients_proportions">🍹 Hozzávalók és Arányok:</div>
                 <div id="modal-koktel-hozzavalok-lista" class="modal-hozzavalok-lista"></div>
             </div>
 
@@ -73,7 +74,7 @@
             <div id="modal-naplo-doboz" class="modal-naplo-box" hidden>
                 <div id="modal-naplo-utolso" class="modal-naplo-utolso"></div>
                 <details class="modal-naplo-elozmenyek">
-                    <summary>Előzmények</summary>
+                    <summary data-i18n="history">Előzmények</summary>
                     <ul id="modal-naplo-lista" class="modal-naplo-lista"></ul>
                 </details>
             </div>
@@ -84,18 +85,18 @@
                 <button id="elmegy" class="gombok dark" onclick="kategoriatValaszt('B')">B</button>
                 <button id="soha" class="gombok dark" onclick="kategoriatValaszt('C')">C</button>
                 <button id="megjobbansoha" class="gombok dark" onclick="kategoriatValaszt('D')">D</button>
-                <button id="forras" class="gombok" onclick="kategoriatValaszt('forras')">Vissza</button>
+                <button id="forras" class="gombok" onclick="kategoriatValaszt('forras')" data-i18n="return">Vissza</button>
             </div>
         </div>
     </div>
 
     <div id="uj-ital-modal" class="modal-hatter-ui" hidden>
         <div class="modal-doboz-ui modal-nagy-doboz">
-            <h3 id="uj-ital-modal-cim" class="modal-alcim">Új ital / koktél felvétele</h3>
+            <h3 id="uj-ital-modal-cim" class="modal-alcim" data-i18n="add_new_drink_cocktail">Új ital / koktél felvétele</h3>
 
             <div class="floating-group">
                 <input type="text" id="uj-ital-nev" class="floating-input" placeholder=" " />
-                <label class="floating-label">Ital neve</label>
+                <label class="floating-label" data-i18n="drink_name">Ital neve</label>
             </div>
 
             <!-- A kártyán/modalban alapból a márka-előtag nélküli név látszik (pl. "Finlandia Mango" ->
@@ -106,19 +107,19 @@
                 <select id="uj-ital-kategoria" class="floating-select" onchange="kategoriaValtozasCheck()">
                     <!-- a lehetőségeket a ranglista.js tölti fel a public.ital_kategoriak táblából -->
                 </select>
-                <label class="floating-label">Ital Fajta</label>
+                <label class="floating-label" data-i18n="drink_type">Ital Fajta</label>
             </div>
 
             <div id="alkoholfok-group" class="floating-group">
                 <input type="number" id="uj-ital-szazalek" class="floating-input" placeholder=" " step="0.1" />
-                <label class="floating-label">Alkoholfok (%)</label>
+                <label class="floating-label" data-i18n="alcohol_percentage">Alkoholfok (%)</label>
             </div>
 
             <div id="kiszereles-group" class="floating-group" hidden>
                 <select id="uj-ital-kiszereles" class="floating-select">
                     <!-- a lehetőségeket a ranglista.js tölti fel (js/segedek/ital-kategoriak.js: KISZERELESEK) -->
                 </select>
-                <label class="floating-label">Kiszerelés</label>
+                <label class="floating-label" data-i18n="drink_packaging">Kiszerelés</label>
             </div>
 
             <!-- Színezett kép (ital-kep.js): forma + 1-2 szín + opcionális minta saját színnel; "Nincs" = márkakép vagy ikon -->
@@ -126,7 +127,7 @@
                 <select id="uj-ital-forma" class="floating-select" onchange="formaValtozott()">
                     <!-- a lehetőségeket a ranglista.js tölti fel (ital-kep.js: FORMAK) -->
                 </select>
-                <label class="floating-label">Kép formája</label>
+                <label class="floating-label" data-i18n="photo_format">Kép formája</label>
             </div>
 
             <div id="kep-szinezes-resz" class="kep-szinezes-resz" hidden>
@@ -136,21 +137,21 @@
                             <!-- a lehetőségeket a ranglista.js tölti fel (public.szin_paletta + "Szín keverés");
                                  az admin oldal Színek fülén vehető fel/szerkeszthető/törölhető új bejegyzés -->
                         </select>
-                        <label class="floating-label">Fő szín</label>
+                        <label class="floating-label" data-i18n="main_color">Fő szín</label>
                     </div>
                     <input type="color" id="uj-ital-szin-1" class="szin-hely-picker" value="#e30613" oninput="kepElonezetFrissit()" hidden />
                 </div>
 
                 <label class="kep-szin-mezo">
                     <input type="checkbox" id="uj-ital-van-szin-2" onchange="masodikSzinValtozott()" />
-                    Legyen második szín
+                    <span data-i18n="be_second_color">Legyen második szín</span>
                 </label>
 
                 <div id="szin-2-hely" class="szin-hely" hidden>
                     <div class="floating-group">
                         <select id="uj-ital-szin-2-select" class="floating-select" onchange="szinSlotValtozott(2)">
                         </select>
-                        <label class="floating-label">Második szín</label>
+                        <label class="floating-label" data-i18n="second_color">Második szín</label>
                     </div>
                     <input type="color" id="uj-ital-szin-2" class="szin-hely-picker" value="#111111" oninput="kepElonezetFrissit()" hidden />
                 </div>
@@ -160,7 +161,7 @@
                         <select id="uj-ital-minta" class="floating-select" onchange="mintaValtozott()">
                             <!-- ital-kep.js: MINTAK, csak a kiválasztott formához rajzoltak -->
                         </select>
-                        <label class="floating-label">Minta</label>
+                        <label class="floating-label" data-i18n="sample">Minta</label>
                     </div>
                     <div id="kep-elonezet" class="kep-elonezet"></div>
                 </div>
@@ -169,80 +170,79 @@
                     <div class="floating-group">
                         <select id="uj-ital-szin-3-select" class="floating-select" onchange="szinSlotValtozott(3)">
                         </select>
-                        <label class="floating-label">Minta színe</label>
+                        <label class="floating-label" data-i18n="sample_color">Minta színe</label>
                     </div>
                     <input type="color" id="uj-ital-szin-3" class="szin-hely-picker" value="#ffffff" oninput="kepElonezetFrissit()" hidden />
                 </div>
             </div>
             <label id="teljes-nev-group" class="szuro-kapcsolo-sor" hidden>
                 <input type="checkbox" id="uj-ital-teljes-nev">
-                <span>Teljes név mutatása</span>
+                <span data-i18n="show_full_name">Teljes név mutatása</span>
             </label>
 
             <div id="koktel-összeallitas-resz" class="koktel-resz-kontener" hidden>
                 <div class="toggle-mode-container">
                     <button type="button" id="mode-arany-btn" class="toggle-mode-btn active"
-                        onclick="valtsMódot('arany')">📐 Arányok alapján</button>
-                    <button type="button" id="mode-pontos-btn" class="toggle-mode-btn" onclick="valtsMódot('pontos')">🧪
+                        onclick="valtsMódot('arany')" data-i18n="based_on_proportions">📐 Arányok alapján</button>
+                    <button type="button" id="mode-pontos-btn" class="toggle-mode-btn" onclick="valtsMódot('pontos')" data-i18n="exact_amount">🧪
                         Pontos mennyiség</button>
                 </div>
 
-                <h4 class="hozzavalo-alcim">☰ Hozzávalók</h4>
+                <h4 class="hozzavalo-alcim" data-i18n="indgridients">☰ Hozzávalók</h4>
 
                 <div id="hozzavalok-lista"></div>
 
-                <button type="button" class="gomb-uj-hozzavalo" onclick="ujHozzavaloSor()">+ Új hozzávaló</button>
+                <button type="button" class="gomb-uj-hozzavalo" onclick="ujHozzavaloSor()" data-i18n="new_indgridients">+ Új hozzávaló</button>
             </div>
 
             <div class="modal-akcio-gombok">
-                <button id="uj-ital-mentes-gomb" onclick="mentUjItal()" class="sm-btn gomb-hozzaadas">Hozzáadás</button>
-                <button onclick="zardUjItalModal()" class="sm-btn gomb-megse">Mégse</button>
+                <button id="uj-ital-mentes-gomb" onclick="mentUjItal()" class="sm-btn gomb-hozzaadas" data-i18n="add">Hozzáadás</button>
+                <button onclick="zardUjItalModal()" class="sm-btn gomb-megse" data-i18n="back">Mégse</button>
             </div>
         </div>
     </div>
 
     <div id="szuro-modal" class="modal-hatter-ui" hidden>
         <div class="modal-doboz-ui szuro-modal-doboz" role="dialog" aria-modal="true" aria-labelledby="szuro-modal-cim">
-            <h3 id="szuro-modal-cim" class="szuro-modal-cim">🔍 Ranglista szűrők</h3>
+            <h3 id="szuro-modal-cim" class="szuro-modal-cim" data-i18n="tierlist_filters">🔍 Ranglista szűrők</h3>
 
             <div class="szuro-fulek" role="tablist">
                 <button type="button" id="szuro-ful-sajat" class="szuro-ful aktiv" role="tab" aria-selected="true"
-                    aria-controls="szuro-panel-sajat">Saját nézet</button>
+                    aria-controls="szuro-panel-sajat" data-i18n="filter_own_view">Saját nézet</button>
                 <button type="button" id="szuro-ful-csoport" class="szuro-ful" role="tab" aria-selected="false"
-                    aria-controls="szuro-panel-csoport">Csoport beállítás</button>
+                    aria-controls="szuro-panel-csoport" data-i18n="filter_group_setting">Csoport beállítás</button>
             </div>
 
             <!-- Saját nézet: csak ebben a böngészőablakban él, nem mentjük el sehova -->
             <div id="szuro-panel-sajat" class="szuro-panel" role="tabpanel">
-                <p class="szuro-leiras">Csak neked és csak most: újratöltéskor visszaáll a csoport beállítására.</p>
+                <p class="szuro-leiras" data-i18n="filter_own_desc">Csak neked és csak most: újratöltéskor visszaáll a csoport beállítására.</p>
                 <div id="sajat-szuro-kategoriak" class="szuro-kategoria-lista"></div>
 
-                <label class="sm-label szuro-label szuro-label-top" for="kizart-kulcsszo-input">🚫 Márka / név
-                    elrejtése:</label>
+                <label class="sm-label szuro-label szuro-label-top" for="kizart-kulcsszo-input" data-i18n="hide_brand_name">🚫 Márka / név elrejtése:</label>
                 <div class="szuro-input-sor">
-                    <input type="text" id="kizart-kulcsszo-input" class="sm-input szuro-input" placeholder="Pl. Royal"
+                    <input type="text" id="kizart-kulcsszo-input" class="sm-input szuro-input" placeholder="Pl. Royal" data-i18n-attr="placeholder:hide_brand_ph"
                         maxlength="40">
                     <button type="button" id="kizart-hozzaad-gomb" class="sm-btn gomb-plusz"
-                        aria-label="Hozzáadás">+</button>
+                        aria-label="Hozzáadás" data-i18n-attr="aria-label:add">+</button>
                 </div>
                 <div id="kizart-tagek-kontener" class="tag-kontener"></div>
 
                 <div class="szuro-footer">
                     <button type="button" id="sajat-szuro-alaphelyzet"
-                        class="sm-btn gomb-masodlagos">Alaphelyzet</button>
-                    <button type="button" class="sm-btn gomb-kesz szuro-bezar">Kész</button>
+                        class="sm-btn gomb-masodlagos" data-i18n="reset_default">Alaphelyzet</button>
+                    <button type="button" class="sm-btn gomb-kesz szuro-bezar" data-i18n="done">Kész</button>
                 </div>
             </div>
 
             <!-- Csoport beállítás: elmentjük, a csoport minden tagjánál ez az alap -->
             <div id="szuro-panel-csoport" class="szuro-panel" role="tabpanel" hidden>
-                <p class="szuro-leiras">Ezek az italok jelennek meg a csoport minden tagjánál. A mentés után érvényes.
+                <p class="szuro-leiras" data-i18n="filter_group_desc">Ezek az italok jelennek meg a csoport minden tagjánál. A mentés után érvényes.
                 </p>
                 <div id="csoport-szuro-kategoriak" class="szuro-kategoria-lista"></div>
                 <p id="csoport-szuro-allapot" class="szuro-allapot" role="status" aria-live="polite"></p>
                 <div class="szuro-footer">
-                    <button type="button" class="sm-btn gomb-masodlagos szuro-bezar">Mégse</button>
-                    <button type="button" id="csoport-szuro-mentes" class="sm-btn gomb-kesz">Mentés</button>
+                    <button type="button" class="sm-btn gomb-masodlagos szuro-bezar" data-i18n="cancel">Mégse</button>
+                    <button type="button" id="csoport-szuro-mentes" class="sm-btn gomb-kesz" data-i18n="save">Mentés</button>
                 </div>
             </div>
         </div>
