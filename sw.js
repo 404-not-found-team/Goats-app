@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v50';
+const CACHE_NEV = 'goats-v51';
 
 // Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
 // indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
@@ -99,6 +99,7 @@ const ELOGYORSITOTT = [
     'js/supabase-client.js',
     'manifest.json',
     'img/icon-192.png',
+    'img/ertesites-jelveny.png',
     'img/zaszlok/en.svg',
     'img/zaszlok/hu.svg',
     'nyelvek/en.json',
@@ -202,7 +203,8 @@ self.addEventListener('push', (event) => {
     event.waitUntil(self.registration.showNotification(cim, {
         body: adat.szoveg || '',
         icon: 'img/icon-192.png',
-        badge: 'img/icon-192.png',
+        // a státuszsorban az Android csak az átlátszóságot nézi: fehér sziluett átlátszó háttéren kell
+        badge: 'img/ertesites-jelveny.png',
         tag: adat.tag || undefined,
         data: { url: adat.url || 'app.html' },
     }));
