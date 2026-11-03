@@ -12,6 +12,8 @@
 
 ---
 
+> **Új vagy a projektben?** Kezdd a [repó áttekintésével](dokumentacio/attekintes.md) (mi miért van, hol mit találsz), a gyakori feladatokhoz (új téma, új nyelv, új oldal, kiadás…) pedig ott az [útmutató](dokumentacio/utmutato.md).
+
 ## 📌 Tartalomjegyzék
 - [Áttekintés](#-áttekintés)
 - [Csoportok és szerepkörök](#-csoportok-és-szerepkörök)
