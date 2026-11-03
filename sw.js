@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v49';
+const CACHE_NEV = 'goats-v50';
 
 // Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
 // indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
@@ -65,6 +65,7 @@ const ELOGYORSITOTT = [
     'js/main.js',
     'js/pages/admin-javaslatok.js',
     'js/pages/admin-kategoriak.js',
+    'js/pages/admin-jelentesek.js',
     'js/pages/admin-szinek.js',
     'js/pages/admin.js',
     'js/pages/app-orzo.js',

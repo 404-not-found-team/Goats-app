@@ -108,6 +108,9 @@ function fulekBekotese() {
             $(gomb.dataset.tab)?.classList.add('active');
         });
     });
+    // admin.html#jelentesek / #javaslatok: a megfelelő fül nyílik meg (pl. egy push-értesítésből)
+    const cel = location.hash.slice(1);
+    if (cel) document.querySelector(`.sm-tab-btn[data-tab="tab-${CSS.escape(cel)}"]`)?.click();
 }
 
 async function betoltes() {
@@ -145,7 +148,7 @@ async function mentes(input, k) {
     const allapotObj = getState();
     allapotObj.beallitasok = { ...allapotObj.beallitasok, [k.kulcs]: uj };
     try { sessionStorage.removeItem('goats_snapshot'); } catch { /* nem kritikus */ }
-    allapot(`${k.nev}: ${uj ? 'bekapcsolva' : 'kikapcsolva'}.`, 'ok');
+    allapot(uj ? tr('switch_on_x', '{name}: bekapcsolva.', { name: k.nev }) : tr('switch_off_x', '{name}: kikapcsolva.', { name: k.nev }), 'ok');
     figyelmeztetesFrissites();
 }
 
@@ -164,6 +167,9 @@ if (!jogosultsagEllenorzes()) {
     import('./admin-szinek.js')
         .then(m => m.indit())
         .catch(err => console.error('A színek betöltése nem sikerült:', err));
+    import('./admin-jelentesek.js')
+        .then(m => m.indit())
+        .catch(err => console.error('A jelentések betöltése nem sikerült:', err));
 }
 // Ha a profil később változik (pl. kijelentkezés másik fülön, szerepkör-váltás), újra ellenőrzünk
 onChange(() => {
