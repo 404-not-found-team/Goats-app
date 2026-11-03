@@ -69,7 +69,14 @@ function sor(j) {
         img.src = url;
         img.alt = tr('reported_picture', 'Jelentett kép');
         img.loading = 'lazy';
-        kepHely.replaceChildren(img);
+        // koppintásra teljes méretben, új lapon
+        const link = ujElem('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.setAttribute('aria-label', tr('open_full_size', 'Megnyitás teljes méretben'));
+        link.append(img);
+        kepHely.replaceChildren(link);
     });
 
     const szoveg = ujElem('div', 'admin-sor-szoveg');

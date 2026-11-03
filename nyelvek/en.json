@@ -635,5 +635,6 @@
     "switch_on_x": "{name}: turned on.",
     "switch_off_x": "{name}: turned off.",
     "recipe_x": "recipe: {list}",
-    "suggested_by": "suggested by: {name}"
+    "suggested_by": "suggested by: {name}",
+    "open_full_size": "Open full size"
 }
