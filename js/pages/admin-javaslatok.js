@@ -30,11 +30,11 @@ function darab(db) {
 function reszletSzoveg(javaslat, ital, recept) {
     const fo = ital ? K().kategoria(ital.kategoria_id) : null;
     const reszek = [fo?.nev || javaslat.kategoria];
-    reszek.push(javaslat.marka ? `márka: ${javaslat.marka}` : 'márka nélkül');
+    reszek.push(javaslat.marka ? tr('brand_x', 'márka: {brand}', { brand: javaslat.marka }) : tr('no_brand', 'márka nélkül'));
     if (ital?.kiszereles) reszek.push(K().kiszerelesNev(ital.kiszereles));
     if (fo?.alkoholos && ital?.alkohol_fok !== null && ital?.alkohol_fok !== undefined) reszek.push(`${ital.alkohol_fok}%`);
     if (recept?.length) {
-        const egyseg = (h) => h.egyseg || (ital?.recept_mod === 'arany' ? 'rész' : '');
+        const egyseg = (h) => h.egyseg || (ital?.recept_mod === 'arany' ? tr('part_unit', 'rész') : '');
         reszek.push(`recept: ${recept.map(h => `${h.nev} ${h.mennyiseg ?? ''} ${egyseg(h)}`.replace(/\s+/g, ' ').trim()).join(', ')}`);
     }
     return reszek.filter(Boolean).join(' · ');
@@ -43,22 +43,22 @@ function reszletSzoveg(javaslat, ital, recept) {
 function sor(javaslat, ital, recept) {
     const li = ujElem('li', 'admin-sor admin-javaslat');
     const szoveg = ujElem('div', 'admin-sor-szoveg');
-    const datum = javaslat.created_at ? new Date(javaslat.created_at).toLocaleDateString('hu-HU') : '';
+    const datum = javaslat.created_at ? new Date(javaslat.created_at).toLocaleDateString(goatsNyelv.locale()) : '';
     szoveg.append(
-        ujElem('span', 'admin-sor-nev', javaslat.nev || '(névtelen)'),
+        ujElem('span', 'admin-sor-nev', javaslat.nev || tr('unnamed', '(névtelen)')),
         ujElem('span', 'admin-sor-leiras', reszletSzoveg(javaslat, ital, recept)),
         ujElem('span', 'admin-sor-leiras', `javasolta: ${javaslat.javasolta_nev || 'ismeretlen'}${datum ? ` · ${datum}` : ''}`)
     );
 
     const gombok = ujElem('div', 'admin-sor-gombok');
-    const jovahagy = ujElem('button', 'admin-gomb', 'Jóváhagy');
+    const jovahagy = ujElem('button', 'admin-gomb', tr('approve', 'Jóváhagy'));
     jovahagy.type = 'button';
-    jovahagy.addEventListener('click', () => dontes('approve_drink', javaslat, `${javaslat.nev}: jóváhagyva, bekerült a katalógusba.`, gombok));
-    const elutasit = ujElem('button', 'admin-gomb veszelyes', 'Elutasít');
+    jovahagy.addEventListener('click', () => dontes('approve_drink', javaslat, tr('drink_approved', '{name}: jóváhagyva, bekerült a katalógusba.', { name: javaslat.nev }), gombok));
+    const elutasit = ujElem('button', 'admin-gomb veszelyes', tr('reject', 'Elutasít'));
     elutasit.type = 'button';
     elutasit.addEventListener('click', () => {
-        if (!confirm(`Biztosan elutasítod és törlöd ezt az italt: „${javaslat.nev}”? Ez nem vonható vissza.`)) return;
-        dontes('reject_drink', javaslat, `${javaslat.nev}: elutasítva, törölve.`, gombok);
+        if (!confirm(tr('confirm_reject_drink', 'Biztosan elutasítod és törlöd ezt az italt: „{name}”? Ez nem vonható vissza.', { name: javaslat.nev }))) return;
+        dontes('reject_drink', javaslat, tr('drink_rejected', '{name}: elutasítva, törölve.', { name: javaslat.nev }), gombok);
     });
     gombok.append(jovahagy, elutasit);
 
@@ -71,7 +71,7 @@ async function dontes(rpc, javaslat, siker, gombok) {
     const { error } = await client.rpc(rpc, { drink_id: javaslat.id });
     if (error) {
         console.error(`${rpc} hiba:`, error);
-        allapot(error.message || 'Hiba a művelet során.', 'hiba');
+        allapot(error.message || tr('err_operation', 'Hiba a művelet során.'), 'hiba');
         gombok.querySelectorAll('button').forEach(g => { g.disabled = false; });
         return;
     }
@@ -83,13 +83,13 @@ async function betoltes() {
     const { data: javaslatok, error } = await client.rpc('list_pending_drinks');
     if (error) {
         console.error('A javaslatok betöltése nem sikerült:', error);
-        allapot(error.message || 'A javaslatok betöltése nem sikerült.', 'hiba');
+        allapot(error.message || tr('err_suggestions_load', 'A javaslatok betöltése nem sikerült.'), 'hiba');
         return;
     }
     const lista = javaslatok || [];
     darab(lista.length);
     if (lista.length === 0) {
-        $('adminJavaslatok').replaceChildren(ujElem('li', 'admin-sor admin-ures', 'Nincs jóváhagyásra váró ital.'));
+        $('adminJavaslatok').replaceChildren(ujElem('li', 'admin-sor admin-ures', tr('no_pending_drinks', 'Nincs jóváhagyásra váró ital.')));
         return;
     }
 

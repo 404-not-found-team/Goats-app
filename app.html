@@ -13,6 +13,7 @@
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
+    <script src="js/segedek/nyelv.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 
     <script type="module" src="js/main.js"></script>
@@ -21,7 +22,6 @@
     <script src="js/segedek/csoport-kod.js"></script>
     <script defer src="js/elemek/galeria.js"></script>
     <script defer src="js/elemek/naptar.js"></script>
-    <script src="js/segedek/nyelv.js" defer></script>
 </head>
 
 <body>
@@ -62,7 +62,7 @@
             <div class="sm-card">
                 <div class="sm-header">
                     <h3 data-i18n="add_event">Esemény hozzáadása</h3>
-                    <button type="button" aria-label="Bezárás" id="close-esemeny-modal" class="sm-close-btn">&times;</button>
+                    <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close" id="close-esemeny-modal" class="sm-close-btn">&times;</button>
                 </div>
                 <div class="floating-group">
                     <input type="text" id="esemeny-cim-input" class="floating-input" placeholder=" " />
@@ -81,7 +81,7 @@
             <div class="sm-card modal-magas">
                 <div class="sm-header">
                     <h3 id="napi-modal-cím" data-i18n="events">Események</h3>
-                    <button type="button" aria-label="Bezárás" id="close-napi-esemenyek-modal" class="sm-close-btn">&times;</button>
+                    <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close" id="close-napi-esemenyek-modal" class="sm-close-btn">&times;</button>
                 </div>
                 <div id="napi-esemenyek-lista" class="napi-lista">
                 </div>
@@ -94,7 +94,7 @@
             <div class="sm-card">
                 <div class="sm-header">
                     <h3 data-i18n="edit_event">Esemény szerkesztése</h3>
-                    <button type="button" aria-label="Bezárás" id="close-esemeny-reszletek-modal" class="sm-close-btn">&times;</button>
+                    <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close" id="close-esemeny-reszletek-modal" class="sm-close-btn">&times;</button>
                 </div>
                 <div class="floating-group">
                     <input type="text" id="szerkeszt-esemeny-cim" class="floating-input" placeholder=" " />

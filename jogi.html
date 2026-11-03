@@ -5,18 +5,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ATG - Jogi információk</title>
+    <title data-i18n="title_legal">ATG - Jogi információk</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/pages/jogi.css">
-    <script src="js/segedek/nyelv.js" defer></script>
+    <script src="js/segedek/nyelv.js"></script>
 </head>
 
 <body>
     <div class="jogi-oldal">
         <p><a href="index.html" data-i18n="back_to_app">&larr; Vissza az alkalmazáshoz</a></p>
         <h1 data-i18n="legal_information">Jogi információk</h1>
-        <p class="utolso-frissites"><span data-i18n="last_updated">Utolsó frissítés:</span> 2026. október 7.</p>
+        <p class="utolso-frissites"><span data-i18n="last_updated">Utolsó frissítés:</span> <time datetime="2026-10-07" data-i18n-datum>2026. október 7.</time></p>
 
         <div class="tos-modal-body">
             <p data-i18n="legal_hub_intro">Itt találod az ATG – All-Time Greats (üzemeltető: 404 not found team) jogi dokumentumait egy helyen.</p>
@@ -38,9 +38,8 @@
 
             <h4 data-i18n="contact">Kapcsolat</h4>
             <p>
-                Jogi kérdés esetén írj a
-                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=the.offical.404.not.found.team@gmail.com?subject=Jogi%20k%C3%A9rd%C3%A9s%20-%20ATG" target="_blank">the.offical.404.not.found.team@gmail.com</a>
-                címre.
+                <span data-i18n="legal_contact_prefix">Jogi kérdés esetén írj a</span>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=the.offical.404.not.found.team@gmail.com?subject=Jogi%20k%C3%A9rd%C3%A9s%20-%20ATG" target="_blank">the.offical.404.not.found.team@gmail.com</a><span data-i18n="legal_contact_suffix"> címre.</span>
             </p>
         </div>
 

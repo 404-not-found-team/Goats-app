@@ -25,7 +25,7 @@ export function initProfileModal() {
 
   function fill() {
     const s = getState();
-    if (get('profile-display-name')) get('profile-display-name').textContent = s.displayName || 'Nincs név';
+    if (get('profile-display-name')) get('profile-display-name').textContent = s.displayName || tr('no_name', 'Nincs név');
     if (get('profile-display-email')) get('profile-display-email').value = s.user?.email || '';
 
     // A saját név mezőt csak akkor írjuk felül, ha épp nem gépelünk bele (pl. egy másik fülön módosult)
@@ -78,7 +78,7 @@ export function initProfileModal() {
   });
   // Kijelentkezés
   get('logout-btn')?.addEventListener('click', async () => {
-    if (!confirm('Biztosan ki szeretnél jelentkezni?')) return;
+    if (!confirm(tr('confirm_logout', 'Biztosan ki szeretnél jelentkezni?'))) return;
     await signOut();
     location.reload();
   });
@@ -95,16 +95,16 @@ export function initProfileModal() {
     const nev = input.value.trim();
     if (nev === utolsoMentettNev) return;
     if (nev.length < 2 || nev.length > 30) {
-      return setNameStatus('A név 2–30 karakter legyen.', '#ef4444');
+      return setNameStatus(tr('err_name_2_30', 'A név 2–30 karakter legyen.'), '#ef4444');
     }
 
     const sajatSorszam = ++ellenorzesSorszam;
-    setNameStatus('Ellenőrzés...', '#3b82f6');
+    setNameStatus(tr('checking', 'Ellenőrzés...'), '#3b82f6');
     try {
       const szabad = await callRpc('is_display_name_available', { p_name: nev });
       if (sajatSorszam !== ellenorzesSorszam) return; // közben újabb gépelés indult, ez elavult
       if (!szabad) {
-        return setNameStatus('Ebben a csoportban már van ilyen nevű tag.', '#ef4444');
+        return setNameStatus(tr('err_name_taken', 'Ebben a csoportban már van ilyen nevű tag.'), '#ef4444');
       }
     } catch (err) {
       // Ha az ellenőrzés hibázik (pl. hálózat), a mentést a szerveri trigger úgyis védi
@@ -112,14 +112,14 @@ export function initProfileModal() {
     }
     if (sajatSorszam !== ellenorzesSorszam) return;
 
-    setNameStatus('Mentés...', '#3b82f6');
+    setNameStatus(tr('saving', 'Mentés...'), '#3b82f6');
     const ok = await updateMyDisplayName(nev);
     if (sajatSorszam !== ellenorzesSorszam) return;
     if (ok) {
       utolsoMentettNev = nev;
-      setNameStatus('Mentve ✓', '#10b981');
+      setNameStatus(tr('saved_check', 'Mentve ✓'), '#10b981');
     } else {
-      setNameStatus('A mentés nem sikerült.', '#ef4444');
+      setNameStatus(tr('err_save', 'A mentés nem sikerült.'), '#ef4444');
     }
   }
   const mentNevetKesleltetve = debounce(mentNevet, 400);
@@ -152,15 +152,14 @@ export function initProfileModal() {
   // Fiók végleges törlése (Google Play követelmény: az appban is elérhető legyen)
   get('delete-account-btn')?.addEventListener('click', async () => {
     const warning =
-      'A fiókod végleg törlődik (profil, csoporttagság). Ha te vagy a csoport utolsó tagja, a csoport és adatai is törlődnek.\n\n' +
-      'A megerősítéshez írd be: TÖRLÉS';
+      tr('confirm_delete_account', 'A fiókod végleg törlődik (profil, csoporttagság). Ha te vagy a csoport utolsó tagja, a csoport és adatai is törlődnek.\n\nA megerősítéshez írd be: {word}', { word: tr('delete_word', 'TÖRLÉS') });
     const answer = prompt(warning);
     if (answer === null) return;
-    if (answer.trim().toUpperCase() !== 'TÖRLÉS') {
-      return setStatus('A megerősítő szöveg nem egyezik, a fiók nem lett törölve.', '#ef4444');
+    if (answer.trim().toUpperCase() !== tr('delete_word', 'TÖRLÉS').toUpperCase()) {
+      return setStatus(tr('err_confirm_mismatch_account', 'A megerősítő szöveg nem egyezik, a fiók nem lett törölve.'), '#ef4444');
     }
 
-    setStatus('Fiók törlése...', '#3b82f6');
+    setStatus(tr('deleting_account', 'Fiók törlése...'), '#3b82f6');
     try {
       // Utolsó tagként a csoport képei is törlődnek (a fiók törlése után már nincs jogunk)
       const { group, members } = getState();
@@ -169,10 +168,10 @@ export function initProfileModal() {
         if (hibak.length) console.warn('Néhány kép nem törlődött a fiók törlésekor:', hibak);
       }
       await deleteMyAccount();
-      alert('A fiókod törölve lett.');
+      alert(tr('account_deleted', 'A fiókod törölve lett.'));
       location.reload();
     } catch (err) {
-      setStatus(err.message || 'A fiók törlése nem sikerült.', '#ef4444');
+      setStatus(err.message || tr('err_account_delete', 'A fiók törlése nem sikerült.'), '#ef4444');
     }
   });
 }

@@ -24,13 +24,13 @@ export function initTosUjraelfogadas() {
 
   btn?.addEventListener('click', async () => {
     btn.disabled = true;
-    setStatus('Mentés...');
+    setStatus(tr('saving', 'Mentés...'));
     try {
       await callRpc('accept_tos', { version_input: TOS_VERSION });
       await refresh(); // ez emit()-tel frissíti a modal láthatóságát is
       setStatus('');
     } catch (err) {
-      setStatus(err.message || 'A mentés nem sikerült, próbáld újra.', true);
+      setStatus(err.message || tr('err_save_retry', 'A mentés nem sikerült, próbáld újra.'), true);
     } finally {
       btn.disabled = false;
     }

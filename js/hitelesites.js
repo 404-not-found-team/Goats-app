@@ -255,7 +255,7 @@ export async function callRpc(name, args) {
 
 export async function joinGroup(code) {
   const data = await callRpc('join_group_with_code', { code_input: code });
-  if (!data?.ok) throw new Error(data?.error || 'Érvénytelen csoportkód.');
+  if (!data?.ok) throw new Error(data?.error || tr('err_invalid_code', 'Érvénytelen csoportkód!'));
   await refresh();
   return data;
 }

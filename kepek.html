@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://cdnjs.cloudflare.com; style-src-attr 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>ATG - Képek</title>
+    <title data-i18n="title_pictures">ATG - Képek</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/main.css">
@@ -14,12 +14,12 @@
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="modulepreload" href="js/main.js">
+    <script src="js/segedek/nyelv.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/pages/app-orzo.js"></script>
     <script type="module" src="js/pages/kepek.js"></script>
-    <script src="js/segedek/nyelv.js" defer></script>
 </head>
 
 <body data-oldal="kepek">
@@ -43,49 +43,49 @@
 
         <div id="kepekUres" class="galeria-ures" hidden>
             <span class="ures-ikon">🖼️</span>
-            <p class="ures-cim">Még nincsenek képek</p>
-            <span class="ures-leiras">Töltsd fel az első képet a Feltöltés gombbal!</span>
+            <p class="ures-cim" data-i18n="no_pictures">Még nincsenek képek</p>
+            <span class="ures-leiras" data-i18n="upload_first_picture">Töltsd fel az első képet a Feltöltés gombbal!</span>
         </div>
 
         <ul id="kepekRacs" class="kepek-racs"></ul>
     </main>
 
     <dialog id="kivagoDialog" class="kepek-dialog kivago-dialog" aria-labelledby="kivagoCim">
-        <h2 id="kivagoCim">Kép igazítása</h2>
-        <p class="kepek-dialog-leiras">Húzd a képet, hogy a fontos rész a keretbe kerüljön. Ami a keretben van, az lesz látható.</p>
+        <h2 id="kivagoCim" data-i18n="image_alignment">Kép igazítása</h2>
+        <p class="kepek-dialog-leiras" data-i18n="image_alignment_desc">Húzd a képet, hogy a fontos rész a keretbe kerüljön. Ami a keretben van, az lesz látható.</p>
         <p id="kivagoSorszam" class="kepek-szamlalo"></p>
         <canvas id="kivagoVaszon" class="kivago-vaszon" width="640" height="640" tabindex="0"
-            aria-label="A kivágás előnézete. Nyilakkal mozgathatod, a plusz és mínusz billentyűvel nagyíthatsz."></canvas>
+            data-i18n-attr="aria-label:crop_preview" aria-label="A kivágás előnézete. Nyilakkal mozgathatod, a plusz és mínusz billentyűvel nagyíthatsz."></canvas>
         <label class="kivago-nagyitas">
             <i class="fa-solid fa-magnifying-glass-minus" aria-hidden="true"></i>
-            <input type="range" id="kivagoNagyitas" min="1" max="4" step="0.01" value="1" aria-label="Nagyítás">
+            <input type="range" id="kivagoNagyitas" min="1" max="4" step="0.01" value="1" aria-label="Nagyítás" data-i18n-attr="aria-label:zoom">
             <i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i>
         </label>
         <div class="kepek-dialog-gombok kivago-gombok">
-            <button type="button" id="kivagoKihagy" class="kepek-gomb masodlagos">Kihagyás</button>
-            <button type="button" id="kivagoKozepre" class="kepek-gomb masodlagos">Középre</button>
-            <button type="button" id="kivagoMindKozepre" class="kepek-gomb masodlagos" hidden>A többit középre</button>
-            <button type="button" id="kivagoKesz" class="kepek-gomb">Kész</button>
+            <button type="button" id="kivagoKihagy" class="kepek-gomb masodlagos" data-i18n="skip">Kihagyás</button>
+            <button type="button" id="kivagoKozepre" class="kepek-gomb masodlagos" data-i18n="center">Középre</button>
+            <button type="button" id="kivagoMindKozepre" class="kepek-gomb masodlagos" hidden data-i18n="all_center">A többit középre</button>
+            <button type="button" id="kivagoKesz" class="kepek-gomb" data-i18n="done">Kész</button>
         </div>
     </dialog>
 
     <dialog id="jelentesDialog" class="kepek-dialog" aria-labelledby="jelentesCim">
         <form id="jelentesUrlap" method="dialog">
-            <h2 id="jelentesCim">Kép jelentése</h2>
-            <p class="kepek-dialog-leiras">Miért jelented ezt a képet? A jelentést az üzemeltetők kapják meg.</p>
+            <h2 id="jelentesCim" data-i18n="report_image">Kép jelentése</h2>
+            <p class="kepek-dialog-leiras" data-i18n="report_reason_desc">Miért jelented ezt a képet? A jelentést az üzemeltetők kapják meg.</p>
             <fieldset class="kepek-okok">
-                <legend>Ok</legend>
-                <label><input type="radio" name="ok" value="jogellenes" required> Jogellenes tartalom</label>
-                <label><input type="radio" name="ok" value="zaklatas"> Zaklatás, bántó tartalom</label>
-                <label><input type="radio" name="ok" value="gyermekbiztonsag"> Gyermekbiztonság</label>
-                <label><input type="radio" name="ok" value="egyeb"> Egyéb</label>
+                <legend data-i18n="reason">Ok</legend>
+                <label><input type="radio" name="ok" value="jogellenes" required> <span data-i18n="illegal_content">Jogellenes tartalom</span></label>
+                <label><input type="radio" name="ok" value="zaklatas"> <span data-i18n="harassment">Zaklatás, bántó tartalom</span></label>
+                <label><input type="radio" name="ok" value="gyermekbiztonsag"> <span data-i18n="child_safety">Gyermekbiztonság</span></label>
+                <label><input type="radio" name="ok" value="egyeb"> <span data-i18n="other">Egyéb</span></label>
             </fieldset>
-            <label class="kepek-leiras-cimke" for="jelentesLeiras">Részletek (nem kötelező)</label>
+            <label class="kepek-leiras-cimke" for="jelentesLeiras" data-i18n="details_optional">Részletek (nem kötelező)</label>
             <textarea id="jelentesLeiras" name="leiras" maxlength="1000" rows="3"></textarea>
             <p id="jelentesHiba" class="status-hiba" role="alert" hidden></p>
             <div class="kepek-dialog-gombok">
-                <button type="button" id="jelentesMegse" class="kepek-gomb masodlagos">Mégse</button>
-                <button type="submit" id="jelentesKuld" class="kepek-gomb">Jelentés küldése</button>
+                <button type="button" id="jelentesMegse" class="kepek-gomb masodlagos" data-i18n="cancel">Mégse</button>
+                <button type="submit" id="jelentesKuld" class="kepek-gomb" data-i18n="send_report">Jelentés küldése</button>
             </div>
         </form>
     </dialog>
