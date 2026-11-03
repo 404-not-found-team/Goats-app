@@ -11,7 +11,7 @@ export const OLDALAK = [
     { kulcs: 'ranglista', nev: 'Ranglista', emoji: '🍹', fajl: 'ranglista.html', kapcsolo: 'oldal_ranglista', fo: true, publikus: true },
     { kulcs: 'kepek', nev: 'Képek', emoji: '🖼️', fajl: 'kepek.html', kapcsolo: 'oldal_kepek', navban: false },
     { kulcs: 'tervek', nev: 'Tervek', emoji: '📋', fajl: 'tervek.html', kapcsolo: 'oldal_tervek' },
-    { kulcs: 'jatekszabalyok', nev: 'Játékok', emoji: '📜', fajl: 'jatekszabalyok.html', kapcsolo: 'oldal_jatekszabalyok' },
+    //{ kulcs: 'jatekszabalyok', nev: 'Játékok', emoji: '📜', fajl: 'jatekszabalyok.html', kapcsolo: 'oldal_jatekszabalyok' },
     { kulcs: 'goatsgame', nev: 'Goats Game', emoji: '🎮', fajl: 'goatsgame.html', kapcsolo: 'oldal_goatsgame' },
 ];
 
