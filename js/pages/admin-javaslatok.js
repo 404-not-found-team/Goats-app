@@ -35,7 +35,7 @@ function reszletSzoveg(javaslat, ital, recept) {
     if (fo?.alkoholos && ital?.alkohol_fok !== null && ital?.alkohol_fok !== undefined) reszek.push(`${ital.alkohol_fok}%`);
     if (recept?.length) {
         const egyseg = (h) => h.egyseg || (ital?.recept_mod === 'arany' ? tr('part_unit', 'rész') : '');
-        reszek.push(`recept: ${recept.map(h => `${h.nev} ${h.mennyiseg ?? ''} ${egyseg(h)}`.replace(/\s+/g, ' ').trim()).join(', ')}`);
+        reszek.push(tr('recipe_x', 'recept: {list}', { list: recept.map(h => `${h.nev} ${h.mennyiseg ?? ''} ${egyseg(h)}`.replace(/\s+/g, ' ').trim()).join(', ') }));
     }
     return reszek.filter(Boolean).join(' · ');
 }
@@ -47,7 +47,7 @@ function sor(javaslat, ital, recept) {
     szoveg.append(
         ujElem('span', 'admin-sor-nev', javaslat.nev || tr('unnamed', '(névtelen)')),
         ujElem('span', 'admin-sor-leiras', reszletSzoveg(javaslat, ital, recept)),
-        ujElem('span', 'admin-sor-leiras', `javasolta: ${javaslat.javasolta_nev || 'ismeretlen'}${datum ? ` · ${datum}` : ''}`)
+        ujElem('span', 'admin-sor-leiras', tr('suggested_by', 'javasolta: {name}', { name: javaslat.javasolta_nev || tr('unknown', 'ismeretlen') }) + (datum ? ` · ${datum}` : ''))
     );
 
     const gombok = ujElem('div', 'admin-sor-gombok');

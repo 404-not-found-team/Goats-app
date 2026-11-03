@@ -31,7 +31,7 @@ async function aktualisFeliratkozas() {
     return reg.pushManager.getSubscription();
 }
 
-async function bekapcsol() {
+export async function bekapcsol() {
     const engedely = await Notification.requestPermission();
     if (engedely !== 'granted') throw new Error(tr('push_denied', 'Az értesítések le vannak tiltva. A böngésző vagy a telefon beállításaiban engedélyezheted őket.'));
     const reg = await regisztracio();

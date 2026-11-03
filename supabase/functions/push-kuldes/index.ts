@@ -93,7 +93,7 @@ async function jelentesek(idk: string[]): Promise<Kuldendo[]> {
             szoveg: ny === 'hu'
                 ? `Egy felhasználó jelentett egy ${j.cel_tipus === 'kep' ? 'képet' : 'tartalmat'} (${JELENTES_OK[j.ok]?.hu || j.ok}).`
                 : `A user reported ${j.cel_tipus === 'kep' ? 'a picture' : 'some content'} (${JELENTES_OK[j.ok]?.en || j.ok}).`,
-            url: 'admin.html',
+            url: 'admin.html#jelentesek',
             tag: `jelentes-${j.id}`,
         }),
     })));
@@ -110,7 +110,7 @@ async function italok(idk: number[]): Promise<Kuldendo[]> {
         uzenet: (ny: Nyelv) => ({
             cim: ny === 'hu' ? 'Jóváhagyásra váró ital' : 'Drink awaiting approval',
             szoveg: ny === 'hu' ? `Új italjavaslat: ${i.nev}` : `New drink suggestion: ${i.nev}`,
-            url: 'admin.html',
+            url: 'admin.html#javaslatok',
             tag: `ital-${i.id}`,
         }),
     })));

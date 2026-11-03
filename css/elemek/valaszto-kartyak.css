@@ -192,3 +192,18 @@
 #settings-modal .sm-card {
     --modal-height: auto;
 }
+
+/* ---------- Első megnyitáskor: értesítések felajánlása (js/elemek/ertesites-felajanlas.js) ---------- */
+
+.ertesites-ajanlo-kartya {
+    --modal-height: auto;
+}
+
+.ertesites-ajanlo-gombok {
+    display: flex;
+    gap: 10px;
+}
+
+.ertesites-ajanlo-gombok .sm-btn {
+    flex: 1;
+}

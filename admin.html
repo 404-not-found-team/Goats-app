@@ -36,6 +36,7 @@
             <button type="button" class="sm-tab-btn" data-tab="tab-javaslatok" role="tab" aria-selected="false"><span data-i18n="tab_drink_suggestions">Italjavaslatok</span> <span id="adminJavaslatokDb" class="admin-darab" hidden></span></button>
             <button type="button" class="sm-tab-btn" data-tab="tab-kategoriak" role="tab" aria-selected="false" data-i18n="tab_drink_categories">Italkategóriák</button>
             <button type="button" class="sm-tab-btn" data-tab="tab-szinek" role="tab" aria-selected="false" data-i18n="tab_colors">Színek</button>
+            <button type="button" class="sm-tab-btn" data-tab="tab-jelentesek" role="tab" aria-selected="false"><span data-i18n="tab_reports">Jelentések</span> <span id="adminJelentesekDb" class="admin-darab" hidden></span></button>
         </div>
 
         <div id="tab-globalis" class="sm-tab-content active">
@@ -69,6 +70,21 @@
                 </p>
                 <p id="adminJavaslatokAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
                 <ul id="adminJavaslatok" class="admin-lista"></ul>
+            </section>
+        </div>
+
+        <div id="tab-jelentesek" class="sm-tab-content">
+            <section class="admin-szekcio" aria-labelledby="adminJelentesekCim">
+                <h2 id="adminJelentesekCim" data-i18n="tab_reports">Jelentések</h2>
+                <p class="admin-szekcio-leiras" data-i18n="reports_desc">
+                    A felhasználók által jelentett képek. A kép a jelentéskor mentett másolatból látszik, akkor is, ha az eredetit közben törölték.
+                </p>
+                <select id="adminJelentesekSzuro" class="admin-bemenet admin-jelentes-szuro" data-i18n-attr="aria-label:reports_filter" aria-label="Szűrés">
+                    <option value="nyitott" data-i18n="reports_open">Nyitott jelentések</option>
+                    <option value="mind" data-i18n="reports_all">Összes jelentés</option>
+                </select>
+                <p id="adminJelentesekAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
+                <ul id="adminJelentesek" class="admin-lista"></ul>
             </section>
         </div>
 
