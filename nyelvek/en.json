@@ -605,5 +605,9 @@
     "push_denied": "Notifications are blocked. You can allow them in your browser or phone settings.",
     "push_ios_hint": "On iPhone, first add the app to your home screen (Share → Add to Home Screen) to get notifications.",
     "push_unsupported": "This browser does not support notifications.",
-    "push_enabled_msg": "This device will now receive notifications."
+    "push_enabled_msg": "This device will now receive notifications.",
+    "push_offer_title": "Want notifications?",
+    "push_offer_text": "We'll let you know when someone adds a debt for you. You can turn this off any time in the settings.",
+    "not_now": "Not now",
+    "yes_please": "Yes, please"
 }

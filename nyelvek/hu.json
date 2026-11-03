@@ -590,5 +590,9 @@
     "push_denied": "Az értesítések le vannak tiltva. A böngésző vagy a telefon beállításaiban engedélyezheted őket.",
     "push_ios_hint": "iPhone-on az értesítésekhez előbb tedd ki az appot a kezdőképernyőre (Megosztás → Hozzáadás a kezdőképernyőhöz).",
     "push_unsupported": "Ez a böngésző nem támogatja az értesítéseket.",
-    "push_enabled_msg": "Ezen az eszközön mostantól kapsz értesítéseket."
+    "push_enabled_msg": "Ezen az eszközön mostantól kapsz értesítéseket.",
+    "push_offer_title": "Kérsz értesítéseket?",
+    "push_offer_text": "Szólunk, ha valaki tartozást ír fel neked. Bármikor kikapcsolhatod a beállításokban.",
+    "not_now": "Most nem",
+    "yes_please": "Igen, kérem"
 }
