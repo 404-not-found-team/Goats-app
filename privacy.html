@@ -18,7 +18,7 @@
     <div class="jogi-oldal">
         <p><a href="index.html" data-i18n="back_to_app">&larr; Vissza az alkalmazáshoz</a></p>
         <h1 data-i18n="privacy_statement">Adatvédelmi nyilatkozat</h1>
-        <p class="utolso-frissites"><span data-i18n="last_updated">Utolsó frissítés:</span> <time datetime="2026-10-09" data-i18n-datum>2026. október 9.</time></p>
+        <p class="utolso-frissites"><span data-i18n="last_updated">Utolsó frissítés:</span> <time datetime="2026-11-04" data-i18n-datum>2026. november 4.</time></p>
 
         <div class="tos-modal-body">
             <h4>1. Az üzemeltető és a kapcsolat</h4>
@@ -54,11 +54,15 @@
                 <li>csoportcsatlakozási kísérletek naplója (a felhasználó azonosítója és az időpont), amelyet 1 napig
                     őrzünk,</li>
                 <li>műveleti napló: ki, mikor, milyen műveletet (létrehozás, módosítás, törlés) végzett, melyik
-                    csoportban és melyik rekordon — részletesen a 7. pontban.</li>
+                    csoportban és melyik rekordon — részletesen a 7. pontban,</li>
+                <li>ha bekapcsolod az értesítéseket: az adott eszköz push-feliratkozása (a böngésző vagy a telefon
+                    értesítési szolgáltatójánál kapott cím és a titkosításhoz szükséges kulcsok), a feliratkozáskor
+                    érvényes nyelv, valamint a feliratkozás és az utolsó kézbesítés ideje. Ezt eszközönként tároljuk,
+                    a fiókodhoz kötve.</li>
             </ul>
             <p>
-                A böngészőben (localStorage és a böngésző gyorsítótára) csak gyorsítótárat és a téma-beállítást
-                tároljuk, ide tartozik a csoport már megnézett galériaképeinek helyi másolata is (legfeljebb 150 kép),
+                A böngészőben (localStorage és a böngésző gyorsítótára) csak gyorsítótárat, a téma- és
+                nyelvbeállítást, valamint azt tároljuk, hogy felajánlottuk-e már az értesítéseket, ide tartozik a csoport már megnézett galériaképeinek helyi másolata is (legfeljebb 150 kép),
                 amely kijelentkezéskor törlődik. Ezek nem jogosultsági adatok: a hozzáférést mindig a szerver dönti el
                 a bejelentkezésed alapján.
             </p>
@@ -70,6 +74,10 @@
                     használata).</li>
                 <li><strong>Biztonság és visszaélés elleni védelem:</strong> például a csatlakozási kísérletek
                     korlátozása. Jogalap: jogos érdek.</li>
+                <li><strong>Értesítések:</strong> ha bekapcsolod, értesítést küldünk, amikor valaki tartozást ír fel
+                    neked; a csapat (superadmin) tagjai a beérkezett jelentésekről és a jóváhagyásra váró italokról is
+                    kapnak értesítést. Jogalap: a hozzájárulásod, amelyet a beállításokban (Értesítések) bármikor
+                    visszavonhatsz; a kijelentkezés is visszavonja az adott eszközön.</li>
             </ul>
             <p>Hirdetési vagy elemző célra nem használjuk az adatokat, és nem adjuk el őket.</p>
 
@@ -79,15 +87,20 @@
                 <li><strong>Supabase:</strong> adatbázis, hitelesítés és fájltárolás. A szerver régiója: eu-west-1,
                     Írország (EU).</li>
                 <li><strong>GitHub Pages:</strong> az oldal kiszolgálása.</li>
-                <li><strong>Tartalomszolgáltató hálózatok</strong> (jsDelivr, cdnjs, Google gstatic): az oldal
-                    betöltésekor látják a látogató IP-címét, mert onnan töltődnek be a könyvtárak és az ikonok.</li>
+                <li><strong>Google gstatic:</strong> a bejelentkezési gomb Google-logója innen töltődik be, ezért
+                    a betöltéskor látja a látogató IP-címét. A többi könyvtárat és ikont a saját oldalunkról
+                    szolgáljuk ki.</li>
+                <li><strong>Értesítési szolgáltatók</strong> (a böngésződtől vagy telefonodtól függően: Google
+                    Firebase Cloud Messaging, Apple Push Notification service vagy Mozilla Push Service): csak akkor,
+                    ha bekapcsolod az értesítéseket. Ők kézbesítik az értesítést az eszközödre; a tartalmát
+                    titkosítva kapják, nem tudják elolvasni.</li>
             </ul>
             <p>Hirdetési vagy elemző szolgáltató nincs.</p>
 
             <h4>5. Nemzetközi adattovábbítás</h4>
             <p>
-                Az adatbázis és a fájltárolás az Európai Unióban (Írország) van. A szolgáltatóink (például a Supabase és
-                a Google)
+                Az adatbázis és a fájltárolás az Európai Unióban (Írország) van. A szolgáltatóink (például a Supabase,
+                a Google és az értesítési szolgáltatók)
                 a bejelentkezés és a működés során előfordulhat, hogy az EU-n kívül is kezelnek adatot. Ezt a
                 szolgáltatóik
                 adatvédelmi feltételei szabályozzák.
@@ -96,6 +109,8 @@
             <h4>6. Megőrzés</h4>
             <p>
                 Az adatokat a fiók vagy a csoport törléséig őrizzük. A csoportcsatlakozási naplót 1 napig tároljuk.
+                Az értesítési feliratkozást az értesítések kikapcsolásáig, a kijelentkezésig vagy a fiók törléséig
+                őrizzük; ha az értesítési szolgáltató jelzi, hogy a feliratkozás lejárt, automatikusan töröljük.
                 A műveleti napló megőrzési idejét a 7. pont tartalmazza.
             </p>
 
