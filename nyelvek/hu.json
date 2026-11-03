@@ -581,5 +581,6 @@
     "zoom": "Nagyítás",
     "legal_contact_prefix": "Jogi kérdés esetén írj a",
     "legal_contact_suffix": " címre.",
-    "lang_auto": "Automatikus ({lang})"
+    "theme_brown": "Barna",
+    "theme_neon": "Neon"
 }

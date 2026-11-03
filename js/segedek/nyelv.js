@@ -141,18 +141,11 @@
     }
 
 
-    // Vissza az automatikus nyelvre: a helyi választás törlése; ha ettől más nyelv jön, újratöltés
-    function automatikusra() {
-        try { localStorage.removeItem(TAROLO_NYELV); } catch { /* nem elérhető tár */ }
-        if (eszkozNyelve() !== aktualis) location.reload();
-    }
-
     window.goatsNyelv = {
         aktualis: () => aktualis,
         // true, ha ezen az eszközön nincs kézi választás (a nyelv a készülék beállításából jön)
         automatikus: () => !valasztott(),
         eszkozNyelve,
-        automatikusra,
         valt,
         t,
         // dátum- és számformázáshoz (toLocaleString, Intl): a kiválasztott nyelv szerint

@@ -206,18 +206,11 @@ const BEALLITASOK_MODAL = `
         <button type="button" aria-label="${tr('close', 'Bezárás')}" id="close-settings-btn" class="sm-close-btn">&times;</button>
       </div>
       <div class="sm-body">
-        <label class="sm-label">${tr('choose_theme', 'Téma kiválasztása:')}</label>
-        <div id="custom-theme-dropdown" class="custom-dropdown">
-          <div class="dropdown-selected"><span id="theme-dropdown-selected-text"> ${tr('theme_dark', 'Sötét')}</span><span class="arrow">▼</span></div>
-          <div id="theme-dropdown-options" class="dropdown-options"></div>
-        </div>
-      </div>
-      <div class="sm-body">
-        <label class="sm-label">${tr('choose_language', 'Nyelv kiválasztása:')}</label>
-        <div id="custom-lang-dropdown" class="custom-dropdown">
-          <div class="dropdown-selected"><span id="lang-dropdown-selected-text"> Magyar</span><span class="arrow">▼</span></div>
-          <div id="lang-dropdown-options" class="dropdown-options"></div>
-        </div>
+        <p id="tema-cimke" class="sm-label">${tr('choose_theme', 'Téma kiválasztása:')}</p>
+        <div id="tema-kartyak" class="valaszto-racs" role="radiogroup" aria-labelledby="tema-cimke"></div>
+
+        <p id="nyelv-cimke" class="sm-label valaszto-kovetkezo">${tr('choose_language', 'Nyelv kiválasztása:')}</p>
+        <div id="nyelv-kartyak" class="valaszto-racs" role="radiogroup" aria-labelledby="nyelv-cimke"></div>
       </div>
     </div>
   </div>

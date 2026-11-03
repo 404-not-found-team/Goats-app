@@ -1,20 +1,18 @@
-// Nyelvválasztó a beállításokban + a választás szinkronizálása a fiókkal (public.profiles.language).
+// Nyelvválasztó a beállításokban (zászlós kártyák) + a választás szinkronizálása a fiókkal (public.profiles.language).
 // Maga a nyelvváltás a js/segedek/nyelv.js-ben van (window.goatsNyelv), ami minden oldalon fut.
-// - "Automatikus": nincs kézi választás, a készülék (böngésző/telefon) nyelve dönt; a fiókban null.
-// - Kézi választás (Magyar / English): helyben (localStorage) azonnal érvényes, és a fiókba is mentjük.
-// - Ha ezen az eszközön automatikus a nyelv, de a fiókban van kézi választás (másik eszközről), az érvényes.
+// - Amíg senki nem választott, a nyelvet a készülék (böngésző/telefon) beállítása adja magától, és az a
+//   kártya látszik kiválasztottnak; a fiókban ilyenkor nincs nyelv (null).
+// - Kártyára kattintva kézi választás lesz: helyben (localStorage) azonnal érvényes, és a fiókba is mentjük.
+// - Ha ezen az eszközön még nem választottak, de a fiókban van választás (másik eszközről), az érvényes.
 // - Ha itt kézzel választottak, és a fiókban más van, a helyi választás kerül a fiókba.
 
 const NYELVEK = [
     { id: 'hu', name: 'Magyar' },
     { id: 'en', name: 'English' },
 ];
-const AUTO = 'auto';
 
 const nyelv = () => window.goatsNyelv;
 const kliens = () => window._supabase || null;
-const nyelvNeve = (kod) => NYELVEK.find(n => n.id === kod)?.name || kod;
-const autoFelirat = () => tr('lang_auto', 'Automatikus ({lang})', { lang: nyelvNeve(nyelv()?.eszkozNyelve?.() || 'hu') });
 
 // getSession: helyi munkamenet, nem hív hálózatot (a getUser minden hívásnál a szerverhez fordul)
 async function felhasznaloId() {
@@ -24,7 +22,6 @@ async function felhasznaloId() {
     return data?.session?.user?.id || null;
 }
 
-// kod = null: automatikus (nincs kézi választás a fiókban)
 async function mentesFiokba(kod) {
     const userId = await felhasznaloId();
     if (!userId) return;
@@ -42,7 +39,7 @@ async function szinkronFiokkal() {
     }
     const fiokNyelve = NYELVEK.some(n => n.id === data?.language) ? data.language : null;
     if (nyelv()?.automatikus()) {
-        // másik eszközön kézzel választott nyelv: ezen az eszközön is az legyen (újratölt, ha más)
+        // másik eszközön választott nyelv: ezen az eszközön is az legyen (újratölt, ha más)
         if (fiokNyelve && fiokNyelve !== nyelv().aktualis()) await nyelv().valt(fiokNyelve);
         return;
     }
@@ -50,65 +47,61 @@ async function szinkronFiokkal() {
     if (helyi && fiokNyelve !== helyi) await mentesFiokba(helyi);
 }
 
+function nyelvKartya(n) {
+    const gomb = document.createElement('button');
+    gomb.type = 'button';
+    gomb.className = 'valaszto-kartya nyelv-kartya';
+    gomb.setAttribute('role', 'radio');
+    gomb.dataset.nyelv = n.id;
+
+    const zaszlo = document.createElement('img');
+    zaszlo.className = 'nyelv-zaszlo';
+    zaszlo.src = `img/zaszlok/${n.id}.svg`;
+    zaszlo.alt = '';
+    zaszlo.width = 54;
+    zaszlo.height = 36;
+
+    const nev = document.createElement('span');
+    nev.className = 'valaszto-nev';
+    nev.textContent = n.name;
+    nev.lang = n.id;
+
+    gomb.append(zaszlo, nev);
+    return gomb;
+}
+
 export function initLangPicker() {
-    const get = id => document.getElementById(id);
-    const langDropdown = get('custom-lang-dropdown');
-    const langSelectedText = get('lang-dropdown-selected-text');
-    const langOptionsContainer = get('lang-dropdown-options');
+    const racs = document.getElementById('nyelv-kartyak');
 
-    const kivalasztott = () => (nyelv()?.automatikus() ? AUTO : (nyelv()?.aktualis() || 'hu'));
-
-    function frissitValaszto() {
-        const k = kivalasztott();
-        if (langSelectedText) langSelectedText.textContent = k === AUTO ? autoFelirat() : nyelvNeve(k);
-        langOptionsContainer?.querySelectorAll('.dropdown-option').forEach(o =>
-            o.classList.toggle('selected', o.dataset.nyelv === k));
+    function jelol() {
+        const aktualis = nyelv()?.aktualis() || 'hu';
+        racs?.querySelectorAll('.nyelv-kartya').forEach(k =>
+            k.setAttribute('aria-checked', String(k.dataset.nyelv === aktualis)));
     }
 
     async function valaszt(id) {
-        if (id === kivalasztott()) return;
-        if (id === AUTO) {
-            await mentesFiokba(null);
-            nyelv()?.automatikusra(); // újratölt, ha a készülék nyelve más
-            frissitValaszto();
-            return;
-        }
         // előbb a fiókba (a valt utána újratölti az oldalt, ha más a nyelv)
         await mentesFiokba(id);
         if (id === nyelv()?.aktualis()) {
-            nyelv().valt(id, { ujratoltes: false }); // ugyanaz a nyelv, csak mostantól kézi választás
-            frissitValaszto();
+            nyelv().valt(id, { ujratoltes: false }); // ugyanaz a nyelv, de mostantól kézi választás
+            jelol();
         } else {
             await nyelv()?.valt(id);
         }
     }
 
-    if (langOptionsContainer) {
-        const opciok = [{ id: AUTO, name: autoFelirat() }, ...NYELVEK];
-        langOptionsContainer.replaceChildren(...opciok.map(n => {
-            const opcio = document.createElement('div');
-            opcio.className = 'dropdown-option';
-            opcio.dataset.nyelv = n.id;
-            opcio.textContent = n.name;
-            opcio.addEventListener('click', (e) => {
-                e.stopPropagation();
-                langDropdown?.classList.remove('open');
-                valaszt(n.id);
-            });
-            return opcio;
+    if (racs) {
+        racs.replaceChildren(...NYELVEK.map(n => {
+            const kartya = nyelvKartya(n);
+            kartya.addEventListener('click', () => valaszt(n.id));
+            return kartya;
         }));
     }
 
-    langDropdown?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        langDropdown.classList.toggle('open');
-    });
-    document.addEventListener('click', () => langDropdown?.classList.remove('open'));
-
     // a beállítások ablak is tartalmazhat fordítandó szöveget, és a választónak a mostani nyelvet kell mutatnia
     nyelv()?.alkalmaz();
-    frissitValaszto();
-    nyelv()?.onValtozas(frissitValaszto);
+    jelol();
+    nyelv()?.onValtozas(jelol);
 
     szinkronFiokkal();
 }

@@ -596,5 +596,6 @@
     "zoom": "Zoom",
     "legal_contact_prefix": "For legal questions, write to",
     "legal_contact_suffix": ".",
-    "lang_auto": "Automatic ({lang})"
+    "theme_brown": "Brown",
+    "theme_neon": "Neon"
 }
