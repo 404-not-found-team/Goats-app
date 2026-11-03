@@ -597,5 +597,13 @@
     "legal_contact_prefix": "For legal questions, write to",
     "legal_contact_suffix": ".",
     "theme_brown": "Brown",
-    "theme_neon": "Neon"
+    "theme_neon": "Neon",
+    "notifications": "Notifications:",
+    "push_on": "On",
+    "push_off": "Off",
+    "push_desc": "You get a notification when someone adds a debt for you. Turn it on separately on each device.",
+    "push_denied": "Notifications are blocked. You can allow them in your browser or phone settings.",
+    "push_ios_hint": "On iPhone, first add the app to your home screen (Share → Add to Home Screen) to get notifications.",
+    "push_unsupported": "This browser does not support notifications.",
+    "push_enabled_msg": "This device will now receive notifications."
 }
