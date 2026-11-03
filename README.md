@@ -214,7 +214,6 @@ js/
 img/
   icon-*.png           # PWA ikonok (a manifest.json hivatkozza)
   ikonok/              # ital-kategoria SVG ikonok (CSS maszkkal szinezve)
-  markak/              # ital-marka kepek (.webp) + szerkesztoi forras (.xcf) es nevkonvencio README
 ```
 
 **Service worker verziózása:** a `sw.js` tetején lévő `CACHE_NEV` (pl. `'goats-v11'`) minden olyan kiadásnál emelendő, ami bármelyik előgyorsítótárazott (`ELOGYORSITOTT`) fájl útvonalát vagy tartalmát megváltoztatja — enélkül a már telepített/PWA-ként futó appok a régi, lecserélt fájlokat kapnák a gyorsítótárból. Az `activate` esemény a korábbi cache-neveket automatikusan törli.
