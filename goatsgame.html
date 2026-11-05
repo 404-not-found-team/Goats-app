@@ -25,55 +25,60 @@
 </head>
 
 <body data-oldal="goatsgame">
-    <div class="jobb-kontenet">
-        <ul id="navBar"></ul>
-    </div>
-    <div class="goatsgame-container">
-        <div class="tabella">
-            <div class="bal-oldal">
-                <div class="tablazat nevek" id="nevekOszlop">
-                    <div class="fejlec" data-i18n="name">Név</div>
+    <div class="jobb-sav">
+        <div class="jobb-kontenet">
+            <ul id="navBar"></ul>
+        </div>
+        <div class="goatsgame-container">
+            <div class="tabella">
+                <div class="bal-oldal">
+                    <div class="tablazat nevek" id="nevekOszlop">
+                        <div class="fejlec" data-i18n="name">Név</div>
+                    </div>
+
+                    <div class="tablazat-pontok" id="pontJatekOszlopok">
+                    </div>
                 </div>
 
-                <div class="tablazat-pontok" id="pontJatekOszlopok">
+                <div class="tablazat ossz" id="osszOszlop">
+                    <div class="fejlec" data-i18n="total_score">Összpont</div>
                 </div>
             </div>
 
-            <div class="tablazat ossz" id="osszOszlop">
-                <div class="fejlec" data-i18n="total_score">Összpont</div>
+            <div class="jatekok" id="jatekokKontener">
+                <div class="jatek-fejlec">
+                    <h2 data-i18n="games">Játékok</h2>
+                    <button class="gomb-uj-jatek" data-katt="openUjJatekModal" data-i18n="add_new_game">+ Új játék
+                        felvétele</button>
+                </div>
+
+                <div class="jatek-lista" id="jatekLista">
+                </div>
             </div>
         </div>
 
-        <div class="jatekok" id="jatekokKontener">
-            <div class="jatek-fejlec">
-                <h2 data-i18n="games">Játékok</h2>
-                <button class="gomb-uj-jatek" data-katt="openUjJatekModal" data-i18n="add_new_game">+ Új játék felvétele</button>
-            </div>
-
-            <div class="jatek-lista" id="jatekLista">
-            </div>
-        </div>
-    </div>
-
-    <div id="ujJatekModal" class="goatsgame-modal-overlay" hidden>
-        <div class="goatsgame-modal-card">
-            <div class="goatsgame-modal-header">
-                <h3 data-i18n="add_new_game_modal_title">Új játék hozzáadása</h3>
-                <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close" class="goatsgame-modal-close" data-katt="closeUjJatekModal">&times;</button>
-            </div>
-            <div class="goatsgame-modal-body">
-                <div class="input-group">
-                    <label for="ujJatekNevInput" data-i18n="game_name">Játék neve:</label>
-                    <input type="text" id="ujJatekNevInput" class="goats-input" maxlength="40" placeholder="Pl.: Csocsó, Darts..." data-i18n-attr="placeholder:game_name_ph" />
+        <div id="ujJatekModal" class="goatsgame-modal-overlay" hidden>
+            <div class="goatsgame-modal-card">
+                <div class="goatsgame-modal-header">
+                    <h3 data-i18n="add_new_game_modal_title">Új játék hozzáadása</h3>
+                    <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close"
+                        class="goatsgame-modal-close" data-katt="closeUjJatekModal">&times;</button>
                 </div>
-                <div class="input-group">
-                    <label for="ujJatekSzinInput" data-i18n="column_color">Oszlop színe:</label>
-                    <input type="color" id="ujJatekSzinInput" class="goats-color-input" value="#4CAF50" />
+                <div class="goatsgame-modal-body">
+                    <div class="input-group">
+                        <label for="ujJatekNevInput" data-i18n="game_name">Játék neve:</label>
+                        <input type="text" id="ujJatekNevInput" class="goats-input" maxlength="40"
+                            placeholder="Pl.: Csocsó, Darts..." data-i18n-attr="placeholder:game_name_ph" />
+                    </div>
+                    <div class="input-group">
+                        <label for="ujJatekSzinInput" data-i18n="column_color">Oszlop színe:</label>
+                        <input type="color" id="ujJatekSzinInput" class="goats-color-input" value="#4CAF50" />
+                    </div>
                 </div>
-            </div>
-            <div class="goatsgame-modal-footer">
-                <button class="goatsgame-btn-cancel" data-katt="closeUjJatekModal" data-i18n="back">Mégse</button>
-                <button class="goatsgame-btn-save" data-katt="mentUjJatek" data-i18n="add">Hozzáadás</button>
+                <div class="goatsgame-modal-footer">
+                    <button class="goatsgame-btn-cancel" data-katt="closeUjJatekModal" data-i18n="back">Mégse</button>
+                    <button class="goatsgame-btn-save" data-katt="mentUjJatek" data-i18n="add">Hozzáadás</button>
+                </div>
             </div>
         </div>
     </div>

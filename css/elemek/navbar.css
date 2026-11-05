@@ -35,8 +35,8 @@ ul li.active a {
     background-color: var(--accent-color);
 }
 
-.jobb-kontenet{
-    grid-column: 2; /* A 2. oszlopba kerül */
+.jobb-kontenet {
+    grid-column: 2;
     position: fixed;
     top: calc(15px + env(safe-area-inset-top));
     right: calc(20px + env(safe-area-inset-right));
@@ -50,7 +50,7 @@ ul li.active a {
 
 .jobb-sav {
     display: grid;
-    grid-template-columns: 1fr 200px; /* Bal oldal (tartalom): rugalmas (1fr), Jobb oldal (menü): fix 200px */
+    grid-template-columns: 1fr 200px;
     gap: 20px;
     min-height: 100vh;
     margin: 0;
