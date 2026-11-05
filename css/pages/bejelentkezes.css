@@ -11,6 +11,8 @@
     max-width: 650px;
     margin: 0 auto;
     width: 100%;
+    grid-column: 1; 
+    box-sizing: border-box;
 }
 
 /* --------------------------------------------------------------------------
@@ -219,6 +221,8 @@
         gap: 20px;
     }
 
+
+
     .kepek,
     .naptar-kontener {
         width: 100%;
@@ -272,4 +276,14 @@
         padding: 0;
         display: block;
     }
+
+        .jobb-sav {
+    display: grid;
+    grid-template-columns: 1fr  ; /* Bal oldal (tartalom): rugalmas (1fr), Jobb oldal (menü): fix 200px */
+    gap: 20px;
+    min-height: 100vh;
+    margin: 0;
+    box-sizing: border-box;
+    position: relative;
+}
 }
