@@ -27,6 +27,7 @@ A repó felépítését az [áttekintés](attekintes.md) írja le.
 - [Új főkategória angol neve](#új-főkategória-angol-neve)
 
 **Szerver**
+- [Supabase-hívás sablonok](#supabase-hívás-sablonok)
 - [Új értesítéstípus](#új-értesítéstípus)
 - [Adatbázis módosítása](#adatbázis-módosítása)
 - [Edge Function módosítása](#edge-function-módosítása)
@@ -246,6 +247,168 @@ Márkaelem (logó, címke-elrendezés, jellegzetes palack) nem lehet a rajzon.
 A főkategóriák neve az adatbázisból jön (`ital_kategoriak.nev`, magyarul). Angolul a kód alapján fordul:
 `"cat_<kod>": "English name"` az **`en.json`-ba** (a `hu.json`-ba ne, mert felülírná az adatbázis nevét).
 A megjelenítés a `window.italKategoriak.nevForditva(kategoria)` hívással megy (`js/segedek/ital-kategoriak.js`); a Ranglistán ez mindenhol így van, új helyen is ezt használd.
+
+---
+
+## Supabase-hívás sablonok
+
+Másolható minták a gyakori hívásokhoz. A kliens:
+
+```js
+// modulban (type="module")
+import { client } from '../supabase-client.js';      // az útvonal a fájl helyétől függ
+// klasszikus (nem modul) oldalscriptben
+const client = window._supabase;
+```
+
+Minden hívás `{ data, error }`-t ad vissza, kivételt nem dob (kivéve a hálózati hibát egyes esetekben, ezért
+fontos helyen `try/catch`). **Mindig nézd meg az `error`-t**, mert az RLS-tiltás is csak hibaként jön vissza.
+
+### Bejelentkezett felhasználó és csoport
+
+```js
+// a hitelesites.js állapota (azonnal elérhető, hálózat nélkül)
+import { getState, ready, onChange } from '../hitelesites.js';
+await ready;                                   // az első állapot betöltődött
+const { user, profile, group } = getState();   // user.id, profile.system_role, group.id / group.group_code
+onChange((allapot) => { /* újrarajzolás, ha változott (pl. belépés, csoportváltás) */ });
+
+// csak az azonosító kell, hálózati hívás nélkül:
+const { data } = await client.auth.getSession();
+const userId = data?.session?.user?.id;        // NE getUser(): az minden hívásnál a szerverhez fordul
+```
+
+### Lekérdezés
+
+```js
+// több sor, szűrve, rendezve
+const { data: tervek, error } = await client
+    .from('tervek')
+    .select('id, szoveg, felvette_id, letrehozva')
+    .eq('group_code', group.group_code)
+    .order('id', { ascending: false })
+    .limit(50);
+if (error) {
+    console.error('A tervek betöltése nem sikerült:', error);
+    return allapot(tr('err_operation', 'Hiba a művelet során.'));
+}
+
+// egy sor (vagy null, ha nincs) – nem dob hibát, ha nincs találat
+const { data: profil } = await client.from('profiles').select('language').eq('id', userId).maybeSingle();
+
+// kapcsolódó tábla egy lekérdezésben (külső kulcson keresztül); ha két kulcs is ugyanarra a táblára mutat,
+// meg kell nevezni, melyiken át (itt: kategoria_id, mert az alkategoria_id is az ital_kategoriak-ra mutat)
+const { data } = await client.from('italok').select('id, nev, ital_kategoriak!kategoria_id ( nev, kod )');
+
+// gyakori szűrők
+// .eq('a', 1)  .neq('a', 1)  .in('id', [1, 2])  .is('torolve', null)  .gte('letrehozva', datum)
+// .ilike('nev', '%hell%')  .or('ados_id.eq.' + id + ',hitelezo_id.eq.' + id)
+
+// csak darabszám, sorok letöltése nélkül
+const { count } = await client.from('kepek').select('*', { count: 'exact', head: true }).eq('group_id', group.id);
+```
+
+### Beszúrás, módosítás, törlés
+
+```js
+// beszúrás
+const { error } = await client.from('tervek').insert({ szoveg, group_code: kod });
+
+// beszúrás, és az új sor visszaolvasása (ehhez SELECT-jog is kell az RLS-ben!)
+const { data: uj, error: hiba } = await client.from('tervek').insert({ szoveg, group_code: kod }).select('id').single();
+
+// több sor egyszerre (egy kérés, egy trigger-futás)
+await client.from('tartozasok').insert(sorok);   // sorok: tömb
+
+// módosítás – MINDIG legyen szűrő, különben minden olyan sort módosít, amihez joga van
+await client.from('profiles').update({ display_name: nev }).eq('id', userId);
+
+// beszúrás vagy módosítás egyedi kulcs alapján
+await client.from('goatgame_szinek').upsert({ group_id, user_id, szin }, { onConflict: 'group_id,user_id' });
+
+// törlés – MINDIG legyen szűrő
+await client.from('tervek').delete().eq('id', terv.id);
+```
+
+### Adatbázis-függvény (RPC)
+
+Összetett vagy jogosultság-érzékeny műveletnél (pl. jóváhagyás, admin-műveletek) RPC-t hívunk; a jogosultságot a függvény ellenőrzi.
+
+```js
+const { data, error } = await client.rpc('admin_jelentes_lezarasa', { jelentes_id: id, kep_torlese: false });
+// a paraméternevek pontosan egyezzenek az SQL-függvényével
+```
+
+### Edge Function
+
+```js
+const { data, error } = await client.functions.invoke('kep-jelentes', {
+    body: { group_id: csoport.id, utvonal, ok, leiras },
+});   // a bejelentkezett felhasználó tokenjét a kliens magától küldi
+if (error) {
+    // a függvény saját hibaválasza ({ hiba: 'korlat' } stb.) így olvasható ki:
+    let kod = null;
+    try { kod = (await error.context?.json?.())?.hiba || null; } catch { /* nem JSON */ }
+}
+```
+
+### Tárhely (Storage)
+
+```js
+// privát fájl megjelenítése: aláírt, lejáró link (másodpercben)
+const { data } = await client.storage.from('kepek').createSignedUrl(utvonal, 600);
+img.src = data?.signedUrl;
+
+// feltöltés (a mappa neve a csoport azonosítója: <group_id>/<fájl>)
+const { error } = await client.storage.from('kepek').upload(`${group.id}/${fajlNev}.webp`, blob, {
+    contentType: 'image/webp',
+    upsert: false,
+});
+
+// törlés (útvonalak tömbje)
+await client.storage.from('kepek').remove([utvonal]);
+```
+
+### Hibák kezelése
+
+```js
+// gyakori hibakódok: error.code
+// 42501       nincs jogosultság (RLS) – sokszor a message-ben: "row-level security"
+// 23505       már létezik (egyedi kulcs)
+// 23503       hivatkozott sor nem létezik / máshol még használják
+// 23514       nem felel meg egy CHECK feltételnek (pl. túl hosszú név)
+// PGRST116    .single() mellett 0 vagy több sor jött (használj .maybeSingle()-t)
+// P0001       saját "raise exception" egy RPC-ből – a message kiírható
+if (error?.code === '42501') allapot(tr('err_no_permission_settings', 'Nincs jogosultságod…'));
+else if (error?.code === '23505') allapot(tr('err_subcat_exists', 'Ilyen nevű … már van.'));
+else if (error) allapot(tr('err_operation', 'Hiba a művelet során.'));
+```
+
+Szabályok: a felhasználónak szóló üzenet mindig `tr()`-rel menjen; a technikai részletet (`error`) a konzolba írd
+(`console.error('Mi nem sikerült:', error)`), ne a felületre.
+
+### SQL-oldali párjuk (migrációhoz)
+
+```sql
+-- olvasás a saját csoport adataira (minta: a valódi tábla oszlopaihoz igazítsd)
+create policy "csoport olvashatja" on public.tervek for select to authenticated
+    using (group_code in (select g.group_code from groups g where g.id in (select my_group_ids())));
+
+-- RPC, ami maga ellenőrzi a jogosultságot
+create or replace function public.valami_muvelet(azonosito bigint)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+    if not is_superadmin() then
+        raise exception 'Nincs jogosultság' using errcode = '42501';
+    end if;
+    -- …
+end $$;
+revoke all on function public.valami_muvelet(bigint) from public, anon;
+grant execute on function public.valami_muvelet(bigint) to authenticated;
+
+-- új oszlop írása a profiles / italok táblán (oszlopszintű jog kell a policy mellé)
+grant update (uj_oszlop) on public.profiles to authenticated;
+```
 
 ---
 

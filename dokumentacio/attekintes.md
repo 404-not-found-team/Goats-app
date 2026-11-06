@@ -56,7 +56,7 @@ Nincs build lépés, nincs keretrendszer, nincs npm a weboldalhoz: sima HTML, CS
 | Menü (alsó sáv / fiók) | `js/elemek/nav-bar.js`, az oldalak listája: `js/segedek/oldalak.js` |
 | Beállítások ablak, profil, csoport adatok | `js/elemek/beallitasok/` (a HTML-jük: `beallitasok-sablonok.js`) |
 | Bejelentkezés, munkamenet, csoport-állapot | `js/hitelesites.js` (`window.goatsAuth`) |
-| Supabase kliens | `js/supabase-client.js`, a könyvtár: `js/kulso/supabase-js-2.117.2.js` |
+| Supabase kliens | `js/supabase-client.js`, a könyvtár: `js/kulso/supabase-js-2.117.2.js`; hívásminták: [útmutató](utmutato.md#supabase-hívás-sablonok) |
 | Tartozások | `tartozasok.html`, `js/pages/tartozasok.js`, egyenlítés: `js/elemek/tartozasok-egyenlitese.js` |
 | Ranglista, italok, italképek | `ranglista.html`, `js/pages/ranglista.js`, képek: `js/segedek/ital-kep.js`, `img/formak/`, `img/mintak/` |
 | Italkategóriák | `js/segedek/ital-kategoriak.js` (adat: `ital_kategoriak` tábla) |
