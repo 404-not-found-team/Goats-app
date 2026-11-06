@@ -27,59 +27,73 @@
 <body data-oldal="tartozasok">
     <ul id="navBar"></ul>
 
-    <div class="container-tartozasok">
+    <div class="fejlec-gombok-tarolo">
         <h1 data-i18n="debts_title">Tartozások</h1>
-
-        <div class="input-tartozasok">
-            <div class="floating-group">
-                <input type="text" id="miertInput" class="floating-input" placeholder=" " />
-                <label class="floating-label" data-i18n="why">Miért?</label>
-            </div>
-            <div class="floating-group">
-                <input type="number" min="1" id="mennyiertInput" class="floating-input" placeholder=" " />
-                <label class="floating-label" data-i18n="how_much">Mennyiért?</label>
-            </div>
-
-            <div class="floating-group custom-dropdown" id="kinekDropdown">
-                <div class="dropdown-btn" data-katt="toggleKinekDropdown">
-                    <span id="kinekDropdownLabel">&nbsp;</span>
-                </div>
-                <label class="floating-label active" data-i18n="who_owes_whom">Kinek tartozik?</label>
-                <div class="dropdown-content" id="kinekDropdownContent"></div>
-            </div>
-
-            <div class="floating-group custom-dropdown" id="kiTartozikDropdown">
-                <div class="dropdown-btn" data-katt="toggleDropdown">
-                    <span id="dropdownBtnLabel">&nbsp;</span>
-                </div>
-                <label class="floating-label active" data-i18n="who_owes">Ki tartozik?</label>
-                <div class="dropdown-content" id="dropdownContent"></div>
-            </div>
-
-            <!--<input type="button" id="tartozasHozzaadGomb" value="Hozzáad" data-katt="addTartozas" data-i18n="add_btn">-->
-            <button type="button" id="tartozasHozzaadGomb" class="terv-add-btn" data-katt="addTartozas" data-i18n="add_btn">Hozzáad</button>
+        <div class="fejlec-gombok">
+            <button type="button" id="uj-tartozas-gomb" class="gomb-uj-tartozas" data-katt="nyisdUjTartozasModal" data-i18n="new_debt">Új tartozás</button>
         </div>
+    </div>
 
-        <div class="kozos-koltseg">
-            <div class="kozos-koltseg-infok">
-                <fieldset class="elosztas-mod">
-                    <legend data-i18n="shared_expense_distribution">Összeg elosztása</legend>
-                    <label class="kapcsolo-sor">
-                        <input type="radio" name="elosztasMod" value="egyenlo" checked>
-                        <span data-i18n="equal_distribution">Egyenlő elosztás</span>
-                    </label>
-                    <label class="kapcsolo-sor">
-                        <input type="radio" name="elosztasMod" value="egyedi">
-                        <span data-i18n="custom_amounts">Egyedi összegek</span>
-                    </label>
-                </fieldset>
-                <p id="elosztasElonezet" class="elosztas-elonezet" aria-live="polite"></p>
-            </div>
-            <div id="egyediOsszegek" class="egyedi-osszegek hidden"></div>
-        </div>
-
+    <div class="container-tartozasok">
         <div class="tartozasok-kontener tartozasok-grid"></div>
+    </div>
+
+    <!-- Új tartozás felvétele (a fejléc "Új tartozás" gombjára nyílik) -->
+    <div id="uj-tartozas-modal" class="tartozas-ablak-hatter" hidden>
+        <div class="tartozas-ablak" role="dialog" aria-modal="true" aria-labelledby="uj-tartozas-cim">
+            <h3 id="uj-tartozas-cim" class="tartozas-ablak-cim" data-i18n="new_debt">Új tartozás</h3>
+
+            <div class="input-tartozasok">
+                <div class="floating-group">
+                    <input type="text" id="miertInput" class="floating-input" placeholder=" " />
+                    <label class="floating-label" data-i18n="why">Miért?</label>
+                </div>
+                <div class="floating-group">
+                    <input type="number" min="1" id="mennyiertInput" class="floating-input" placeholder=" " />
+                    <label class="floating-label" data-i18n="how_much">Mennyiért?</label>
+                </div>
+
+                <div class="floating-group custom-dropdown" id="kinekDropdown">
+                    <div class="dropdown-btn" data-katt="toggleKinekDropdown">
+                        <span id="kinekDropdownLabel">&nbsp;</span>
+                    </div>
+                    <label class="floating-label active" data-i18n="who_owes_whom">Kinek tartozik?</label>
+                    <div class="dropdown-content" id="kinekDropdownContent"></div>
+                </div>
+
+                <div class="floating-group custom-dropdown" id="kiTartozikDropdown">
+                    <div class="dropdown-btn" data-katt="toggleDropdown">
+                        <span id="dropdownBtnLabel">&nbsp;</span>
+                    </div>
+                    <label class="floating-label active" data-i18n="who_owes">Ki tartozik?</label>
+                    <div class="dropdown-content" id="dropdownContent"></div>
+                </div>
+            </div>
+
+            <div class="kozos-koltseg">
+                <div class="kozos-koltseg-infok">
+                    <fieldset class="elosztas-mod">
+                        <legend data-i18n="shared_expense_distribution">Összeg elosztása</legend>
+                        <label class="kapcsolo-sor">
+                            <input type="radio" name="elosztasMod" value="egyenlo" checked>
+                            <span data-i18n="equal_distribution">Egyenlő elosztás</span>
+                        </label>
+                        <label class="kapcsolo-sor">
+                            <input type="radio" name="elosztasMod" value="egyedi">
+                            <span data-i18n="custom_amounts">Egyedi összegek</span>
+                        </label>
+                    </fieldset>
+                    <p id="elosztasElonezet" class="elosztas-elonezet" aria-live="polite"></p>
+                </div>
+                <div id="egyediOsszegek" class="egyedi-osszegek hidden"></div>
+            </div>
+
+            <div class="tartozas-ablak-gombok">
+                <button type="button" class="tartozas-ablak-megse" data-katt="zardUjTartozasModal" data-i18n="cancel">Mégse</button>
+                <button type="button" id="tartozasHozzaadGomb" class="terv-add-btn" data-katt="addTartozas" data-i18n="add_btn">Hozzáad</button>
+            </div>
+        </div>
     </div>
 </body>
 
-</html>
+</html>

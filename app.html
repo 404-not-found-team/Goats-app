@@ -28,17 +28,23 @@
 
 <body>
     <ul id="navBar"></ul>
-
+    <div class="fejlec-gombok-tarolo">
+        <h1 data-i18n="app_title">Főoldal</h1>
+    </div>
     <div class="hatter">
 
         <div class="kepek">
             <!-- Feltöltés, törlés, jelentés: a Képek oldalon (csak ha a csoportnál engedélyezett) -->
-            <a href="kepek.html" id="osszesKepLink" class="galeria-osszes-link" hidden data-i18n="all_picture">Összes kép &rarr;</a>
+            <a href="kepek.html" id="osszesKepLink" class="galeria-osszes-link" hidden data-i18n="all_picture">Összes
+                kép &rarr;</a>
             <i class="fa-solid fa-caret-left nyil" data-katt="eloKep"></i>
 
-            <img id="kepBal" class="galeria-kep hatrebb" alt="Előző kép" width="120" height="120" loading="lazy" decoding="async">
-            <img id="kepKozep" class="galeria-kep" alt="Aktuális kép" width="180" height="180" loading="lazy" decoding="async">
-            <img id="kepJobb" class="galeria-kep hatrebb" alt="Következő kép" width="120" height="120" loading="lazy" decoding="async">
+            <img id="kepBal" class="galeria-kep hatrebb" alt="Előző kép" width="120" height="120" loading="lazy"
+                decoding="async">
+            <img id="kepKozep" class="galeria-kep" alt="Aktuális kép" width="180" height="180" loading="lazy"
+                decoding="async">
+            <img id="kepJobb" class="galeria-kep hatrebb" alt="Következő kép" width="120" height="120" loading="lazy"
+                decoding="async">
 
             <i class="fa-solid fa-caret-right nyil" data-katt="kovKep"></i>
 
@@ -53,7 +59,9 @@
             </div>
 
             <div class="naptar-napok-fejlec">
-                <span data-i18n="monday">H</span><span data-i18n="tuesday">K</span><span data-i18n="wednesday">Sze</span><span data-i18n="thursday">Cs</span><span data-i18n="friday">P</span><span data-i18n="saturday">Szo</span><span data-i18n="sunday">V</span>
+                <span data-i18n="monday">H</span><span data-i18n="tuesday">K</span><span
+                    data-i18n="wednesday">Sze</span><span data-i18n="thursday">Cs</span><span
+                    data-i18n="friday">P</span><span data-i18n="saturday">Szo</span><span data-i18n="sunday">V</span>
             </div>
 
             <div id="naptar-rács" class="naptar-racs"></div>
@@ -64,7 +72,8 @@
             <div class="sm-card">
                 <div class="sm-header">
                     <h3 data-i18n="add_event">Esemény hozzáadása</h3>
-                    <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close" id="close-esemeny-modal" class="sm-close-btn">&times;</button>
+                    <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close"
+                        id="close-esemeny-modal" class="sm-close-btn">&times;</button>
                 </div>
                 <div class="floating-group">
                     <input type="text" id="esemeny-cim-input" class="floating-input" placeholder=" " />
@@ -83,11 +92,13 @@
             <div class="sm-card modal-magas">
                 <div class="sm-header">
                     <h3 id="napi-modal-cím" data-i18n="events">Események</h3>
-                    <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close" id="close-napi-esemenyek-modal" class="sm-close-btn">&times;</button>
+                    <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close"
+                        id="close-napi-esemenyek-modal" class="sm-close-btn">&times;</button>
                 </div>
                 <div id="napi-esemenyek-lista" class="napi-lista">
                 </div>
-                <button id="napi-uj-esemeny-btn" class="sm-btn sm-btn-save" data-i18n="new_event_this_day">Új esemény ezen a napon</button>
+                <button id="napi-uj-esemeny-btn" class="sm-btn sm-btn-save" data-i18n="new_event_this_day">Új esemény
+                    ezen a napon</button>
             </div>
         </div>
 
@@ -96,7 +107,8 @@
             <div class="sm-card">
                 <div class="sm-header">
                     <h3 data-i18n="edit_event">Esemény szerkesztése</h3>
-                    <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close" id="close-esemeny-reszletek-modal" class="sm-close-btn">&times;</button>
+                    <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close"
+                        id="close-esemeny-reszletek-modal" class="sm-close-btn">&times;</button>
                 </div>
                 <div class="floating-group">
                     <input type="text" id="szerkeszt-esemeny-cim" class="floating-input" placeholder=" " />
@@ -108,8 +120,10 @@
                 </div>
 
                 <div class="gomb-sor">
-                    <button id="modosit-esemeny-btn" class="sm-btn sm-btn-save nyujt" data-i18n="edit">Módosítás</button>
-                    <button id="torol-esemeny-btn" class="sm-btn sm-btn-logout nyujt mt-0" data-i18n="delete">Törlés</button>
+                    <button id="modosit-esemeny-btn" class="sm-btn sm-btn-save nyujt"
+                        data-i18n="edit">Módosítás</button>
+                    <button id="torol-esemeny-btn" class="sm-btn sm-btn-logout nyujt mt-0"
+                        data-i18n="delete">Törlés</button>
                 </div>
             </div>
         </div>

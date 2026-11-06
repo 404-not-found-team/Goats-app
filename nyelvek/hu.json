@@ -289,7 +289,7 @@
     "page_tierlist": "Ranglista",
     "page_pictures": "Képek",
     "page_plans": "Tervek",
-    "page_goatsgame":"Tabella",
+    "page_goatsgame": "Tabella",
     "feat_upload": "Képfeltöltés",
     "feat_upload_desc": "Képek feltöltése a Képek oldalon.",
     "feat_drink_suggest": "Italjavaslat",
@@ -623,5 +623,8 @@
     "recipe_x": "recept: {list}",
     "suggested_by": "javasolta: {name}",
     "open_full_size": "Megnyitás teljes méretben",
-    "title_goats_game":"ATG - Tabella"
+    "title_goats_game": "ATG - Tabella",
+    "new_debt": "Új tartozás",
+    "app_title": "Főoldal",
+    "goats_game_title": "Tabella"
 }

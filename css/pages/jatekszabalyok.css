@@ -2,28 +2,6 @@
    1. FEJLÉC ÉS GOMBOK
    ========================================================================== */
 
-.fejlec-gombok-tarolo {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto 20px auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--card-bg);
-    padding: 18px 24px;
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-    box-sizing: border-box;
-    gap: 12px;
-}
-
-.fejlec-gombok-tarolo h1 {
-    margin: 0;
-    font-size: var(--fs-xxl);
-    color: var(--text-primary);
-}
-
 .gomb-uj-ital {
     background-color: var(--accent-color);
     color: var(--on-accent);
@@ -690,15 +668,6 @@
    ========================================================================== */
 
 @media (max-width: 600px) {
-    .fejlec-gombok-tarolo {
-        padding: 14px 16px;
-        flex-wrap: wrap;
-    }
-
-    .fejlec-gombok-tarolo h1 {
-        font-size: var(--fs-lg);
-    }
-
     .jatek-lista {
         grid-template-columns: 1fr;
     }

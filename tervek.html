@@ -25,16 +25,20 @@
 
 <body data-oldal="tervek">
     <ul id="navBar"></ul>
-
-    <div class="container">
+    <div class="fejlec-gombok-tarolo">
         <h1 data-i18n="plans_ideas_title">Tervek</h1>
-        <div class="terv-input-sor">
-            <div class="floating-group">
-                <input type="text" id="tervInput" class="floating-input" placeholder=" " />
-                <label class="floating-label" data-i18n="enter_plan">Írd be a tervet...</label>
+        <div class="fejlec-gombok">
+            <div class="terv-input-sor">
+                <div class="floating-group">
+                    <input type="text" id="tervInput" class="floating-input" placeholder=" " />
+                    <label class="floating-label" data-i18n="enter_plan">Írd be a tervet...</label>
+                </div>
+                <button type="button" id="hozzaadTervBtn" class="terv-add-btn" data-katt="add"
+                    data-i18n="add_btn">Hozzáad</button>
             </div>
-            <button type="button" id="hozzaadTervBtn" class="terv-add-btn" data-katt="add" data-i18n="add_btn">Hozzáad</button>
         </div>
+    </div>
+    <div class="container">
         <div class="tervek">
         </div>
     </div>

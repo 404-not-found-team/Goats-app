@@ -289,7 +289,7 @@
     "page_tierlist": "Tier list",
     "page_pictures": "Pictures",
     "page_plans": "Plans",
-    "page_goatsgame":"Standings",
+    "page_goatsgame": "Standings",
     "feat_upload": "Picture upload",
     "feat_upload_desc": "Uploading pictures on the Pictures page.",
     "feat_drink_suggest": "Drink suggestion",
@@ -638,5 +638,8 @@
     "recipe_x": "recipe: {list}",
     "suggested_by": "suggested by: {name}",
     "open_full_size": "Open full size",
-    "title_goats_game":"ATG - Standings"
+    "title_goats_game": "ATG - Standings",
+    "new_debt": "New debt",
+    "app_title": "Home",
+    "goats_game_title": "Standings"
 }

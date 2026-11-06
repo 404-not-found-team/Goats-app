@@ -171,3 +171,16 @@
         padding: 12px 14px;
     }
 }
+
+/* a fejlécben (jobbra) a beviteli sor: nincs alatta térköz, így függőlegesen középen van */
+.fejlec-gombok .terv-input-sor {
+    width: 420px;
+    max-width: 100%;
+    margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+    .fejlec-gombok .terv-input-sor {
+        width: 100%;
+    }
+}
