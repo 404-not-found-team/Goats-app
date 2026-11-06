@@ -2,6 +2,8 @@ window.onload = async function () {
     if (window.goatsAuth) await window.goatsAuth.ready;
     // Globálisan kikapcsolt tartozás-felvétel (FELADAT15): a gomb letiltva, a szerver is elutasítaná
     window.goatsKapcsolok?.funkcioGombTiltas(document.getElementById('tartozasHozzaadGomb'), 'funkcio_tartozas_felvetel');
+    window.goatsKapcsolok?.funkcioGombTiltas(document.getElementById('uj-tartozas-gomb'), 'funkcio_tartozas_felvetel');
+    ujTartozasAblakBekotese();
     initMembersAndContainers();
     loadTartozasok(true);
 
@@ -581,6 +583,35 @@ function tartozasHiba(error) {
     return tr('err_saving', 'Hiba történt a mentéskor!');
 }
 
+// ---------- Új tartozás ablak (a fejléc "Új tartozás" gombjára nyílik) ----------
+
+function nyisdUjTartozasModal() {
+    if (window.goatsKapcsolok && !window.goatsKapcsolok.funkcioEngedelyezett('funkcio_tartozas_felvetel')) {
+        alert(window.goatsKapcsolok.TILTVA_SZOVEG);
+        return;
+    }
+    document.getElementById('uj-tartozas-modal').hidden = false;
+    document.getElementById('miertInput')?.focus();
+}
+
+function zardUjTartozasModal() {
+    closeAllDropdowns();
+    document.getElementById('uj-tartozas-modal').hidden = true;
+    document.getElementById('uj-tartozas-gomb')?.focus();
+}
+
+// Bezárás a háttérre kattintva és Esc-re (ha egy lenyíló nyitva van, az Esc előbb azt csukja be)
+function ujTartozasAblakBekotese() {
+    const ablak = document.getElementById('uj-tartozas-modal');
+    if (!ablak) return;
+    ablak.addEventListener('click', (e) => { if (e.target === ablak) zardUjTartozasModal(); });
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape' || ablak.hidden) return;
+        if (document.querySelector('#uj-tartozas-modal .dropdown-content.show')) closeAllDropdowns();
+        else zardUjTartozasModal();
+    });
+}
+
 async function addTartozas() {
     if (window.goatsKapcsolok && !window.goatsKapcsolok.funkcioEngedelyezett('funkcio_tartozas_felvetel')) {
         alert(window.goatsKapcsolok.TILTVA_SZOVEG);
@@ -649,5 +680,6 @@ async function addTartozas() {
     updateDropdownLabel();
     frissitKozosKoltseg();
 
+    zardUjTartozasModal();
     loadTartozasok();
-}
+}
