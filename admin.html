@@ -23,36 +23,54 @@
 </head>
 
 <body>
-    <ul id="navBar"></ul>
-
+    <div class="jobb-sav">
+        <div class="jobb-kontenet">
+            <ul id="navBar"></ul>
+        </div>
+        <div class="fejlec-gombok-tarolo">
+            <h1 data-i18n="admin_title">Admin</h1>
+        </div>
+    </div>
     <main id="adminTartalom" class="admin-oldal" hidden>
-        <h1 data-i18n="admin_title">Admin</h1>
+
 
         <div id="adminFigyelmeztetes" class="admin-figyelmeztetes" role="status" hidden></div>
         <p id="adminAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
 
         <div class="sm-tabs" role="tablist">
-            <button type="button" class="sm-tab-btn active" data-tab="tab-globalis" role="tab" aria-selected="true" data-i18n="tab_global_switches">Globális kapcsolók</button>
-            <button type="button" class="sm-tab-btn" data-tab="tab-javaslatok" role="tab" aria-selected="false"><span data-i18n="tab_drink_suggestions">Italjavaslatok</span> <span id="adminJavaslatokDb" class="admin-darab" hidden></span></button>
-            <button type="button" class="sm-tab-btn" data-tab="tab-kategoriak" role="tab" aria-selected="false" data-i18n="tab_drink_categories">Italkategóriák</button>
-            <button type="button" class="sm-tab-btn" data-tab="tab-szinek" role="tab" aria-selected="false" data-i18n="tab_colors">Színek</button>
-            <button type="button" class="sm-tab-btn" data-tab="tab-jelentesek" role="tab" aria-selected="false"><span data-i18n="tab_reports">Jelentések</span> <span id="adminJelentesekDb" class="admin-darab" hidden></span></button>
+            <button type="button" class="sm-tab-btn active" data-tab="tab-globalis" role="tab" aria-selected="true"
+                data-i18n="tab_global_switches">Globális kapcsolók</button>
+            <button type="button" class="sm-tab-btn" data-tab="tab-javaslatok" role="tab" aria-selected="false"><span
+                    data-i18n="tab_drink_suggestions">Italjavaslatok</span> <span id="adminJavaslatokDb"
+                    class="admin-darab" hidden></span></button>
+            <button type="button" class="sm-tab-btn" data-tab="tab-kategoriak" role="tab" aria-selected="false"
+                data-i18n="tab_drink_categories">Italkategóriák</button>
+            <button type="button" class="sm-tab-btn" data-tab="tab-szinek" role="tab" aria-selected="false"
+                data-i18n="tab_colors">Színek</button>
+            <button type="button" class="sm-tab-btn" data-tab="tab-jelentesek" role="tab" aria-selected="false"><span
+                    data-i18n="tab_reports">Jelentések</span> <span id="adminJelentesekDb" class="admin-darab"
+                    hidden></span></button>
         </div>
 
         <div id="tab-globalis" class="sm-tab-content active">
             <p class="admin-bevezeto" data-i18n="global_intro">
-                Az egész alkalmazásra érvényesek, minden csoportra. A superadminokra egyik sem vonatkozik, ők mindent látnak és használhatnak.
+                Az egész alkalmazásra érvényesek, minden csoportra. A superadminokra egyik sem vonatkozik, ők
+                mindent
+                látnak és használhatnak.
             </p>
 
             <section class="admin-szekcio" aria-labelledby="adminOldalakCim">
                 <h2 id="adminOldalakCim" data-i18n="pages">Oldalak</h2>
-                <p class="admin-szekcio-leiras" data-i18n="pages_desc">A kikapcsolt oldal eltűnik a menüből, és közvetlenül sem nyitható meg. A Kezdőlap nem kapcsolható.</p>
+                <p class="admin-szekcio-leiras" data-i18n="pages_desc">A kikapcsolt oldal eltűnik a menüből, és
+                    közvetlenül sem nyitható meg. A Kezdőlap nem kapcsolható.</p>
                 <ul id="adminOldalak" class="admin-lista"></ul>
             </section>
 
             <section class="admin-szekcio" aria-labelledby="adminFunkciokCim">
                 <h2 id="adminFunkciokCim" data-i18n="features">Funkciók</h2>
-                <p class="admin-szekcio-leiras" data-i18n="features_desc">A kikapcsolt funkció gombja letiltva jelenik meg, és a szerver is elutasítja.</p>
+                <p class="admin-szekcio-leiras" data-i18n="features_desc">A kikapcsolt funkció gombja letiltva
+                    jelenik
+                    meg, és a szerver is elutasítja.</p>
                 <ul id="adminFunkciok" class="admin-lista"></ul>
             </section>
 
@@ -66,7 +84,9 @@
             <section class="admin-szekcio" aria-labelledby="adminJavaslatokCim">
                 <h2 id="adminJavaslatokCim" data-i18n="tab_drink_suggestions">Italjavaslatok</h2>
                 <p class="admin-szekcio-leiras" data-i18n="suggestions_desc">
-                    A felhasználók által javasolt italok: jóváhagyás után a közös katalógusba kerülnek, elutasításkor törlődnek.
+                    A felhasználók által javasolt italok: jóváhagyás után a közös katalógusba kerülnek,
+                    elutasításkor
+                    törlődnek.
                 </p>
                 <p id="adminJavaslatokAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
                 <ul id="adminJavaslatok" class="admin-lista"></ul>
@@ -77,9 +97,12 @@
             <section class="admin-szekcio" aria-labelledby="adminJelentesekCim">
                 <h2 id="adminJelentesekCim" data-i18n="tab_reports">Jelentések</h2>
                 <p class="admin-szekcio-leiras" data-i18n="reports_desc">
-                    A felhasználók által jelentett képek. A kép a jelentéskor mentett másolatból látszik, akkor is, ha az eredetit közben törölték.
+                    A felhasználók által jelentett képek. A kép a jelentéskor mentett másolatból látszik, akkor
+                    is, ha
+                    az eredetit közben törölték.
                 </p>
-                <select id="adminJelentesekSzuro" class="admin-bemenet admin-jelentes-szuro" data-i18n-attr="aria-label:reports_filter" aria-label="Szűrés">
+                <select id="adminJelentesekSzuro" class="admin-bemenet admin-jelentes-szuro"
+                    data-i18n-attr="aria-label:reports_filter" aria-label="Szűrés">
                     <option value="nyitott" data-i18n="reports_open">Nyitott jelentések</option>
                     <option value="mind" data-i18n="reports_all">Összes jelentés</option>
                 </select>
@@ -92,7 +115,9 @@
             <section class="admin-szekcio" aria-labelledby="adminKategoriakCim">
                 <h2 id="adminKategoriakCim" data-i18n="tab_drink_categories">Italkategóriák</h2>
                 <p class="admin-szekcio-leiras" data-i18n="categories_desc">
-                    Alkategóriák a főkategóriákon belül (pl. Energiaitalok → Hell). Az ital a szabály szerint kerül az alkategóriába (a márkája vagy a neve eleje alapján), és italonként kézzel felülírható.
+                    Alkategóriák a főkategóriákon belül (pl. Energiaitalok → Hell). Az ital a szabály szerint
+                    kerül az
+                    alkategóriába (a márkája vagy a neve eleje alapján), és italonként kézzel felülírható.
                 </p>
                 <p id="adminKategoriakAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
 
@@ -107,19 +132,26 @@
                 <form id="adminUjAlkategoria" class="admin-urlap">
                     <h3 class="admin-alcim" data-i18n="new_subcategory">Új alkategória</h3>
                     <div class="admin-urlap-sor">
-                        <input id="adminUjAlNev" class="admin-bemenet" maxlength="40" placeholder="Név (pl. Hell)" aria-label="Az alkategória neve" data-i18n-attr="placeholder:subcat_name_ph; aria-label:subcat_name" required>
-                        <select id="adminUjAlSzabaly" class="admin-bemenet" aria-label="A szabály típusa" data-i18n-attr="aria-label:rule_type">
+                        <input id="adminUjAlNev" class="admin-bemenet" maxlength="40" placeholder="Név (pl. Hell)"
+                            aria-label="Az alkategória neve"
+                            data-i18n-attr="placeholder:subcat_name_ph; aria-label:subcat_name" required>
+                        <select id="adminUjAlSzabaly" class="admin-bemenet" aria-label="A szabály típusa"
+                            data-i18n-attr="aria-label:rule_type">
                             <option value="marka" data-i18n="brand_matches">Márka egyezik</option>
                             <option value="nev" data-i18n="name_starts_with">Név eleje</option>
                             <option value="nincs" data-i18n="no_rule">Nincs szabály (csak kézi)</option>
                         </select>
-                        <input id="adminUjAlErtek" class="admin-bemenet" maxlength="40" placeholder="Érték (pl. hell)" aria-label="A szabály értéke" data-i18n-attr="placeholder:rule_value_ph; aria-label:rule_value">
+                        <input id="adminUjAlErtek" class="admin-bemenet" maxlength="40" placeholder="Érték (pl. hell)"
+                            aria-label="A szabály értéke"
+                            data-i18n-attr="placeholder:rule_value_ph; aria-label:rule_value">
                         <button type="submit" class="admin-gomb" data-i18n="add">Hozzáadás</button>
                     </div>
                 </form>
 
                 <h3 class="admin-alcim" data-i18n="drink_classification">Italok besorolása</h3>
-                <input id="adminItalKereso" class="admin-bemenet admin-kereso" type="search" placeholder="Keresés név szerint…" aria-label="Italok keresése" data-i18n-attr="placeholder:search_by_name; aria-label:search_drinks">
+                <input id="adminItalKereso" class="admin-bemenet admin-kereso" type="search"
+                    placeholder="Keresés név szerint…" aria-label="Italok keresése"
+                    data-i18n-attr="placeholder:search_by_name; aria-label:search_drinks">
                 <ul id="adminItalok" class="admin-lista admin-italok"></ul>
             </section>
         </div>
@@ -128,7 +160,11 @@
             <section class="admin-szekcio" aria-labelledby="adminSzinekCim">
                 <h2 id="adminSzinekCim" data-i18n="tab_colors">Színek</h2>
                 <p class="admin-szekcio-leiras" data-i18n="colors_desc">
-                    Névvel elmentett, egyedi színek (pl. "Hell piros", RGB/színválasztóval megadva). A Ranglistán minden szín-helyen (fő szín, második szín) ebből a listából lehet választani - "Szín keverés" a lista legvégén nyit egyéni RGB-t.
+                    Névvel elmentett, egyedi színek (pl. "Hell piros", RGB/színválasztóval megadva). A
+                    Ranglistán minden
+                    szín-helyen (fő szín, második szín) ebből a listából lehet választani - "Szín keverés" a
+                    lista
+                    legvégén nyit egyéni RGB-t.
                 </p>
                 <p id="adminSzinekAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
                 <ul id="adminSzinek" class="admin-lista"></ul>
@@ -136,8 +172,11 @@
                 <form id="adminUjSzin" class="admin-urlap">
                     <h3 class="admin-alcim" data-i18n="new_color">Új szín</h3>
                     <div class="admin-urlap-sor">
-                        <input id="adminUjSzinNev" class="admin-bemenet" maxlength="40" placeholder="Név (pl. Hell piros)" aria-label="A szín neve" data-i18n-attr="placeholder:color_name_ph; aria-label:color_name" required>
-                        <input id="adminUjSzin1" type="color" value="#e30613" aria-label="A szín (RGB)" data-i18n-attr="aria-label:color_rgb">
+                        <input id="adminUjSzinNev" class="admin-bemenet" maxlength="40"
+                            placeholder="Név (pl. Hell piros)" aria-label="A szín neve"
+                            data-i18n-attr="placeholder:color_name_ph; aria-label:color_name" required>
+                        <input id="adminUjSzin1" type="color" value="#e30613" aria-label="A szín (RGB)"
+                            data-i18n-attr="aria-label:color_rgb">
                         <button type="submit" class="admin-gomb" data-i18n="add">Hozzáadás</button>
                     </div>
                 </form>

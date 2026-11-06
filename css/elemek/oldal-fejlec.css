@@ -17,6 +17,8 @@
     box-sizing: border-box;
     /* minden oldalon ugyanakkora: a cím-only és a gombos fejléc is ennyi magas */
     min-height: 88px;
+    /* a navbar-sávos elrendezésben (.jobb-sav rács) a bal oszlopba kerül */
+    grid-column: 1;
 }
 
 .fejlec-gombok-tarolo h1 {

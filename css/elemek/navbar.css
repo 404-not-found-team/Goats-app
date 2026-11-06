@@ -52,6 +52,10 @@ ul li.active a {
     display: grid;
     grid-template-columns: 1fr 200px;
     gap: 20px;
+    /* a body flex-középre igazít: e nélkül a sáv a tartalom szélességére zsugorodna */
+    width: 100%;
+    /* a sorok ne nyúljanak meg a 100vh kitöltéséhez (különben a fejléc-kártya is megnő) */
+    align-content: start;
     min-height: 100vh;
     margin: 0;
     box-sizing: border-box;
@@ -117,6 +121,11 @@ ul li.active a {
    a fájlban az alapszabályok UTÁN van, és a szelektorok legalább
    ugyanolyan specifikusak (ul#navBar > ul / #navBar). */
 @media (max-width: 600px) {
+    /* mobilon a navbar alsó sáv, nem kell neki külön oszlop */
+    .jobb-sav {
+        grid-template-columns: 1fr;
+    }
+
     body {
         padding-bottom: calc(75px + env(safe-area-inset-bottom));
     }
