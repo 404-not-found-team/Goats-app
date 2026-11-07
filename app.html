@@ -40,6 +40,8 @@
             <!-- Feltöltés, törlés, jelentés: a Képek oldalon (csak ha a csoportnál engedélyezett) -->
             <a href="kepek.html" id="osszesKepLink" class="galeria-osszes-link" hidden data-i18n="all_picture">Összes
                 kép &rarr;</a>
+            <!-- asztali nézetben az aktuális kép elmosott, kinagyított változata a képsáv háttere (a galeria.js tölti) -->
+            <img id="kepek-hatterkep" class="kepek-hatterkep" alt="" aria-hidden="true" decoding="async">
             <i class="fa-solid fa-caret-left nyil" data-katt="eloKep"></i>
 
             <img id="kepBal" class="galeria-kep hatrebb" alt="Előző kép" width="120" height="120" loading="lazy"
@@ -69,6 +71,14 @@
 
             <div id="naptar-rács" class="naptar-racs"></div>
         </div>
+
+        <!-- Közelgő események (csak asztali nézetben látszik; a naptar.js tölti a naptár eseményeiből) -->
+        <section class="kozelgo" aria-labelledby="kozelgo-cim">
+            <h2 id="kozelgo-cim" data-i18n="upcoming_events">Közelgő események</h2>
+            <div id="kozelgo-lista" class="kozelgo-lista"></div>
+            <p id="kozelgo-ures" class="kozelgo-ures" data-i18n="no_upcoming_events">Még nincs tervezett program. Vegyetek fel egyet!</p>
+            <button type="button" id="kozelgo-uj-gomb" class="kozelgo-gomb" data-i18n="new_event_btn">+ Új esemény</button>
+        </section>
 
         <!-- Új Esemény Modal -->
         <div id="esemeny-modal" class="sm-overlay" hidden>

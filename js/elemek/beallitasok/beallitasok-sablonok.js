@@ -250,14 +250,29 @@ export function injectUserNavHTML(state) {
     headerContainer.innerHTML = `
       <button id="open-profile-modal-btn" class="nav-profile-btn" title="${tr('profile', 'Profil')}">
         <div id="header-user-avatar" class="google-avatar-circle"></div>
+        <span class="profil-szoveg">
+          <span id="header-user-name" class="profil-nev"></span>
+          <span id="header-group-name" class="profil-csoport"></span>
+        </span>
       </button>
     `;
     const emoji = localStorage.getItem('goats_group_emoji');
     const sign = emoji || (state.group?.group_name || state.displayName || '🐐').charAt(0).toUpperCase();
     headerContainer.querySelector('#header-user-avatar').textContent = sign;
+    // a nevek felhasználói adatok: textContent-tel, nem HTML-ként
+    headerContainer.querySelector('#header-user-name').textContent = state.displayName || '';
+    headerContainer.querySelector('#header-group-name').textContent = state.group?.group_name || '';
   }
 
-  document.body.appendChild(headerContainer);
+  // Asztali nézetben a profil a navbar fölé kerül (a .jobb-kontenet oldalsávba, a menü fölé);
+  // ahol nincs oldalsáv (pl. a belépési oldal), ott a régi helyén marad, a jobb felső sarokban
+  const oldalsav = document.querySelector('.jobb-kontenet');
+  if (oldalsav) {
+    headerContainer.classList.add('sav-profil');
+    oldalsav.prepend(headerContainer);
+  } else {
+    document.body.appendChild(headerContainer);
+  }
 
   document.body.insertAdjacentHTML('beforeend', MODALOK.join('\n'));
 }

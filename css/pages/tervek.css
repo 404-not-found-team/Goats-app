@@ -61,6 +61,14 @@
     gap: 12px;
 }
 
+/* széles képernyőn (a lista a fejléc szélességében van) két oszlopban */
+@media (min-width: 901px) {
+    .tervek {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 .terv-item {
     display: flex;
     align-items: center;

@@ -84,7 +84,7 @@ function frissitGaleria() {
     if (!aktualisGroupId()) return;
 
     const vanKep = kepekLista.length > 0;
-    document.querySelectorAll('.kepek .galeria-kep, .kepek .nyil').forEach(el => { el.hidden = !vanKep; });
+    document.querySelectorAll('.kepek .galeria-kep, .kepek .nyil, .kepek .kepek-hatterkep').forEach(el => { el.hidden = !vanKep; });
     uresAllapot(!vanKep);
     if (!vanKep) return;
 
@@ -96,6 +96,7 @@ function frissitGaleria() {
         ['kepBal', kepekLista[balIndex]],
         ['kepKozep', aktualis],
         ['kepJobb', kepekLista[jobbIndex]],
+        ['kepek-hatterkep', aktualis], // asztali nézetben a képsáv elmosott háttere
     ]);
 }
 

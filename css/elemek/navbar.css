@@ -98,6 +98,139 @@ ul li.active a {
     justify-content: center;
 }
 
+/* A profilgomb neve és csoportja csak az asztali oldalsávban látszik */
+.profil-szoveg {
+    display: none;
+}
+
+/* Asztali nézet: jobb oldali sáv, felül a profilkártya, alatta a menükártya.
+   Az egész oldal (tartalom + sáv) egy legfeljebb 1500px széles, középre tett sávban van, így nagy
+   monitoron sem szakad el a menü a tartalomtól. A sáv teteje egy vonalban van az oldalfejléccel. */
+@media (min-width: 601px) {
+    .jobb-sav {
+        grid-template-columns: minmax(0, 1fr) 250px;
+        gap: 24px;
+        max-width: 1500px;
+        margin: 0 auto;
+    }
+
+    /* fix helyzetű (görgetéskor is látszik), ezért a jobb szélét úgy számoljuk, hogy a középre tett
+       1500px-es sáv jobb szélére essen; keskenyebb ablakban 20px-re a képernyő szélétől */
+    .jobb-kontenet {
+        top: calc(20px + env(safe-area-inset-top));
+        right: max(calc(20px + env(safe-area-inset-right)), calc((100% - 1500px) / 2));
+        width: 250px;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    /* minden tartalom a bal oszlopba kerül (különben az automatikus elhelyezés a sáv oszlopába is tehetne) */
+    .jobb-sav > *:not(.jobb-kontenet) {
+        grid-column: 1;
+    }
+
+    /* a listás oldalak tartalma ugyanolyan széles, mint a fejléc: a bal és jobb szélük egy vonalban van vele
+       (a főoldal naptára és galériája a saját méretében, középen marad) */
+    .jobb-sav > .container,
+    .jobb-sav > .container-tartozasok,
+    .jobb-sav > .goatsgame-container,
+    .jobb-sav > .ranglista-fo-tarolo,
+    .jobb-sav > .admin-oldal {
+        width: 100%;
+        max-width: none;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .jobb-sav > .goatsgame-container {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    #navBar {
+        width: 100%;
+        margin: 0;
+        padding: 10px;
+        gap: 4px;
+        box-sizing: border-box;
+        border-radius: 16px;
+    }
+
+    #navBar li a {
+        display: block;
+        padding: 11px 14px;
+        border-radius: 10px;
+    }
+
+    /* a profil itt nem lebeg a sarokban, hanem a sáv első kártyája */
+    .top-user-nav.sav-profil {
+        position: static;
+    }
+
+    /* ugyanolyan magas, mint az oldalfejléc (lásd oldal-fejlec.css: min-height: 88px) */
+    .sav-profil .nav-profile-btn {
+        width: 100%;
+        min-height: 88px;
+        justify-content: flex-start;
+        gap: 14px;
+        padding: 0 18px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        box-shadow: var(--box-shadow);
+        color: var(--text-primary);
+        font-family: inherit;
+        text-align: left;
+        transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .sav-profil .nav-profile-btn:hover {
+        border-color: var(--accent-color);
+    }
+
+    .sav-profil .google-avatar-circle {
+        width: 46px;
+        height: 46px;
+        font-size: var(--fs-xl);
+        flex-shrink: 0;
+    }
+
+    .sav-profil .profil-szoveg {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .profil-nev,
+    .profil-csoport {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .profil-nev {
+        font-weight: 600;
+        font-size: var(--fs-base);
+    }
+
+    .profil-csoport {
+        font-size: var(--fs-sm);
+        color: var(--text-secondary);
+    }
+
+    .profil-csoport:empty {
+        display: none;
+    }
+
+    .sav-profil .nav-auth-btn {
+        width: 100%;
+        min-height: 88px;
+        padding: 0 20px;
+        border-radius: 16px;
+        font-size: var(--fs-base);
+    }
+}
+
 /* Alapállapot (desktop): mobilos elemek rejtve */
 .mobile-more-btn {
     display: none;

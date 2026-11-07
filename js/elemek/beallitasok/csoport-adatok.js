@@ -24,6 +24,7 @@ export function initGroupDetails() {
     const sign = emoji || (group?.group_name || displayName || '🐐').charAt(0).toUpperCase();
     if (get('group-avatar-badge')) get('group-avatar-badge').textContent = sign;
     if (get('header-user-avatar')) get('header-user-avatar').textContent = sign;
+    if (get('header-group-name')) get('header-group-name').textContent = group?.group_name || '';
   };
 
   // Egy tag sora. Kiválasztás módban (admin, nem a saját sor) checkbox vagy rádiógomb jelenik meg

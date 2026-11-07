@@ -66,6 +66,13 @@ function setupGombok() {
         document.getElementById('esemeny-reszletek-modal').hidden = true;
     });
 
+    // "Közelgő események" kártya: új esemény a mai dátummal
+    document.getElementById('kozelgo-uj-gomb')?.addEventListener('click', () => {
+        const datumInput = document.getElementById('esemeny-datum-input');
+        if (datumInput) datumInput.value = datumKulcs(new Date());
+        document.getElementById('esemeny-modal').hidden = false;
+    });
+
     document.getElementById('modosit-esemeny-btn')?.addEventListener('click', modositEsemeny);
     document.getElementById('torol-esemeny-btn')?.addEventListener('click', () => {
         if (aktivEsemeny && confirm(tr('confirm_delete_event', 'Biztosan törlöd ezt az eseményt: "{title}"?', { title: aktivEsemeny.cim }))) {
@@ -169,6 +176,64 @@ function kirajzolNaptar() {
 
         racs.appendChild(napDiv);
     }
+
+    kirajzolKozelgoket();
+}
+
+// "ÉÉÉÉ-HH-NN" a helyi dátumból (az esemenyek.datum is ilyen formájú)
+function datumKulcs(d) {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// Közelgő események kártya (asztali nézetben a naptár mellett): a mai és a későbbi események
+// időrendben; ha nincs ilyen, egy rövid üzenet hív új esemény felvételére
+const KOZELGO_MAX = 4;
+
+function kirajzolKozelgoket() {
+    const lista = document.getElementById('kozelgo-lista');
+    if (!lista) return;
+    const ma = datumKulcs(new Date());
+    const kozelgok = esemenyekListaja
+        .filter(e => e.datum >= ma)
+        .sort((a, b) => a.datum.localeCompare(b.datum) || a.cim.localeCompare(b.cim))
+        .slice(0, KOZELGO_MAX);
+    lista.replaceChildren(...kozelgok.map(kozelgoElem));
+    const ures = document.getElementById('kozelgo-ures');
+    if (ures) ures.hidden = kozelgok.length > 0;
+}
+
+function kozelgoElem(es) {
+    const [ev, honap, nap] = es.datum.split('-').map(Number);
+    const datum = new Date(ev, honap - 1, nap);
+    const ma = new Date();
+    ma.setHours(0, 0, 0, 0);
+    const hanyNap = Math.round((datum - ma) / 86400000);
+
+    const elem = document.createElement('button');
+    elem.type = 'button';
+    elem.className = 'kozelgo-elem';
+
+    const jelveny = document.createElement('span');
+    jelveny.className = 'kozelgo-datum';
+    const napSzam = document.createElement('b');
+    napSzam.textContent = nap;
+    const honapNev = document.createElement('span');
+    honapNev.textContent = datum.toLocaleDateString(goatsNyelv.locale(), { month: 'short' }).replace('.', '');
+    jelveny.append(napSzam, honapNev);
+
+    const szoveg = document.createElement('span');
+    szoveg.className = 'kozelgo-szoveg';
+    const cim = document.createElement('b');
+    cim.textContent = es.cim;
+    const mikor = document.createElement('span');
+    mikor.textContent = hanyNap === 0 ? tr('today', 'Ma')
+        : hanyNap === 1 ? tr('tomorrow', 'Holnap')
+        : tr('in_days', '{n} nap múlva', { n: hanyNap });
+    szoveg.append(cim, mikor);
+
+    elem.append(jelveny, szoveg);
+    elem.addEventListener('click', () => nyisdEsemenySzerkesztest(es));
+    return elem;
 }
 
 // Napi áttekintő modal feltöltése és megnyitása
