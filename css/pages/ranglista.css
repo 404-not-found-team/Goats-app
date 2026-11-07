@@ -311,11 +311,12 @@
 }
 
 .gombok {
-    color: white;
+    color: rgb(0, 0, 0);
     border: none;
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 #forras {
