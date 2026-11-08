@@ -142,7 +142,8 @@ ul li.active a {
     .jobb-sav > .container-tartozasok,
     .jobb-sav > .goatsgame-container,
     .jobb-sav > .ranglista-fo-tarolo,
-    .jobb-sav > .admin-oldal {
+    .jobb-sav > .admin-oldal,
+    .jobb-sav > .kepek-oldal {
         width: 100%;
         max-width: none;
         margin-left: 0;

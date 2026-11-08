@@ -14,19 +14,6 @@
     box-sizing: border-box;
 }
 
-.kepek-fejlec {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-
-.kepek-fejlec h1 {
-    margin: 0;
-}
-
-.kepek-feltolt-gomb,
 .kepek-gomb {
     display: inline-flex;
     align-items: center;
@@ -42,12 +29,10 @@
     transition: background 0.2s ease;
 }
 
-.kepek-feltolt-gomb:hover,
 .kepek-gomb:hover {
     background: var(--accent-hover);
 }
 
-.kepek-feltolt-gomb:disabled,
 .kepek-gomb:disabled {
     opacity: 0.6;
     cursor: default;
@@ -107,8 +92,8 @@
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 16px;
 }
 
 .kepek-csempe {
@@ -376,11 +361,12 @@
 }
 
 /* Kikapcsolt képfeltöltés magyarázata a gomb alatt (FELADAT15) */
-.kepek-fejlec {
+.fejlec-gombok:has(#kepFeltoltesGomb) {
     flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
-.kepek-fejlec .funkcio-tiltva-szoveg {
+.fejlec-gombok .funkcio-tiltva-szoveg {
     flex-basis: 100%;
     margin: 0;
     text-align: right;

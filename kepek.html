@@ -27,16 +27,21 @@
 </head>
 
 <body data-oldal="kepek">
-    <ul id="navBar"></ul>
-
-    <main class="kepek-oldal">
-        <div class="kepek-fejlec">
-            <h1 data-i18n="all_picture">Képek</h1>
+    <div class="jobb-sav">
+        <div class="jobb-kontenet">
+            <ul id="navBar"></ul>
+        </div>
+    <div class="fejlec-gombok-tarolo">
+        <h1 data-i18n="page_pictures">Képek</h1>
+        <div class="fejlec-gombok">
             <input type="file" id="kepFeltoltesInput" accept="image/*" multiple hidden>
-            <button type="button" id="kepFeltoltesGomb" class="kepek-feltolt-gomb">
+            <button type="button" id="kepFeltoltesGomb" class="fejlec-gomb">
                 <i class="fa-solid fa-upload" aria-hidden="true"></i> <span data-i18n="add">Feltöltés</span>
             </button>
         </div>
+    </div>
+
+    <main class="kepek-oldal">
 
         <div id="kepFeltoltesAllapot" class="kepek-allapot" role="status" aria-live="polite" hidden>
             <img id="kepFeltoltesElonezet" class="kepek-elonezet" alt="A feltöltendő kép előnézete" width="40" height="40" hidden>
@@ -93,6 +98,7 @@
             </div>
         </form>
     </dialog>
+    </div>
 </body>
 
 </html>
