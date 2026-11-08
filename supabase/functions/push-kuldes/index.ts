@@ -1,11 +1,12 @@
 // Push-értesítések kiküldése. Adatbázis-triggerek hívják (pg_net), nem a kliens:
-//   { "tipus": "tartozas" | "jelentes" | "ital", "idk": [<a beszúrt sorok azonosítói>] }
+//   { "tipus": "tartozas" | "jelentes" | "ital" | "esemeny", "idk": [<a beszúrt sorok azonosítói>] }
 // - Hitelesítés: az "x-push-titok" fejléc; a push_titok_ellenorzes() RPC veti össze a Vaultban tárolt
 //   titokkal (csak a service role hívhatja). Ezért a függvény JWT-ellenőrzés nélkül fut (verify_jwt: false).
 // - A részleteket (összeg, név, nyelv) a service role-lal maga kérdezi le az azonosítók alapján,
 //   a hívó által küldött szövegben nem bízik.
 // - Címzettek: tartozásnál az adós (ha nem ő maga vette fel); jelentésnél és jóváhagyásra váró italnál
-//   a superadminok (profiles.system_role = 'superadmin').
+//   a superadminok (profiles.system_role = 'superadmin'); új naptáreseménynél a csoport tagjai, kivéve
+//   aki felvette (esemenyek.felvette_id).
 // - Nyelv: profiles.language, ha üres, a feliratkozáskor rögzített eszköznyelv, végül magyar.
 // - A lejárt (404/410) feliratkozásokat törli.
 // Titkos beállítások: VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT (mailto:...).
@@ -116,6 +117,53 @@ async function italok(idk: number[]): Promise<Kuldendo[]> {
     })));
 }
 
+// A naptár dátuma ("ÉÉÉÉ-HH-NN") olvasható formában, pl. "nov. 14., péntek" / "Fri, 14 Nov"
+const datumSzoveg = (datum: string, nyelv: Nyelv) => {
+    const d = new Date(`${datum}T00:00:00Z`);
+    if (Number.isNaN(d.getTime())) return datum;
+    return new Intl.DateTimeFormat(nyelv === 'hu' ? 'hu-HU' : 'en-GB', {
+        month: 'short', day: 'numeric', weekday: 'long', timeZone: 'UTC',
+    }).format(d);
+};
+
+async function esemenyek(idk: string[]): Promise<Kuldendo[]> {
+    const { data, error } = await admin.from('esemenyek')
+        .select('id, cim, datum, group_code, felvette_id').in('id', idk);
+    if (error) throw error;
+    const sorok = data || [];
+    if (sorok.length === 0) return [];
+
+    // csoportkód -> a csoport tagjai
+    const kodok = [...new Set(sorok.map(e => e.group_code).filter(Boolean))];
+    const { data: csoportok, error: csHiba } = await admin.from('groups').select('id, group_code').in('group_code', kodok);
+    if (csHiba) throw csHiba;
+    const csoportIdk = (csoportok || []).map(g => g.id);
+    const { data: tagsagok, error: tHiba } = csoportIdk.length
+        ? await admin.from('group_members').select('group_id, user_id').in('group_id', csoportIdk)
+        : { data: [], error: null };
+    if (tHiba) throw tHiba;
+    const kodSzerintiTagok = new Map<string, string[]>();
+    for (const g of csoportok || []) {
+        kodSzerintiTagok.set(g.group_code, (tagsagok || []).filter(t => t.group_id === g.id).map(t => t.user_id));
+    }
+
+    const nevTar = await nevek([...new Set(sorok.map(e => e.felvette_id).filter(Boolean))]);
+    return sorok.flatMap(e => {
+        const ki = e.felvette_id ? nevTar.get(e.felvette_id) : null;
+        return (kodSzerintiTagok.get(e.group_code) || []).filter(id => id !== e.felvette_id).map(userId => ({
+            userId,
+            uzenet: (ny: Nyelv) => ({
+                cim: ny === 'hu' ? 'Új esemény' : 'New event',
+                szoveg: ny === 'hu'
+                    ? `${ki ? `${ki} felvette: ` : ''}${e.cim} – ${datumSzoveg(e.datum, ny)}`
+                    : `${ki ? `${ki} added: ` : ''}${e.cim} – ${datumSzoveg(e.datum, ny)}`,
+                url: 'app.html',
+                tag: `esemeny-${e.id}`,
+            }),
+        }));
+    });
+}
+
 async function kuldes(lista: Kuldendo[]) {
     const userIdk = [...new Set(lista.map(k => k.userId))];
     if (userIdk.length === 0) return { kuldve: 0, torolve: 0 };
@@ -169,6 +217,7 @@ Deno.serve(async (req) => {
         if (adat.tipus === 'tartozas') lista = await tartozasok(idk.map(Number).filter(Number.isFinite));
         else if (adat.tipus === 'jelentes') lista = await jelentesek(idk.map(String));
         else if (adat.tipus === 'ital') lista = await italok(idk.map(Number).filter(Number.isFinite));
+        else if (adat.tipus === 'esemeny') lista = await esemenyek(idk.map(String).filter(Boolean));
         else return valasz(400, { hiba: 'ismeretlen típus' });
         return valasz(200, await kuldes(lista));
     } catch (err) {

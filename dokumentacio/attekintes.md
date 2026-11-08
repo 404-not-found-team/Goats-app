@@ -222,7 +222,7 @@ a választás a fiókba is mentődik. Nyelvváltáskor az oldal újratölt.
 
 **Képek.** A `kepek` bucket privát, aláírt linkkel jelenik meg; feltöltés előtt négyzetes kivágás és tömörítés (max 150 KB). Jelentéskor másolat megy a `jelentett` bucketbe.
 
-**Értesítések.** A felhasználó eszközönként kapcsolja be; az adatbázis-trigger új tartozásnál (az adósnak), új jelentésnél és jóváhagyásra váró italnál (a superadminoknak) meghívja a `push-kuldes` függvényt.
+**Értesítések.** A felhasználó eszközönként kapcsolja be; az adatbázis-trigger új tartozásnál (az adósnak), új naptáreseménynél (a csoport többi tagjának), új jelentésnél és jóváhagyásra váró italnál (a superadminoknak) meghívja a `push-kuldes` függvényt.
 
 **Offline.** A `sw.js` előre letölti az `ELOGYORSITOTT` listában szereplő fájlokat. Minden kiadásnál emelni kell a `CACHE_NEV` számát, különben a telepített appok a régi fájlokat mutatják.
 
