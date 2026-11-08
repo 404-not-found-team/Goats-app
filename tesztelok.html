@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; worker-src 'self' blob:; style-src 'self'; style-src-attr 'none'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://bvositlxbeqztnhdembx.supabase.co wss://bvositlxbeqztnhdembx.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title data-i18n="title_testers">ATG - Tesztelőknek</title>
+    <meta name="description" content="Légy az ATG androidos tesztelője: csatlakozás, teendők és újdonságok egy helyen.">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="img/favicon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/kulso/fontawesome-6.5.1/css/fontawesome.min.css">
+    <link rel="stylesheet" href="css/kulso/fontawesome-6.5.1/css/solid.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/elemek/telepites.css">
+    <link rel="stylesheet" href="css/pages/tesztelok.css">
+    <script src="js/segedek/nyelv.js"></script>
+    <script src="js/segedek/tema.js"></script>
+    <script type="module" src="js/pages/tesztelok.js"></script>
+</head>
+
+<body>
+    <main class="to">
+        <p class="to-vissza"><a href="index.html" data-i18n="back_to_app">&larr; Vissza az alkalmazáshoz</a></p>
+
+        <header class="to-hero">
+            <img class="to-logo" src="img/favicon-192.png" alt="ATG">
+            <div>
+                <span class="tl-cimke"><i class="fa-solid fa-flask"></i> <span data-i18n="tst_badge">Androidos tesztelés</span></span>
+                <h1 data-i18n="tst_title">Légy az ATG tesztelője!</h1>
+                <p data-i18n="tst_intro">Az ATG hamarosan a Play Áruházba kerül. Ehhez a Google egy kéthetes zárt tesztet kér, és ebben te is segíthetsz. Köszi, hogy benne vagy!</p>
+            </div>
+            <div class="to-cel">
+                <div><b>12</b><small data-i18n="tst_goal_testers">tesztelő kell legalább</small></div>
+                <div><b>14</b><small data-i18n="tst_goal_days">napig folyamatosan</small></div>
+            </div>
+        </header>
+
+        <section class="to-kartya" aria-labelledby="to-csatlakozas">
+            <h2 id="to-csatlakozas"><span class="to-h-szam">1</span> <span data-i18n="tst_join_title">Csatlakozás (csak egyszer kell)</span></h2>
+            <p class="to-al" data-i18n="tst_join_desc">Három lépés, pár perc az egész. Androidos telefon kell hozzá.</p>
+            <div class="tl-lepesek">
+                <div class="tl-lepes">
+                    <div class="tl-telefon" aria-hidden="true"><div class="tl-kepernyo"><div class="tl-cimsor"><span class="tl-url">groups.google.com</span></div><div class="tl-csoport"><span class="tl-csoport-ikon"><i class="fa-solid fa-users"></i></span><b>ATG tesztelők</b><small data-i18n="tst_ill_public_group">Nyilvános csoport</small><span class="tl-kiemel tl-gomb" data-i18n="tst_ill_join">Csatlakozás</span></div><div class="tl-tartalom"></div></div></div>
+                    <div class="tl-lepes-szoveg"><span class="tl-szam">1</span>
+                        <div><b data-i18n="tst_s1_t">Csatlakozz a csoporthoz</b>
+                            <p data-i18n="tst_s1_d">Nyisd meg az <b>ATG tesztelők</b> Google-csoportot, és nyomj a <b>Csatlakozás</b> gombra. Ugyanazzal a Google-fiókkal lépj be, amelyiket a telefonodon a Play Áruház használ.</p>
+                            <a class="tl-kis-gomb" href="https://groups.google.com/g/atg-tesztelok" target="_blank" rel="noopener"><span data-i18n="tst_s1_btn">Csoport megnyitása</span> <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="tl-lepes">
+                    <div class="tl-telefon" aria-hidden="true"><div class="tl-kepernyo"><div class="tl-cimsor"><span class="tl-url">play.google.com</span></div><div class="tl-meghivo"><img class="tl-ikon-kep" src="img/favicon-192.png" alt=""><b>ATG</b><small data-i18n="tst_ill_invite">Tesztelőként kipróbálhatod a még meg nem jelent verziót.</small><span class="tl-kiemel tl-gomb" data-i18n="tst_ill_become">Tesztelő leszek</span></div></div></div>
+                    <div class="tl-lepes-szoveg"><span class="tl-szam">2</span>
+                        <div><b data-i18n="tst_s2_t">Légy tesztelő</b>
+                            <p data-i18n="tst_s2_d">Nyisd meg a meghívót, és nyomd meg a <b>tesztelővé válás</b> gombját (angolul: Become a tester). Pár perc, mire a Google rögzíti.</p>
+                            <a class="tl-kis-gomb" href="https://play.google.com/apps/testing/hu.goatsapp.app" target="_blank" rel="noopener"><span data-i18n="tst_s2_btn">Meghívó megnyitása</span> <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="tl-lepes">
+                    <div class="tl-telefon" aria-hidden="true"><div class="tl-kepernyo"><div class="tl-cimsor"><span class="tl-url">Play</span></div><div class="tl-aruhaz"><div class="tl-aruhaz-fej"><img class="tl-ikon-kep" src="img/favicon-192.png" alt=""><div><b>ATG</b><small>404 Not Found Team</small><small data-i18n="tst_ill_early">Korai hozzáférés</small></div></div><span class="tl-kiemel tl-gomb tl-szeles" data-i18n="inst_ill_install">Telepítés</span></div><div class="tl-tartalom"></div></div></div>
+                    <div class="tl-lepes-szoveg"><span class="tl-szam">3</span>
+                        <div><b data-i18n="tst_s3_t">Telepítsd az Áruházból</b>
+                            <p data-i18n="tst_s3_d">Az ATG ezután megtalálható a Play Áruházban. Telepítsd, és <b>legalább 14 napig tartsd meg</b>.</p>
+                            <a class="tl-kis-gomb" href="https://play.google.com/store/apps/details?id=hu.goatsapp.app" target="_blank" rel="noopener"><span data-i18n="tst_s3_btn">Megnyitás az Áruházban</span> <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tl-sav to-sav"><i class="fa-solid fa-mobile-screen-button"></i>
+                <span data-i18n="tst_iphone_note"><b>iPhone-od van?</b> A Play Áruházas teszt csak Androidon működik, de a böngészős appot te is telepítheted a kezdőoldalról.</span>
+            </div>
+        </section>
+
+        <div class="to-ketto">
+            <section class="to-kartya" aria-labelledby="to-teendok">
+                <h2 id="to-teendok"><span class="to-h-szam">2</span> <span data-i18n="tst_tasks_title">Mit kérünk a 14 nap alatt?</span></h2>
+                <p class="to-al" data-i18n="tst_tasks_desc">Nyisd meg az appot <b>majdnem minden nap</b>, és csinálj benne <b>egy-két dolgot</b>. Pár perc elég. Néhány ötlet:</p>
+                <ul class="to-feladatok">
+                    <li><span class="to-ikon"><i class="fa-solid fa-calendar-plus"></i></span>
+                        <div><b data-i18n="tst_t1_t">Vegyél fel egy eseményt</b> <span data-i18n="tst_t1_d">a Főoldal naptárába, akár egy kitalált programot.</span></div>
+                    </li>
+                    <li><span class="to-ikon"><i class="fa-solid fa-list-check"></i></span>
+                        <div><b data-i18n="tst_t2_t">Írj egy tervet</b> <span data-i18n="tst_t2_d">a Tervek oldalon, vagy pipálj ki egyet.</span></div>
+                    </li>
+                    <li><span class="to-ikon"><i class="fa-solid fa-champagne-glasses"></i></span>
+                        <div><b data-i18n="tst_t3_t">Értékelj egy italt</b> <span data-i18n="tst_t3_d">a Ranglistán: húzd át egy másik szintre.</span></div>
+                    </li>
+                    <li><span class="to-ikon"><i class="fa-solid fa-image"></i></span>
+                        <div><b data-i18n="tst_t4_t">Tölts fel egy képet</b> <span data-i18n="tst_t4_d">a Képek oldalra, vagy nézd meg a galériát.</span></div>
+                    </li>
+                    <li><span class="to-ikon"><i class="fa-solid fa-money-bill-transfer"></i></span>
+                        <div><b data-i18n="tst_t5_t">Írj fel egy tartozást</b> <span data-i18n="tst_t5_d">és egyenlítsd ki. Egy próba is jó.</span></div>
+                    </li>
+                    <li><span class="to-ikon"><i class="fa-solid fa-palette"></i></span>
+                        <div><b data-i18n="tst_t6_t">Próbálj ki egy témát</b> <span data-i18n="tst_t6_d">vagy nyelvet a Beállításokban.</span></div>
+                    </li>
+                </ul>
+                <div class="tl-sav to-figyelem"><i class="fa-solid fa-triangle-exclamation"></i>
+                    <span data-i18n="tst_keep_note"><b>Ne töröld 14 napig!</b> Ha közben kikerülsz a tesztből, a Google nem számol veled.</span>
+                </div>
+            </section>
+
+            <section class="to-kartya" aria-labelledby="to-visszajelzes">
+                <h2 id="to-visszajelzes"><span class="to-h-szam">3</span> <span data-i18n="tst_feedback_title">Visszajelzés</span></h2>
+                <p class="to-al" data-i18n="tst_feedback_desc">Minden hiba, furcsaság vagy ötlet aranyat ér. Kétféleképpen jelezhetsz:</p>
+                <div class="to-csatornak">
+                    <div class="to-csatorna"><span class="to-ikon"><i class="fa-solid fa-store"></i></span>
+                        <div><b data-i18n="tst_fb_play_t">A Play Áruházban</b>
+                            <p data-i18n="tst_fb_play_d">Tesztelőként az ATG Áruház-oldalán <b>privát visszajelzést</b> küldhetsz nekünk. Ezt csak mi látjuk, nem nyilvános értékelés.</p>
+                        </div>
+                    </div>
+                     <!--<div class="to-csatorna"><span class="to-ikon"><i class="fa-solid fa-envelope"></i></span>
+                        <div><b data-i18n="tst_fb_mail_t">E-mailben</b>
+                            <p data-i18n="tst_fb_mail_d">Írd meg, mit csináltál, mi történt, és milyen telefonod van. Egy képernyőkép sokat segít.</p>
+                            <a class="tl-kis-gomb" href="mailto:the.offical.404.not.found.team@gmail.com?subject=ATG%20tesztel%C3%A9s%20%E2%80%93%20visszajelz%C3%A9s"><span data-i18n="tst_fb_mail_btn">E-mail küldése</span> <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                        </div>
+                    </div>-->
+                </div>
+            </section>
+        </div>
+
+        <section class="to-kartya" aria-labelledby="to-ujdonsagok">
+            <h2 id="to-ujdonsagok"><span class="to-h-szam"><i class="fa-solid fa-star"></i></span> <span data-i18n="tst_news_title">Újdonságok</span></h2>
+            <p class="to-al" data-i18n="tst_news_desc">Ide írjuk, mi változott. Ezeket érdemes kipróbálni.</p>
+            <ol class="to-ido" id="to-ujdonsag-lista"></ol>
+        </section>
+
+        <footer class="to-lab szoveg-kicsi">
+            <p class="to-nyelv">
+                <button type="button" data-nyelv="hu">Magyar</button> &middot;
+                <button type="button" data-nyelv="en">English</button>
+            </p>
+            <p>
+                <a href="privacy.html" data-i18n="privacy_link">Adatvédelmi tájékoztató</a> &middot;
+                <a href="felhasznalasi-feltetelek.html" data-i18n="terms_link">Felhasználási feltételek</a> &middot;
+                <a href="jogi.html" data-i18n="legal_information">Jogi információk</a>
+            </p>
+        </footer>
+    </main>
+</body>
+
+</html>

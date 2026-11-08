@@ -55,21 +55,64 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-// PWA telepítés felkínálása (változatlan logika, a korábbi index.js-ből áthozva)
+// PWA telepítés: lapfüles útmutató (Android / iPhone / Számítógép). A felismert eszköz füle nyílik meg,
+// és ha a böngésző felkínálja (beforeinstallprompt), megjelenik az egy koppintásos telepítés gomb.
+// Androidon alul a Play Áruházas tesztelésre hívjuk fel a figyelmet (tesztelok.html).
 let deferredPrompt;
+
+function felismertPlatform() {
+    const ua = navigator.userAgent || '';
+    // az iPadOS 13+ asztali Safarinak adja ki magát, de érintőképernyős
+    if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 'ios';
+    if (/Android/i.test(ua)) return 'android';
+    return 'gep';
+}
+
 function kezelPWATelepitest() {
     const installBtn = document.getElementById('pwa-install-btn');
     const installCard = document.getElementById('pwa-install-card');
-    const iosNotice = document.getElementById('ios-notice');
+    if (!installCard) return;
 
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-        if (installCard) installCard.hidden = true;
+        installCard.hidden = true;
+        return;
     }
 
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    if (isIOS) {
-        if (installBtn) installBtn.hidden = true;
-        if (iosNotice) iosNotice.classList.remove('hidden');
+    const platform = felismertPlatform();
+    const fulek = [...installCard.querySelectorAll('[role="tab"]')];
+    const tesztelo = document.getElementById('telepito-tesztelo');
+
+    const valaszt = (kod) => {
+        fulek.forEach((ful) => {
+            const aktiv = ful.dataset.platform === kod;
+            ful.setAttribute('aria-selected', String(aktiv));
+            ful.tabIndex = aktiv ? 0 : -1;
+            const panel = document.getElementById(ful.getAttribute('aria-controls'));
+            if (panel) panel.hidden = !aktiv;
+        });
+        if (tesztelo) tesztelo.hidden = kod !== 'android';
+    };
+
+    fulek.forEach((ful, i) => {
+        ful.addEventListener('click', () => valaszt(ful.dataset.platform));
+        // nyilakkal is lehessen lépni a fülek között
+        ful.addEventListener('keydown', (e) => {
+            if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+            const kov = fulek[(i + (e.key === 'ArrowRight' ? 1 : fulek.length - 1)) % fulek.length];
+            kov.focus();
+            valaszt(kov.dataset.platform);
+        });
+    });
+    valaszt(platform);
+
+    // a felismert eszköz címkéje a cím fölött
+    const cimke = document.getElementById('telepito-cimke');
+    const cimkeSzoveg = document.getElementById('telepito-cimke-szoveg');
+    if (cimke && cimkeSzoveg && platform !== 'gep') {
+        cimkeSzoveg.textContent = platform === 'ios'
+            ? tr('inst_you_use_ios', 'iPhone-t használsz')
+            : tr('inst_you_use_android', 'Androidot használsz');
+        cimke.hidden = false;
     }
 
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -78,18 +121,17 @@ function kezelPWATelepitest() {
         if (installBtn) installBtn.hidden = false;
     });
 
-    if (installBtn) {
-        installBtn.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            deferredPrompt = null;
-            if (outcome === 'accepted' && installCard) installCard.hidden = true;
-        });
-    }
+    installBtn?.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installBtn.hidden = true;
+        if (outcome === 'accepted') installCard.hidden = true;
+    });
 
     window.addEventListener('appinstalled', () => {
-        if (installCard) installCard.hidden = true;
+        installCard.hidden = true;
         deferredPrompt = null;
     });
 }

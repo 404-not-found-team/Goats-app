@@ -104,85 +104,6 @@
     line-height: 1.4;
 }
 
-/* PWA Telepítő kártya */
-.install-card {
-    background: var(--install-card-bg);
-    border: 1px solid var(--install-card-border);
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-}
-
-.install-content {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.install-icon {
-    font-size: var(--fs-xxl);
-    flex-shrink: 0;
-}
-
-.install-text {
-    flex: 1;
-    min-width: 220px;
-}
-
-.install-text h3 {
-    margin: 0 0 5px 0;
-    color: var(--text-primary);
-    font-size: var(--fs-lg);
-}
-
-.install-text p {
-    margin: 0;
-    font-size: var(--fs-sm);
-    color: var(--text-secondary);
-    line-height: 1.4;
-}
-
-.install-text .ios-notice {
-    margin-top: 8px;
-    padding: 8px 12px;
-    background: rgba(234, 179, 8, 0.1);
-    border: 1px solid rgba(234, 179, 8, 0.3);
-    border-radius: 8px;
-    color: #eab308;
-}
-
-.install-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    white-space: nowrap;
-    padding: 10px 20px;
-    background: var(--accent-color);
-    color: var(--on-accent);
-    border: none;
-    border-radius: 10px;
-    font-size: var(--fs-sm);
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: var(--install-btn-shadow);
-    transition: all 0.2s ease;
-}
-
-.install-btn:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--install-btn-shadow-hover);
-}
-
-.install-btn:active {
-    transform: translateY(0);
-}
-
-.install-btn i {
-    font-size: var(--fs-base);
-}
-
 @media (max-width: 600px) {
     .features-grid {
         flex-direction: column;
@@ -200,15 +121,5 @@
 
     .login-guide-card {
         padding: 20px;
-    }
-
-    .install-content {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .install-btn {
-        width: 100%;
-        justify-content: center;
     }
 }

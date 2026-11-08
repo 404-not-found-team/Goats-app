@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="css/kulso/fontawesome-6.5.1/css/fontawesome.min.css">
     <link rel="stylesheet" href="css/kulso/fontawesome-6.5.1/css/solid.min.css">
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/elemek/telepites.css">
 
     <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
     <link rel="modulepreload" href="js/pages/bejelentkezes-oldal.js">
@@ -53,22 +54,103 @@
             <p id="login-status" class="sm-status sm-status-small"></p>
         </section>
 
-        <section id="pwa-install-card" class="install-card">
-            <div class="install-content">
-                <div class="install-icon">📲</div>
-                <div class="install-text">
-                    <h3 data-i18n="download_app">Telepítsd az alkalmazást!</h3>
-                    <p data-i18n="download_app_description">Töltsd le az ATG-t a kezdőképernyődre a gyorsabb elérésért
-                        és az alkalmazás-élményért.</p>
-                    <p id="ios-notice" class="ios-notice hidden" data-i18n="ios_notice_text">
-                        💡 <strong>iOS (iPhone) esetén:</strong> Nyomj a Safari <strong>Megosztás</strong> gombjára
-                        (<i class="fa-solid fa-share-from-square"></i>), majd válaszd a <strong>"Hozzáadás a
-                            kezdőképernyőhöz"</strong> lehetőséget!
-                    </p>
+        <section id="pwa-install-card" class="telepito-kartya">
+            <div class="telepito-fej">
+                <div>
+                    <span class="tl-cimke" id="telepito-cimke" hidden><i class="fa-solid fa-mobile-screen"></i> <span id="telepito-cimke-szoveg"></span></span>
+                    <h2 data-i18n="download_app">Telepítsd az ATG-t!</h2>
+                    <p data-i18n="inst_subtitle">Egy perc, és úgy indul, mint bármelyik app a telefonodon vagy a gépeden.</p>
                 </div>
-                <button id="pwa-install-btn" class="gomb-uj-ital install-btn" data-i18n="download_app_btn">
-                    <i class="fa-solid fa-download"></i> App Telepítése
-                </button>
+                <button type="button" id="pwa-install-btn" class="tl-fo-gomb" hidden><i class="fa-solid fa-download"></i> <span data-i18n="inst_one_tap">Telepítés egy koppintással</span></button>
+            </div>
+            <div class="telepito-fulek" role="tablist" aria-label="Eszköz" data-i18n-attr="aria-label:inst_platform">
+                    <button type="button" role="tab" id="telepito-ful-android" data-platform="android" aria-controls="telepito-panel-android" aria-selected="false"><i class="fa-solid fa-mobile-screen"></i> <span data-i18n="inst_tab_android">Android</span></button>
+                    <button type="button" role="tab" id="telepito-ful-ios" data-platform="ios" aria-controls="telepito-panel-ios" aria-selected="false"><i class="fa-solid fa-mobile-screen-button"></i> <span data-i18n="inst_tab_ios">iPhone</span></button>
+                    <button type="button" role="tab" id="telepito-ful-gep" data-platform="gep" aria-controls="telepito-panel-gep" aria-selected="false"><i class="fa-solid fa-desktop"></i> <span data-i18n="inst_tab_pc">Számítógép</span></button>
+            </div>
+                <div class="tl-lepesek" id="telepito-panel-android" role="tabpanel" aria-labelledby="telepito-ful-android" hidden>
+                    <div class="tl-lepes">
+                        <div class="tl-telefon" aria-hidden="true"><div class="tl-kepernyo"><div class="tl-cimsor"><span class="tl-url">atg…/Goats-app</span><i class="fa-solid fa-ellipsis-vertical tl-kiemel tl-kicsi"></i></div><div class="tl-lenyilo"><span></span><span></span><span class="tl-kiemel tl-menupont"><i class="fa-solid fa-mobile-screen"></i> <span data-i18n="inst_ill_install_app">App telepítése</span></span><span></span></div><div class="tl-tartalom"></div></div></div>
+                        <div class="tl-lepes-szoveg"><span class="tl-szam">1</span>
+                            <div><b data-i18n="inst_and_1_t">Nyisd meg Chrome-ban</b>
+                                <p data-i18n="inst_and_1_d">Az ATG oldalán koppints a jobb felső <b>⋮</b> menüre.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tl-lepes">
+                        <div class="tl-telefon" aria-hidden="true"><div class="tl-kepernyo"><div class="tl-cimsor"><span class="tl-url">atg…/Goats-app</span><i class="fa-solid fa-ellipsis-vertical tl-kicsi"></i></div><div class="tl-tartalom"></div><div class="tl-parbeszed"><img class="tl-ikon-kep" src="img/favicon-192.png" alt=""><b data-i18n="inst_ill_install_q">ATG telepítése?</b><span class="tl-gombok"><span data-i18n="cancel">Mégse</span><span class="tl-kiemel tl-gomb" data-i18n="inst_ill_install">Telepítés</span></span></div></div></div>
+                        <div class="tl-lepes-szoveg"><span class="tl-szam">2</span>
+                            <div><b data-i18n="inst_and_2_t">Telepítés</b>
+                                <p data-i18n="inst_and_2_d">Válaszd az <b>„Alkalmazás telepítése”</b> vagy a <b>„Hozzáadás a kezdőképernyőhöz”</b> pontot.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tl-lepes">
+                        <div class="tl-telefon" aria-hidden="true"><div class="tl-kepernyo"><div class="tl-racs"><span></span><span></span><span></span><span></span><span class="tl-app tl-kiemel"><img class="tl-ikon-kep" src="img/favicon-192.png" alt=""><small>ATG</small></span><span></span><span></span><span></span><span></span></div></div></div>
+                        <div class="tl-lepes-szoveg"><span class="tl-szam">3</span>
+                            <div><b data-i18n="inst_done_t">Kész!</b>
+                                <p data-i18n="inst_and_3_d">Az ATG ikonja megjelenik a kezdőképernyőn, és úgy indul, mint egy app.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tl-lepesek" id="telepito-panel-ios" role="tabpanel" aria-labelledby="telepito-ful-ios" hidden>
+                    <div class="tl-lepes">
+                        <div class="tl-telefon" aria-hidden="true"><div class="tl-kepernyo"><div class="tl-cimsor"><span class="tl-url">404-not-found…</span></div><div class="tl-tartalom"></div><div class="tl-ios-sav"><i class="fa-solid fa-chevron-left"></i><i class="fa-solid fa-arrow-up-from-bracket tl-kiemel tl-kicsi"></i><i class="fa-solid fa-bookmark"></i><i class="fa-solid fa-clone"></i></div></div></div>
+                        <div class="tl-lepes-szoveg"><span class="tl-szam">1</span>
+                            <div><b data-i18n="inst_ios_1_t">Nyisd meg Safariban</b>
+                                <p data-i18n="inst_ios_1_d">Alul koppints a <b>Megosztás</b> gombra.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tl-lepes">
+                        <div class="tl-telefon" aria-hidden="true"><div class="tl-kepernyo"><div class="tl-tartalom"></div><div class="tl-lap"><span></span><span class="tl-kiemel tl-menupont"><i class="fa-solid fa-square-plus"></i> <span data-i18n="inst_ill_add_home">Főképernyőhöz adás</span></span><span></span></div></div></div>
+                        <div class="tl-lepes-szoveg"><span class="tl-szam">2</span>
+                            <div><b data-i18n="inst_ios_2_t">Főképernyőhöz adás</b>
+                                <p data-i18n="inst_ios_2_d">Görgess le, válaszd a <b>„Főképernyőhöz adás”</b> pontot, majd a <b>Hozzáadás</b> gombot.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tl-lepes">
+                        <div class="tl-telefon" aria-hidden="true"><div class="tl-kepernyo"><div class="tl-racs"><span></span><span></span><span></span><span></span><span class="tl-app tl-kiemel"><img class="tl-ikon-kep" src="img/favicon-192.png" alt=""><small>ATG</small></span><span></span><span></span><span></span><span></span></div></div></div>
+                        <div class="tl-lepes-szoveg"><span class="tl-szam">3</span>
+                            <div><b data-i18n="inst_done_t">Kész!</b>
+                                <p data-i18n="inst_ios_3_d">Indítsd az ikonról. Az értesítések iPhone-on csak így, telepítve működnek.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tl-lepesek" id="telepito-panel-gep" role="tabpanel" aria-labelledby="telepito-ful-gep" hidden>
+                    <div class="tl-lepes">
+                        <div class="tl-bongeszo" aria-hidden="true"><div class="tl-bong-sav"><span class="tl-pontok"><i></i><i></i><i></i></span><span class="tl-bong-url">404-not-found-team.github.io/Goats-app</span><i class="fa-solid fa-download tl-kiemel tl-kicsi"></i></div><div class="tl-bong-tartalom"></div></div>
+                        <div class="tl-lepes-szoveg"><span class="tl-szam">1</span>
+                            <div><b data-i18n="inst_pc_1_t">Chrome vagy Edge</b>
+                                <p data-i18n="inst_pc_1_d">A címsor jobb szélén kattints a <b>telepítés</b> ikonra.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tl-lepes">
+                        <div class="tl-bongeszo" aria-hidden="true"><div class="tl-bong-sav"><span class="tl-pontok"><i></i><i></i><i></i></span><span class="tl-bong-url">404-not-found-team.github.io/Goats-app</span><i class="fa-solid fa-download tl-kicsi"></i></div><div class="tl-bong-tartalom"><div class="tl-felugro"><img class="tl-ikon-kep" src="img/favicon-192.png" alt=""><b data-i18n="inst_ill_install_q_pc">Alkalmazás telepítése?</b><span class="tl-kiemel tl-gomb" data-i18n="inst_ill_install">Telepítés</span></div></div></div>
+                        <div class="tl-lepes-szoveg"><span class="tl-szam">2</span>
+                            <div><b data-i18n="inst_and_2_t">Telepítés</b>
+                                <p data-i18n="inst_pc_2_d">A felugró ablakban nyomd meg a <b>Telepítés</b> gombot.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tl-lepes">
+                        <div class="tl-bongeszo" aria-hidden="true"><div class="tl-bong-sav"><span class="tl-pontok"><i></i><i></i><i></i></span><span class="tl-bong-url">ATG</span></div><div class="tl-bong-tartalom"><div class="tl-ablak"><img class="tl-ikon-kep" src="img/favicon-192.png" alt=""><b>ATG</b></div></div></div>
+                        <div class="tl-lepes-szoveg"><span class="tl-szam">3</span>
+                            <div><b data-i18n="inst_done_t">Kész!</b>
+                                <p data-i18n="inst_pc_3_d">Saját ablakban nyílik, és a Start menüből vagy a Dockból is indítható.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <div class="telepito-also" id="telepito-tesztelo" hidden>
+                <div class="tl-sav"><i class="fa-solid fa-store"></i>
+                    <span data-i18n="inst_play_soon"><b>Hamarosan a Play Áruházban is!</b> Addig a böngészős telepítés ugyanazt az appot adja.</span>
+                </div>
+                <a class="tl-masod-gomb" href="tesztelok.html"><i class="fa-solid fa-flask"></i> <span data-i18n="inst_become_tester">Jelentkezz tesztelőnek</span></a>
             </div>
         </section>
 

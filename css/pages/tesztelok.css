@@ -1,0 +1,336 @@
+/* Tesztelőoldal (tesztelok.html): nyilvános útmutató a Play Áruházas zárt teszthez.
+   A lépés-illusztrációk és a közös gombok a css/elemek/telepites.css-ben vannak. */
+.to {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 4px 0 40px;
+    box-sizing: border-box;
+    color: var(--text-primary);
+}
+
+.to-vissza {
+    margin: 0;
+    font-size: var(--fs-sm);
+}
+
+.to-vissza a,
+.to-lab a {
+    color: var(--accent-text);
+}
+
+.to-hero {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 24px;
+    align-items: center;
+    padding: 28px;
+    border-radius: 22px;
+    border: 1px solid var(--border-color);
+    background: radial-gradient(circle at 10% 0%, color-mix(in srgb, var(--accent-color) 30%, transparent), transparent 50%),
+        var(--card-bg);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.to-logo {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--accent-color) 45%, transparent);
+}
+
+.to-hero h1 {
+    margin: 2px 0 8px;
+    font-size: var(--fs-xxl);
+    text-align: left;
+}
+
+.to-hero p {
+    margin: 0;
+    max-width: 560px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.to-cel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 200px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    background: var(--inner-bg);
+}
+
+.to-cel div {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.to-cel b {
+    font-size: var(--fs-xxl);
+    color: var(--accent-text);
+}
+
+.to-cel small {
+    color: var(--text-secondary);
+    font-size: var(--fs-sm);
+}
+
+.to-kartya {
+    padding: 24px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.to-kartya h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 6px;
+    font-size: var(--fs-xl);
+    text-align: left;
+}
+
+.to-h-szam {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--accent-color) 20%, transparent);
+    color: var(--accent-text);
+    font-size: var(--fs-base);
+}
+
+.to-al {
+    margin: 0 0 18px;
+    color: var(--text-secondary);
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+}
+
+.to-al b {
+    color: var(--text-primary);
+}
+
+.to-sav,
+.to-figyelem {
+    margin-top: 18px;
+}
+
+.to-ketto {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.to-ikon {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--accent-color) 18%, transparent);
+    color: var(--accent-text);
+}
+
+.to-feladatok {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.to-feladatok li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--inner-bg);
+    font-size: var(--fs-sm);
+    line-height: 1.4;
+}
+
+.to-feladatok li span:not(.to-ikon) {
+    color: var(--text-secondary);
+}
+
+.to-csatornak {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.to-csatorna {
+    display: flex;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    background: var(--inner-bg);
+}
+
+.to-csatorna p {
+    margin: 4px 0 0;
+    color: var(--text-secondary);
+    font-size: var(--fs-sm);
+    line-height: 1.45;
+}
+
+.to-csatorna p b {
+    color: var(--text-primary);
+}
+
+/* Újdonságok: idővonal */
+.to-ido {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin: 0;
+    padding: 0 0 0 18px;
+    list-style: none;
+    border-left: 2px solid var(--border-color);
+}
+
+.to-ido > li {
+    position: relative;
+}
+
+.to-ido > li::before {
+    content: '';
+    position: absolute;
+    left: -26px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--border-color);
+    border: 2px solid var(--card-bg);
+}
+
+.to-ido > li.friss::before {
+    background: var(--accent-color);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--accent-color) 80%, transparent);
+}
+
+.to-datum {
+    font-weight: 800;
+}
+
+.to-uj-jel {
+    margin-left: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--accent-color);
+    color: var(--on-accent);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+}
+
+.to-ido ul {
+    display: block;
+    list-style: disc;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 6px 0 0;
+    padding: 0 0 0 18px;
+    color: var(--text-secondary);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+}
+
+.to-lab {
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.to-lab p {
+    margin: 6px 0;
+}
+
+.to-nyelv button {
+    padding: 2px 4px;
+    border: 0;
+    background: none;
+    color: var(--accent-text);
+    font: inherit;
+    cursor: pointer;
+}
+
+.to-nyelv button[aria-pressed="true"] {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+@media (max-width: 760px) {
+    .to {
+        gap: 16px;
+        padding-top: 0;
+    }
+
+    .to-hero {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: center;
+        padding: 22px 18px;
+        text-align: center;
+    }
+
+    .to-logo {
+        width: 76px;
+        height: 76px;
+    }
+
+    .to-hero h1 {
+        font-size: var(--fs-xl);
+        text-align: center;
+    }
+
+    .to-cel {
+        flex-direction: row;
+        justify-content: space-around;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .to-cel div {
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+    }
+
+    .to-kartya {
+        padding: 18px 16px;
+    }
+
+    .to-kartya h2 {
+        font-size: var(--fs-lg);
+    }
+
+    .to-ketto {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .to-feladatok {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v56';
+const CACHE_NEV = 'goats-v57';
 
 // Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
 // indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
@@ -21,6 +21,7 @@ const ELOGYORSITOTT = [
     'privacy.html',
     'felhasznalasi-feltetelek.html',
     'fiok-torles.html',
+    'tesztelok.html',
     'favicon.ico',
     'img/favicon-192.png',
     'css/base/segedosztalyok.css',
@@ -32,6 +33,7 @@ const ELOGYORSITOTT = [
     'css/elemek/modals.css',
     'css/elemek/navbar.css',
     'css/elemek/tartozasok-egyenlitese.css',
+    'css/elemek/telepites.css',
     'css/elemek/valaszto-kartyak.css',
     'css/kulso/fontawesome-6.5.1/css/fontawesome.min.css',
     'css/kulso/fontawesome-6.5.1/css/solid.min.css',
@@ -47,6 +49,7 @@ const ELOGYORSITOTT = [
     'css/pages/ranglista.css',
     'css/pages/tartozasok.css',
     'css/pages/tervek.css',
+    'css/pages/tesztelok.css',
     'js/admin-muveletek.js',
     'js/elemek/beallitasok-modal.js',
     'js/elemek/beallitasok/beallitasok-sablonok.js',
@@ -79,6 +82,8 @@ const ELOGYORSITOTT = [
     'js/pages/ranglista.js',
     'js/pages/tartozasok.js',
     'js/pages/tervek.js',
+    'js/pages/tesztelok.js',
+    'js/pages/tesztelok-ujdonsagok.js',
     'js/segedek/adat-gyorsitotar.js',
     'js/segedek/csoport-kepek.js',
     'js/segedek/csoport-kod.js',
