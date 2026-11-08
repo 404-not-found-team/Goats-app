@@ -33,32 +33,69 @@
     gap: 12px;
 }
 
-.gomb-uj-tartozas {
+/* Egységes fejlécgomb minden oldalon (a .fejlec-gombok-on belül, ezért erősebb az oldalak saját gombstílusainál).
+   Elsődleges: kiemelő színű. Másodlagos (.masodlagos): keretes, sötét. A beviteli mező ugyanilyen magas. */
+.fejlec-gombok .fejlec-gomb {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 40px;
+    margin: 0;
+    padding: 0 18px;
+    border: 1px solid transparent;
+    border-radius: 10px;
     background-color: var(--accent-color);
     color: var(--on-accent);
-    border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
+    font-family: inherit;
+    font-size: var(--fs-sm);
     font-weight: 600;
-    font-size: var(--fs-base);
+    white-space: nowrap;
+    flex-shrink: 0;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-sizing: border-box;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
 }
 
-.gomb-uj-tartozas:hover {
+.fejlec-gombok .fejlec-gomb:hover {
     background-color: var(--accent-hover);
-    transform: scale(1.02);
 }
 
-.gomb-uj-tartozas:disabled {
+.fejlec-gombok .fejlec-gomb:active {
+    transform: scale(0.98);
+}
+
+.fejlec-gombok .fejlec-gomb.masodlagos {
+    background-color: var(--inner-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.fejlec-gombok .fejlec-gomb.masodlagos:hover {
+    border-color: var(--accent-color);
+}
+
+.fejlec-gombok .fejlec-gomb:disabled {
     cursor: not-allowed;
     opacity: 0.6;
     transform: none;
 }
 
+.fejlec-gombok .floating-input {
+    height: 40px;
+    padding-bottom: 4px;
+}
+
+/* A fejléc és a tartalom között minden oldalon ugyanannyi a hely: a .jobb-sav rács sorköze (24px, navbar.css) */
+.jobb-sav > .fejlec-gombok-tarolo {
+    margin-bottom: 0;
+}
+
 @media (max-width: 600px) {
     .fejlec-gombok-tarolo {
         flex-direction: column;
+        /* a csak címes fejlécben is középen legyen a cím (a min. magasság miatt) */
+        justify-content: center;
         gap: 15px;
         padding: 16px;
         text-align: center;

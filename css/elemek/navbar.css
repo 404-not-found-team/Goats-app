@@ -51,7 +51,7 @@ ul li.active a {
 .jobb-sav {
     display: grid;
     grid-template-columns: 1fr 200px;
-    gap: 20px;
+    gap: 24px;
     /* a body flex-középre igazít: e nélkül a sáv a tartalom szélességére zsugorodna */
     width: 100%;
     /* a sorok ne nyúljanak meg a 100vh kitöltéséhez (különben a fejléc-kártya is megnő) */
@@ -60,6 +60,13 @@ ul li.active a {
     margin: 0;
     box-sizing: border-box;
     position: relative;
+}
+
+/* A fejléc és a tartalom, valamint a tartalom blokkjai között mindig a rács sorköze (24px) a távolság:
+   az oldalak saját felső/alsó margója itt nem számít bele (a vízszintes középre igazítás marad) */
+.jobb-sav > *:not(.jobb-kontenet) {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 /* Jobb felső navigációs gombok / Profilkép */
@@ -254,9 +261,20 @@ ul li.active a {
    a fájlban az alapszabályok UTÁN van, és a szelektorok legalább
    ugyanolyan specifikusak (ul#navBar > ul / #navBar). */
 @media (max-width: 600px) {
-    /* mobilon a navbar alsó sáv, nem kell neki külön oszlop */
+    /* mobilon a navbar alsó sáv, nem kell neki külön oszlop. A minmax(0, …) azért kell, hogy egy széles
+       tartalom (pl. az admin oldal fülsora) ne nyújthassa a képernyőnél szélesebbre az oszlopot */
     .jobb-sav {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .jobb-sav > * {
+        min-width: 0;
+    }
+
+    /* a Tabella tartalma is a fejléc szélességében (az oldal saját oldalsó belső margója nélkül) */
+    .jobb-sav > .goatsgame-container {
+        padding-left: 0;
+        padding-right: 0;
     }
 
     body {

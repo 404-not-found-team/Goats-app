@@ -24,6 +24,7 @@ export const FUNKCIOK = [
     { kulcs: 'funkcio_italjavaslat', nev: tr('feat_drink_suggest', 'Italjavaslat'), leiras: tr('feat_drink_suggest_desc', 'Új ital javaslása a Ranglista oldalon.') },
     { kulcs: 'funkcio_uj_csoport', nev: tr('feat_new_group', 'Új csoport létrehozása'), leiras: tr('feat_new_group_desc', 'Új csoport létrehozása a beállításoknál.') },
     { kulcs: 'funkcio_tartozas_felvetel', nev: tr('feat_add_debt', 'Tartozás felvétele'), leiras: tr('feat_add_debt_desc', 'Új tartozás felvétele a Tartozások oldalon.') },
+    { kulcs: 'funkcio_google_naptar', nev: tr('feat_gcal', 'Google Naptár szinkron'), leiras: tr('feat_gcal_desc', 'A csoport eseményei a tagok Google Naptárában (bekapcsolás a Beállításokban).') },
     { kulcs: 'funkcio_csoportcsatlakozas', nev: tr('feat_join_group', 'Csoportcsatlakozás'), leiras: tr('feat_join_group_desc', 'Csatlakozás meglévő csoporthoz csoportkóddal.') },
 ];
 

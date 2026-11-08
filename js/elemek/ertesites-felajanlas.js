@@ -17,7 +17,7 @@ const SABLON = () => `
         <h3 id="ertesites-ajanlo-cim">${tr('push_offer_title', 'Kérsz értesítéseket?')}</h3>
       </div>
       <div class="sm-body">
-        <p>${tr('push_offer_text', 'Szólunk, ha valaki tartozást ír fel neked. Bármikor kikapcsolhatod a beállításokban.')}</p>
+        <p>${tr('push_offer_text', 'Szólunk, ha valaki tartozást ír fel neked, vagy új esemény kerül a naptárba. Bármikor kikapcsolhatod a beállításokban.')}</p>
         <p id="ertesites-ajanlo-allapot" class="sm-status sm-status-small" role="status" aria-live="polite"></p>
       </div>
       <div class="ertesites-ajanlo-gombok">

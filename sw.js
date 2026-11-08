@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v54';
+const CACHE_NEV = 'goats-v55';
 
 // Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
 // indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
@@ -21,6 +21,8 @@ const ELOGYORSITOTT = [
     'privacy.html',
     'felhasznalasi-feltetelek.html',
     'fiok-torles.html',
+    'favicon.ico',
+    'img/favicon-192.png',
     'css/base/segedosztalyok.css',
     'css/base/valtozok.css',
     'css/base/visszaallitas.css',
@@ -54,6 +56,7 @@ const ELOGYORSITOTT = [
     'js/elemek/beallitasok/tema-valaszto.js',
     'js/elemek/beallitasok/nyelv-valaszto.js',
     'js/elemek/beallitasok/ertesitesek.js',
+    'js/elemek/beallitasok/google-naptar.js',
     'js/elemek/ertesites-felajanlas.js',
     'js/elemek/beallitasok/tos-ujraelfogadas.js',
     'js/elemek/galeria.js',

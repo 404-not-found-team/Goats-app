@@ -138,34 +138,7 @@
     margin-bottom: 0;
 }
 
-/* A Hozzáad gomb témafüggő háttérrel és átmenettel */
-.terv-input-sor button,
-.terv-input-sor .terv-add-btn {
-    width: auto;
-    height: 48px;
-    padding: 0 24px;
-    white-space: nowrap;
-    margin: 0;
-    flex-shrink: 0;
-    background-color: var(--accent-color);
-    color: var(--on-accent);
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: var(--fs-base);
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.terv-input-sor button:hover,
-.terv-input-sor .terv-add-btn:hover {
-    background-color: var(--accent-hover);
-}
-
-.terv-input-sor button:active,
-.terv-input-sor .terv-add-btn:active {
-    transform: scale(0.98);
-}
+/* A Hozzáad gomb stílusa: a közös fejlécgomb (css/elemek/oldal-fejlec.css, .fejlec-gomb) */
 
 /* ==========================================================================
    3. RESZPONZÍV SZABÁLYOK

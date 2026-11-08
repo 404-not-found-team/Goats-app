@@ -218,8 +218,18 @@ const BEALLITASOK_MODAL = `
             <span class="ertesites-kapcsolo-sav" aria-hidden="true"><span class="ertesites-kapcsolo-gomb"></span></span>
             <span class="ertesites-kapcsolo-szoveg">${tr('push_off', 'Kikapcsolva')}</span>
           </button>
-          <p class="szoveg-kicsi ertesites-leiras">${tr('push_desc', 'Értesítést kapsz, ha valaki tartozást ír fel neked. Eszközönként külön kell bekapcsolni.')}</p>
+          <p class="szoveg-kicsi ertesites-leiras">${tr('push_desc', 'Értesítést kapsz, ha valaki tartozást ír fel neked, vagy új eseményt vesz fel a naptárba. Eszközönként külön kell bekapcsolni.')}</p>
           <p id="ertesites-allapot" class="sm-status sm-status-small" role="status" aria-live="polite"></p>
+        </div>
+
+        <div id="gnaptar-szakasz" hidden>
+          <p id="gnaptar-cimke" class="sm-label valaszto-kovetkezo">${tr('gcal_title', 'Google Naptár:')}</p>
+          <button id="gnaptar-kapcsolo" type="button" class="ertesites-kapcsolo" role="switch" aria-checked="false" aria-labelledby="gnaptar-cimke">
+            <span class="ertesites-kapcsolo-sav" aria-hidden="true"><span class="ertesites-kapcsolo-gomb"></span></span>
+            <span class="ertesites-kapcsolo-szoveg">${tr('push_off', 'Kikapcsolva')}</span>
+          </button>
+          <p class="szoveg-kicsi ertesites-leiras">${tr('gcal_desc', 'A csoport eseményei megjelennek a Google Naptáradban, egy külön „ATG” naptárban. Ehhez a naptárt megosztjuk az e-mail címeddel.')}</p>
+          <p id="gnaptar-allapot" class="sm-status sm-status-small" role="status" aria-live="polite"></p>
         </div>
       </div>
     </div>

@@ -7,6 +7,8 @@
         content="default-src 'self'; script-src 'self'; worker-src 'self' blob:; style-src 'self'; style-src-attr 'none'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://bvositlxbeqztnhdembx.supabase.co wss://bvositlxbeqztnhdembx.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title data-i18n="title_privacy">ATG - Adatvédelmi nyilatkozat</title>
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="img/favicon-192.png">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/pages/jogi.css">
@@ -18,7 +20,7 @@
     <div class="jogi-oldal">
         <p><a href="index.html" data-i18n="back_to_app">&larr; Vissza az alkalmazáshoz</a></p>
         <h1 data-i18n="privacy_statement">Adatvédelmi nyilatkozat</h1>
-        <p class="utolso-frissites"><span data-i18n="last_updated">Utolsó frissítés:</span> <time datetime="2026-11-04" data-i18n-datum>2026. november 4.</time></p>
+        <p class="utolso-frissites"><span data-i18n="last_updated">Utolsó frissítés:</span> <time datetime="2026-11-08" data-i18n-datum>2026. november 8.</time></p>
 
         <div class="tos-modal-body">
             <h4>1. Az üzemeltető és a kapcsolat</h4>
@@ -75,15 +77,20 @@
                 <li><strong>Biztonság és visszaélés elleni védelem:</strong> például a csatlakozási kísérletek
                     korlátozása. Jogalap: jogos érdek.</li>
                 <li><strong>Értesítések:</strong> ha bekapcsolod, értesítést küldünk, amikor valaki tartozást ír fel
-                    neked; a csapat (superadmin) tagjai a beérkezett jelentésekről és a jóváhagyásra váró italokról is
+                    neked, vagy új eseményt vesz fel a csoport naptárába; a csapat (superadmin) tagjai a beérkezett jelentésekről és a jóváhagyásra váró italokról is
                     kapnak értesítést. Jogalap: a hozzájárulásod, amelyet a beállításokban (Értesítések) bármikor
                     visszavonhatsz; a kijelentkezés is visszavonja az adott eszközön.</li>
+                <li><strong>Google Naptár szinkron:</strong> ha bekapcsolod, a csoport eseményeit (cím, dátum, ki vette
+                    fel) egy külön Google-naptárba másoljuk, és ezt a naptárt megosztjuk a Google-fiókod e-mail
+                    címével, hogy a saját Google Naptáradban lásd. Jogalap: a hozzájárulásod, amelyet a beállításokban
+                    (Google Naptár) bármikor visszavonhatsz; ekkor a megosztást visszavonjuk.</li>
             </ul>
             <p>Hirdetési vagy elemző célra nem használjuk az adatokat, és nem adjuk el őket.</p>
 
             <h4>4. Kik kapják meg az adatokat (harmadik felek)</h4>
             <ul>
-                <li><strong>Google:</strong> bejelentkezés (OAuth).</li>
+                <li><strong>Google:</strong> bejelentkezés (OAuth); ha bekapcsolod a Google Naptár szinkront, a
+                    Google Calendar a csoport eseményeit és a megosztáshoz az e-mail címedet is megkapja.</li>
                 <li><strong>Supabase:</strong> adatbázis, hitelesítés és fájltárolás. A szerver régiója: eu-west-1,
                     Írország (EU).</li>
                 <li><strong>GitHub Pages:</strong> az oldal kiszolgálása.</li>

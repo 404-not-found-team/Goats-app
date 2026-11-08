@@ -63,6 +63,7 @@ Nincs build lépés, nincs keretrendszer, nincs npm a weboldalhoz: sima HTML, CS
 | Galéria, képfeltöltés | `kepek.html`, `js/pages/kepek.js`, tömörítés: `js/segedek/kep-tomorites.js`, kivágás: `js/elemek/kep-kivago.js` |
 | Képjelentés | kliens: `js/pages/kepek.js`; szerver: `supabase/functions/kep-jelentes/`; admin: `js/pages/admin-jelentesek.js` |
 | Push-értesítések | kapcsoló: `js/elemek/beallitasok/ertesitesek.js`; felajánlás: `js/elemek/ertesites-felajanlas.js`; megjelenítés: `sw.js` vége; küldés: `supabase/functions/push-kuldes/` |
+| Google Naptár szinkron | kapcsoló: `js/elemek/beallitasok/google-naptar.js`; szerver: `supabase/functions/naptar-szinkron/` |
 | Offline működés, gyorsítótár | `sw.js` (`CACHE_NEV`, `ELOGYORSITOTT`) |
 | Admin oldal | `admin.html`, `js/pages/admin*.js`, `css/pages/admin.css` |
 | Globális kapcsolók (oldal/funkció ki-be) | `js/segedek/oldalak.js` (lista), `js/segedek/oldal-orzo.js`, `js/segedek/funkcio-kapcsolo.js` |
@@ -91,7 +92,8 @@ Nincs build lépés, nincs keretrendszer, nincs npm a weboldalhoz: sima HTML, CS
  │   ├─ Postgres + RLS (minden jogosultság itt)  │
  │   ├─ Auth (Google-bejelentkezés)              │
  │   ├─ Storage (kepek, jelentett bucket)        │
- │   └─ Edge Functions (kep-jelentes, push-kuldes)│
+ │   └─ Edge Functions (kep-jelentes, push-kuldes,│
+ │      naptar-szinkron)                         │
  └───────────────────────────────────────────────┘
 ```
 
@@ -154,7 +156,7 @@ akkor is elutasítja.
 | `img/koktelok/` | Koktélképek a nevük alapján. |
 | `img/zaszlok/` | Zászlók a nyelvválasztóhoz. |
 | `img/icon-*.png`, `img/ertesites-jelveny.png` | App-ikonok; az értesítés egyszínű jelvénye a státuszsorba. |
-| `supabase/functions/` | Edge Functionök forrása (`kep-jelentes`, `push-kuldes`). A Supabase-be külön kell telepíteni őket. |
+| `supabase/functions/` | Edge Functionök forrása (`kep-jelentes`, `push-kuldes`, `naptar-szinkron`). A Supabase-be külön kell telepíteni őket. |
 
 ---
 
@@ -194,6 +196,7 @@ A fontosabb táblák:
 | `jatek_szabalyok`, `jatek_lepesek`, `jatek_javaslatok` | Játékszabályok. |
 | `app_kapcsolok`, `app_beallitasok` | Globális kapcsolók (oldalak/funkciók ki-be), számértékű beállítások. |
 | `push_feliratkozasok` | Eszközönkénti push-feliratkozások (csak RPC-n írható). |
+| `naptar_szinkron`, `naptar_megosztasok` | Ki kapcsolta be a Google Naptár szinkront (saját sor), és kivel van megosztva melyik csoportnaptár (csak a szerver). |
 | `naplo` | Műveleti napló (csak superadmin látja). |
 
 Fontos függvények: `is_superadmin()`, `my_group_ids()`, `funkcio_engedelyezve(kulcs)`, és a felületről hívott
@@ -205,6 +208,7 @@ RPC-k (pl. `approve_drink`, `admin_jelentesek`, `push_feliratkozas_mentese`).
 |---|---|---|
 | `kep-jelentes` | a kliens (bejelentkezve) | elmenti a jelentést, és a képről másolatot tesz a privát `jelentett` bucketbe |
 | `push-kuldes` | adatbázis-triggerek (`pg_net`), titkos fejléccel | kiküldi a push-értesítéseket a címzettek nyelvén |
+| `naptar-szinkron` | adatbázis-triggerek (`pg_net`), titkos fejléccel | a csoportok Google-naptárát kezeli egy Google-robotfiókkal (`GOOGLE_SERVICE_ACCOUNT` titok): naptár létrehozása, megosztás, események felvétele/módosítása/törlése |
 
 ---
 
@@ -223,6 +227,8 @@ a választás a fiókba is mentődik. Nyelvváltáskor az oldal újratölt.
 **Képek.** A `kepek` bucket privát, aláírt linkkel jelenik meg; feltöltés előtt négyzetes kivágás és tömörítés (max 150 KB). Jelentéskor másolat megy a `jelentett` bucketbe.
 
 **Értesítések.** A felhasználó eszközönként kapcsolja be; az adatbázis-trigger új tartozásnál (az adósnak), új naptáreseménynél (a csoport többi tagjának), új jelentésnél és jóváhagyásra váró italnál (a superadminoknak) meghívja a `push-kuldes` függvényt.
+
+**Google Naptár.** Aki a beállításokban bekapcsolja, annak a csoport Google-naptárát (a robotfiók tulajdona, `groups.google_naptar_id`) megosztjuk a Google-fiókja e-mail címével; a Google e-mailjében egyszer hozzá kell adnia. Az első bekapcsoláskor jön létre a csoport naptára, a mai és későbbi eseményekkel. Utána az esemény felvétele, módosítása és törlése triggerrel kerül át (`esemenyek.google_esemeny_id`). A robotfiók a csapat Google Cloud szervezetének „My First Project” projektjében van.
 
 **Offline.** A `sw.js` előre letölti az `ELOGYORSITOTT` listában szereplő fájlokat. Minden kiadásnál emelni kell a `CACHE_NEV` számát, különben a telepített appok a régi fájlokat mutatják.
 

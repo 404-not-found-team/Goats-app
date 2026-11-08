@@ -6,6 +6,7 @@ import { initGroupDetails } from './beallitasok/csoport-adatok.js';
 import { initThemePicker } from './beallitasok/tema-valaszto.js';
 import { initLangPicker } from './beallitasok/nyelv-valaszto.js';
 import { initErtesitesek } from './beallitasok/ertesitesek.js';
+import { initGoogleNaptar } from './beallitasok/google-naptar.js';
 import { ertesitesFelajanlas } from './ertesites-felajanlas.js';
 import { initTosUjraelfogadas } from './beallitasok/tos-ujraelfogadas.js';
 import { fokuszAllit } from '../segedek/modal-fokusz.js';
@@ -23,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initThemePicker();
   initLangPicker();
   initErtesitesek(state);
+  initGoogleNaptar(state);
   ertesitesFelajanlas(state);
   initTosUjraelfogadas();
 
