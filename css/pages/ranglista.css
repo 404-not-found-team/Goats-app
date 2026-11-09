@@ -247,13 +247,23 @@
     transform: scale(1.05);
 }
 
-/* A márka a név fölött: kicsi, halvány sor (üresen is helyet foglal, hogy a kártyák egyformák legyenek) */
+/* A kártya felirata: márkás italnál márka (kicsi, halvány) + név, márka nélkül a név két sorba is törhet.
+   A felirat magassága fix (két névsornyi), így a kártyák egy vonalban maradnak. */
+.ital-felirat {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+    height: 2.5em;
+    margin-top: 5px;
+    font-size: var(--fs-xs);
+    line-height: 1.25;
+}
+
 .ital-marka {
     width: 100%;
-    min-height: 1.25em;
-    margin-top: 5px;
     font-size: 11px;
-    line-height: 1.25;
+    line-height: 1.15;
     font-weight: 500;
     color: var(--text-secondary);
     overflow: hidden;
@@ -262,13 +272,21 @@
 }
 
 .ital-nev {
-    font-size: var(--fs-xs);
+    width: 100%;
     color: var(--text-primary);
     font-weight: 700;
-    width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.ital-nev.ket-sor {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 /* ==========================================================================

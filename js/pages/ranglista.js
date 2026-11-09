@@ -24,22 +24,30 @@ function ujSajatSzuro() {
     return { kategoriak_ki: [], alkategoriak_ki: [], zero: {}, kizart: [] };
 }
 
-// A kártyán/modalban megjelenő név: alapból márka nélkül (pl. "Finlandia Mango" -> "Mango"), de néhány
-// italnál ez félreérthető (pl. "Kozel Premium" -> csak "Premium" látszana) - ilyenkor az ital saját
-// teljes_nev_mutatasa jelzőjével (superadmin kapcsolja az ital szerkesztésénél) a teljes név látszik.
-function megjelenitettNev(nev, teljesNevMutatva) {
-    return teljesNevMutatva ? (nev || '') : window.italKep.nevMarkaNelkul(nev);
+// A kártyán megjelenő név márka nélkül (pl. "Finlandia Mango" -> "Mango"); a márka külön, fölötte
+// kis sorban látszik (megjelenitettMarka), így a "Kozel Premium" sem csak "Premium"-ként jelenik meg.
+function megjelenitettNev(nev) {
+    return window.italKep.nevMarkaNelkul(nev);
 }
 
-// A kártyán a név fölötti kis, halvány sor: a márka (pl. "Finlandia"). Üres, ha az ital nem márkás, ha a
-// neve csak a márkából áll (pl. "Jägermeister"), vagy ha a teljes név úgyis látszik. Az üres sor is
-// helyet foglal, így a kártyák egyforma magasak maradnak.
-function megjelenitettMarka(nev, teljesNevMutatva) {
-    if (teljesNevMutatva) return '';
+// A kártyán a név fölötti kis, halvány sor: a márka (pl. "Finlandia"). Üres, ha az ital nem márkás, vagy
+// ha a neve csak a márkából áll (pl. "Jägermeister"); ilyenkor a név két sorba is törhet (lásd feliratBeallit).
+function megjelenitettMarka(nev) {
     const teljes = String(nev || '');
     const rovid = window.italKep.nevMarkaNelkul(teljes);
     if (rovid === teljes) return '';
     return teljes.slice(0, teljes.length - rovid.length).replace(/[\s\-–:,.]+$/, '').trim();
+}
+
+// A kártya felirata: márkás italnál két külön sor (márka + név, mindkettő egysoros, a végén "…"),
+// márka nélkül a név kapja mindkét sor helyét, és két sorba törhet (pl. "Krokodilos fogkrém").
+// A felirat magassága mindkét esetben ugyanannyi, így a kártyák egy vonalban maradnak.
+function feliratBeallit(felirat, nev) {
+    const marka = megjelenitettMarka(nev);
+    const nevElem = ujElem('span', marka ? 'ital-nev' : 'ital-nev ket-sor', megjelenitettNev(nev));
+    if (marka) felirat.replaceChildren(ujElem('span', 'ital-marka', marka), nevElem);
+    else felirat.replaceChildren(nevElem);
+    felirat.title = nev || '';
 }
 
 const kliens = () => (typeof _supabase !== 'undefined' ? _supabase : supabase);
@@ -63,7 +71,7 @@ async function inicializalas() {
         const [kategoriak, katalogusRes, osszetevoRes, rangRes, szuroRes, szinPalettaRes] = await Promise.all([
             K().lekeres(client).catch(err => ({ hiba: err })),
             client.from('italok')
-                .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, kep_szin_3, kep_szin_1_id, kep_szin_2_id, kep_szin_3_id, teljes_nev_mutatasa')
+                .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, kep_szin_3, kep_szin_1_id, kep_szin_2_id, kep_szin_3_id')
                 .order('nev', { ascending: true })
                 .range(0, 1999),
             client.from('ital_osszetevok')
@@ -844,7 +852,6 @@ function nyisdUjItalModal() {
     document.getElementById('uj-ital-modal').hidden = false;
     kategoriaValtozasCheck();
     kepMezokBeallit();
-    frissitsTeljesNevGroup();
 }
 
 function zardUjItalModal() {
@@ -858,17 +865,10 @@ function zardUjItalModal() {
     document.getElementById('uj-ital-szin-2').hidden = true;
     document.getElementById('szin-3-hely').hidden = true;
     document.getElementById('uj-ital-szin-3').hidden = true;
-    document.getElementById('uj-ital-teljes-nev').checked = false;
     document.getElementById('hozzavalok-lista').replaceChildren();
     szerkesztettItalId = null;
     document.getElementById('uj-ital-modal-cim').textContent = tr('add_new_drink_cocktail', 'Új ital / koktél felvétele');
     document.getElementById('uj-ital-mentes-gomb').textContent = tr('add', 'Hozzáadás');
-}
-
-// A "Teljes név mutatása" kapcsoló csak superadminnak látszik az űrlapon
-function frissitsTeljesNevGroup() {
-    const sor = document.getElementById('teljes-nev-group');
-    if (sor) sor.hidden = !window.goatsAuth?.isSuperadmin?.();
 }
 
 // A kiválasztott főkategória az új ital űrlapon
@@ -1031,8 +1031,7 @@ async function mentUjItal() {
     }
 
     const client = kliens();
-    const KIVALASZTANDO = 'id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, kep_szin_3, kep_szin_1_id, kep_szin_2_id, kep_szin_3_id, teljes_nev_mutatasa';
-    const teljesNevMutatva = document.getElementById('uj-ital-teljes-nev')?.checked || false;
+    const KIVALASZTANDO = 'id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, kep_szin_3, kep_szin_1_id, kep_szin_2_id, kep_szin_3_id';
 
     if (szerkesztettItalId) {
         const italId = szerkesztettItalId;
@@ -1043,7 +1042,6 @@ async function mentUjItal() {
             alkohol_fok: fo.alkoholos ? (szazalek ? parseFloat(szazalek) : null) : 0,
             kiszereles: fo.kiszereles ? (document.getElementById('uj-ital-kiszereles')?.value || null) : null,
             recept_mod: fo.recept ? aktualisMod : null,
-            teljes_nev_mutatasa: teljesNevMutatva,
             ...kepAdatokUrlapbol(),
         };
 
@@ -1084,7 +1082,6 @@ async function mentUjItal() {
         alkohol_fok: fo.alkoholos ? (szazalek ? parseFloat(szazalek) : null) : 0,
         kiszereles: fo.kiszereles ? (document.getElementById('uj-ital-kiszereles')?.value || null) : null,
         recept_mod: fo.recept ? aktualisMod : null,
-        teljes_nev_mutatasa: teljesNevMutatva,
         ...kepAdatokUrlapbol(),
         jovahagyva: false,
         javasolta_id: window.goatsAuth?.getState()?.user?.id || null,
@@ -1161,17 +1158,11 @@ function addItalKartyaToUI(ital, rendez = true) {
 
     const kep = window.italKep.elemLetrehoz(kepAdat);
 
-    const marka = document.createElement('span');
-    marka.className = 'ital-marka';
-    marka.textContent = megjelenitettMarka(ital.nev, ital.teljes_nev_mutatasa);
-
     const felirat = document.createElement('span');
-    felirat.className = 'ital-nev';
-    felirat.textContent = megjelenitettNev(ital.nev, ital.teljes_nev_mutatasa);
-    felirat.title = ital.nev || '';
+    felirat.className = 'ital-felirat';
+    feliratBeallit(felirat, ital.nev);
 
     kartya.appendChild(kep);
-    kartya.appendChild(marka);
     kartya.appendChild(felirat);
 
     // A saját, még jóváhagyatlan italon jelvény (mást a szerver nem is ad vissza jóváhagyatlanul)
@@ -1329,8 +1320,6 @@ function nyisdSzerkesztesModal() {
     document.getElementById('uj-ital-kategoria').value = String(ital.kategoria_id);
     document.getElementById('uj-ital-szazalek').value = ital.alkohol_fok ?? '';
     document.getElementById('uj-ital-kiszereles').value = ital.kiszereles || 'dobozos';
-    document.getElementById('uj-ital-teljes-nev').checked = !!ital.teljes_nev_mutatasa;
-    frissitsTeljesNevGroup();
     kepMezokBeallit(ital);
 
     const mod = ital.recept_mod === 'pontos' ? 'pontos' : 'arany';
@@ -1372,13 +1361,8 @@ function frissitsItalKartyaDOM(italId, ital) {
     const ujKep = window.italKep.elemLetrehoz(kepAdat);
     if (regiKep) regiKep.replaceWith(ujKep); else kartya.insertBefore(ujKep, kartya.firstChild);
 
-    const felirat = kartya.querySelector('.ital-nev');
-    if (felirat) {
-        felirat.textContent = megjelenitettNev(ital.nev, ital.teljes_nev_mutatasa);
-        felirat.title = ital.nev || '';
-    }
-    const marka = kartya.querySelector('.ital-marka');
-    if (marka) marka.textContent = megjelenitettMarka(ital.nev, ital.teljes_nev_mutatasa);
+    const felirat = kartya.querySelector('.ital-felirat');
+    if (felirat) feliratBeallit(felirat, ital.nev);
 
     // Ha még nincs rangsorolva (a forrás-dobozban van), a kategóriaváltozás miatt a megfelelő helyre kerül
     if (!kartya.closest('.ranglista-dropzone')) {
