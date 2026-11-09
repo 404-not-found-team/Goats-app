@@ -1,0 +1,138 @@
+# ATG – részletes műszaki leírás
+
+A README rövid; ez a fájl a részleteket tartalmazza (képek, admin kapcsolók, italkatalógus, PWA, mappaszerkezet, jogi oldalak).
+Az áttekintés: [attekintes.md](attekintes.md), a gyakori feladatok: [utmutato.md](utmutato.md).
+
+## 🖼️ Képek
+A galéria képei a privát `kepek` Supabase Storage bucketben vannak, csoportonként a csoport azonosítójával elnevezett mappában (`<group_id>/<uuid>.webp`).
+
+**Méret és formátum**
+- A képek mindenhol négyzetben jelennek meg, ezért feltöltéskor a feltöltő kiválasztja a négyzetes kivágást (`js/elemek/kep-kivago.js`): a képet húzni lehet (egérrel, ujjal, nyilakkal), nagyítani csúszkával, görgővel vagy két ujjal. Gombok: Kihagyás (Esc), Középre, Kész; több képnél „A többit középre”. A kivágó `<canvas>`-ra rajzol, inline stílus nélkül.
+- Feltöltés előtt a böngésző kicsinyíti és tömöríti a képet (`js/segedek/kep-tomorites.js`, az első feltöltéskor töltődik be): a rövidebb oldal legfeljebb 360 px (a galéria 180 px-es kijelzett méretének 2×-ese), a hosszabb legfeljebb 720 px. A négyzetre vágott kép így 360×360 px, jellemzően 40–50 KB. A FELADAT12 előtti (nem négyzetes) képek maradnak, azok középre vágva jelennek meg.
+- Kimenet: WebP 0,65-ös minőséggel (ha a böngésző nem tud WebP-t kódolni, JPEG 0,6). Ha 100 KB fölött van, a minőség 0,05-ös lépésekben 0,4-ig csökken, utána a méret 10%-onként (legalább 480 px-ig). 150 KB fölött a feltöltés elmarad.
+- A bemenet legfeljebb 15 MB, csak kép; animált GIF nem tölthető fel. A HEIC-et a böngésző (vagy tartalékként a heic2any) alakítja át.
+- A vászonra rajzolás miatt a kimenetben nincs EXIF/GPS metaadat; a tájolást (EXIF-forgatás) a betöltés érvényesíti.
+- A fájl soha nem módosul: mindig új (uuid) útvonalra kerül, `upsert` nélkül, `cacheControl: 31536000`-zel.
+- Szerveroldalon a bucket is korlátoz: `file_size_limit = 153600` (150 KB), `allowed_mime_types = {image/webp,image/jpeg}`. A korábban feltöltött, nagyobb képek megmaradnak.
+
+**Csoportonkénti korlát**
+- Egy csoport mappájában legfeljebb 300 kép lehet. A számot a `public.app_beallitasok` tábla adja, újratelepítés nélkül módosítható (Supabase SQL editor):
+  ```sql
+  update public.app_beallitasok set ertek = 500 where kulcs = 'kep_korlat_csoportonkent';
+  ```
+- A korlátot a `storage.objects` táblán egy RESTRICTIVE INSERT policy (`kepek_csoport_korlat`) ellenőrzi a `kep_mappa_korlat_alatt()` függvénnyel; a kliens a `kep_korlat_csoportonkent()` RPC-vel kérdezi le, és elérésekor ezt írja ki: „A csoport elérte a képkorlátot, törölj régebbi képeket.”
+
+**Oldalak**
+- `kepek.html` + `js/pages/kepek.js`: a teljes rács, feltöltés, törlés, jelentés; a csempék képe csak akkor töltődik be, amikor a görgetésben láthatóvá válik (IntersectionObserver, kötegelt aláírással).
+- `app.html` + `js/elemek/galeria.js`: csak lapozás. Az „Összes kép →” link akkor látszik, ha a csoportnál a `kepek` oldal engedélyezett.
+- A Képek oldal ki-be kapcsolása a `groups.enabled_pages` tömbben (`kepek` kulcs); új csoportnál alapból be van kapcsolva.
+
+**Jelentés és a jelentett képek másolata**
+- A Képek oldal a `kep-jelentes` Edge Functiont hívja (`supabase/functions/kep-jelentes/index.ts`). Ez a felhasználó nevében (az ő JWT-jével) szúrja be a sort a `public.jelentesek` táblába, így a táblaszabályok érvényesek: csak csoporttag jelenthet, óránként legfeljebb 20-at.
+- Utána a service role-lal lemásolja a képet a privát `jelentett` bucketbe `<jelentés-azonosító>.<kiterjesztés>` néven, és a helyét beírja a jelentés `masolat_utvonal` oszlopába. A `jelentett` bucketre nincs storage-policy: a csoporttagok nem látják és nem törölhetik, a másolat akkor is megmarad, ha az eredeti képet vagy a csoportot törlik.
+- A másolatot az üzemeltetők törlik kézzel (Supabase → Storage → `jelentett`), a jelentés lezárása után (`statusz = 'lezarva'`).
+- A kliens a `jelentesek` táblába csak a `group_id`, `cel_tipus`, `cel_azonosito`, `ok`, `leiras` oszlopot írhatja (oszlopszintű jog); a `statusz` és a `masolat_utvonal` csak szerveroldalon változik.
+- Telepítés: `supabase functions deploy kep-jelentes` (JWT-ellenőrzéssel). A `SUPABASE_URL`, `SUPABASE_ANON_KEY` és `SUPABASE_SERVICE_ROLE_KEY` környezeti változót a Supabase automatikusan adja.
+
+**Helyi gyorsítótár** (`js/segedek/kep-gyorsitotar.js`)
+- A privát bucket miatt aláírt URL kell, ami minden aláíráskor új, így a böngésző HTTP-cache-e nem segít. Ezért a letöltött képet a Cache Storage `goats-kepek-v1` tárolója őrzi az útvonal alapján, és a következő megnyitáskor onnan, blob URL-ként jelenik meg: egy képet eszközönként csak egyszer töltünk le.
+- Csak a látható képeket töltjük be (a főoldalon a középsőt és a két szomszédját, a Képek oldalon a láthatóvá vált csempéket); a hiányzókra egy kötegelt `createSignedUrls` hívás megy (2 perces lejárattal).
+- Legfeljebb 150 kép / 20 MB, a legrégebben használt törlődik (index: `localStorage` `goats_kep_cache_index`). Kijelentkezéskor az egész törlődik.
+- A service worker a Storage-kéréseket nem cache-eli, és a `goats-kepek-*` tárolót verzióváltáskor sem törli.
+
+---
+
+## ⚙️ Admin oldal és globális kapcsolók
+Az `admin.html` (`js/pages/admin.js`, `css/pages/admin.css`) csak a superadminoké (`profiles.system_role = 'superadmin'`). Session nélkül az `index.html`-re, nem superadminnak az `app.html`-re irányít (`location.replace`), az adatai addig nem töltődnek be; a profil változásakor (`onChange`) újra ellenőriz. A menüben az „Admin ⚙️” csak superadminnak látszik, a csoporttól és a kapcsolóktól függetlenül (mobilon a „Több ☰” fiókban).
+
+**Globális kapcsolók** – az egész alkalmazásra érvényesek (nem csoportonként), a `public.app_kapcsolok` táblában (`kulcs`, `ertek boolean`, `modositotta`, `modositva`). Olvasni minden bejelentkezett felhasználó tudja, írni csak a superadmin az `admin_beallitas_mentese(kulcs_in, ertek_in)` RPC-vel. (A `public.app_beallitasok` a FELADAT12 számértékű beállításait tárolja, pl. a képkorlátot; az külön tábla.)
+
+| Kulcs | Mit kapcsol |
+|---|---|
+| `oldal_tartozasok`, `oldal_ranglista`, `oldal_kepek`, `oldal_tervek`, `oldal_goatsgame` | Az oldal a menüben és közvetlen megnyitáskor (a Kezdőlap nem kapcsolható) |
+| `funkcio_kepfeltoltes` | Képfeltöltés (Képek oldal) |
+| `funkcio_italjavaslat` | Új ital javaslása (Ranglista) |
+| `funkcio_uj_csoport` | Új csoport létrehozása |
+| `funkcio_tartozas_felvetel` | Új tartozás felvétele |
+| `funkcio_csoportcsatlakozas` | Csatlakozás csoportkóddal |
+| `csoportszuro_csak_admin` | Beállítás (alapból ki): bekapcsolva a Ranglista csoportszűrőjét csak a csoport adminja módosíthatja |
+
+**A superadminokra egyik kapcsoló sem vonatkozik**: minden oldalt látnak és minden funkciót használhatnak.
+
+**Működés**
+- Az oldalak listája egy helyen van: `js/segedek/oldalak.js` (a nav-bar és az admin oldal is ezt használja).
+- A `hitelesites.js` a bejelentkezéskor betölti a kapcsolókat (`state.beallitasok`, a munkamenet-pillanatképben legfeljebb 60 másodpercig), és kiadja az `oldalEngedelyezett(kulcs)` és `funkcioEngedelyezett(kulcs)` segédet; mindkettő igaz superadminnak.
+- Menü: egy oldal látszik, ha (superadmin) VAGY (a csoport `enabled_pages`-ében benne van ÉS a globális kapcsolója be van kapcsolva).
+- Közvetlen megnyitás: a kapcsolható oldalak `<body data-oldal="...">` attribútuma alapján a `js/segedek/oldal-orzo.js` az `app.html`-re irányít („Ez az oldal jelenleg nem elérhető.”). Kijelentkezve a kapcsolók nem olvashatók, ezért a publikus Ranglistát ilyenkor nem korlátozza.
+- Funkciók: a `js/segedek/funkcio-kapcsolo.js` letiltja a gombot, és mellé írja: „Ez a funkció jelenleg ki van kapcsolva.”
+- **Szerveroldali kikényszerítés** (a felület elrejtése csak kozmetika): `public.funkcio_engedelyezve(kulcs)` (superadminnak mindig igaz). A képfeltöltést, az italjavaslatot és a tartozás felvételét RESTRICTIVE INSERT policyk ellenőrzik (`storage.objects` a `kepek` bucketre, `kepek`, `ital_katalogus`, `tartozasok`), a csoportlétrehozást és a csatlakozást a `create_new_group` és a `join_group_with_code` RPC.
+
+---
+
+## 🍹 Italkatalógus és szűrés
+**Táblák**
+
+| Tábla | Tartalom |
+|---|---|
+| `public.ital_kategoriak` | Fő- és alkategóriák: `kod`, `nev`, `szulo_id` (alkategóriánál a főkategória), `sorrend`, szabály (`szabaly_marka` = márka egyezik, vagy `szabaly_nev` = a név eleje). A főkategória tulajdonságai a felületet vezérlik: `ikon`, `recept` (koktél, fröccs), `kiszereles` (sör), `alkoholos`, `zero_szuro` (energiaital). |
+| `public.italok` | A katalógus: `id`, `marka`, `nev`, `kategoria_id`, `alkategoria_id` + `alkategoria_kezi` (kézi felülírás; kézi és üres = egyik sem), `zero` (üres = automatikus a névből: zero, sugar free, cukormentes; a Ranglistán „Cukormentes” jelvény), `alkohol_fok`, `kiszereles` (sörnél: `dobozos` = 0,5 l, `dobozos_330` = 0,33 l, `uveges`), `recept_mod` (`arany`/`pontos`), `jovahagyva`, `javasolta_id`, `created_at`. Az azonosítók a régi `ital_katalogus` azonosítói, így a mentett ranglisták (`ital_ranglista.id = 'ital-<id>'`) érvényesek. |
+| `public.ital_osszetevok` | Koktél/fröccs recept: egy sor egy hozzávaló (`ital_id`, `sorrend`, `nev`, `mennyiseg`, `egyseg`). |
+
+Az alkategória-szabály és a zero felismerése egy helyen van: `js/segedek/ital-kategoriak.js` (a Ranglista és az admin oldal is ezt használja). Jogosultság: olvasni mindenki tudja (a jóvá nem hagyott italt csak a javasló, a csoporttársai és a superadmin), új italt bejelentkezett felhasználó javasolhat (a `funkcio_italjavaslat` kapcsoló mellett), kategóriát és besorolást csak a superadmin módosíthat (RLS).
+
+**Admin oldal → Italjavaslatok**: a jóváhagyásra váró italok (kategória, márka, kiszerelés, alkoholfok, recept, javasló), jóváhagyás vagy elutasítás (`list_pending_drinks`, `approve_drink`, `reject_drink` RPC; korábban a beállítások ablakában volt).
+
+**Admin oldal → Italkategóriák**: alkategória létrehozása, szerkesztése, törlése egy főkategórián belül (szabály: márka vagy névkezdet), és italonként az alkategória és a zero kézi felülírása.
+
+**Szűrés (Ranglista)**
+- **Csoportnak** (mentett, `groups.filter_settings`, `save_filter_settings` RPC): mely főkategóriák látszanak (kategória-csempék), és zero-szűrős kategóriánál mind / csak zero / nem zero. Alkategóriánként nem lehet szűrni: egy kategória vagy egészben látszik, vagy sehogy (a régi `alkategoriak_ki` értéket az app figyelmen kívül hagyja, mentéskor üresre állítja). Amíg a csoport nem állította be, egyetlen ital sem látszik, és az oldal felkínálja a beállítást. Alapból bármelyik tag módosíthatja; a `csoportszuro_csak_admin` kapcsolóval csak a csoport adminja.
+- **Nekem** (saját nézet): a csoport beállításán belül tovább szűkít (kategóriák, zero, elrejtett nevek). A böngészőben megmarad, csoportonként külön (`localStorage` `goats_ranglista_szuro_<csoportkód>`).
+
+---
+
+## 📲 PWA támogatás
+Az alkalmazás telepíthető asztali és mobil böngészőkből is ("Telepítés" / "Hozzáadás a kezdőképernyőhöz").
+- A `sw.js` előgyorsítótárazza az alkalmazás vázát (a bejelentkezési és a legfontosabb belépési fájlokat), hogy az első/ismételt betöltés gyors legyen, és navigációnál 2 másodperces hálózati időkorlát után a gyorsítótárra vált.
+- A saját domain statikus fájljai "stale-while-revalidate" stratégiával töltődnek: azonnal a gyorsítótárból, a háttérben frissülve.
+- A Supabase API- és Storage-kéréseket a service worker sosem gyorsítótárazza (ezek mindig frissek/felhasználó-specifikusak kell legyenek). A galériaképeket külön, a [Képek](#️-képek) szakaszban leírt helyi gyorsítótár tárolja.
+- **Verziózás:** lásd a [Mappa- és fájlszerkezet](#-mappa--és-fájlszerkezet) szakasz alján.
+
+---
+
+## 📂 Mappa- és fájlszerkezet
+
+A FELADAT13-as átszervezés óta a mappa- és fájlnevek (ahol lehetett) magyarok, ékezet és szóköz nélkül, kisbetűvel, kötőjellel elválasztva — a GitHub Pages és az URL-ek kis-/nagybetű-érzékenysége miatt. A `css/`, `js/`, `css/base/`, `css/pages/`, `js/pages/`, `main.*`, `navbar.css`, `modals.css` és `supabase-client.js` nevek szándékosan maradtak (már eleve egyértelműek vagy általánosan ismert technikai kifejezések).
+
+```
+css/
+  base/            # alap: szinek/betumeret (valtozok.css), reset (visszaallitas.css), segedosztalyok.css
+  elemek/          # ujrafelhasznalhato komponensek (navbar.css, modals.css, lenyilo-menu.css, lebego-cimke.css, moderacio.css, tartozasok-egyenlitese.css)
+  pages/           # oldal-specifikus stilusok (bejelentkezes.css = index.html, fooldal.css = app.html, tartozasok/ranglista/tervek/kepek/admin/jogi.css, goatsgame.css)
+  main.css         # a fenti @import-ok gyujtofajlja
+js/
+  hitelesites.js       # kozponti auth/session/csoport-allapot (window.goatsAuth)
+  supabase-client.js   # Supabase kliens singleton
+  admin-muveletek.js   # csoport/profil admin RPC wrapperek
+  main.js              # modul-aggregator a bejelentkezett oldalakhoz
+  elemek/              # ujrafelhasznalhato UI-komponensek (naptar, nav-bar, galeria, kep-kivago, beallitasok-modal, tartozasok-egyenlitese.js)
+    beallitasok/        # a beallitasok-modal al-nezetei (belepes-modal, profil-modal, csoport-adatok, tema-valaszto, ital-moderacio, beallitasok-sablonok, tos-ujraelfogadas)
+  pages/               # egy-egy HTML oldalhoz tartozo belepesi script (bejelentkezes-oldal.js, app-orzo.js, tartozasok.js, tervek.js, kepek.js, admin.js, admin-kategoriak.js, ranglista.js, goatsgame.js)
+  segedek/             # altalanos segedfuggvenyek (ital-kep, modal-fokusz, szin-osztaly, csoport-kepek, csoport-kod, kep-tomorites, kep-gyorsitotar, oldalak, oldal-orzo, funkcio-kapcsolo, ital-kategoriak, keslelteto, teljesitmeny, tema)
+img/
+  icon-*.png           # PWA ikonok (a manifest.json hivatkozza)
+  ikonok/              # ital-kategoria SVG ikonok (CSS maszkkal szinezve)
+```
+
+**Service worker verziózása:** a `sw.js` tetején lévő `CACHE_NEV` (pl. `'goats-v11'`) minden olyan kiadásnál emelendő, ami bármelyik előgyorsítótárazott (`ELOGYORSITOTT`) fájl útvonalát vagy tartalmát megváltoztatja — enélkül a már telepített/PWA-ként futó appok a régi, lecserélt fájlokat kapnák a gyorsítótárból. Az `activate` esemény a korábbi cache-neveket automatikusan törli.
+
+---
+
+## ⚖️ Jogi oldalak
+
+- **Hub:** `jogi.html` — innen érhető el mindegyik jogi dokumentum, és ez a link van a Profil menüben ("Jogi információk").
+- **Adatvédelmi tájékoztató:** `privacy.html`.
+- **Felhasználási feltételek:** `felhasznalasi-feltetelek.html` — a verziószáma (`hitelesites.js` `TOS_VERSION`) egyezzen a lap tetején feltüntetett verzióval.
+- **Fiók törlése:** `fiok-torles.html`.
+- A bejelentkezési képernyőn (checkbox nélkül) egy mondat linkel a feltételekre és az adatvédelmi tájékoztatóra; az elfogadás tényleges rögzítése az `accept_tos` RPC-vel történik, a `TOS_VERSION`-nel.
+- **Verzióemelés menete:** ha a felhasználási feltételek szövege lényegesen változik, emeld a `TOS_VERSION` értékét (`js/hitelesites.js`), és a `felhasznalasi-feltetelek.html` tetején lévő verziószámot/dátumot is ennek megfelelően. Ez új elfogadást kényszerít ki a következő bejelentkezéskor.
+- Mindhárom statikus oldal lábléce a másik kettőre és a hub-ra mutat.

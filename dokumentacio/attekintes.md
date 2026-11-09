@@ -3,7 +3,7 @@
 Ez a leírás annak szól, aki most csatlakozik a munkához. Elmondja, mi ez az app, miből áll, és melyik fájl mit csinál.
 Ha valamit **csinálni** szeretnél (új téma, új nyelv, új oldal stb.), azt lépésről lépésre az
 [útmutató](utmutato.md) írja le. A részletes működési szabályok (jogosultságok, kapcsolók, képkezelés) a
-[README](../README.md)-ben vannak.
+[részletes leírásban](reszletek.md) vannak.
 
 ## Tartalom
 
@@ -117,7 +117,7 @@ akkor is elutasítja.
 | `jogi.html`, `privacy.html`, `felhasznalasi-feltetelek.html`, `fiok-torles.html` | Jogi oldalak (a Play is ezeket linkeli). |
 | `manifest.json` | PWA-adatok: név, ikonok, start URL. |
 | `sw.js` | Service worker: előgyorsítótár, offline működés, push-értesítések megjelenítése. |
-| `README.md` | Részletes működési leírás (jogosultságok, kapcsolók, képek, TWA). |
+| `README.md` | Rövid bemutató, indítás, kiadás. A részletes működési leírás (kapcsolók, képek, italkatalógus, PWA) a `dokumentacio/reszletek.md`-ben van. |
 | `dokumentacio/` | Ez a leírás és az [útmutató](utmutato.md). |
 
 ### `css/`
@@ -275,7 +275,7 @@ a választás a fiókba is mentődik. Nyelvváltáskor az oldal újratölt.
 
 ## 10. Az első napod
 
-1. Olvasd el ezt, és fusd át a [README](../README.md) fejezeteit.
+1. Olvasd el ezt, és fusd át a [részletes leírás](reszletek.md) fejezeteit.
 2. Indítsd el helyben: a repó gyökerében `python -m http.server 8099`, majd `http://localhost:8099/index.html`.
    `file://`-ként nem működik. Az adatok az élő Supabase-ből jönnek, tehát amit helyben csinálsz, az élesben történik.
 3. Nézd meg egy egyszerű oldal útját elejétől végéig: `tervek.html` → `js/pages/tervek.js`.
