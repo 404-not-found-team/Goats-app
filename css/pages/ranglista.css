@@ -247,14 +247,15 @@
     transform: scale(1.05);
 }
 
-/* A kártya felirata: márkás italnál márka (kicsi, halvány) + név, márka nélkül a név két sorba is törhet.
-   A felirat magassága fix (két névsornyi), így a kártyák egy vonalban maradnak. */
+/* A kártya felirata: márkás italnál a márka (kicsi, halvány, egy sor) alatt a név legfeljebb két sorban,
+   márka nélkül a név legfeljebb három sorban. A felirat magassága fix (márka + két névsor), így a kártyák
+   egy vonalban maradnak. */
 .ital-felirat {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     width: 100%;
-    height: 2.5em;
+    height: calc(11px * 1.15 + 2.5em);
     margin-top: 5px;
     font-size: var(--fs-xs);
     line-height: 1.25;
@@ -272,21 +273,20 @@
 }
 
 .ital-nev {
-    width: 100%;
-    color: var(--text-primary);
-    font-weight: 700;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.ital-nev.ket-sor {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     line-clamp: 2;
-    white-space: normal;
+    width: 100%;
+    color: var(--text-primary);
+    font-weight: 700;
+    overflow: hidden;
     overflow-wrap: anywhere;
+}
+
+.ital-nev.ket-sor {
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
 }
 
 /* ==========================================================================
@@ -350,8 +350,40 @@
     font-weight: bold;
 }
 
+/* "Kivesz": a szintből kiveszi az italt - másodlagos gomb, hogy ne tűnjön bezárásnak */
 #forras {
-    background: #6c757d;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+#forras:hover {
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+}
+
+/* Az ital ablakának bezárás gombja (jobb felső sarok); a szerkesztő ceruza a bal felsőben van */
+.modal-bezar-x {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    background: var(--inner-bg);
+    color: var(--text-secondary);
+    font-size: var(--fs-base);
+    line-height: 1;
+    cursor: pointer;
+}
+
+.modal-bezar-x:hover {
+    color: var(--text-primary);
+    border-color: var(--accent-color);
 }
 
 #bezar {
@@ -455,7 +487,7 @@
 .modal-szerkesztes-btn {
     position: absolute;
     top: 16px;
-    right: 16px;
+    left: 16px;
     z-index: 2;
     width: 30px;
     height: 30px;
@@ -550,70 +582,6 @@
     margin-bottom: 18px;
     color: var(--accent-text);
     font-size: var(--fs-lg);
-}
-
-.szuro-label {
-    font-weight: bold !important;
-    margin-bottom: 10px !important;
-    display: block !important;
-}
-
-.szuro-label-top {
-    margin-top: 20px !important;
-    margin-bottom: 8px !important;
-}
-
-.szuro-input-sor {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-}
-
-.szuro-input {
-    margin-bottom: 0 !important;
-}
-
-.gomb-plusz {
-    width: auto !important;
-    padding: 0 16px !important;
-    background: var(--accent-color) !important;
-    color: var(--on-accent) !important;
-}
-
-.tag-kontener {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    min-height: 38px;
-    padding: 6px;
-    background: var(--inner-bg);
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
-}
-
-.kizart-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
-    border-radius: 16px;
-    background: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    font-size: var(--fs-sm);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.kizart-tag:hover {
-    background: rgba(239, 68, 68, 0.35);
-    transform: scale(1.03);
-}
-
-.kizart-tag .torles-x {
-    font-size: var(--fs-sm);
-    font-weight: bold;
 }
 
 .szuro-footer {
@@ -765,20 +733,6 @@
     border: 1px solid var(--border-color);
     background: var(--inner-bg);
     font-size: var(--fs-sm);
-}
-
-.szuro-szekcio-cim {
-    display: block;
-    margin: 20px 0 8px;
-    font-size: var(--fs-xs);
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-}
-
-.tag-kontener:empty {
-    display: none;
 }
 
 .szuro-zero {
@@ -1048,68 +1002,290 @@
         max-height: 90px;
     }
 }
-/* Új ital / szerkesztés űrlap: színezett kép mezői és élő előnézet */
-.kep-szinezes-resz {
-    margin-bottom: 15px;
-}
-
-.kep-szinezes-sor {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-.kep-szinezes-sor .floating-group {
-    flex: 1;
-    margin-bottom: 0;
-}
-
-.kep-szin-mezo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-    cursor: pointer;
-}
-
-.szin-hely {
+/* Új ital / szerkesztés űrlap */
+.szerk-ket-oszlop {
     display: flex;
     gap: 10px;
-    align-items: center;
-    margin-bottom: 15px;
 }
 
-.szin-hely .floating-group {
+.szerk-ket-oszlop > .floating-group {
     flex: 1;
-    margin-bottom: 0;
+    min-width: 0;
 }
 
-.szin-hely-picker {
-    flex-shrink: 0;
-    width: 40px;
-    height: 48px;
-    padding: 0;
-    border: 1px solid rgba(127, 127, 127, 0.4);
-    border-radius: 6px;
-    background: none;
-    cursor: pointer;
+.szerk-szekcio-cim {
+    margin: 4px 0 8px;
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-align: left;
+}
+
+/* Kinézet: élő előnézet + színek, alatta a forma rajzokból és a minta pirulákból */
+.kinezet-doboz {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    background: color-mix(in srgb, var(--inner-bg) 55%, transparent);
+    text-align: left;
+}
+
+.kinezet-felso {
+    display: grid;
+    grid-template-columns: 124px minmax(0, 1fr);
+    gap: 12px;
+    align-items: stretch;
+}
+
+.kinezet-elonezet {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 6px;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    background: radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--accent-color) 32%, transparent), transparent 70%),
+        var(--inner-bg);
+    font-size: var(--fs-xs);
+    line-height: 1.25;
+    text-align: center;
+}
+
+.kinezet-elonezet .ital-marka {
+    margin-top: 4px;
 }
 
 .kep-elonezet {
-    width: 90px;
-    flex-shrink: 0;
+    width: 100px;
 }
 
 .kep-elonezet .ital-szinezett,
 .kep-elonezet .ital-ikon,
 .kep-elonezet img {
-    height: 140px;
-    max-height: 140px;
+    height: 120px;
+    max-height: 120px;
     cursor: default;
 }
 
+.kep-elonezet .ital-szinezett:hover {
+    transform: none;
+}
+
+.kinezet-szinek {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+/* Forma nélkül nincs szín: az előnézet akkor a teljes szélességet kapja */
+.kinezet-felso:has(.kinezet-szinek[hidden]) {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.szin-sor {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--inner-bg);
+    cursor: pointer;
+}
+
+.szin-sor.ki .szin-kor,
+.szin-sor.ki .szin-sor-cim {
+    opacity: 0.4;
+}
+
+.szin-sor-cim {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+}
+
+.szin-sor-cim small {
+    color: var(--text-secondary);
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* A böngésző színválasztója színes körként */
+.szin-kor {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 3px solid rgba(255, 255, 255, 0.85);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px var(--border-color), 0 3px 10px rgba(0, 0, 0, 0.4);
+    background: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    overflow: hidden;
+}
+
+.szin-kor::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.szin-kor::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+.szin-kor::-moz-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+.szin-kor:disabled {
+    cursor: default;
+}
+
+/* Kapcsoló (a 2. szín be/ki) */
+.kapcsolo {
+    position: relative;
+    flex-shrink: 0;
+    width: 40px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.kapcsolo input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.kapcsolo-csuszka {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: #4a4560;
+    pointer-events: none;
+    transition: background 0.15s ease;
+}
+
+.kapcsolo-csuszka::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.15s ease;
+}
+
+.kapcsolo input:checked + .kapcsolo-csuszka {
+    background: var(--accent-color);
+}
+
+.kapcsolo input:checked + .kapcsolo-csuszka::after {
+    transform: translateX(16px);
+}
+
+.kapcsolo input:focus-visible + .kapcsolo-csuszka {
+    outline: 2px solid var(--accent-text);
+    outline-offset: 2px;
+}
+
+.kinezet-cimke {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.kinezet-minta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.forma-valaszto {
+    display: flex;
+    gap: 8px;
+    max-width: 100%;
+    padding-bottom: 4px;
+    overflow-x: auto;
+}
+
+.forma-csempe {
+    flex: 0 0 58px;
+    height: 70px;
+    display: grid;
+    place-items: center;
+    padding: 4px;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+    background: var(--inner-bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.forma-csempe.aktiv {
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 16%, var(--inner-bg));
+}
+
+.forma-csempe .ital-szinezett {
+    width: 48px;
+    height: 58px;
+    cursor: pointer;
+}
+
+.forma-csempe .ital-szinezett:hover {
+    transform: none;
+}
+
+.forma-nincs {
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.minta-valaszto {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.minta-pirula {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    background: var(--inner-bg);
+    color: var(--text-secondary);
+    font: inherit;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.minta-pirula.aktiv {
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 22%, transparent);
+    color: var(--text-primary);
+}
 
 /* A 330 ml-es doboz formája (kozep-doboz) eleve kisebbre van rajzolva, azt nem kicsinyítjük tovább */
 .kisebb-kiszereles .ital-szinezett.forma-kozep-doboz,

@@ -164,9 +164,6 @@ if (!jogosultsagEllenorzes()) {
     import('./admin-kategoriak.js')
         .then(m => m.indit())
         .catch(err => console.error('Az italkategóriák betöltése nem sikerült:', err));
-    import('./admin-szinek.js')
-        .then(m => m.indit())
-        .catch(err => console.error('A színek betöltése nem sikerült:', err));
     import('./admin-jelentesek.js')
         .then(m => m.indit())
         .catch(err => console.error('A jelentések betöltése nem sikerült:', err));

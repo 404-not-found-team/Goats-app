@@ -190,7 +190,7 @@ A fontosabb táblák:
 | `groups`, `group_members` | Csoportok (név, kód, `enabled_pages`, szűrő) és tagságok (admin/tag). |
 | `tartozasok`, `tartozas_egyenlitesek` | Tartozások és az egyenlítések. |
 | `tervek`, `esemenyek` | Tervek és naptáresemények. |
-| `italok`, `ital_kategoriak`, `ital_osszetevok`, `ital_ranglista`, `ital_ranglista_naplo`, `szin_paletta` | Italkatalógus, kategóriák, receptek, a csoportok rangsorai, ki mit hova tett, mentett színek. |
+| `italok`, `ital_kategoriak`, `ital_osszetevok`, `ital_ranglista`, `ital_ranglista_naplo`, `szin_paletta` | Italkatalógus, kategóriák, receptek, a csoportok rangsorai, ki mit hova tett; a `szin_paletta` (régi mentett színek) már csak olvasásra kell, amíg italok hivatkoznak rá. |
 | `kepek`, `jelentesek` | Galériaképek adatai; jelentések. A fájlok a `kepek` és a privát `jelentett` bucketben vannak. |
 | `goatgame_*` | Goats Game: játékok, meccsek, pontok, színek. |
 | `jatek_szabalyok`, `jatek_lepesek`, `jatek_javaslatok` | Játékszabályok. |

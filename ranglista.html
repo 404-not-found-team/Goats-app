@@ -62,6 +62,8 @@
 
     <div id="modal-hatter" hidden>
         <div id="hatter" class="modal-kis-doboz">
+            <button type="button" id="modal-bezar-gomb" class="modal-bezar-x" data-katt="modalBezár"
+                aria-label="Bezárás" data-i18n-attr="aria-label:close">✕</button>
             <button type="button" id="modal-szerkesztes-gomb" class="modal-szerkesztes-btn"
                 data-katt="nyisdSzerkesztesModal" title="Szerkesztés (superadmin)" data-i18n-attr="title:edit_superadmin" hidden>✏️</button>
             <!-- a kép vagy (kép híján) a kategória-ikon, ugyanaz az elem, mint a kártyán (ital-kep.js) -->
@@ -92,7 +94,7 @@
                 <button id="elmegy" class="gombok dark" data-katt="kategoriatValaszt" data-arg="B">B</button>
                 <button id="soha" class="gombok dark" data-katt="kategoriatValaszt" data-arg="C">C</button>
                 <button id="megjobbansoha" class="gombok dark" data-katt="kategoriatValaszt" data-arg="D">D</button>
-                <button id="forras" class="gombok" data-katt="kategoriatValaszt" data-arg="forras" data-i18n="return">Forrás</button>
+                <button id="forras" class="gombok" data-katt="kategoriatValaszt" data-arg="forras" data-i18n="return">Kivesz</button>
             </div>
         </div>
     </div>
@@ -106,20 +108,19 @@
                 <label class="floating-label" data-i18n="drink_name">Ital neve</label>
             </div>
 
-            <!-- A kártyán/modalban alapból a márka-előtag nélküli név látszik (pl. "Finlandia Mango" ->
-                 "Mango"); néhány névnél (pl. "Kozel Premium") ez félreérthető, ezért itt kikapcsolható -->
+            <!-- Fajta és alkoholfok egy sorban (alkoholmentesnél csak a fajta) -->
+            <div class="szerk-ket-oszlop">
+                <div class="floating-group">
+                    <select id="uj-ital-kategoria" class="floating-select" data-valtozas="kategoriaValtozasCheck">
+                        <!-- a lehetőségeket a ranglista.js tölti fel a public.ital_kategoriak táblából -->
+                    </select>
+                    <label class="floating-label" data-i18n="drink_type">Ital Fajta</label>
+                </div>
 
-
-            <div class="floating-group">
-                <select id="uj-ital-kategoria" class="floating-select" data-valtozas="kategoriaValtozasCheck">
-                    <!-- a lehetőségeket a ranglista.js tölti fel a public.ital_kategoriak táblából -->
-                </select>
-                <label class="floating-label" data-i18n="drink_type">Ital Fajta</label>
-            </div>
-
-            <div id="alkoholfok-group" class="floating-group">
-                <input type="number" id="uj-ital-szazalek" class="floating-input" placeholder=" " step="0.1" />
-                <label class="floating-label" data-i18n="alcohol_percentage">Alkoholfok (%)</label>
+                <div id="alkoholfok-group" class="floating-group">
+                    <input type="number" id="uj-ital-szazalek" class="floating-input" placeholder=" " step="0.1" />
+                    <label class="floating-label" data-i18n="alcohol_percentage">Alkoholfok (%)</label>
+                </div>
             </div>
 
             <div id="kiszereles-group" class="floating-group" hidden>
@@ -129,57 +130,50 @@
                 <label class="floating-label" data-i18n="drink_packaging">Kiszerelés</label>
             </div>
 
-            <!-- Színezett kép (ital-kep.js): forma + 1-2 szín + opcionális minta saját színnel; "Nincs" = márkakép vagy ikon -->
-            <div class="floating-group">
-                <select id="uj-ital-forma" class="floating-select" data-valtozas="formaValtozott">
-                    <!-- a lehetőségeket a ranglista.js tölti fel (ital-kep.js: FORMAK) -->
-                </select>
-                <label class="floating-label" data-i18n="photo_format">Kép formája</label>
-            </div>
-
-            <div id="kep-szinezes-resz" class="kep-szinezes-resz" hidden>
-                <div class="szin-hely">
-                    <div class="floating-group">
-                        <select id="uj-ital-szin-1-select" class="floating-select" data-valtozas="szinSlotValtozott" data-arg="1">
-                            <!-- a lehetőségeket a ranglista.js tölti fel (public.szin_paletta + "Szín keverés");
-                                 az admin oldal Színek fülén vehető fel/szerkeszthető/törölhető új bejegyzés -->
-                        </select>
-                        <label class="floating-label" data-i18n="main_color">Fő szín</label>
+            <!-- Kinézet (ital-kep.js): élő előnézet, 1-2 szín (+ a minta színe), forma rajzokból, minta pirulákból.
+                 Forma nélkül ("Nincs") a márkakép vagy a kategória-ikon jelenik meg, színek nélkül. -->
+            <p class="szerk-szekcio-cim" data-i18n="look">Kinézet</p>
+            <div class="kinezet-doboz">
+                <div class="kinezet-felso">
+                    <div class="kinezet-elonezet">
+                        <div id="kep-elonezet" class="kep-elonezet"></div>
+                        <span id="elonezet-marka" class="ital-marka"></span>
+                        <span id="elonezet-nev" class="ital-nev"></span>
                     </div>
-                    <input type="color" id="uj-ital-szin-1" class="szin-hely-picker" value="#e30613" data-bevitel="kepElonezetFrissit" hidden />
+                    <div id="kep-szinezes-resz" class="kinezet-szinek" hidden>
+                        <label class="szin-sor">
+                            <input type="color" id="uj-ital-szin-1" class="szin-kor" value="#e30613" data-bevitel="kepElonezetFrissit">
+                            <span class="szin-sor-cim"><span data-i18n="main_color">Fő szín</span><small id="szin-1-kod"></small></span>
+                        </label>
+                        <div id="szin-2-sor" class="szin-sor">
+                            <input type="color" id="uj-ital-szin-2" class="szin-kor" value="#111111" data-bevitel="kepElonezetFrissit"
+                                aria-label="Második szín" data-i18n-attr="aria-label:second_color">
+                            <span class="szin-sor-cim"><span data-i18n="second_color_short">2. szín</span><small id="szin-2-kod"></small></span>
+                            <label class="kapcsolo">
+                                <input type="checkbox" id="uj-ital-van-szin-2" data-valtozas="masodikSzinValtozott"
+                                    aria-label="Legyen második szín" data-i18n-attr="aria-label:be_second_color">
+                                <span class="kapcsolo-csuszka" aria-hidden="true"></span>
+                            </label>
+                        </div>
+                        <label id="szin-3-hely" class="szin-sor" hidden>
+                            <input type="color" id="uj-ital-szin-3" class="szin-kor" value="#ffffff" data-bevitel="kepElonezetFrissit">
+                            <span class="szin-sor-cim"><span data-i18n="sample_color">Minta színe</span><small id="szin-3-kod"></small></span>
+                        </label>
+                    </div>
                 </div>
 
-                <label class="kep-szin-mezo">
-                    <input type="checkbox" id="uj-ital-van-szin-2" data-valtozas="masodikSzinValtozott" />
-                    <span data-i18n="be_second_color">Legyen második szín</span>
-                </label>
-
-                <div id="szin-2-hely" class="szin-hely" hidden>
-                    <div class="floating-group">
-                        <select id="uj-ital-szin-2-select" class="floating-select" data-valtozas="szinSlotValtozott" data-arg="2">
-                        </select>
-                        <label class="floating-label" data-i18n="second_color">Második szín</label>
-                    </div>
-                    <input type="color" id="uj-ital-szin-2" class="szin-hely-picker" value="#111111" data-bevitel="kepElonezetFrissit" hidden />
+                <span class="kinezet-cimke" data-i18n="photo_format">Forma</span>
+                <input type="hidden" id="uj-ital-forma">
+                <div id="forma-valaszto" class="forma-valaszto" role="radiogroup" aria-label="Forma" data-i18n-attr="aria-label:photo_format">
+                    <!-- a ranglista.js tölti fel (ital-kep.js: FORMAK) -->
                 </div>
 
-                <div class="kep-szinezes-sor">
-                    <div id="minta-group" class="floating-group">
-                        <select id="uj-ital-minta" class="floating-select" data-valtozas="mintaValtozott">
-                            <!-- ital-kep.js: MINTAK, csak a kiválasztott formához rajzoltak -->
-                        </select>
-                        <label class="floating-label" data-i18n="sample">Minta</label>
+                <div id="minta-group" class="kinezet-minta">
+                    <span class="kinezet-cimke" data-i18n="sample">Minta</span>
+                    <input type="hidden" id="uj-ital-minta">
+                    <div id="minta-valaszto" class="minta-valaszto" role="radiogroup" aria-label="Minta" data-i18n-attr="aria-label:sample">
+                        <!-- ital-kep.js: MINTAK, csak a kiválasztott formához rajzoltak -->
                     </div>
-                    <div id="kep-elonezet" class="kep-elonezet"></div>
-                </div>
-
-                <div id="szin-3-hely" class="szin-hely" hidden>
-                    <div class="floating-group">
-                        <select id="uj-ital-szin-3-select" class="floating-select" data-valtozas="szinSlotValtozott" data-arg="3">
-                        </select>
-                        <label class="floating-label" data-i18n="sample_color">Minta színe</label>
-                    </div>
-                    <input type="color" id="uj-ital-szin-3" class="szin-hely-picker" value="#ffffff" data-bevitel="kepElonezetFrissit" hidden />
                 </div>
             </div>
 
@@ -220,15 +214,6 @@
             <div id="szuro-panel-sajat" class="szuro-panel" role="tabpanel">
                 <p class="szuro-leiras" data-i18n="filter_own_desc">Koppints egy kategóriára a ki- és bekapcsoláshoz. Pipa = látszik. Ez csak nálad változik, és megmarad.</p>
                 <div id="sajat-szuro-kategoriak" class="szuro-kategoria-lista"></div>
-
-                <label class="szuro-szekcio-cim" for="kizart-kulcsszo-input" data-i18n="hide_brand_name">Elrejtett nevek</label>
-                <div class="szuro-input-sor">
-                    <input type="text" id="kizart-kulcsszo-input" class="sm-input szuro-input" placeholder="Pl. Royal" data-i18n-attr="placeholder:hide_brand_ph"
-                        maxlength="40">
-                    <button type="button" id="kizart-hozzaad-gomb" class="sm-btn gomb-plusz"
-                        aria-label="Hozzáadás" data-i18n-attr="aria-label:add">+</button>
-                </div>
-                <div id="kizart-tagek-kontener" class="tag-kontener"></div>
 
                 <div class="szuro-footer">
                     <button type="button" id="sajat-szuro-alaphelyzet"

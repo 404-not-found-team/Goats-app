@@ -86,7 +86,7 @@ Az alkategória-szabály és a zero felismerése egy helyen van: `js/segedek/ita
 
 **Szűrés (Ranglista)**
 - **Csoportnak** (mentett, `groups.filter_settings`, `save_filter_settings` RPC): mely főkategóriák látszanak (kategória-csempék), és zero-szűrős kategóriánál mind / csak zero / nem zero. Alkategóriánként nem lehet szűrni: egy kategória vagy egészben látszik, vagy sehogy (a régi `alkategoriak_ki` értéket az app figyelmen kívül hagyja, mentéskor üresre állítja). Amíg a csoport nem állította be, egyetlen ital sem látszik, és az oldal felkínálja a beállítást. Alapból bármelyik tag módosíthatja; a `csoportszuro_csak_admin` kapcsolóval csak a csoport adminja.
-- **Nekem** (saját nézet): a csoport beállításán belül tovább szűkít (kategóriák, zero, elrejtett nevek). A böngészőben megmarad, csoportonként külön (`localStorage` `goats_ranglista_szuro_<csoportkód>`).
+- **Nekem** (saját nézet): a csoport beállításán belül tovább szűkít (kategóriák, zero). A böngészőben megmarad, csoportonként külön (`localStorage` `goats_ranglista_szuro_<csoportkód>`).
 
 ---
 

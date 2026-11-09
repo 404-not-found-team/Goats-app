@@ -46,8 +46,6 @@
                     class="admin-darab" hidden></span></button>
             <button type="button" class="sm-tab-btn" data-tab="tab-kategoriak" role="tab" aria-selected="false"
                 data-i18n="tab_drink_categories">Italkategóriák</button>
-            <button type="button" class="sm-tab-btn" data-tab="tab-szinek" role="tab" aria-selected="false"
-                data-i18n="tab_colors">Színek</button>
             <button type="button" class="sm-tab-btn" data-tab="tab-jelentesek" role="tab" aria-selected="false"><span
                     data-i18n="tab_reports">Jelentések</span> <span id="adminJelentesekDb" class="admin-darab"
                     hidden></span></button>
@@ -157,32 +155,6 @@
             </section>
         </div>
 
-        <div id="tab-szinek" class="sm-tab-content">
-            <section class="admin-szekcio" aria-labelledby="adminSzinekCim">
-                <h2 id="adminSzinekCim" data-i18n="tab_colors">Színek</h2>
-                <p class="admin-szekcio-leiras" data-i18n="colors_desc">
-                    Névvel elmentett, egyedi színek (pl. "Hell piros", RGB/színválasztóval megadva). A
-                    Ranglistán minden
-                    szín-helyen (fő szín, második szín) ebből a listából lehet választani - "Szín keverés" a
-                    lista
-                    legvégén nyit egyéni RGB-t.
-                </p>
-                <p id="adminSzinekAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
-                <ul id="adminSzinek" class="admin-lista"></ul>
-
-                <form id="adminUjSzin" class="admin-urlap">
-                    <h3 class="admin-alcim" data-i18n="new_color">Új szín</h3>
-                    <div class="admin-urlap-sor">
-                        <input id="adminUjSzinNev" class="admin-bemenet" maxlength="40"
-                            placeholder="Név (pl. Hell piros)" aria-label="A szín neve"
-                            data-i18n-attr="placeholder:color_name_ph; aria-label:color_name" required>
-                        <input id="adminUjSzin1" type="color" value="#e30613" aria-label="A szín (RGB)"
-                            data-i18n-attr="aria-label:color_rgb">
-                        <button type="submit" class="admin-gomb" data-i18n="add">Hozzáadás</button>
-                    </div>
-                </form>
-            </section>
-        </div>
     </main>
     </div>
 </body>
