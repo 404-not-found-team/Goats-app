@@ -247,11 +247,24 @@
     transform: scale(1.05);
 }
 
+/* A márka a név fölött: kicsi, halvány sor (üresen is helyet foglal, hogy a kártyák egyformák legyenek) */
+.ital-marka {
+    width: 100%;
+    min-height: 1.25em;
+    margin-top: 5px;
+    font-size: 11px;
+    line-height: 1.25;
+    font-weight: 500;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .ital-nev {
     font-size: var(--fs-xs);
     color: var(--text-primary);
-    font-weight: 500;
-    margin-top: 5px;
+    font-weight: 700;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;

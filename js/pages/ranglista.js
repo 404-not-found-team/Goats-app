@@ -31,6 +31,17 @@ function megjelenitettNev(nev, teljesNevMutatva) {
     return teljesNevMutatva ? (nev || '') : window.italKep.nevMarkaNelkul(nev);
 }
 
+// A kártyán a név fölötti kis, halvány sor: a márka (pl. "Finlandia"). Üres, ha az ital nem márkás, ha a
+// neve csak a márkából áll (pl. "Jägermeister"), vagy ha a teljes név úgyis látszik. Az üres sor is
+// helyet foglal, így a kártyák egyforma magasak maradnak.
+function megjelenitettMarka(nev, teljesNevMutatva) {
+    if (teljesNevMutatva) return '';
+    const teljes = String(nev || '');
+    const rovid = window.italKep.nevMarkaNelkul(teljes);
+    if (rovid === teljes) return '';
+    return teljes.slice(0, teljes.length - rovid.length).replace(/[\s\-–:,.]+$/, '').trim();
+}
+
 const kliens = () => (typeof _supabase !== 'undefined' ? _supabase : supabase);
 const K = () => window.italKategoriak;
 
@@ -270,11 +281,14 @@ function epitForrasDobozok() {
                 csoport.append(alcim, allista);
                 lista.appendChild(csoport);
             });
-            // Alkategória nélküli italoknak egy felirat/keret nélküli wrap-konténer, hogy ugyanúgy
-            // rácsba (nem egymás alá) rendeződjenek, mint az alkategória-csoportok tagjai
+            // Az alkategória nélküli italok a lista alján egy "Egyéb" alcsoportba kerülnek, ugyanolyan
+            // csíkkal, mint a többi; üresen (vagy ha a szűrő mindet elrejti) a csík sem látszik
+            const egyebCsoport = ujElem('div', 'ital-alcsoport');
+            const egyebCim = ujElem('h4', 'ital-alcsoport-cim', tr('other', 'Egyéb'));
             const egyeb = ujElem('div', 'ital-alcsoport-lista');
             egyeb.dataset.alkulcs = alKulcs(fo.kod, '');
-            lista.appendChild(egyeb);
+            egyebCsoport.append(egyebCim, egyeb);
+            lista.appendChild(egyebCsoport);
         }
         doboz.append(fejlec, lista);
         return doboz;
@@ -1147,12 +1161,17 @@ function addItalKartyaToUI(ital, rendez = true) {
 
     const kep = window.italKep.elemLetrehoz(kepAdat);
 
+    const marka = document.createElement('span');
+    marka.className = 'ital-marka';
+    marka.textContent = megjelenitettMarka(ital.nev, ital.teljes_nev_mutatasa);
+
     const felirat = document.createElement('span');
     felirat.className = 'ital-nev';
     felirat.textContent = megjelenitettNev(ital.nev, ital.teljes_nev_mutatasa);
     felirat.title = ital.nev || '';
 
     kartya.appendChild(kep);
+    kartya.appendChild(marka);
     kartya.appendChild(felirat);
 
     // A saját, még jóváhagyatlan italon jelvény (mást a szerver nem is ad vissza jóváhagyatlanul)
@@ -1358,6 +1377,8 @@ function frissitsItalKartyaDOM(italId, ital) {
         felirat.textContent = megjelenitettNev(ital.nev, ital.teljes_nev_mutatasa);
         felirat.title = ital.nev || '';
     }
+    const marka = kartya.querySelector('.ital-marka');
+    if (marka) marka.textContent = megjelenitettMarka(ital.nev, ital.teljes_nev_mutatasa);
 
     // Ha még nincs rangsorolva (a forrás-dobozban van), a kategóriaváltozás miatt a megfelelő helyre kerül
     if (!kartya.closest('.ranglista-dropzone')) {
