@@ -205,21 +205,21 @@
 
     <div id="szuro-modal" class="modal-hatter-ui" hidden>
         <div class="modal-doboz-ui szuro-modal-doboz" role="dialog" aria-modal="true" aria-labelledby="szuro-modal-cim">
-            <h3 id="szuro-modal-cim" class="szuro-modal-cim" data-i18n="tierlist_filters">Ranglista szűrők</h3>
+            <h3 id="szuro-modal-cim" class="szuro-modal-cim" data-i18n="tierlist_filters">Mit mutasson a ranglista?</h3>
 
             <div class="szuro-fulek" role="tablist">
                 <button type="button" id="szuro-ful-sajat" class="szuro-ful aktiv" role="tab" aria-selected="true"
-                    aria-controls="szuro-panel-sajat" data-i18n="filter_own_view">Saját nézet</button>
+                    aria-controls="szuro-panel-sajat" data-i18n="filter_own_view">Nekem</button>
                 <button type="button" id="szuro-ful-csoport" class="szuro-ful" role="tab" aria-selected="false"
-                    aria-controls="szuro-panel-csoport" data-i18n="filter_group_setting">Csoport beállítás</button>
+                    aria-controls="szuro-panel-csoport" data-i18n="filter_group_setting">Csoportnak</button>
             </div>
 
             <!-- Saját nézet: csak ebben a böngészőablakban él, nem mentjük el sehova -->
             <div id="szuro-panel-sajat" class="szuro-panel" role="tabpanel">
-                <p class="szuro-leiras" data-i18n="filter_own_desc">Csak neked és csak most: újratöltéskor visszaáll a csoport beállítására.</p>
+                <p class="szuro-leiras" data-i18n="filter_own_desc">Koppints egy kategóriára a ki- és bekapcsoláshoz. Pipa = látszik. Ez csak nálad változik, és megmarad.</p>
                 <div id="sajat-szuro-kategoriak" class="szuro-kategoria-lista"></div>
 
-                <label class="sm-label szuro-label szuro-label-top" for="kizart-kulcsszo-input" data-i18n="hide_brand_name">Márka / név elrejtése:</label>
+                <label class="szuro-szekcio-cim" for="kizart-kulcsszo-input" data-i18n="hide_brand_name">Elrejtett nevek</label>
                 <div class="szuro-input-sor">
                     <input type="text" id="kizart-kulcsszo-input" class="sm-input szuro-input" placeholder="Pl. Royal" data-i18n-attr="placeholder:hide_brand_ph"
                         maxlength="40">
@@ -237,8 +237,7 @@
 
             <!-- Csoport beállítás: elmentjük, a csoport minden tagjánál ez az alap -->
             <div id="szuro-panel-csoport" class="szuro-panel" role="tabpanel" hidden>
-                <p class="szuro-leiras" data-i18n="filter_group_desc">Ezek az italok jelennek meg a csoport minden tagjánál. A mentés után érvényes.
-                </p>
+                <p class="szuro-leiras" data-i18n="filter_group_desc">Ezek a kategóriák látszanak alapból a csoport minden tagjánál. Mentés után érvényes.</p>
                 <div id="csoport-szuro-kategoriak" class="szuro-kategoria-lista"></div>
                 <p id="csoport-szuro-allapot" class="szuro-allapot" role="status" aria-live="polite"></p>
                 <div class="szuro-footer">

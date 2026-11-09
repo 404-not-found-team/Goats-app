@@ -563,33 +563,6 @@
     margin-bottom: 8px !important;
 }
 
-.szuro-pill-kontener {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 15px;
-}
-
-.szuro-pill {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: var(--fs-sm);
-    font-weight: 600;
-    cursor: pointer;
-    user-select: none;
-    border: 1px solid var(--border-color);
-    background: var(--inner-bg);
-    color: var(--text-secondary);
-    transition: all 0.2s ease;
-}
-
-.szuro-pill.aktiv {
-    background: rgba(99, 102, 241, 0.2);
-    color: var(--text-primary);
-    border-color: var(--accent-color);
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
-}
-
 .szuro-input-sor {
     display: flex;
     gap: 8px;
@@ -686,8 +659,9 @@
 }
 
 .szuro-ful.aktiv {
-    background: var(--accent-color);
-    color: var(--on-accent);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
 .szuro-leiras {
@@ -698,66 +672,113 @@
 
 .szuro-kategoria-lista {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.szuro-kategoria-sor.teljes {
-    flex-basis: 100%;
-    width: 100%;
-}
-
-.szuro-kategoria-sor {
-    display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+    gap: 12px;
 }
 
-/* Alkategóriák és zero egy panelben a főkategória alatt: címke + vezérlő soronként */
-.szuro-reszletek {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 10px 12px;
-    border-radius: 12px;
-    background: var(--inner-bg);
-    border: 1px solid var(--border-color);
-}
-
-.szuro-reszlet-sor {
-    display: flex;
-    align-items: center;
+/* Kategória-csempék: bekapcsolva kerettel és pipával, kikapcsolva halványan */
+.szuro-csempek {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
 }
 
-.szuro-reszlet-cimke {
-    flex: 0 0 86px;
-    font-size: var(--fs-xs);
+.szuro-csempe {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    padding: 14px 6px 10px;
+    border-radius: 14px;
+    border: 2px solid var(--border-color);
+    background: var(--inner-bg);
+    color: var(--text-primary);
+    font: inherit;
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.szuro-csempe.aktiv {
+    opacity: 1;
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 14%, var(--inner-bg));
+}
+
+.szuro-csempe .ital-ikon {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 4px;
+    background-color: var(--accent-text);
+}
+
+.szuro-csempe:not(.aktiv) .ital-ikon {
+    background-color: var(--text-secondary);
+}
+
+.szuro-csempe-jel {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: none;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    color: var(--on-accent);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.szuro-csempe.aktiv .szuro-csempe-jel {
+    display: grid;
+}
+
+.szuro-csempe-nev {
+    max-width: 100%;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.szuro-csempe-db {
+    font-size: 11px;
     color: var(--text-secondary);
 }
 
-.szuro-alkategoriak {
+/* Cukor-választó a bekapcsolt, zero-szűrős kategóriákhoz */
+.szuro-finom {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--inner-bg);
+    font-size: var(--fs-sm);
 }
 
-/* Az alkategória-pirula szerényebb: nincs ragyogás, finom kiemelés */
-.szuro-pill.kicsi {
-    padding: 4px 12px;
+.szuro-szekcio-cim {
+    display: block;
+    margin: 20px 0 8px;
     font-size: var(--fs-xs);
-    font-weight: 600;
-    box-shadow: none;
-    background: transparent;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
 }
 
-.szuro-pill.kicsi.aktiv {
-    background: rgba(99, 102, 241, 0.18);
-    border-color: rgba(99, 102, 241, 0.6);
-    box-shadow: none;
+.tag-kontener:empty {
+    display: none;
 }
 
 .szuro-zero {
@@ -784,18 +805,6 @@
 .szuro-zero-gomb.aktiv {
     background: rgba(99, 102, 241, 0.18);
     color: var(--text-primary);
-}
-
-@media (max-width: 480px) {
-    .szuro-reszlet-sor {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-    }
-
-    .szuro-reszlet-cimke {
-        flex-basis: auto;
-    }
 }
 
 .szuro-kategoria-lista.csak-olvashato button {

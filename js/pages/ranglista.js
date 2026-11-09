@@ -21,7 +21,7 @@ const osszetevokItalonkent = new Map(); // ital id -> [{nev, mennyiseg, egyseg}]
 let szinPaletta = []; // [{id, nev, kep_szin_1}] - public.szin_paletta, bármelyik italnál újrahasználható mentett színek
 
 function ujSajatSzuro() {
-    return { kategoriak_ki: [], alkategoriak_ki: [], zero: {}, kizart: [] };
+    return { kategoriak_ki: [], zero: {}, kizart: [] };
 }
 
 // A kártyán megjelenő név márka nélkül (pl. "Finlandia Mango" -> "Mango"); a márka külön, fölötte
@@ -532,6 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('sajat-szuro-alaphelyzet')?.addEventListener('click', () => {
         sajatSzuro = ujSajatSzuro();
+        mentSajatSzuro();
         renderSajatSzuro();
         alkalmazSzurot();
     });
@@ -562,11 +563,14 @@ function szuroAtalakitas(regi) {
 
 // A csoport mentett szűrője (groups.filter_settings) a lekérdezett adatból
 function alkalmazCsoportSzurot(filterSettings) {
+    betoltSajatSzuro();
     const groupId = window.goatsAuth?.getState()?.group?.id;
     if (!groupId) {
         // Csoport nélkül (vendégként): minden látszik, csoport-beállítás nincs
         csoportSzuro = { v: 2, beallitva: true, kategoriak: K().fo.map(f => f.kod), alkategoriak_ki: [], zero: {} };
-        document.getElementById('szuro-ful-csoport').hidden = true;
+        // vendégként csak a saját nézet van, így a fülsor sem kell
+        const fulek = document.querySelector('#szuro-modal .szuro-fulek');
+        if (fulek) fulek.hidden = true;
         alkalmazSzurot();
         return;
     }
@@ -610,21 +614,35 @@ function szuroFul(nev) {
     });
 }
 
-// Egy kapcsoló-pirula (aktív = látszik)
-function pirula(felirat, aktiv, valtas, extraOsztaly = '') {
-    const gomb = ujElem('button', `szuro-pill ${extraOsztaly}`.trim(), felirat);
-    gomb.type = 'button';
-    gomb.classList.toggle('aktiv', aktiv);
-    gomb.setAttribute('aria-pressed', String(aktiv));
-    gomb.addEventListener('click', valtas);
-    return gomb;
+// A saját szűrő ebben a böngészőben megmarad (csoportonként külön), újratöltés után is
+function sajatSzuroKulcs() {
+    return `goats_ranglista_szuro_${aktualisGroupCode() || 'vendeg'}`;
+}
+
+function betoltSajatSzuro() {
+    try {
+        const adat = JSON.parse(localStorage.getItem(sajatSzuroKulcs()) || 'null');
+        if (adat && typeof adat === 'object') {
+            sajatSzuro = {
+                kategoriak_ki: Array.isArray(adat.kategoriak_ki) ? adat.kategoriak_ki : [],
+                zero: adat.zero && typeof adat.zero === 'object' ? adat.zero : {},
+                kizart: Array.isArray(adat.kizart) ? adat.kizart : [],
+            };
+            return;
+        }
+    } catch { /* sérült vagy nem elérhető tároló: alaphelyzet */ }
+    sajatSzuro = ujSajatSzuro();
+}
+
+function mentSajatSzuro() {
+    try { localStorage.setItem(sajatSzuroKulcs(), JSON.stringify(sajatSzuro)); } catch { /* privát mód: csak most él */ }
 }
 
 // Zero-választó (Mind / Csak zero / Nem zero)
 function zeroValaszto(ertek, valtas) {
     const sor = ujElem('div', 'szuro-zero');
     sor.setAttribute('role', 'radiogroup');
-    sor.setAttribute('aria-label', tr('zero_energy_drinks', 'Zero energiaitalok'));
+    sor.setAttribute('aria-label', tr('sugar', 'Cukor'));
     ZERO_ERTEKEK.forEach(z => {
         const gomb = ujElem('button', 'szuro-zero-gomb', ZERO_FELIRAT[z]);
         gomb.type = 'button';
@@ -637,42 +655,38 @@ function zeroValaszto(ertek, valtas) {
     return sor;
 }
 
-// A kategória-lista (fő pirula + alkategória pirulák + zero) egy szűrőhöz.
-// beallitas: { foLathato(fo), foValt(fo), alLathato(kulcs), alValt(kulcs), zero(fo), zeroValt(fo, z), csakEzek }
-function kategoriaLista(kontener, beallitas) {
-    const sorok = K().fo.filter(fo => !beallitas.csakEzek || beallitas.csakEzek(fo)).map(fo => {
-        const sor = ujElem('div', 'szuro-kategoria-sor');
-        const foAktiv = beallitas.foLathato(fo);
-        sor.appendChild(pirula(K().nevForditva(fo), foAktiv, () => beallitas.foValt(fo)));
-
-        if (foAktiv) {
-            // Alkategóriák és zero: egy felcímkézett panelben a főkategória alatt
-            const reszletek = ujElem('div', 'szuro-reszletek');
-            const alok = K().alkategoriai(fo.id);
-            if (alok.length > 0) {
-                const alsor = ujElem('div', 'szuro-alkategoriak');
-                alok.forEach(a => {
-                    alsor.appendChild(pirula(K().nevForditva(a), beallitas.alLathato(a.kod), () => beallitas.alValt(a.kod), 'kicsi'));
-                });
-                reszletek.appendChild(reszletSor(tr('subcategory', 'Alkategória'), alsor));
-            }
-            if (fo.zero_szuro) {
-                reszletek.appendChild(reszletSor(tr('sugar', 'Cukor'), zeroValaszto(beallitas.zero(fo), (z) => beallitas.zeroValt(fo, z))));
-            }
-            if (reszletek.children.length) sor.appendChild(reszletek);
-        }
-        // Alkategóriás / zero-választós sor teljes szélességű, a többi pirula egymás mellett tördelődik
-        sor.classList.toggle('teljes', sor.children.length > 1);
-        return sor;
-    });
-    kontener.replaceChildren(...sorok);
+// Egy kategória-csempe: ikon, név, darabszám; bekapcsolva kerettel és pipával (aktív = látszik).
+// Alkategóriánként nem lehet szűrni: egy kategória vagy teljesen látszik, vagy egyáltalán nem.
+function kategoriaCsempe(fo, aktiv, valtas) {
+    const gomb = ujElem('button', 'szuro-csempe');
+    gomb.type = 'button';
+    gomb.classList.toggle('aktiv', aktiv);
+    gomb.setAttribute('aria-pressed', String(aktiv));
+    const ikon = ujElem('span', `ital-ikon ikon-${fo.ikon && /^[a-z0-9-]{1,30}$/.test(fo.ikon) ? fo.ikon : window.italKep.ikonFajl(fo.kod)}`);
+    ikon.setAttribute('aria-hidden', 'true');
+    const db = document.querySelectorAll(`.ital-kartya[data-kategoria="${fo.kod}"]`).length;
+    gomb.append(
+        ujElem('span', 'szuro-csempe-jel', '✓'),
+        ikon,
+        ujElem('span', 'szuro-csempe-nev', K().nevForditva(fo)),
+        ujElem('span', 'szuro-csempe-db', tr('drinks_count', '{n} ital', { n: db })),
+    );
+    gomb.addEventListener('click', valtas);
+    return gomb;
 }
 
-// A részletek-panel egy sora: címke + vezérlő
-function reszletSor(cimke, vezerlo) {
-    const sor = ujElem('div', 'szuro-reszlet-sor');
-    sor.append(ujElem('span', 'szuro-reszlet-cimke', cimke), vezerlo);
-    return sor;
+// A kategória-csempék rácsa egy szűrőhöz, alatta a cukor-választó(k) a bekapcsolt, zero-szűrős kategóriákhoz.
+// beallitas: { foLathato(fo), foValt(fo), zero(fo), zeroValt(fo, z), csakEzek }
+function kategoriaLista(kontener, beallitas) {
+    const fok = K().fo.filter(fo => !beallitas.csakEzek || beallitas.csakEzek(fo));
+    const racs = ujElem('div', 'szuro-csempek');
+    racs.append(...fok.map(fo => kategoriaCsempe(fo, beallitas.foLathato(fo), () => beallitas.foValt(fo))));
+    const zerok = fok.filter(fo => fo.zero_szuro && beallitas.foLathato(fo)).map(fo => {
+        const doboz = ujElem('div', 'szuro-finom');
+        doboz.append(ujElem('b', '', K().nevForditva(fo)), zeroValaszto(beallitas.zero(fo), (z) => beallitas.zeroValt(fo, z)));
+        return doboz;
+    });
+    kontener.replaceChildren(racs, ...zerok);
 }
 
 const valt = (tomb, ertek) => (tomb.includes(ertek) ? tomb.filter(t => t !== ertek) : [...tomb, ertek]);
@@ -689,14 +703,9 @@ function renderSajatSzuro() {
         kategoriaLista(kontener, {
             csakEzek: (fo) => cs.kategoriak.includes(fo.kod),
             foLathato: (fo) => !sajatSzuro.kategoriak_ki.includes(fo.kod),
-            foValt: (fo) => { sajatSzuro.kategoriak_ki = valt(sajatSzuro.kategoriak_ki, fo.kod); renderSajatSzuro(); alkalmazSzurot(); },
-            alLathato: (kulcs) => !cs.alkategoriak_ki.includes(kulcs) && !sajatSzuro.alkategoriak_ki.includes(kulcs),
-            alValt: (kulcs) => {
-                if (cs.alkategoriak_ki.includes(kulcs)) return; // a csoport elrejtette: itt nem kapcsolható be
-                sajatSzuro.alkategoriak_ki = valt(sajatSzuro.alkategoriak_ki, kulcs); renderSajatSzuro(); alkalmazSzurot();
-            },
+            foValt: (fo) => { sajatSzuro.kategoriak_ki = valt(sajatSzuro.kategoriak_ki, fo.kod); mentSajatSzuro(); renderSajatSzuro(); alkalmazSzurot(); },
             zero: (fo) => sajatSzuro.zero[fo.kod] || cs.zero?.[fo.kod] || 'mind',
-            zeroValt: (fo, z) => { sajatSzuro.zero[fo.kod] = z; renderSajatSzuro(); alkalmazSzurot(); },
+            zeroValt: (fo, z) => { sajatSzuro.zero[fo.kod] = z; mentSajatSzuro(); renderSajatSzuro(); alkalmazSzurot(); },
         });
     }
 
@@ -709,6 +718,7 @@ function hozzaadKizartTag() {
     const ertek = input.value.trim().toLowerCase();
     if (ertek && !sajatSzuro.kizart.includes(ertek)) {
         sajatSzuro.kizart.push(ertek);
+        mentSajatSzuro();
         input.value = '';
         renderKizartTagek();
         alkalmazSzurot();
@@ -725,6 +735,7 @@ function renderKizartTagek() {
         gomb.appendChild(ujElem('span', 'torles-x', '✕'));
         gomb.addEventListener('click', () => {
             sajatSzuro.kizart = sajatSzuro.kizart.filter(t => t !== tag);
+            mentSajatSzuro();
             renderKizartTagek();
             alkalmazSzurot();
         });
@@ -746,8 +757,6 @@ function renderCsoportSzuro() {
     kategoriaLista(kontener, {
         foLathato: (fo) => v.kategoriak.includes(fo.kod),
         foValt: (fo) => { if (!modosithato) return; v.kategoriak = valt(v.kategoriak, fo.kod); ujra(); },
-        alLathato: (kulcs) => !v.alkategoriak_ki.includes(kulcs),
-        alValt: (kulcs) => { if (!modosithato) return; v.alkategoriak_ki = valt(v.alkategoriak_ki, kulcs); ujra(); },
         zero: (fo) => v.zero?.[fo.kod] || 'mind',
         zeroValt: (fo, z) => { if (!modosithato) return; v.zero = { ...(v.zero || {}), [fo.kod]: z }; ujra(); },
     });
@@ -767,7 +776,8 @@ async function mentCsoportSzuro() {
     const gomb = document.getElementById('csoport-szuro-mentes');
     if (!groupId || !csoportVazlat) return;
 
-    const beallitas = { ...csoportVazlat, v: 2, beallitva: true };
+    // Alkategóriánként már nem lehet szűrni: a régi, elmentett alkategória-tiltásokat is töröljük
+    const beallitas = { ...csoportVazlat, v: 2, beallitva: true, alkategoriak_ki: [] };
     gomb.disabled = true;
     allapot.className = 'szuro-allapot';
     allapot.textContent = tr('filter_saving', 'Mentés…');
@@ -797,11 +807,6 @@ function kartyaLathato(kartya) {
     if (!csoportSzuro) return false;
     const fo = kartya.dataset.kategoria;
     if (!csoportSzuro.kategoriak.includes(fo) || sajatSzuro.kategoriak_ki.includes(fo)) return false;
-
-    if (kartya.dataset.vanAlcsoport === '1') {
-        const kulcs = alKulcs(fo, kartya.dataset.alkategoria);
-        if (csoportSzuro.alkategoriak_ki.includes(kulcs) || sajatSzuro.alkategoriak_ki.includes(kulcs)) return false;
-    }
 
     if (kartya.dataset.zeroSzuro === '1') {
         const zero = sajatSzuro.zero[fo] || csoportSzuro.zero?.[fo] || 'mind';
