@@ -262,7 +262,7 @@ function nyisdNapiEsemenyeket(dString, napiEsemenyek) {
 
                 const szerkesztesSpan = document.createElement('span');
                 szerkesztesSpan.className = 'szerkesztes-jel';
-                szerkesztesSpan.textContent = tr('edit_pencil', 'Szerkesztés ✏️');
+                szerkesztesSpan.textContent = tr('edit_pencil', 'Szerkesztés');
 
                 elem.appendChild(cimSpan);
                 elem.appendChild(szerkesztesSpan);

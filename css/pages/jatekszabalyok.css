@@ -302,17 +302,6 @@
     border-color: var(--accent-color);
 }
 
-.jsz-kartya-ikon {
-    width: 44px;
-    height: 44px;
-    flex-shrink: 0;
-    display: grid;
-    place-items: center;
-    border-radius: 12px;
-    background: var(--inner-bg);
-    font-size: 22px;
-}
-
 .jsz-kartya-szoveg {
     flex: 1;
     min-width: 0;

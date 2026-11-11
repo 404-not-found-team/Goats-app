@@ -134,12 +134,11 @@ function kartyaHTML(jatek) {
     const sajat = sajatJatekE(jatek);
     const n = lepesSzam(jatek);
     const meta = [];
-    if (jatek.min_jatekosok) meta.push(`<span>👥 ${esc(jatek.min_jatekosok)}+</span>`);
-    if (n !== null) meta.push(`<span>📜 ${tr('rules_n', '{n} szabály', { n })}</span>`);
+    if (jatek.min_jatekosok) meta.push(`<span>${tr('min_players_n', 'min. {n} fő', { n: esc(jatek.min_jatekosok) })}</span>`);
+    if (n !== null) meta.push(`<span>${tr('rules_n', '{n} szabály', { n })}</span>`);
     if (sajat && jatek.publikus) meta.push(`<span class="jsz-chip kicsi publikus">${tr('public', 'Publikus')}</span>`);
     if (!sajat) meta.push(`<span>${esc(jatek.csoport_nev || tr('other_group', 'másik csoport'))}</span>`);
     return `
-        <span class="jsz-kartya-ikon" aria-hidden="true">🎲</span>
         <span class="jsz-kartya-szoveg">
             <span class="jsz-kartya-cim">${esc(jatek.cim)}</span>
             <span class="jsz-kartya-meta">${meta.join('')}</span>
@@ -224,7 +223,7 @@ function kirajzolasJatek(jatek, lepesek, javaslatok) {
     $('jsz-jatek-cim').textContent = jatek.cim;
 
     const chipek = [];
-    if (jatek.min_jatekosok) chipek.push(`<span class="jsz-chip">👥 ${tr('min_players_n', 'min. {n} fő', { n: esc(jatek.min_jatekosok) })}</span>`);
+    if (jatek.min_jatekosok) chipek.push(`<span class="jsz-chip">${tr('min_players_n', 'min. {n} fő', { n: esc(jatek.min_jatekosok) })}</span>`);
     chipek.push(jatek.publikus
         ? `<span class="jsz-chip publikus">${tr('public', 'Publikus')}</span>`
         : `<span class="jsz-chip">${tr('group_only', 'Csak a csoportnak')}</span>`);
@@ -235,7 +234,7 @@ function kirajzolasJatek(jatek, lepesek, javaslatok) {
     $('jsz-jatek-leiras').hidden = !jatek.leiras;
     const kell = $('jsz-kell');
     kell.hidden = !jatek.eszkozok;
-    kell.innerHTML = jatek.eszkozok ? `<span aria-hidden="true">🧰</span><span><b>${tr('needed', 'Kell hozzá:')}</b> ${esc(jatek.eszkozok)}</span>` : '';
+    kell.innerHTML = jatek.eszkozok ? `<span><b>${tr('needed', 'Kell hozzá:')}</b> ${esc(jatek.eszkozok)}</span>` : '';
 
     $('jsz-menu-tarolo').hidden = !sajat;
     const vanLepes = lepesek.length > 0;

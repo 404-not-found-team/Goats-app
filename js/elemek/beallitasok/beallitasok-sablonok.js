@@ -2,6 +2,23 @@
 // benne: a neveket, adatokat a modulok textContent-tel írják be). A feliratok tr()-rel a kiválasztott
 // nyelven kerülnek be (a nyelvi fájlból, ezért HTML-ként beilleszthetők). Az injectUserNavHTML() fűzi be őket.
 
+// Kis vonalas ikonok (SVG) a gombokhoz: emoji helyett, a téma szövegszínét veszik fel
+const IKON = {
+  szem: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  szemKi: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-6.5 0-10-7-10-7a18.4 18.4 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="2" y1="2" x2="22" y2="22"/></svg>',
+  masol: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  pipa: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>',
+};
+export { IKON };
+
+// Az al-ablakok fejléce: vissza nyíl a profil menübe, cím, bezárás
+const visszaFejlec = (cim, bezarId) => `
+      <div class="sm-header sm-fejlec-vissza">
+        <button type="button" class="sm-vissza-btn" data-vissza-profil aria-label="${tr('back_to_menu', 'Vissza a menübe')}">‹</button>
+        <h3>${cim}</h3>
+        <button type="button" aria-label="${tr('close', 'Bezárás')}" id="${bezarId}" class="sm-close-btn">&times;</button>
+      </div>`;
+
 const BELEPES_MODAL = `
   <!-- BELÉPÉS / CSOPORT MODAL -->
   <div id="auth-modal" class="sm-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-title" hidden>
@@ -47,7 +64,7 @@ const BELEPES_MODAL = `
             <input type="text" id="new-group-name-input" class="floating-input" placeholder=" " maxlength="40" autocomplete="off" />
             <label class="floating-label">${tr('new_group_name', 'Új csoport neve (pl. "Buli Csapat")')}</label>
           </div>
-          <button id="create-group-btn" class="gomb-uj-ital gomb-siker">➕ ${tr('create_group_btn', 'Új csoport létrehozása')}</button>
+          <button id="create-group-btn" class="gomb-uj-ital gomb-siker">${tr('create_group_btn', 'Új csoport létrehozása')}</button>
         </div>
       </div>
 
@@ -57,25 +74,26 @@ const BELEPES_MODAL = `
 `;
 
 const PROFIL_MODAL = `
-  <!-- PROFIL MODAL -->
-  <div id="profile-modal" class="sm-overlay" role="dialog" aria-modal="true" hidden>
+  <!-- PROFIL MENÜ: lenyíló menü a profilgomb alatt (gépen az oldalsáv profilkártyája, telefonon a jobb
+       felső kör alatt; a helyét a profil-modal.js állítja be). Kívülre kattintva vagy Esc-re bezárul. -->
+  <div id="profile-modal" class="sm-overlay profil-lenyilo" role="dialog" aria-modal="true" aria-labelledby="profile-display-name" hidden>
     <div class="google-profile-card">
-      <button type="button" aria-label="${tr('close', 'Bezárás')}" id="close-profile-btn" class="google-close-btn">&times;</button>
       <div class="google-user-header">
         <div id="group-avatar-badge" class="google-avatar-circle large"></div>
         <div class="google-user-info">
           <h3 id="profile-display-name">${tr('no_name', 'Nincs név')}</h3>
+          <span id="profile-group-name" class="profil-csoportnev"></span>
         </div>
       </div>
 
-
-      <div class="google-menu-list">
-        <button id="open-profile-details-btn" class="google-menu-btn"><span> ${tr('profile_details', 'Profil adatok')}</span><span class="arrow-icon">›</span></button>
-        <button id="open-group-details-btn" class="google-menu-btn"><span> ${tr('group_details', 'Csoport adatok')}</span><span class="arrow-icon">›</span></button>
-        <button id="open-join-group-btn" class="google-menu-btn" hidden><span> ${tr('join_or_new_group', 'Csatlakozás / új csoport')}</span><span class="arrow-icon">›</span></button>
-        <button id="open-settings-btn" class="google-menu-btn"><span> ${tr('settings', 'Beállítások')}</span><span class="arrow-icon">›</span></button>
-        <a href="jogi.html" rel="noopener" class="google-menu-btn"><span> ${tr('legal_information', 'Jogi információk')}</span><span class="arrow-icon">›</span></a>
-        <button id="logout-btn" class="google-menu-btn danger"><span> ${tr('logout', 'Kijelentkezés')}</span></button>
+      <div class="profil-menu-lista">
+        <button id="open-profile-details-btn" class="profil-menu-sor"><span>${tr('profile_details', 'Profil adatok')}</span><span class="arrow-icon">›</span></button>
+        <button id="open-group-details-btn" class="profil-menu-sor"><span>${tr('group_details', 'Csoport adatok')}</span><span class="arrow-icon">›</span></button>
+        <button id="open-join-group-btn" class="profil-menu-sor" hidden><span>${tr('join_or_new_group', 'Csatlakozás / új csoport')}</span><span class="arrow-icon">›</span></button>
+        <button id="open-settings-btn" class="profil-menu-sor"><span>${tr('settings', 'Beállítások')}</span><span class="arrow-icon">›</span></button>
+        <a href="jogi.html" class="profil-menu-sor"><span>${tr('legal_information', 'Jogi információk')}</span><span class="arrow-icon">›</span></a>
+        <span class="profil-menu-elvalaszto" aria-hidden="true"></span>
+        <button id="logout-btn" class="profil-menu-sor veszely"><span>${tr('logout', 'Kijelentkezés')}</span></button>
       </div>
       <p id="profile-status" class="sm-status sm-status-small"></p>
     </div>
@@ -83,32 +101,23 @@ const PROFIL_MODAL = `
 `;
 
 const PROFIL_ADATOK_MODAL = `
-  <!-- PROFIL ADATOK MODAL -->
-  <div id="profil-details-modal" class="sm-overlay" role="dialog" aria-modal="true" hidden>
-    <div class="sm-card">
-      <div class="sm-header">
-        <h3> ${tr('profile_details', 'Profil adatok')}</h3>
-        <button type="button" aria-label="${tr('close', 'Bezárás')}" id="close-profil-details-btn" class="sm-close-btn">&times;</button>
-      </div>
+  <!-- PROFIL ADATOK MODAL (a Beállítások stílusában: szürke szakaszcím, alatta doboz) -->
+  <div id="profil-details-modal" class="sm-overlay beall-ablak" role="dialog" aria-modal="true" hidden>
+    <div class="sm-card">${visszaFejlec(tr('profile_details', 'Profil adatok'), 'close-profil-details-btn')}
       <div class="sm-body">
-        <div class="floating-group mb-8">
-          <input type="text" id="profile-display-email" class="floating-input" placeholder=" " readonly tabindex="-1" />
-          <label class="floating-label">${tr('email_address', 'E-mail cím')}</label>
-        </div>
+        <p class="sm-label">${tr('email_address', 'E-mail cím')}</p>
+        <p id="profile-display-email" class="beall-doboz beall-ertek halvany"></p>
 
-        <div class="floating-group mb-8">
-          <input type="text" id="own-name-input" class="floating-input" placeholder=" " maxlength="30" autocomplete="off" />
-          <label class="floating-label">${tr('your_display_name', 'A te megjelenített neved')}</label>
+        <label class="sm-label valaszto-kovetkezo" for="own-name-input">${tr('your_display_name', 'A te megjelenített neved')}</label>
+        <div class="beall-doboz beall-mezo-sor">
+          <input type="text" id="own-name-input" class="beall-input" maxlength="30" autocomplete="off" />
+          <span id="own-name-status" class="beall-mezo-allapot" role="status" aria-live="polite"></span>
         </div>
-        <p id="own-name-status" class="sm-status sm-status-small mb-14"></p>
+        <p class="szoveg-kicsi beall-leiras">${tr('display_name_hint', 'Így látnak a csoportod tagjai. Gépelés után magától mentődik.')}</p>
 
-        <div class="mt-12">
-          <button id="toggle-profil-muveletek-btn" type="button" class="google-menu-btn" aria-expanded="false">
-            <span>⚙️ ${tr('actions', 'Műveletek')}</span><span id="profil-muveletek-nyil" class="arrow-icon">›</span>
-          </button>
-          <div id="profil-muveletek-tartalom" class="google-menu-list mt-10" hidden>
-            <button id="delete-account-btn" class="google-menu-btn danger-dark"><span> ${tr('delete_profile', 'Fiók törlése')}</span></button>
-          </div>
+        <p class="sm-label valaszto-kovetkezo">${tr('danger_zone', 'Veszélyes műveletek')}</p>
+        <div class="beall-veszely">
+          <button id="delete-account-btn" type="button" class="beall-veszely-gomb">${tr('delete_profile', 'Fiók törlése')}</button>
         </div>
         <p id="profile-details-status" class="sm-status sm-status-small"></p>
       </div>
@@ -117,57 +126,47 @@ const PROFIL_ADATOK_MODAL = `
 `;
 
 const CSOPORT_ADATOK_MODAL = `
-  <!-- CSOPORT ADATOK MODAL -->
-  <div id="group-details-modal" class="sm-overlay" role="dialog" aria-modal="true" hidden>
-    <div class="sm-card">
-      <div class="sm-header">
-        <h3> ${tr('group_details', 'Csoport adatok')}</h3>
-        <button type="button" aria-label="${tr('close', 'Bezárás')}" id="close-group-details-btn" class="sm-close-btn">&times;</button>
-      </div>
+  <!-- CSOPORT ADATOK MODAL (a Beállítások stílusában) -->
+  <div id="group-details-modal" class="sm-overlay beall-ablak" role="dialog" aria-modal="true" hidden>
+    <div class="sm-card">${visszaFejlec(tr('group_details', 'Csoport adatok'), 'close-group-details-btn')}
       <div class="sm-body">
         <p id="group-no-group" class="csoport-nelkul" hidden>${tr('no_group_yet', 'Még nem tartozol csoporthoz.')}</p>
 
         <div id="group-content">
-          <div class="floating-group">
-            <input type="text" id="group-name-display" class="floating-input" placeholder=" " maxlength="40" readonly />
-            <label class="floating-label">${tr('group_name', 'Csoport neve')}</label>
+          <label class="sm-label" for="group-name-display">${tr('group_name', 'Csoport neve')}</label>
+          <div class="beall-doboz beall-mezo-sor">
+            <input type="text" id="group-name-display" class="beall-input" maxlength="40" readonly />
+            <span id="group-name-status" class="beall-mezo-allapot" role="status" aria-live="polite"></span>
           </div>
-          <p id="group-name-status" class="sm-status sm-status-small mb-12"></p>
 
-          <div class="floating-group input-with-toggle">
-            <input type="password" id="group-code-display" class="floating-input" placeholder=" " readonly />
-            <label class="floating-label">${tr('group_code_label', 'Csoportkód (ezzel tudnak csatlakozni)')}</label>
-            <button id="toggle-group-code-visibility" type="button" class="input-toggle-btn">👁️</button>
+          <label class="sm-label valaszto-kovetkezo" for="group-code-display">${tr('group_code_label', 'Csoportkód (ezzel tudnak csatlakozni)')}</label>
+          <div class="beall-doboz beall-mezo-sor">
+            <input type="password" id="group-code-display" class="beall-input beall-kod" readonly />
+            <button id="toggle-group-code-visibility" type="button" class="beall-ikon-gomb" aria-label="${tr('show_code', 'Kód mutatása')}">${IKON.szem}</button>
+            <button id="copy-group-code-btn" type="button" class="beall-ikon-gomb" aria-label="${tr('copy_code', 'Kód másolása')}">${IKON.masol}</button>
           </div>
-          <button id="copy-group-code-btn" type="button" class="sm-btn google-menu-btn mb-14"> ${tr('copy_code', 'Kód másolása')}</button>
 
-          <div class="mb-10">
-            <button id="toggle-tagok-btn" type="button" class="google-menu-btn" aria-expanded="false">
-              <span>👥 ${tr('members', 'Tagok')}</span><span id="tagok-nyil" class="arrow-icon">›</span>
-            </button>
-            <div id="tagok-tartalom" class="mt-10" hidden>
-              <div id="group-members-list" class="mb-12"></div>
-              <div class="google-menu-list">
-                <button id="indit-eltavolitas-btn" type="button" class="google-menu-btn danger" hidden>${tr('remove_members', 'Tagok eltávolítása')}</button>
-                <button id="indit-atadas-btn" type="button" class="google-menu-btn" hidden>${tr('transfer_admin', 'Admin jog átadása')}</button>
-                <p id="muveletek-sugo" class="szoveg-kicsi" hidden></p>
-                <button id="muveletek-vegrehajt-btn" type="button" class="google-menu-btn" hidden>${tr('execute', 'Végrehajtás')}</button>
-                <button id="muveletek-megse-btn" type="button" class="google-menu-btn" hidden>${tr('cancel', 'Mégse')}</button>
-              </div>
+          <p id="tagok-cim" class="sm-label valaszto-kovetkezo">${tr('members', 'Tagok')}</p>
+          <div id="group-members-list" class="beall-doboz beall-tagok"></div>
+          <div class="beall-linkek">
+            <button id="indit-eltavolitas-btn" type="button" class="beall-link" hidden>${tr('remove_members', 'Tagok eltávolítása')}</button>
+            <button id="indit-atadas-btn" type="button" class="beall-link" hidden>${tr('transfer_admin', 'Admin jog átadása')}</button>
+          </div>
+          <p id="muveletek-sugo" class="szoveg-kicsi beall-leiras" hidden></p>
+          <div class="beall-gombsor">
+            <button id="muveletek-megse-btn" type="button" class="sm-btn" hidden>${tr('cancel', 'Mégse')}</button>
+            <button id="muveletek-vegrehajt-btn" type="button" class="sm-btn sm-btn-save" hidden>${tr('execute', 'Végrehajtás')}</button>
+          </div>
+
+          <!-- Veszélyes műveletek: a Kilépés mindenkinek látszik, a többi csak adminnak -->
+          <div id="csoport-muveletek-blokk">
+            <p class="sm-label valaszto-kovetkezo">${tr('danger_zone', 'Veszélyes műveletek')}</p>
+            <div class="beall-veszely">
+              <button id="regenerate-code-btn" type="button" class="beall-veszely-gomb" hidden>${tr('regenerate_code', 'Új csoportkód generálása')}</button>
+              <button id="leave-group-btn" type="button" class="beall-veszely-gomb">${tr('leave_group', 'Kilépés a csoportból')}</button>
+              <button id="delete-group-btn" type="button" class="beall-veszely-gomb" hidden>${tr('delete_group', 'Csoport törlése')}</button>
             </div>
-          </div>
-
-          <!-- Műveletek: a Kilépés mindenkinek látszik, a többi csak adminnak -->
-          <div id="csoport-muveletek-blokk" class="mt-10" hidden>
-            <button id="toggle-muveletek-btn" type="button" class="google-menu-btn" aria-expanded="false">
-              <span>⚙️ ${tr('actions', 'Műveletek')}</span><span id="muveletek-nyil" class="arrow-icon">›</span>
-            </button>
-            <div id="csoport-muveletek-tartalom" class="google-menu-list mt-10" hidden>
-              <button id="regenerate-code-btn" type="button" class="google-menu-btn" hidden>${tr('regenerate_code', 'Új csoportkód generálása')}</button>
-              <button id="delete-group-btn" type="button" class="google-menu-btn danger" hidden>${tr('delete_group', 'Csoport törlése')}</button>
-              <p id="group-details-status" class="sm-status sm-status-small"></p>
-              <button id="leave-group-btn" type="button" class="google-menu-btn danger">${tr('leave_group', 'Kilépés a csoportból')}</button>
-            </div>
+            <p id="group-details-status" class="sm-status sm-status-small"></p>
           </div>
         </div>
       </div>
@@ -199,12 +198,8 @@ const TOS_UJRAELFOGADAS_MODAL = `
 
 const BEALLITASOK_MODAL = `
   <!-- BEÁLLÍTÁSOK MODAL (TÉMA) -->
-  <div id="settings-modal" class="sm-overlay" role="dialog" aria-modal="true" hidden>
-    <div class="sm-card">
-      <div class="sm-header">
-        <h3> ${tr('settings', 'Beállítások')}</h3>
-        <button type="button" aria-label="${tr('close', 'Bezárás')}" id="close-settings-btn" class="sm-close-btn">&times;</button>
-      </div>
+  <div id="settings-modal" class="sm-overlay beall-ablak" role="dialog" aria-modal="true" hidden>
+    <div class="sm-card">${visszaFejlec(tr('settings', 'Beállítások'), 'close-settings-btn')}
       <div class="sm-body">
         <p id="tema-cimke" class="sm-label">${tr('choose_theme', 'Téma kiválasztása:')}</p>
         <div id="tema-kartyak" class="valaszto-racs" role="radiogroup" aria-labelledby="tema-cimke"></div>

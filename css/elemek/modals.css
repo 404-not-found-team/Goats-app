@@ -581,3 +581,361 @@ a.google-menu-btn{
     font-size: .8rem;
 }
 
+
+/* ==========================================================================
+   Profil menü: lenyíló menü a profilgomb alatt (a helyét a profil-modal.js
+   profilMenuNyitas() adja a --profil-felul / --profil-jobbra / --profil-szeles változókkal)
+   ========================================================================== */
+
+#profile-modal.profil-lenyilo {
+    background: transparent;
+    backdrop-filter: none;
+}
+
+#profile-modal .google-profile-card {
+    position: fixed;
+    top: var(--profil-felul, 70px);
+    right: var(--profil-jobbra, 12px);
+    width: var(--profil-szeles, 280px);
+    max-width: calc(100vw - 16px);
+    height: auto;
+    max-height: calc(100vh - var(--profil-felul, 70px) - 16px);
+    padding: 8px;
+    border-radius: 16px;
+    /* nem átlátszó: egyes témákban a --card-bg félig átlátszó, és alatta a menü szövege áttűnne */
+    background: linear-gradient(var(--card-bg), var(--card-bg)), var(--bg-color);
+    justify-content: flex-start;
+    overflow-y: auto;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+    animation: profil-lenyilas 0.14s ease-out;
+}
+
+@keyframes profil-lenyilas {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #profile-modal .google-profile-card {
+        animation: none;
+    }
+}
+
+#profile-modal .google-user-header {
+    gap: 12px;
+    padding: 8px 8px 12px;
+    margin-bottom: 6px;
+}
+
+#profile-modal .google-avatar-circle.large {
+    width: 44px;
+    height: 44px;
+    font-size: var(--fs-xl);
+}
+
+#profile-modal .google-user-info h3 {
+    margin: 0;
+    font-size: var(--fs-lg);
+}
+
+.profil-csoportnev {
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+}
+
+/* gépen az oldalsáv profilkártyája már mutatja a nevet és a csoportot */
+#profile-modal[data-oldalsav="igen"] .google-user-header {
+    display: none;
+}
+
+.profil-menu-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.profil-menu-sor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: var(--fs-base);
+    font-weight: 600;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.profil-menu-sor:hover,
+.profil-menu-sor:focus-visible {
+    background: var(--inner-bg);
+    outline: none;
+}
+
+.profil-menu-sor:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--accent-color);
+}
+
+.profil-menu-sor .arrow-icon {
+    color: var(--text-secondary);
+}
+
+.profil-menu-sor.veszely {
+    color: var(--hiba-color);
+}
+
+.profil-menu-elvalaszto {
+    height: 1px;
+    margin: 6px 4px;
+    background: var(--border-color);
+}
+
+#profile-status:empty {
+    display: none;
+}
+
+/* ==========================================================================
+   Profil adatok, Csoport adatok, Beállítások: ugyanakkora, mint a többi ablak (--modal-height),
+   szürke szakaszcím + alatta doboz, ‹ vissza a profil menübe; ami nem fér el, az ablakon belül görgethető
+   ========================================================================== */
+
+.beall-ablak .sm-card {
+    justify-content: flex-start;
+}
+
+.sm-header.sm-fejlec-vissza {
+    justify-content: flex-start;
+    gap: 4px;
+}
+
+.sm-vissza-btn {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    margin-left: -8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--text-secondary);
+    font-size: 1.7rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.sm-vissza-btn:hover {
+    color: var(--text-primary);
+}
+
+.sm-vissza-btn:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.beall-doboz {
+    margin: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--inner-bg);
+    box-sizing: border-box;
+}
+
+.beall-ertek {
+    padding: 12px 14px;
+    font-size: var(--fs-base);
+    overflow-wrap: anywhere;
+}
+
+.beall-ertek.halvany {
+    color: var(--text-secondary);
+}
+
+.beall-mezo-sor {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px 4px 0;
+}
+
+.beall-mezo-sor:focus-within {
+    border-color: var(--accent-color);
+}
+
+.beall-input {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 14px;
+    border: 0;
+    background: transparent;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: var(--fs-base);
+}
+
+.beall-input:focus {
+    outline: none;
+}
+
+.beall-input[readonly] {
+    cursor: default;
+}
+
+.beall-kod {
+    letter-spacing: 0.12em;
+}
+
+.beall-mezo-allapot {
+    padding-right: 8px;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.beall-mezo-allapot:empty {
+    display: none;
+}
+
+.beall-ikon-gomb {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.beall-ikon-gomb:hover {
+    border-color: var(--accent-color);
+}
+
+.beall-ikon-gomb:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.beall-leiras {
+    margin: 6px 0 0;
+    color: var(--text-secondary);
+}
+
+.beall-tagok {
+    display: flex;
+    flex-direction: column;
+    max-height: 230px;
+    overflow-y: auto;
+}
+
+.beall-tagok .tag-sor {
+    gap: 10px;
+    margin: 0;
+    padding: 9px 12px;
+    border: 0;
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 0;
+    background: transparent;
+}
+
+.beall-tagok .tag-sor:last-child {
+    border-bottom: 0;
+}
+
+.tag-kor {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--accent-color);
+    color: var(--on-accent);
+    font-size: var(--fs-xs);
+    font-weight: 800;
+}
+
+.beall-tagok .admin-jel {
+    margin-left: auto;
+    padding: 2px 8px;
+    border: 1px solid color-mix(in srgb, var(--accent-color) 45%, transparent);
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+.beall-linkek {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-top: 8px;
+}
+
+.beall-linkek:not(:has(button:not([hidden]))),
+.beall-gombsor:not(:has(button:not([hidden]))) {
+    display: none;
+}
+
+.beall-link {
+    padding: 4px 0;
+    border: 0;
+    background: none;
+    color: var(--accent-text);
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.beall-gombsor {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.beall-gombsor .sm-btn {
+    flex: 1;
+}
+
+.beall-veszely {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--hiba-color) 35%, transparent);
+    border-radius: 12px;
+    background: var(--inner-bg);
+}
+
+.beall-veszely-gomb {
+    padding: 12px 14px;
+    border: 0;
+    background: transparent;
+    color: var(--hiba-color);
+    font-family: inherit;
+    font-size: var(--fs-base);
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+/* a látható gombok között vékony elválasztó (a rejtett admin-gombok nem számítanak) */
+.beall-veszely-gomb:not([hidden]) ~ .beall-veszely-gomb:not([hidden]) {
+    border-top: 1px solid color-mix(in srgb, var(--hiba-color) 20%, transparent);
+}
+
+.beall-veszely-gomb:hover,
+.beall-veszely-gomb:focus-visible {
+    background: color-mix(in srgb, var(--hiba-color) 10%, transparent);
+    outline: none;
+}

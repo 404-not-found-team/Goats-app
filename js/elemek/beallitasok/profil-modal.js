@@ -5,6 +5,25 @@ import { debounce } from '../../segedek/keslelteto.js';
 import { fokuszAllit } from '../../segedek/modal-fokusz.js';
 import { leiratkozas } from './ertesitesek.js';
 
+// A profil menü a profilgomb alatt nyílik le (gépen az oldalsáv profilkártyája, telefonon a jobb felső
+// kör): a helyét a gomb képernyőn lévő helyéből számoljuk (CSS változók, lásd modals.css .profil-lenyilo).
+// A Beállítások / Profil adatok / Csoport adatok ‹ gombja is ezzel nyitja vissza (beallitasok-modal.js).
+export function profilMenuNyitas() {
+  const modal = document.getElementById('profile-modal');
+  const gomb = document.getElementById('open-profile-modal-btn');
+  if (!modal) return;
+  if (gomb) {
+    const r = gomb.getBoundingClientRect();
+    modal.style.setProperty('--profil-felul', `${Math.round(r.bottom + 8)}px`);
+    modal.style.setProperty('--profil-jobbra', `${Math.max(8, Math.round(window.innerWidth - r.right))}px`);
+    modal.style.setProperty('--profil-szeles', `${Math.round(Math.max(r.width, 260))}px`);
+  }
+  // az oldalsávos (asztali) profilkártya már mutatja a nevet: ott a menü fejléce rejtve
+  modal.dataset.oldalsav = gomb?.closest('.sav-profil') && gomb.offsetWidth > 100 ? 'igen' : '';
+  modal.hidden = false;
+  fokuszAllit(modal);
+}
+
 export function initProfileModal() {
   const get = id => document.getElementById(id);
 
@@ -21,13 +40,14 @@ export function initProfileModal() {
   };
   const setNameStatus = (msg, color = '') => {
     const s = get('own-name-status');
-    if (s) { s.textContent = msg || ''; s.className = STATUS_OSZTALY[color] || ''; }
+    if (s) { s.textContent = msg || ''; s.className = `beall-mezo-allapot ${STATUS_OSZTALY[color] || ''}`; }
   };
 
   function fill() {
     const s = getState();
     if (get('profile-display-name')) get('profile-display-name').textContent = s.displayName || tr('no_name', 'Nincs név');
-    if (get('profile-display-email')) get('profile-display-email').value = s.user?.email || '';
+    if (get('profile-display-email')) get('profile-display-email').textContent = s.user?.email || '';
+    if (get('profile-group-name')) get('profile-group-name').textContent = s.group?.group_name || '';
 
     // A saját név mezőt csak akkor írjuk felül, ha épp nem gépelünk bele (pl. egy másik fülön módosult)
     const ownName = get('own-name-input');
@@ -48,7 +68,7 @@ export function initProfileModal() {
   document.addEventListener('click', (e) => {
     if (e.target.closest?.('#open-profile-modal-btn')) {
       fill();
-      if (profileModal) { profileModal.hidden = false; fokuszAllit(profileModal); }
+      profilMenuNyitas();
     }
   });
 
@@ -57,7 +77,6 @@ export function initProfileModal() {
     fill();
     setStatus('');
     setNameStatus('');
-    zarjProfilMuveletek();
     profileModal.hidden = true;
     profilDetailsModal.hidden = false;
     fokuszAllit(profilDetailsModal);
@@ -131,26 +150,6 @@ export function initProfileModal() {
     mentNevetKesleltetve();
   });
   get('own-name-input')?.addEventListener('blur', () => mentNevetKesleltetve.flush());
-
-  // Műveletek: lenyíló blokk (alapból csukva, mint a Csoport adatoknál)
-  function zarjProfilMuveletek() {
-    const tartalom = get('profil-muveletek-tartalom');
-    const btn = get('toggle-profil-muveletek-btn');
-    const nyil = get('profil-muveletek-nyil');
-    if (tartalom) tartalom.hidden = true;
-    btn?.setAttribute('aria-expanded', 'false');
-    if (nyil) nyil.textContent = '›';
-  }
-  get('toggle-profil-muveletek-btn')?.addEventListener('click', () => {
-    const tartalom = get('profil-muveletek-tartalom');
-    const btn = get('toggle-profil-muveletek-btn');
-    const nyil = get('profil-muveletek-nyil');
-    if (!tartalom) return;
-    const nyitva = tartalom.hidden; // most nyitjuk-e
-    tartalom.hidden = !nyitva;
-    btn?.setAttribute('aria-expanded', String(nyitva));
-    if (nyil) nyil.textContent = nyitva ? '⌄' : '›';
-  });
 
   // Fiók végleges törlése (Google Play követelmény: az appban is elérhető legyen)
   get('delete-account-btn')?.addEventListener('click', async () => {

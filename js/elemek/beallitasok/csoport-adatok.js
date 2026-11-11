@@ -4,6 +4,7 @@ import {
   removeMember, transferOwnership, renameGroup, regenerateGroupCode, deleteCurrentGroup,
 } from '../../admin-muveletek.js';
 import { debounce } from '../../segedek/keslelteto.js';
+import { IKON } from './beallitasok-sablonok.js';
 
 export function initGroupDetails() {
   const get = id => document.getElementById(id);
@@ -25,6 +26,7 @@ export function initGroupDetails() {
     if (get('group-avatar-badge')) get('group-avatar-badge').textContent = sign;
     if (get('header-user-avatar')) get('header-user-avatar').textContent = sign;
     if (get('header-group-name')) get('header-group-name').textContent = group?.group_name || '';
+    if (get('profile-group-name')) get('profile-group-name').textContent = group?.group_name || '';
   };
 
   // Egy tag sora. Kiválasztás módban (admin, nem a saját sor) checkbox vagy rádiógomb jelenik meg
@@ -43,15 +45,21 @@ export function initGroupDetails() {
       row.appendChild(input);
     }
 
+    const kor = document.createElement('span');
+    kor.className = 'tag-kor';
+    kor.setAttribute('aria-hidden', 'true');
+    kor.textContent = (m.display_name || '?').charAt(0).toUpperCase();
+    row.appendChild(kor);
+
     const name = document.createElement('span');
     name.className = 'nyujt';
-    name.textContent = m.display_name + (m.user_id === me ? ' (te)' : '');
+    name.textContent = m.display_name + (m.user_id === me ? ` (${tr('you', 'te')})` : '');
     row.appendChild(name);
 
     if (m.group_role === 'admin') {
       const badge = document.createElement('span');
       badge.className = 'admin-jel';
-      badge.textContent = '👑 admin';
+      badge.textContent = 'admin';
       row.appendChild(badge);
     }
 
@@ -66,6 +74,8 @@ export function initGroupDetails() {
     if (list && group) {
       list.replaceChildren(...members.map(m => memberRow(m, user?.id, isAdmin, kivalasztasMod)));
     }
+    const cim = get('tagok-cim');
+    if (cim && group) cim.textContent = tr('members_n', 'Tagok · {n}', { n: members.length });
   }
 
   function render() {
@@ -89,7 +99,7 @@ export function initGroupDetails() {
 
     const codeInput = get('group-code-display');
     if (codeInput) { codeInput.value = group.group_code; codeInput.type = 'password'; }
-    if (get('toggle-group-code-visibility')) get('toggle-group-code-visibility').textContent = '👁️';
+    kodGombAllapot(false);
 
     // A Műveletek blokk mindenkinek látszik (a Kilépés mindig ott van), a tartalma admin-függő
     const muveletekBlokk = get('csoport-muveletek-blokk');
@@ -109,28 +119,8 @@ export function initGroupDetails() {
   get('open-group-details-btn')?.addEventListener('click', async () => {
     setStatus('');
     zarjMuveletMod();
-    zarjTagok();
     render();
     await refresh();
-  });
-
-  // Tagok: lenyíló blokk, alapból csukva
-  function zarjTagok() {
-    const tartalom = get('tagok-tartalom');
-    const nyil = get('tagok-nyil');
-    if (tartalom) tartalom.hidden = true;
-    get('toggle-tagok-btn')?.setAttribute('aria-expanded', 'false');
-    if (nyil) nyil.textContent = '›';
-  }
-  get('toggle-tagok-btn')?.addEventListener('click', () => {
-    const tartalom = get('tagok-tartalom');
-    const nyil = get('tagok-nyil');
-    if (!tartalom) return;
-    const nyitva = tartalom.hidden; // most nyitjuk-e
-    tartalom.hidden = !nyitva;
-    get('toggle-tagok-btn')?.setAttribute('aria-expanded', String(nyitva));
-    if (nyil) nyil.textContent = nyitva ? '⌄' : '›';
-    if (!nyitva) zarjMuveletMod();
   });
 
   // A csoport képeinek törlése a csoport törlése/utolsó tag kilépése ELŐTT (utána már nincs jogunk)
@@ -139,23 +129,39 @@ export function initGroupDetails() {
     if (hibak.length) setStatus(tr('err_some_images_delete', 'Néhány kép törlése nem sikerült, de a művelet folytatódik.'), '#ef4444');
   }
 
-  // Kód mutatása/elrejtése, másolása
+  // Kód mutatása/elrejtése, másolása (a gombokban SVG ikon van, ezért closest-tel keressük a gombot)
+  function kodGombAllapot(lathato) {
+    const gomb = get('toggle-group-code-visibility');
+    if (!gomb) return;
+    gomb.innerHTML = lathato ? IKON.szemKi : IKON.szem;
+    gomb.setAttribute('aria-label', lathato ? tr('hide_code', 'Kód elrejtése') : tr('show_code', 'Kód mutatása'));
+    gomb.setAttribute('aria-pressed', String(lathato));
+  }
+  let masolasIdozito = null;
   document.addEventListener('click', async (e) => {
-    if (e.target.id === 'toggle-group-code-visibility') {
+    if (e.target.closest?.('#toggle-group-code-visibility')) {
       const input = get('group-code-display');
       if (!input) return;
-      const hidden = input.type === 'password';
-      input.type = hidden ? 'text' : 'password';
-      e.target.textContent = hidden ? '🙈' : '👁️';
+      const lathato = input.type === 'password';
+      input.type = lathato ? 'text' : 'password';
+      kodGombAllapot(lathato);
     }
-    if (e.target.id === 'copy-group-code-btn') {
+    const masolGomb = e.target.closest?.('#copy-group-code-btn');
+    if (masolGomb) {
       const code = getState().group?.group_code;
       if (!code) return;
       try {
         await navigator.clipboard.writeText(code);
-        //setStatus('A csoportkód a vágólapra másolva.', '#10b981');
+        // rövid visszajelzés a gombon: pipa, majd vissza a másolás ikonra
+        masolGomb.innerHTML = IKON.pipa;
+        masolGomb.setAttribute('aria-label', tr('copied', 'Másolva'));
+        clearTimeout(masolasIdozito);
+        masolasIdozito = setTimeout(() => {
+          masolGomb.innerHTML = IKON.masol;
+          masolGomb.setAttribute('aria-label', tr('copy_code', 'Kód másolása'));
+        }, 1500);
       } catch {
-        //setStatus('A másolás nem sikerült, jelöld ki kézzel.', '#ef4444');
+        setStatus(tr('err_copy', 'A másolás nem sikerült, jelöld ki kézzel.'), '#ef4444');
       }
     }
   });
@@ -163,7 +169,7 @@ export function initGroupDetails() {
   // Csoportnév: automatikus mentés gépelés közben, csak admin (a mező a többieknek readonly)
   const setNameStatus = (msg, color = '') => {
     const s = get('group-name-status');
-    if (s) { s.textContent = msg || ''; s.className = STATUS_OSZTALY[color] || ''; }
+    if (s) { s.textContent = msg || ''; s.className = `beall-mezo-allapot ${STATUS_OSZTALY[color] || ''}`; }
   };
   async function mentCsoportnevet() {
     const { group, groupRole } = getState();
@@ -210,18 +216,6 @@ export function initGroupDetails() {
     frissitsAdminGombokLathatosagat(getState().groupRole === 'admin');
     renderTagok();
   }
-
-  get('toggle-muveletek-btn')?.addEventListener('click', () => {
-    const tartalom = get('csoport-muveletek-tartalom');
-    const btn = get('toggle-muveletek-btn');
-    if (!tartalom) return;
-    const nyitva = tartalom.hidden; // most nyitjuk-e
-    tartalom.hidden = !nyitva;
-    btn?.setAttribute('aria-expanded', String(nyitva));
-    const nyil = get('muveletek-nyil');
-    if (nyil) nyil.textContent = nyitva ? '⌄' : '›';
-    if (!nyitva) zarjMuveletMod();
-  });
 
   function inditsdKivalasztast(mod, sugoSzoveg) {
     kivalasztasMod = mod;

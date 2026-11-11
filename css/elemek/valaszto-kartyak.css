@@ -188,11 +188,6 @@
     color: var(--text-secondary);
 }
 
-/* A beállítások ablak a tartalmához igazodik (a többi modal fix 480 px-e helyett), legfeljebb 85vh, utána görget */
-#settings-modal .sm-card {
-    --modal-height: auto;
-}
-
 /* ---------- Első megnyitáskor: értesítések felajánlása (js/elemek/ertesites-felajanlas.js) ---------- */
 
 .ertesites-ajanlo-kartya {

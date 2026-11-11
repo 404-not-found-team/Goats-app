@@ -12,7 +12,7 @@ const $ = (id) => document.getElementById(id);
 
 // Oldal-kapcsolók (a Kezdőlap nem kapcsolható) és funkció-kapcsolók egy listában
 const KAPCSOLOK = [
-    ...OLDALAK.filter(o => o.kapcsolo).map(o => ({ kulcs: o.kapcsolo, nev: `${o.emoji} ${o.nev}`, leiras: null, csoport: 'adminOldalak' })),
+    ...OLDALAK.filter(o => o.kapcsolo).map(o => ({ kulcs: o.kapcsolo, nev: o.nev, leiras: null, csoport: 'adminOldalak' })),
     ...FUNKCIOK.map(f => ({ kulcs: f.kulcs, nev: f.nev, leiras: f.leiras, csoport: 'adminFunkciok' })),
     // Beállítás (nem tiltás): alapból kikapcsolt, ezért nem kerül a "Jelenleg kikapcsolva" sorba
     {
