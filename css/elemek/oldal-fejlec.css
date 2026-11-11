@@ -86,6 +86,76 @@
     padding-bottom: 4px;
 }
 
+/* Fülek a fejlécben (Admin, Játékok): a cím mellett egy függőleges vonal után sima szavak, a címnél
+   kisebben és halványabban; a kiválasztott fehér, alatta rövid kiemelő színű vonal.
+   Lehetnek linkek (külön oldalak, aria-current) vagy gombok (egy oldalon belüli fülek, aria-selected). */
+.fejlec-cim-sor {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    min-width: 0;
+}
+
+.oldal-fulek {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    min-width: 0;
+    padding: 4px 0 4px 22px;
+    border-left: 1px solid var(--border-color);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.oldal-fulek::-webkit-scrollbar {
+    display: none;
+}
+
+.oldal-ful {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 6px 0 8px;
+    border: 0;
+    background: none;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.oldal-ful:hover {
+    color: var(--text-primary);
+}
+
+.oldal-ful[aria-current="page"],
+.oldal-ful[aria-selected="true"] {
+    color: var(--text-primary);
+}
+
+.oldal-ful[aria-current="page"]::after,
+.oldal-ful[aria-selected="true"]::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--accent-color);
+}
+
+.oldal-ful:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
 /* A fejléc és a tartalom között minden oldalon ugyanannyi a hely: a .jobb-sav rács sorköze (24px, navbar.css) */
 .jobb-sav > .fejlec-gombok-tarolo {
     margin-bottom: 0;
@@ -104,6 +174,25 @@
     .fejlec-gombok-tarolo h1 {
         font-size: var(--fs-xl);
         text-align: center;
+    }
+
+    /* telefonon a fülek a cím alatt, vonal nélkül; ami nem fér ki, oldalra görgethető */
+    .fejlec-cim-sor {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .oldal-fulek {
+        max-width: 100%;
+        gap: 18px;
+        padding-left: 0;
+        border-left: 0;
+        justify-content: safe center;
+    }
+
+    .oldal-ful {
+        font-size: var(--fs-base);
     }
 
     .fejlec-gombok {

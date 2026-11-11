@@ -1,19 +1,26 @@
 // Az alkalmazás oldalai egy helyen (FELADAT15): a nav-bar és az admin oldal is ezt használja.
-// - kulcs: a groups.enabled_pages-ben használt név (csoportonkénti engedélyezés)
+// - kulcs: az oldal azonosítója (a globális kapcsolók és a nav-bar használja)
 // - kapcsolo: a globális kapcsoló kulcsa a public.app_kapcsolok táblában (null = nem kapcsolható)
 // - fo: mobilon az alsó sávban mindig látszik (a többi a "Több ☰" fiókba kerül)
 // - publikus: csoport nélkül (kijelentkezve) is látszik
 // - navban: false esetén az oldal létezik és kapcsolható (admin be/ki állíthatja), de a nav-bar
 //   nem listázza külön fülként - a Képeknél a főoldali galéria "Összes kép" linkje már odavisz
+// - menu: az azonos menu-kulcsú oldalak a nav-barban egyetlen menüpontként jelennek meg (MENUK),
+//   az oldalak fejlécében pedig fülként lehet váltani közöttük (#oldal-fulek, lásd nav-bar.js)
 export const OLDALAK = [
     { kulcs: 'index', nev: tr('page_home', 'Kezdőlap'), emoji: '🏠', fajl: 'app.html', kapcsolo: null, fo: true, publikus: true },
     { kulcs: 'tartozasok', nev: tr('page_debts', 'Tartozások'), emoji: '💸', fajl: 'tartozasok.html', kapcsolo: 'oldal_tartozasok', fo: true },
     { kulcs: 'ranglista', nev: tr('page_tierlist', 'Ranglista'), emoji: '🍹', fajl: 'ranglista.html', kapcsolo: 'oldal_ranglista', fo: true, publikus: true },
     { kulcs: 'kepek', nev: tr('page_pictures', 'Képek'), emoji: '🖼️', fajl: 'kepek.html', kapcsolo: 'oldal_kepek', navban: false },
     { kulcs: 'tervek', nev: tr('page_plans', 'Tervek'), emoji: '📋', fajl: 'tervek.html', kapcsolo: 'oldal_tervek' },
-    //{ kulcs: 'jatekszabalyok', nev: 'Játékok', emoji: '📜', fajl: 'jatekszabalyok.html', kapcsolo: 'oldal_jatekszabalyok' },
-    { kulcs: 'goatsgame', nev: tr('page_goatsgame', 'Tabella'), emoji: '🎮', fajl: 'goatsgame.html', kapcsolo: 'oldal_goatsgame' },
+    { kulcs: 'goatsgame', nev: tr('page_goatsgame', 'Tabella'), emoji: '🎮', fajl: 'goatsgame.html', kapcsolo: 'oldal_goatsgame', menu: 'jatekok' },
+    { kulcs: 'jatekszabalyok', nev: tr('page_rules', 'Szabályok'), emoji: '📜', fajl: 'jatekszabalyok.html', kapcsolo: 'oldal_jatekszabalyok', menu: 'jatekok' },
 ];
+
+// Összevont menüpontok: a tagjaik közül az első látható oldalra visznek
+export const MENUK = {
+    jatekok: { kulcs: 'jatekok', nev: tr('page_games', 'Játékok'), emoji: '🎲', fo: true },
+};
 
 // Csak superadminnak, a csoporttól és a kapcsolóktól függetlenül
 export const ADMIN_OLDAL = { kulcs: 'admin', nev: 'Admin', emoji: '⚙️', fajl: 'admin.html' };

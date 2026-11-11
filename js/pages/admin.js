@@ -95,10 +95,10 @@ function kirajzolas() {
     figyelmeztetesFrissites();
 }
 
-// ---- Fülek (a .sm-tabs/.sm-tab-content a css/elemek/modals.css meglévő, eddig máshol nem
-// használt stílusa - a settings-rendszer modaljaival azonos mintát követi) ----
+// ---- Fülek: a gombok a fejlécben vannak (#adminFulek, stílus: css/elemek/oldal-fejlec.css),
+// a tartalmuk a .sm-tab-content (css/elemek/modals.css) ----
 function fulekBekotese() {
-    const gombok = document.querySelectorAll('.sm-tab-btn');
+    const gombok = document.querySelectorAll('#adminFulek .oldal-ful');
     gombok.forEach(gomb => {
         gomb.addEventListener('click', () => {
             gombok.forEach(g => { g.classList.remove('active'); g.setAttribute('aria-selected', 'false'); });
@@ -110,7 +110,7 @@ function fulekBekotese() {
     });
     // admin.html#jelentesek / #javaslatok: a megfelelő fül nyílik meg (pl. egy push-értesítésből)
     const cel = location.hash.slice(1);
-    if (cel) document.querySelector(`.sm-tab-btn[data-tab="tab-${CSS.escape(cel)}"]`)?.click();
+    if (cel) document.querySelector(`#adminFulek .oldal-ful[data-tab="tab-${CSS.escape(cel)}"]`)?.click();
 }
 
 async function betoltes() {
@@ -155,6 +155,7 @@ async function mentes(input, k) {
 await ready;
 if (!jogosultsagEllenorzes()) {
     $('adminTartalom').hidden = false;
+    $('adminFulek').hidden = false;
     fulekBekotese();
     betoltes();
     // Italjavaslatok, italkategóriák és az italok besorolása (csak az ellenőrzés után töltődnek be)
@@ -170,5 +171,8 @@ if (!jogosultsagEllenorzes()) {
 }
 // Ha a profil később változik (pl. kijelentkezés másik fülön, szerepkör-váltás), újra ellenőrzünk
 onChange(() => {
-    if (jogosultsagEllenorzes()) $('adminTartalom').hidden = true;
+    if (jogosultsagEllenorzes()) {
+        $('adminTartalom').hidden = true;
+        $('adminFulek').hidden = true;
+    }
 });

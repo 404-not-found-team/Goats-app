@@ -24,45 +24,120 @@
     <script type="module" src="js/pages/jatekszabalyok.js"></script>
 </head>
 
-<body data-oldal="jatekszabalyok">
-    <ul id="navBar"></ul>
+<!-- Három nézet egy oldalon (a body data-nezet attribútuma dönti el, melyik látszik, lásd jatekszabalyok.js):
+     lista, játék (gépen a lista mellett), szerkesztő. A címsor #jatek=… / #szerk=… / #uj része jelzi,
+     így a telefon "vissza" gombja az oldalon belül lép vissza. -->
+<body data-oldal="jatekszabalyok" data-nezet="lista">
+    <div class="jobb-sav">
+    <div class="jobb-kontenet">
+        <ul id="navBar"></ul>
+    </div>
 
-    <div class="fejlec-gombok-tarolo">
-        <h1 data-i18n="rules_title">📜 Játékszabályok</h1>
-        <div class="fejlec-gombok">
-            <button type="button" id="uj-jatek-gomb" class="gomb-uj-ital" data-i18n="new_game_btn">➕ Új játék</button>
+    <div class="fejlec-gombok-tarolo jsz-fejlec">
+        <div class="fejlec-cim-sor">
+            <h1 id="jsz-fejlec-cim"><span class="jsz-cim-lista" data-i18n="page_games">Játékok</span><span id="jsz-cim-szerk" class="jsz-cim-szerk"></span></h1>
+            <!-- Tabella / Szabályok fülek: alapból mindkettő (ne ugorjon a fejléc), a nav-bar.js a látható oldalakra frissíti -->
+            <nav id="oldal-fulek" class="oldal-fulek" data-menu="jatekok" aria-label="Játékok" data-i18n-attr="aria-label:page_games"><a class="oldal-ful" href="goatsgame.html" data-i18n="page_goatsgame">Tabella</a><a class="oldal-ful" href="jatekszabalyok.html" aria-current="page" data-i18n="page_rules">Szabályok</a></nav>
+        </div>
+        <div class="fejlec-gombok jsz-lista-gombok">
+            <button type="button" id="uj-jatek-gomb" class="fejlec-gomb" data-i18n="new_game_btn">＋ Új játék</button>
+        </div>
+        <div class="fejlec-gombok jsz-szerk-gombok">
+            <button type="button" id="szerk-megse-gomb" class="fejlec-gomb masodlagos" data-i18n="cancel">Mégse</button>
+            <button type="button" id="szerk-mentes-gomb" class="fejlec-gomb" data-i18n="save">Mentés</button>
         </div>
     </div>
 
-    <div class="jatek-fo-tarolo">
-        <p id="jatek-ures-allapot" class="jatek-ures-allapot" hidden data-i18n="no_rules_yet">
-            Még nincs felvéve játékszabály. A csoportod tagjai, és ha megosztod, más csoportok is itt fogják látni.
-        </p>
-        <div id="jatek-lista" class="jatek-lista"></div>
-    </div>
-
-    <!-- Szerkesztő modal: új játék felvétele / saját játék szerkesztése -->
-    <div id="jatek-szerkeszto-modal" class="sm-overlay" hidden>
-        <div class="sm-card jatek-szerkeszto-kartya">
-            <button type="button" id="jatek-szerkeszto-bezar" class="sm-close-btn" aria-label="Bezárás" data-i18n-attr="aria-label:close">&times;</button>
-            <div class="sm-header">
-                <h3 id="jatek-szerkeszto-cim" data-i18n="new_game_modal">Új játék</h3>
+    <main class="jatek-oldal">
+        <!-- Lista -->
+        <section class="jsz-lista-oszlop" aria-labelledby="jsz-fejlec-cim">
+            <input type="search" id="jsz-kereso" class="jsz-kereso" placeholder="🔍 Keresés…" aria-label="Keresés a játékok között"
+                data-i18n-attr="placeholder:search_games_ph; aria-label:search_games">
+            <div class="jsz-szegm" role="group" aria-label="Melyik játékok látszanak" data-i18n-attr="aria-label:games_filter">
+                <button type="button" class="jsz-szegm-gomb" data-szuro="mind" aria-pressed="true" data-i18n="filter_all">Mind</button>
+                <button type="button" class="jsz-szegm-gomb" data-szuro="sajat" aria-pressed="false" data-i18n="filter_own">Saját</button>
+                <button type="button" class="jsz-szegm-gomb" data-szuro="megosztott" aria-pressed="false" data-i18n="filter_shared">Megosztott</button>
             </div>
-            <div class="sm-body">
+            <p id="jatek-ures-allapot" class="jsz-ures" hidden data-i18n="no_rules_yet">
+                Még nincs felvéve játékszabály. A csoportod tagjai, és ha megosztod, más csoportok is itt fogják látni.
+            </p>
+            <p id="jsz-nincs-talalat" class="jsz-ures" hidden data-i18n="no_game_match">Nincs ilyen játék.</p>
+            <div id="jatek-lista" class="jsz-lista"></div>
+        </section>
+
+        <!-- Egy játék: telefonon a lista helyett, gépen mellette -->
+        <section class="jsz-jatek" aria-labelledby="jsz-jatek-cim">
+            <div class="jsz-eszkozsor">
+                <button type="button" id="jsz-vissza" class="jsz-ikongomb" aria-label="Vissza a listához" data-i18n-attr="aria-label:back_to_list">←</button>
+            </div>
+            <p id="jsz-valassz" class="jsz-ures" hidden data-i18n="pick_a_game">Válassz egy játékot a listából.</p>
+            <div id="jsz-jatek-tartalom">
+                <div class="jsz-jatek-fej">
+                    <h2 id="jsz-jatek-cim" class="jsz-jatek-cim"></h2>
+                    <div class="jsz-jatek-fej-gombok">
+                        <button type="button" id="jsz-inditas-gep" class="jsz-fo-gomb jsz-csak-gep" data-i18n="start_game">▶ Játék indítása</button>
+                        <div class="jsz-menu-tarolo" id="jsz-menu-tarolo">
+                            <button type="button" id="jsz-menu-gomb" class="jsz-ikongomb" aria-haspopup="true" aria-expanded="false" aria-controls="jsz-menu"
+                                aria-label="További műveletek" data-i18n-attr="aria-label:more_actions">⋯</button>
+                            <div id="jsz-menu" class="jsz-menu" hidden>
+                                <button type="button" id="jatek-szerkesztes-gomb" class="jsz-menu-elem" data-i18n="edit_game">✏️ Szerkesztés</button>
+                                <button type="button" id="jatek-torles-gomb" class="jsz-menu-elem veszely" data-i18n="delete_game">🗑️ Törlés</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="jsz-jatek-chipek" class="jsz-chipek"></div>
+                <p id="jsz-jatek-leiras" class="jsz-jatek-leiras"></p>
+                <div id="jsz-kell" class="jsz-kell"></div>
+                <button type="button" id="jsz-inditas" class="jsz-fo-gomb jsz-csak-tel" data-i18n="start_game">▶ Játék indítása</button>
+
+                <h3 id="jsz-szabalyok-cim" class="jsz-szakaszcim"></h3>
+                <p id="jatek-lepesek-ures" class="jsz-ures" hidden data-i18n="no_sections_yet">Ehhez a játékhoz még nincs felvéve szabály.</p>
+                <ol id="jsz-lepesek" class="jsz-lepesek"></ol>
+
+                <div class="jsz-kieg">
+                    <button type="button" id="jsz-kieg-gomb" class="jsz-kieg-fej" aria-expanded="false" aria-controls="jsz-kieg-tartalom">
+                        <span><span data-i18n="additions_from_others">💬 Kiegészítések más csoportoktól</span> <span id="jsz-kieg-szam" class="jsz-chip kicsi" hidden></span></span>
+                        <span class="jsz-nyil" aria-hidden="true"></span>
+                    </button>
+                    <div id="jsz-kieg-tartalom" class="jsz-kieg-tartalom" hidden>
+                        <div id="jatek-javaslatok-lista" class="jsz-javaslatok"></div>
+                        <div id="jatek-uj-javaslat-resz" class="jsz-uj-javaslat" hidden>
+                            <div class="floating-group">
+                                <input type="text" id="jatek-javaslat-cim-input" class="floating-input" placeholder=" " maxlength="80">
+                                <label class="floating-label" for="jatek-javaslat-cim-input" data-i18n="proposal_title">Javaslat címe (pl. "B verzió")</label>
+                            </div>
+                            <div class="floating-group">
+                                <textarea id="jatek-javaslat-szoveg-input" class="floating-input floating-textarea" placeholder=" " maxlength="2000" rows="3"></textarea>
+                                <label class="floating-label" for="jatek-javaslat-szoveg-input" data-i18n="proposal_text">A javaslat szövege</label>
+                            </div>
+                            <button type="button" id="jatek-javaslat-kuldes-gomb" class="jsz-fo-gomb" data-i18n="send_proposal">Javaslat küldése</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Szerkesztő: új játék vagy saját játék módosítása -->
+        <section class="jsz-szerk" aria-labelledby="jsz-fejlec-cim">
+            <div class="jsz-panel">
+                <h3 class="jsz-szakaszcim" data-i18n="basics">Alapok</h3>
                 <div class="floating-group">
                     <input type="text" id="jatek-cim-input" class="floating-input" placeholder=" " maxlength="80">
                     <label class="floating-label" for="jatek-cim-input" data-i18n="game_name">Játék neve</label>
                 </div>
-
                 <div class="floating-group">
                     <textarea id="jatek-leiras-input" class="floating-input floating-textarea" placeholder=" " maxlength="500" rows="3"></textarea>
                     <label class="floating-label" for="jatek-leiras-input" data-i18n="short_description">Rövid leírás (opcionális)</label>
                 </div>
-
-                <div class="jatek-mezo-sor">
-                    <div class="floating-group">
-                        <input type="number" id="jatek-min-jatekosok-input" class="floating-input" placeholder=" " min="1" max="99">
-                        <label class="floating-label" for="jatek-min-jatekosok-input" data-i18n="min_players">Min. játékosszám</label>
+                <div class="jsz-ket-mezo">
+                    <div class="jsz-lepteto">
+                        <label for="jatek-min-jatekosok-input" data-i18n="min_people">Min. fő</label>
+                        <div class="jsz-lepteto-sor">
+                            <button type="button" class="jsz-lepteto-gomb" data-lep="-1" aria-label="Kevesebb" data-i18n-attr="aria-label:less">−</button>
+                            <input type="number" id="jatek-min-jatekosok-input" inputmode="numeric" min="1" max="99" placeholder="–">
+                            <button type="button" class="jsz-lepteto-gomb" data-lep="1" aria-label="Több" data-i18n-attr="aria-label:more">+</button>
+                        </div>
                     </div>
                     <div class="floating-group">
                         <input type="text" id="jatek-eszkozok-input" class="floating-input" placeholder=" " maxlength="300">
@@ -70,80 +145,55 @@
                     </div>
                 </div>
 
-                <label class="jatek-kapcsolo-sor">
-                    <input type="checkbox" id="jatek-publikus-input">
-                    <span data-i18n="share_publicly">Megosztás minden csoporttal (publikus)</span>
-                </label>
+                <h3 class="jsz-szakaszcim" id="jsz-lathato-cim" data-i18n="who_can_see">Ki láthatja?</h3>
+                <div class="jsz-lathato" role="radiogroup" aria-labelledby="jsz-lathato-cim">
+                    <label class="jsz-lathato-opcio">
+                        <input type="radio" name="jsz-lathato" value="csoport" checked>
+                        <b data-i18n="visible_us">🔒 Csak mi</b>
+                        <span data-i18n="visible_us_desc">A csoportod tagjai</span>
+                    </label>
+                    <label class="jsz-lathato-opcio">
+                        <input type="radio" name="jsz-lathato" value="mindenki" id="jatek-publikus-input">
+                        <b data-i18n="visible_all">🌍 Mindenki</b>
+                        <span data-i18n="visible_all_desc">Más csoportok is látják, és javasolhatnak hozzá</span>
+                    </label>
+                </div>
+            </div>
 
-                <h4 class="jatek-lepesek-cim" data-i18n="rules_by_section">Szabályok, szakaszonként</h4>
-                <div id="jatek-lepesek-szerkeszto" class="jatek-lepesek-szerkeszto"></div>
-                <button type="button" id="jatek-uj-lepes-gomb" class="jatek-uj-lepes-gomb" data-i18n="new_section_btn">+ Új szakasz</button>
+            <div class="jsz-panel">
+                <h3 class="jsz-szakaszcim" data-i18n="rules">Szabályok</h3>
+                <ol id="jatek-lepesek-szerkeszto" class="jsz-szerk-lepesek"></ol>
+                <button type="button" id="jatek-uj-lepes-gomb" class="jsz-szaggatott" data-i18n="new_rule_btn">+ Új szabály</button>
             </div>
-            <div class="sm-footer">
-                <p id="jatek-szerkeszto-allapot" class="sm-status" role="status" aria-live="polite"></p>
-                <button type="button" id="jatek-mentes-gomb" class="sm-btn sm-btn-save" data-i18n="save">Mentés</button>
+
+            <div class="jsz-szerk-also">
+                <p id="jatek-szerkeszto-allapot" class="jsz-allapot" role="status" aria-live="polite"></p>
+                <button type="button" id="szerk-mentes-also" class="jsz-fo-gomb" data-i18n="save">Mentés</button>
             </div>
-        </div>
+        </section>
+    </main>
     </div>
 
-    <!-- Részletek modal -->
-    <div id="jatek-reszletek-modal" class="sm-overlay" hidden>
-        <div class="sm-card jatek-reszletek-kartya">
-            <button type="button" id="jatek-reszletek-bezar" class="sm-close-btn" aria-label="Bezárás" data-i18n-attr="aria-label:close">&times;</button>
-            <div class="sm-header">
-                <h3 id="jatek-reszletek-cim"></h3>
-            </div>
-            <div class="sm-body">
-                <div id="jatek-reszletek-badge-sor" class="jatek-reszletek-badge-sor"></div>
-                <p id="jatek-reszletek-leiras" class="jatek-reszletek-leiras"></p>
-                <div id="jatek-reszletek-infok" class="jatek-reszletek-infok"></div>
-
-                <div id="jatek-sajat-muveletek" class="jatek-sajat-muveletek" hidden>
-                    <button type="button" id="jatek-szerkesztes-gomb" class="sm-btn" data-i18n="edit_game">✏️ Szerkesztés</button>
-                    <button type="button" id="jatek-torles-gomb" class="sm-btn sm-btn-logout" data-i18n="delete_game">🗑️ Törlés</button>
-                </div>
-
-                <p id="jatek-lepesek-ures" class="jatek-ures-reszletek" hidden data-i18n="no_sections_yet">Ehhez a játékhoz még nincs felvéve szabály-szakasz.</p>
-
-                <button type="button" id="jatek-szabalyok-mutat-gomb" class="jatek-uj-lepes-gomb" hidden data-i18n="view_rules_btn">📜 Szabályok megtekintése</button>
-
-                <div class="jatek-javaslatok-szekcio">
-                    <h4 data-i18n="community_additions">Közösségi kiegészítések</h4>
-                    <div id="jatek-javaslatok-lista" class="jatek-javaslatok-lista"></div>
-
-                    <div id="jatek-uj-javaslat-resz" class="jatek-uj-javaslat-resz" hidden>
-                        <div class="floating-group">
-                            <input type="text" id="jatek-javaslat-cim-input" class="floating-input" placeholder=" " maxlength="80">
-                            <label class="floating-label" for="jatek-javaslat-cim-input" data-i18n="proposal_title">Javaslat címe (pl. "B verzió")</label>
-                        </div>
-                        <div class="floating-group">
-                            <textarea id="jatek-javaslat-szoveg-input" class="floating-input floating-textarea" placeholder=" " maxlength="2000" rows="3"></textarea>
-                            <label class="floating-label" for="jatek-javaslat-szoveg-input" data-i18n="proposal_text">A javaslat szövege</label>
-                        </div>
-                        <button type="button" id="jatek-javaslat-kuldes-gomb" class="sm-btn sm-btn-save" data-i18n="send_proposal">Javaslat küldése</button>
-                    </div>
-                </div>
-            </div>
+    <!-- Játék mód: teljes képernyő, egyszerre egy szabály, nagy betűvel -->
+    <div id="jsz-jatekmod" class="jsz-jatekmod" hidden role="dialog" aria-modal="true" aria-labelledby="jm-jatek">
+        <div class="jm-fej">
+            <button type="button" id="jm-bezar" class="jsz-ikongomb" aria-label="Kilépés a játék módból" data-i18n-attr="aria-label:exit_play_mode">✕</button>
+            <span id="jm-jatek" class="jm-jatek"></span>
+            <span id="jm-szamlalo" class="jm-szamlalo"></span>
         </div>
-    </div>
-
-    <!-- Szabályok modal -->
-    <div id="jatek-szabalyok-modal" class="sm-overlay" hidden>
-        <div class="sm-card jatek-szabalyok-kartya">
-            <button type="button" id="jatek-szabalyok-bezar" class="sm-close-btn" aria-label="Bezárás" data-i18n-attr="aria-label:close">&times;</button>
-            <div class="sm-header">
-                <h3 id="jatek-szabalyok-modal-cim" data-i18n="rules_title">Szabályok</h3>
-                <span id="jatek-lepeso-szamlalo" class="jatek-lepeso-szamlalo"></span>
-            </div>
-            <div class="sm-body">
-                <div id="jatek-lepeso-kartya" class="jatek-lepeso-kartya"></div>
-                <div class="jatek-lepeso-navigacio">
-                    <button type="button" id="jatek-lepeso-vissza" class="jatek-lepeso-nyil jatek-lepeso-nyil-balra" aria-label="Előző szakasz" data-i18n-attr="aria-label:previous_section"></button>
-                    <div id="jatek-lepeso-pontok" class="jatek-lepeso-pontok"></div>
-                    <button type="button" id="jatek-lepeso-elore" class="jatek-lepeso-nyil jatek-lepeso-nyil-jobbra" aria-label="Következő szakasz" data-i18n-attr="aria-label:next_section"></button>
-                </div>
-            </div>
+        <div class="jm-halad"><i id="jm-halad"></i></div>
+        <div class="jm-kozep">
+            <button type="button" id="jm-elozo-nyil" class="jm-nyil jsz-csak-gep" aria-label="Előző szabály" data-i18n-attr="aria-label:previous_rule">‹</button>
+            <div id="jm-lap" class="jm-lap" aria-live="polite"></div>
+            <button type="button" id="jm-kov-nyil" class="jm-nyil jsz-csak-gep" aria-label="Következő szabály" data-i18n-attr="aria-label:next_rule">›</button>
         </div>
+        <div id="jm-pontok" class="jm-pontok" aria-hidden="true"></div>
+        <div class="jm-also jsz-csak-tel">
+            <button type="button" id="jm-elozo" class="jsz-mas-gomb" data-i18n="previous_btn">‹ Előző</button>
+            <button type="button" id="jm-kov" class="jsz-fo-gomb" data-i18n="next_btn">Következő ›</button>
+        </div>
+        <p class="jm-tipp jsz-csak-tel" data-i18n="swipe_hint">Húzd oldalra a lapozáshoz</p>
+        <p class="jm-tipp jsz-csak-gep" data-i18n="keys_hint">← → lapozás · Esc kilépés</p>
     </div>
 </body>
 

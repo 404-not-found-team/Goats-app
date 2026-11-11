@@ -30,7 +30,22 @@
             <ul id="navBar"></ul>
         </div>
         <div class="fejlec-gombok-tarolo">
-            <h1 data-i18n="admin_title">Admin</h1>
+            <div class="fejlec-cim-sor">
+                <h1 data-i18n="admin_title">Admin</h1>
+                <!-- a fülek csak a jogosultság-ellenőrzés után jelennek meg (admin.js) -->
+                <div id="adminFulek" class="oldal-fulek" role="tablist" aria-label="Admin" hidden>
+                    <button type="button" class="oldal-ful" data-tab="tab-globalis" role="tab" aria-selected="true"
+                        data-i18n="tab_global_switches">Globális kapcsolók</button>
+                    <button type="button" class="oldal-ful" data-tab="tab-javaslatok" role="tab" aria-selected="false"><span
+                            data-i18n="tab_drink_suggestions">Italjavaslatok</span> <span id="adminJavaslatokDb"
+                            class="admin-darab" hidden></span></button>
+                    <button type="button" class="oldal-ful" data-tab="tab-kategoriak" role="tab" aria-selected="false"
+                        data-i18n="tab_drink_categories">Italkategóriák</button>
+                    <button type="button" class="oldal-ful" data-tab="tab-jelentesek" role="tab" aria-selected="false"><span
+                            data-i18n="tab_reports">Jelentések</span> <span id="adminJelentesekDb" class="admin-darab"
+                            hidden></span></button>
+                </div>
+            </div>
         </div>
     <main id="adminTartalom" class="admin-oldal" hidden>
 
@@ -38,18 +53,6 @@
         <div id="adminFigyelmeztetes" class="admin-figyelmeztetes" role="status" hidden></div>
         <p id="adminAllapot" class="admin-allapot" role="status" aria-live="polite"></p>
 
-        <div class="sm-tabs" role="tablist">
-            <button type="button" class="sm-tab-btn active" data-tab="tab-globalis" role="tab" aria-selected="true"
-                data-i18n="tab_global_switches">Globális kapcsolók</button>
-            <button type="button" class="sm-tab-btn" data-tab="tab-javaslatok" role="tab" aria-selected="false"><span
-                    data-i18n="tab_drink_suggestions">Italjavaslatok</span> <span id="adminJavaslatokDb"
-                    class="admin-darab" hidden></span></button>
-            <button type="button" class="sm-tab-btn" data-tab="tab-kategoriak" role="tab" aria-selected="false"
-                data-i18n="tab_drink_categories">Italkategóriák</button>
-            <button type="button" class="sm-tab-btn" data-tab="tab-jelentesek" role="tab" aria-selected="false"><span
-                    data-i18n="tab_reports">Jelentések</span> <span id="adminJelentesekDb" class="admin-darab"
-                    hidden></span></button>
-        </div>
 
         <div id="tab-globalis" class="sm-tab-content active">
             <p class="admin-bevezeto" data-i18n="global_intro">

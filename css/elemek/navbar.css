@@ -114,9 +114,10 @@ ul li.active a {
    Az egész oldal (tartalom + sáv) egy legfeljebb 1500px széles, középre tett sávban van, így nagy
    monitoron sem szakad el a menü a tartalomtól. A sáv teteje egy vonalban van az oldalfejléccel. */
 @media (min-width: 601px) {
+    /* a sorköz (fejléc és tartalom között) ugyanannyi, mint a profil és a menü között (.jobb-kontenet gap) */
     .jobb-sav {
         grid-template-columns: minmax(0, 1fr) 250px;
-        gap: 24px;
+        gap: 12px 24px;
         max-width: 1500px;
         margin: 0 auto;
     }

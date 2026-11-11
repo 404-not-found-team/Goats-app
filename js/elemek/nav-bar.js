@@ -1,6 +1,6 @@
 import { ready, getState, onChange, isSuperadmin, oldalEngedelyezett } from '../hitelesites.js';
 import { jeloles } from '../segedek/teljesitmeny.js';
-import { OLDALAK, ADMIN_OLDAL } from '../segedek/oldalak.js';
+import { OLDALAK, ADMIN_OLDAL, MENUK } from '../segedek/oldalak.js';
 
 // Az utoljára kirajzolt menü azonosítója: a háttérfrissítés (onChange) csak változáskor rajzol újra
 let kirajzoltMenu = null;
@@ -20,21 +20,28 @@ function rajzol() {
     if (!navBar) return;
     const { user, group } = getState();
 
-    // Egy oldal látszik, ha (superadmin) VAGY (a csoport enabled_pages-ében benne van ÉS a globális
-    // kapcsolója be van kapcsolva). Csoport nélkül (kijelentkezve vagy még nincs csoport) csak a
-    // publikus oldalak. Az Admin csak superadminnak, a csoporttól és a kapcsolóktól függetlenül.
+    // Egy oldal látszik, ha (superadmin) VAGY a globális kapcsolója be van kapcsolva. Csoport nélkül
+    // (kijelentkezve vagy még nincs csoport) csak a publikus oldalak. Az Admin csak superadminnak.
+    // (A groups.enabled_pages csoportonkénti listáját már nem nézzük: abba az új oldalak nem kerültek
+    // bele maguktól, így a globálisan bekapcsolt új oldal sem jelent meg a csoportoknál.)
     const superadmin = isSuperadmin();
-    const csoportOldalai = group && Array.isArray(group.enabled_pages) ? group.enabled_pages : null;
     const lathato = (o) => {
         if (superadmin) return true;
         if (!group) return !!o.publikus;
-        if (csoportOldalai && !csoportOldalai.includes(o.kulcs)) return false;
         return oldalEngedelyezett(o.kulcs);
     };
-    const menuOldalak = OLDALAK.filter(o => o.navban !== false && lathato(o));
+    const lathatoOldalak = OLDALAK.filter(o => o.navban !== false && lathato(o));
+    // az azonos "menu" kulcsú oldalak egy menüpontba kerülnek (az első látható tag helyén)
+    const menuOldalak = [];
+    for (const o of lathatoOldalak) {
+        if (!o.menu) { menuOldalak.push(o); continue; }
+        if (menuOldalak.some(m => m.kulcs === o.menu)) continue;
+        const tagok = lathatoOldalak.filter(t => t.menu === o.menu);
+        menuOldalak.push({ ...MENUK[o.menu], fajl: tagok[0].fajl, tagok });
+    }
     if (superadmin) menuOldalak.push(ADMIN_OLDAL);
 
-    const menuAzonosito = JSON.stringify([!!user, menuOldalak.map(o => o.kulcs)]);
+    const menuAzonosito = JSON.stringify([!!user, menuOldalak.map(o => [o.kulcs, (o.tagok || []).map(t => t.kulcs)])]);
     if (menuAzonosito === kirajzoltMenu) return;
     kirajzoltMenu = menuAzonosito;
 
@@ -81,7 +88,8 @@ function rajzol() {
         const emojiNev = document.createElement('span');
 
         // Az "app.html" is a "Kezdőlap" fület jelöli aktívnak, nem csak az "index.html"
-        const aktivE = aktualisUtvonal === celFajl || (o.kulcs === 'index' && aktualisUtvonal === 'app.html');
+        const aktivE = aktualisUtvonal === celFajl || (o.kulcs === 'index' && aktualisUtvonal === 'app.html')
+            || !!o.tagok?.some(t => t.fajl === aktualisUtvonal);
         if (aktivE) oldal.className = "active";
 
         teljesNev.textContent = o.nev;
@@ -105,6 +113,8 @@ function rajzol() {
             navBar.appendChild(oldal);
         }
     }
+
+    oldalFulekKirajzolasa(menuOldalak, aktualisUtvonal);
 
     // Mobilon a "Több ☰" gomb, ha van extra oldal
     if (vanExtraOldal) {
@@ -134,3 +144,21 @@ window.toggleNavDrawer = function () {
         document.body.classList.toggle('drawer-nyitva', nyitva);
     }
 };
+
+// Egy összevont menüpont oldalain (pl. Játékok: Szabályok / Tabella) a fejlécben a #oldal-fulek
+// elem kapja meg a tagok linkjeit; csak a látható oldalak, és csak ha legalább kettő van
+function oldalFulekKirajzolasa(menuOldalak, aktualisUtvonal) {
+    const fulek = document.getElementById('oldal-fulek');
+    if (!fulek) return;
+    const tagok = menuOldalak.find(m => m.kulcs === fulek.dataset.menu)?.tagok || [];
+    fulek.innerHTML = '';
+    fulek.hidden = tagok.length < 2;
+    tagok.forEach(t => {
+        const link = document.createElement('a');
+        link.className = 'oldal-ful';
+        link.href = t.fajl;
+        link.textContent = t.nev;
+        if (t.fajl === aktualisUtvonal) link.setAttribute('aria-current', 'page');
+        fulek.appendChild(link);
+    });
+}

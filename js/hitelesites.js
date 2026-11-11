@@ -21,7 +21,7 @@ const blank = () => ({
   user: null,
   profile: null,
   displayName: '',
-  group: null,       // { id, group_code, group_name, enabled_pages }
+  group: null,       // { id, group_code, group_name }
   groupRole: null,   // 'admin' | 'member'
   members: [],       // [{ user_id, display_name, group_role }]
   beallitasok: {},   // globális kapcsolók (public.app_kapcsolok): { kulcs: boolean }, FELADAT15
@@ -167,7 +167,7 @@ export async function refresh() {
       .eq('id', session.user.id)
       .maybeSingle(),
     client.from('group_members')
-      .select('group_role, groups(id, group_code, group_name, enabled_pages)')
+      .select('group_role, groups(id, group_code, group_name)')
       .eq('user_id', session.user.id)
       .maybeSingle(),
     kapcsolokBetoltese(),

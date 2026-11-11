@@ -133,15 +133,13 @@ function kovKep() {
 }
 
 // Az "Összes kép" link ugyanakkor látszik, mint a menüben a Képek fül: superadminnak mindig,
-// másnak ha a csoport enabled_pages-ében benne van ÉS a globális kapcsolója be van kapcsolva
+// másnak ha a globális kapcsolója be van kapcsolva
 function osszesKepLinkFrissites() {
     const link = document.getElementById('osszesKepLink');
     if (!link) return;
     const auth = window.goatsAuth;
-    const oldalak = auth?.getState()?.group?.enabled_pages;
-    const csoportban = !Array.isArray(oldalak) || oldalak.includes('kepek');
     link.hidden = !aktualisGroupId()
-        || !(auth?.isSuperadmin?.() || (csoportban && auth?.oldalEngedelyezett?.('kepek') !== false));
+        || !(auth?.isSuperadmin?.() || auth?.oldalEngedelyezett?.('kepek') !== false);
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
