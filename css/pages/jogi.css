@@ -105,3 +105,28 @@
     word-break: break-word;
     overflow-wrap: break-word;
 }
+/* Újdonságok oldal (ujdonsagok.html): dátumonként egy blokk, a legfrissebb "Új" jellel */
+.ujdonsag-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ujdonsag-bejegyzes h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ujdonsag-uj-jel {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--accent-color);
+    color: var(--on-accent);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+}
+
+.ujdonsag-bejegyzes ul {
+    list-style: disc;
+}

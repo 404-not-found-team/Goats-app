@@ -7,7 +7,7 @@ import { jeloles } from './segedek/teljesitmeny.js';
 import { uritKepGyorsitotar } from './segedek/kep-gyorsitotar.js';
 import { oldalKulcsbol } from './segedek/oldalak.js';
 
-export const TOS_VERSION = '2026-10';
+export const TOS_VERSION = '2026-11';
 const KEEP_KEYS = new Set(['goats_theme', 'goats_tos_pending']);
 // Az utoljára ismert állapot (localStorage, az app bezárása után is megmarad): oldalbetöltéskor
 // ebből azonnal kirajzolható a felület, a friss állapot a háttérben érkezik (onChange).

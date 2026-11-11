@@ -5,6 +5,7 @@
 // - publikus: csoport nélkül (kijelentkezve) is látszik
 // - navban: false esetén az oldal létezik és kapcsolható (admin be/ki állíthatja), de a nav-bar
 //   nem listázza külön fülként - a Képeknél a főoldali galéria "Összes kép" linkje már odavisz
+// - csakAndroid: true esetén csak androidos eszközön látszik a nav-barban (a tesztelőoldal)
 // - menu: az azonos menu-kulcsú oldalak a nav-barban egyetlen menüpontként jelennek meg (MENUK),
 //   az oldalak fejlécében pedig fülként lehet váltani közöttük (#oldal-fulek, lásd nav-bar.js)
 export const OLDALAK = [
@@ -16,6 +17,8 @@ export const OLDALAK = [
     // kulcs: 'hanynapja', nev: tr('page_hanynapja', 'Hány napja'), emoji: '⏳', fajl: 'hanynapja.html', kapcsolo: null },
     { kulcs: 'goatsgame', nev: tr('page_goatsgame', 'Tabella'), emoji: '🎮', fajl: 'goatsgame.html', kapcsolo: 'oldal_goatsgame', menu: 'jatekok' },
     { kulcs: 'jatekszabalyok', nev: tr('page_rules', 'Szabályok'), emoji: '📜', fajl: 'jatekszabalyok.html', kapcsolo: 'oldal_jatekszabalyok', menu: 'jatekok' },
+    // az androidos zárt teszt oldala; a teszt végén az Adminban kikapcsolható (oldal_tesztelok)
+    { kulcs: 'tesztelok', nev: tr('page_testers', 'Tesztelőknek'), emoji: '🧪', fajl: 'tesztelok.html', kapcsolo: 'oldal_tesztelok', csakAndroid: true },
     //{ kulcs: 'teszt', nev: tr('', 'teszt'), emoji: '🅰️', fajl: 'teszt.html', kapcsolo: 'oldal_teszt'},
 ];
 

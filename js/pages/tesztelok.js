@@ -2,9 +2,10 @@
 // Feladata: az "Újdonságok" idővonal kirajzolása a kiválasztott nyelven, és a lábléci nyelvváltó.
 import { UJDONSAGOK } from './tesztelok-ujdonsagok.js';
 
-// az újdonságok magyarul és angolul vannak meg: minden más nyelven (pl. német) az angol jelenik meg
+// az újdonságok magyarul, angolul és németül vannak meg; ha egy bejegyzésből hiányzik a nyelv, az angol jelenik meg
 function nyelv() {
-    return window.goatsNyelv?.aktualis?.() === 'hu' ? 'hu' : 'en';
+    const ny = window.goatsNyelv?.aktualis?.();
+    return ['hu', 'en', 'de'].includes(ny) ? ny : 'en';
 }
 
 function datumSzoveg(iso) {
@@ -17,7 +18,8 @@ function kirajzolUjdonsagokat() {
     const lista = document.getElementById('to-ujdonsag-lista');
     if (!lista) return;
     const kod = nyelv();
-    const elemek = UJDONSAGOK.map((bejegyzes, i) => {
+    // a tesztelőoldalon csak a legutóbbi 5 kiadás; a teljes lista az Újdonságok oldalon (ujdonsagok.html)
+    const elemek = UJDONSAGOK.slice(0, 5).map((bejegyzes, i) => {
         const li = document.createElement('li');
         if (i === 0) li.className = 'friss';
 
@@ -35,7 +37,7 @@ function kirajzolUjdonsagokat() {
         }
 
         const ul = document.createElement('ul');
-        (bejegyzes[kod] || bejegyzes.hu).forEach((szoveg) => {
+        (bejegyzes[kod] || bejegyzes.en || bejegyzes.hu).forEach((szoveg) => {
             const pont = document.createElement('li');
             pont.textContent = szoveg;
             ul.append(pont);

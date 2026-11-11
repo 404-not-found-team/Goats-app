@@ -30,7 +30,9 @@ function rajzol() {
         if (!group) return !!o.publikus;
         return oldalEngedelyezett(o.kulcs);
     };
-    const lathatoOldalak = OLDALAK.filter(o => o.navban !== false && lathato(o));
+    // csakAndroid: csak androidos eszközön jelenik meg (pl. a Play Áruházas zárt teszt oldala)
+    const android = /Android/i.test(navigator.userAgent);
+    const lathatoOldalak = OLDALAK.filter(o => o.navban !== false && (!o.csakAndroid || android) && lathato(o));
     // az azonos "menu" kulcsú oldalak egy menüpontba kerülnek (az első látható tag helyén)
     const menuOldalak = [];
     for (const o of lathatoOldalak) {
