@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const get = id => document.getElementById(id);
 
   // A beállítások-rendszer "kezdőlapja" a Profil menü (lenyíló menü a profilgomb alatt). Az almenük
-  // (Profil adatok, Csoport adatok, Beállítások) fejlécében a ‹ gomb ide visz vissza; az X, az Esc és a
+  // (Csoport adatok, Beállítások) fejlécében a ‹ gomb ide visz vissza; az X, az Esc és a
   // háttérre kattintás mindenhol bezár. A tos-ujraelfogadas-modal szándékosan kimarad: annak nincs
   // bezáró útja, csak az "Elfogadom".
   const ESC_HATTER_KIVETEL = new Set(['tos-ujraelfogadas-modal']);
@@ -53,7 +53,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const closeBtns = [
     { btn: 'close-auth-btn', modal: 'auth-modal' },
     { btn: 'close-profile-btn', modal: 'profile-modal' },
-    { btn: 'close-profil-details-btn', modal: 'profil-details-modal' },
     { btn: 'close-group-details-btn', modal: 'group-details-modal' },
     { btn: 'close-settings-btn', modal: 'settings-modal' },
   ];

@@ -28,7 +28,6 @@ export function initProfileModal() {
   const get = id => document.getElementById(id);
 
   const profileModal = get('profile-modal');
-  const profilDetailsModal = get('profil-details-modal');
   const groupDetailsModal = get('group-details-modal');
   const settingsModal = get('settings-modal');
   const authModal = get('auth-modal');
@@ -73,14 +72,6 @@ export function initProfileModal() {
   });
 
   // Navigáció az al-ablakokba
-  get('open-profile-details-btn')?.addEventListener('click', () => {
-    fill();
-    setStatus('');
-    setNameStatus('');
-    profileModal.hidden = true;
-    profilDetailsModal.hidden = false;
-    fokuszAllit(profilDetailsModal);
-  });
   get('open-group-details-btn')?.addEventListener('click', () => {
     profileModal.hidden = true;
     groupDetailsModal.hidden = false;
@@ -91,7 +82,11 @@ export function initProfileModal() {
     authModal.hidden = false;
     fokuszAllit(authModal);
   });
+  // A Beállításokban van a Fiók rész is (név, e-mail, fiók törlése)
   get('open-settings-btn')?.addEventListener('click', () => {
+    fill();
+    setStatus('');
+    setNameStatus('');
     profileModal.hidden = true;
     settingsModal.hidden = false;
     fokuszAllit(settingsModal);

@@ -939,3 +939,24 @@ a.google-menu-btn{
     background: color-mix(in srgb, var(--hiba-color) 10%, transparent);
     outline: none;
 }
+
+/* Beállítások: linkként működő sor (pl. Jogi információk) */
+.beall-link-sor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    color: var(--text-primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.beall-link-sor .arrow-icon {
+    color: var(--text-secondary);
+}
+
+.beall-link-sor:hover,
+.beall-link-sor:focus-visible {
+    border-color: var(--accent-color);
+    outline: none;
+}

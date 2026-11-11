@@ -775,5 +775,7 @@
     "copied": "Copied",
     "err_copy": "Copying failed, select it manually.",
     "members_n": "Members · {n}",
-    "you": "you"
+    "you": "you",
+    "account": "Account",
+    "name_seen_hint": "This is how your group sees you"
 }

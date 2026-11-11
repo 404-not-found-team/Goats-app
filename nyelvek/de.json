@@ -775,5 +775,7 @@
     "copied": "Kopiert",
     "err_copy": "Kopieren fehlgeschlagen, markiere den Code von Hand.",
     "members_n": "Mitglieder · {n}",
-    "you": "du"
+    "you": "du",
+    "account": "Konto",
+    "name_seen_hint": "So sehen dich deine Gruppenmitglieder"
 }

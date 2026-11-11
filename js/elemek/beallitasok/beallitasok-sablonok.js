@@ -87,40 +87,13 @@ const PROFIL_MODAL = `
       </div>
 
       <div class="profil-menu-lista">
-        <button id="open-profile-details-btn" class="profil-menu-sor"><span>${tr('profile_details', 'Profil adatok')}</span><span class="arrow-icon">›</span></button>
         <button id="open-group-details-btn" class="profil-menu-sor"><span>${tr('group_details', 'Csoport adatok')}</span><span class="arrow-icon">›</span></button>
         <button id="open-join-group-btn" class="profil-menu-sor" hidden><span>${tr('join_or_new_group', 'Csatlakozás / új csoport')}</span><span class="arrow-icon">›</span></button>
         <button id="open-settings-btn" class="profil-menu-sor"><span>${tr('settings', 'Beállítások')}</span><span class="arrow-icon">›</span></button>
-        <a href="jogi.html" class="profil-menu-sor"><span>${tr('legal_information', 'Jogi információk')}</span><span class="arrow-icon">›</span></a>
         <span class="profil-menu-elvalaszto" aria-hidden="true"></span>
         <button id="logout-btn" class="profil-menu-sor veszely"><span>${tr('logout', 'Kijelentkezés')}</span></button>
       </div>
       <p id="profile-status" class="sm-status sm-status-small"></p>
-    </div>
-  </div>
-`;
-
-const PROFIL_ADATOK_MODAL = `
-  <!-- PROFIL ADATOK MODAL (a Beállítások stílusában: szürke szakaszcím, alatta doboz) -->
-  <div id="profil-details-modal" class="sm-overlay beall-ablak" role="dialog" aria-modal="true" hidden>
-    <div class="sm-card">${visszaFejlec(tr('profile_details', 'Profil adatok'), 'close-profil-details-btn')}
-      <div class="sm-body">
-        <p class="sm-label">${tr('email_address', 'E-mail cím')}</p>
-        <p id="profile-display-email" class="beall-doboz beall-ertek halvany"></p>
-
-        <label class="sm-label valaszto-kovetkezo" for="own-name-input">${tr('your_display_name', 'A te megjelenített neved')}</label>
-        <div class="beall-doboz beall-mezo-sor">
-          <input type="text" id="own-name-input" class="beall-input" maxlength="30" autocomplete="off" />
-          <span id="own-name-status" class="beall-mezo-allapot" role="status" aria-live="polite"></span>
-        </div>
-        <p class="szoveg-kicsi beall-leiras">${tr('display_name_hint', 'Így látnak a csoportod tagjai. Gépelés után magától mentődik.')}</p>
-
-        <p class="sm-label valaszto-kovetkezo">${tr('danger_zone', 'Veszélyes műveletek')}</p>
-        <div class="beall-veszely">
-          <button id="delete-account-btn" type="button" class="beall-veszely-gomb">${tr('delete_profile', 'Fiók törlése')}</button>
-        </div>
-        <p id="profile-details-status" class="sm-status sm-status-small"></p>
-      </div>
     </div>
   </div>
 `;
@@ -201,7 +174,14 @@ const BEALLITASOK_MODAL = `
   <div id="settings-modal" class="sm-overlay beall-ablak" role="dialog" aria-modal="true" hidden>
     <div class="sm-card">${visszaFejlec(tr('settings', 'Beállítások'), 'close-settings-btn')}
       <div class="sm-body">
-        <p id="tema-cimke" class="sm-label">${tr('choose_theme', 'Téma kiválasztása:')}</p>
+        <label class="sm-label" for="own-name-input">${tr('account', 'Fiók')}</label>
+        <div class="beall-doboz beall-mezo-sor">
+          <input type="text" id="own-name-input" class="beall-input" maxlength="30" autocomplete="off" aria-describedby="fiok-leiras" />
+          <span id="own-name-status" class="beall-mezo-allapot" role="status" aria-live="polite"></span>
+        </div>
+        <p id="fiok-leiras" class="szoveg-kicsi beall-leiras">${tr('name_seen_hint', 'Így látnak a csoportod tagjai')}<!-- · <span id="profile-display-email"></span>--></p>
+
+        <p id="tema-cimke" class="sm-label valaszto-kovetkezo">${tr('choose_theme', 'Téma kiválasztása:')}</p>
         <div id="tema-kartyak" class="valaszto-racs" role="radiogroup" aria-labelledby="tema-cimke"></div>
 
         <p id="nyelv-cimke" class="sm-label valaszto-kovetkezo">${tr('choose_language', 'Nyelv kiválasztása:')}</p>
@@ -226,6 +206,15 @@ const BEALLITASOK_MODAL = `
           <p class="szoveg-kicsi ertesites-leiras">${tr('gcal_desc', 'A csoport eseményei megjelennek a Google Naptáradban, egy külön „ATG” naptárban. Ehhez a naptárt megosztjuk az e-mail címeddel.')}</p>
           <p id="gnaptar-allapot" class="sm-status sm-status-small" role="status" aria-live="polite"></p>
         </div>
+
+        <p class="sm-label valaszto-kovetkezo">${tr('other', 'Egyéb')}</p>
+        <a href="jogi.html" class="beall-doboz beall-link-sor"><span>${tr('legal_information', 'Jogi információk')}</span><span class="arrow-icon">›</span></a>
+
+        <p class="sm-label valaszto-kovetkezo">${tr('danger_zone', 'Veszélyes műveletek')}</p>
+        <div class="beall-veszely">
+          <button id="delete-account-btn" type="button" class="beall-veszely-gomb">${tr('delete_profile', 'Fiók törlése')}</button>
+        </div>
+        <p id="profile-details-status" class="sm-status sm-status-small"></p>
       </div>
     </div>
   </div>
@@ -235,7 +224,6 @@ const BEALLITASOK_MODAL = `
 const MODALOK = [
   BELEPES_MODAL,
   PROFIL_MODAL,
-  PROFIL_ADATOK_MODAL,
   CSOPORT_ADATOK_MODAL,
   TOS_UJRAELFOGADAS_MODAL,
   BEALLITASOK_MODAL,

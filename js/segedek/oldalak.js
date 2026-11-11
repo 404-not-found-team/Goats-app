@@ -15,6 +15,7 @@ export const OLDALAK = [
     { kulcs: 'tervek', nev: tr('page_plans', 'Tervek'), emoji: '📋', fajl: 'tervek.html', kapcsolo: 'oldal_tervek' },
     { kulcs: 'goatsgame', nev: tr('page_goatsgame', 'Tabella'), emoji: '🎮', fajl: 'goatsgame.html', kapcsolo: 'oldal_goatsgame', menu: 'jatekok' },
     { kulcs: 'jatekszabalyok', nev: tr('page_rules', 'Szabályok'), emoji: '📜', fajl: 'jatekszabalyok.html', kapcsolo: 'oldal_jatekszabalyok', menu: 'jatekok' },
+    { kulcs: 'hanynapja', nev: tr('', 'hanynapja'), emoji: '🅰️', fajl: 'hanynapja.html', kapcsolo: 'oldal_hanynapja'},
 ];
 
 // Összevont menüpontok: a tagjaik közül az első látható oldalra visznek

@@ -760,5 +760,7 @@
     "copied": "Másolva",
     "err_copy": "A másolás nem sikerült, jelöld ki kézzel.",
     "members_n": "Tagok · {n}",
-    "you": "te"
+    "you": "te",
+    "account": "Fiók",
+    "name_seen_hint": "Így látnak a csoportod tagjai"
 }
