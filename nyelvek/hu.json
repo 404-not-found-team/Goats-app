@@ -911,5 +911,6 @@
     "del_sec5_p1": "Ehhez nem kell a fiókodat törölnöd: a feltöltött képeidet és a „Hány napja” számlálóidat a mellettük lévő menüből egyenként is törölheted. Más adataid törlését e-mailben kérheted, és 14 napon belül intézzük.",
     "page_testers": "Tesztelőknek",
     "tst_t7_t": "Indíts egy Hány napja számlálót",
-    "tst_t7_d": "a Főoldal „Hány napja” részéből: válassz egy sablont, és nézd, hogyan nő napról napra a sorozatod."
+    "tst_t7_d": "a Főoldal „Hány napja” részéből: válassz egy sablont, és nézd, hogyan nő napról napra a sorozatod.",
+    "tst_group_code_note": "<b>Nincs még csoportod?</b> Belépés után csatlakozhatsz a közös tesztelői csoporthoz ezzel a kóddal: <b>2FAFB791F8</b>. Az itt felvitt adatokat a többi tesztelő is látja, ezért csak tesztadatot írj be."
 }

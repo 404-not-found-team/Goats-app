@@ -926,5 +926,6 @@
     "del_sec5_p1": "You don’t need to delete your account for this: you can delete your uploaded pictures and your “Days since” counters one by one from the menu next to them. You can request the deletion of other data by email, and we handle it within 14 days.",
     "page_testers": "For testers",
     "tst_t7_t": "Start a “Days since” counter",
-    "tst_t7_d": "from the “Days since” section on the home page: pick a template and watch your streak grow day by day."
+    "tst_t7_d": "from the “Days since” section on the home page: pick a template and watch your streak grow day by day.",
+    "tst_group_code_note": "<b>No group yet?</b> After signing in you can join the shared tester group with this code: <b>2FAFB791F8</b>. Everything you add there is visible to the other testers, so please use test data only."
 }

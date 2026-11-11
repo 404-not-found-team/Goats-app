@@ -926,5 +926,6 @@
     "del_sec5_p1": "Dafür musst du dein Konto nicht löschen: Deine hochgeladenen Bilder und deine „Tage seit“-Zähler kannst du einzeln über das Menü daneben löschen. Die Löschung anderer Daten kannst du per E-Mail beantragen; wir erledigen sie innerhalb von 14 Tagen.",
     "page_testers": "Für Tester",
     "tst_t7_t": "„Tage seit“-Zähler starten",
-    "tst_t7_d": "im Bereich „Tage seit“ auf der Startseite: wähle eine Vorlage und sieh zu, wie deine Serie Tag für Tag wächst."
+    "tst_t7_d": "im Bereich „Tage seit“ auf der Startseite: wähle eine Vorlage und sieh zu, wie deine Serie Tag für Tag wächst.",
+    "tst_group_code_note": "<b>Noch keine Gruppe?</b> Nach der Anmeldung kannst du mit diesem Code der gemeinsamen Testergruppe beitreten: <b>2FAFB791F8</b>. Alles, was du dort einträgst, sehen auch die anderen Tester, also bitte nur Testdaten verwenden."
 }
