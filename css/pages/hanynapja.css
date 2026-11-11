@@ -1,0 +1,499 @@
+/* Hány napja oldal (hanynapja.html, js/pages/hanynapja.js):
+   fent a csoport toplistája számlálónként, alatta a saját számlálók űrlappal és kártyákkal. */
+
+.hn-oldal {
+    width: 100%;
+    max-width: 1350px;
+    margin: 0 auto;
+    padding-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-sizing: border-box;
+}
+
+.jobb-sav > .hn-oldal {
+    max-width: none;
+}
+
+.hn-szakasz {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hn-szakaszcim {
+    margin: 0;
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-align: left;
+}
+
+/* ---------- Csoport toplista ---------- */
+
+.hn-toplista {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.hn-top-kartya {
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+}
+
+.hn-top-cim {
+    margin: 0 0 10px;
+    font-size: var(--fs-lg);
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.hn-top-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.hn-top-sor {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: var(--inner-bg);
+}
+
+.hn-top-hely {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    font-size: var(--fs-sm);
+    font-weight: 800;
+}
+
+/* dobogó: arany, ezüst, bronz */
+.hn-hely-1 .hn-top-hely {
+    background: #f5c542;
+    border-color: #f5c542;
+    color: #1a1400;
+}
+
+.hn-hely-2 .hn-top-hely {
+    background: #c9ced6;
+    border-color: #c9ced6;
+    color: #15181d;
+}
+
+.hn-hely-3 .hn-top-hely {
+    background: #d08a4e;
+    border-color: #d08a4e;
+    color: #1d1006;
+}
+
+.hn-top-nev {
+    flex: 1;
+    min-width: 0;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hn-top-napok {
+    font-weight: 700;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+/* a saját sorod kiemelve */
+.hn-top-sor.hn-en {
+    background: color-mix(in srgb, var(--accent-color) 16%, var(--inner-bg));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-color) 55%, transparent);
+}
+
+.hn-top-sor.hn-en .hn-top-nev {
+    color: var(--accent-text);
+}
+
+.hn-top-sajat {
+    margin: 10px 0 0;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border-color);
+    color: var(--accent-text);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+}
+
+/* ---------- Új számláló űrlap ---------- */
+
+.hn-uj {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+}
+
+.hn-mezo {
+    height: 42px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: var(--fs-base);
+    box-sizing: border-box;
+    color-scheme: dark;
+}
+
+[data-theme="light"] .hn-mezo {
+    color-scheme: light;
+}
+
+.hn-mezo:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.hn-mezo::placeholder {
+    color: var(--text-secondary);
+}
+
+.hn-mezo-nev {
+    flex: 1 1 220px;
+    min-width: 0;
+}
+
+.hn-datum-cimke,
+.hn-lathato {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+}
+
+.hn-lathato input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-color);
+}
+
+.hn-allapot {
+    flex-basis: 100%;
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+}
+
+.hn-allapot:empty {
+    display: none;
+}
+
+.hn-allapot.status-hiba {
+    color: var(--hiba-color);
+}
+
+/* ---------- Saját számlálók ---------- */
+
+.hn-lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    align-items: start;
+    gap: 12px;
+}
+
+.hn-kartya {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+}
+
+.hn-kartya-fejlec {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.hn-cim-doboz {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    min-width: 0;
+}
+
+/* a saját, még jóváhagyatlan sablonjavaslat jelvénye */
+.hn-jelveny {
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px dashed var(--accent-color);
+    color: var(--accent-text);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* ⋮ menü jobb felül (mint a Képek oldalon): láthatóság, törlés */
+.hn-menu {
+    position: relative;
+    flex-shrink: 0;
+    margin: -4px -8px 0 0;
+}
+
+.hn-menu-gomb {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.hn-menu-gomb:hover,
+.hn-menu-gomb[aria-expanded="true"] {
+    background: var(--border-color);
+    color: var(--text-primary);
+}
+
+.hn-menu-gomb:focus-visible,
+.hn-menupont:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 1px;
+}
+
+.hn-menu-lista {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    z-index: 50;
+    min-width: 190px;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    /* átlátszó témánál is fedjen: a kártyaszín alá a háttérszín */
+    background: linear-gradient(var(--card-bg), var(--card-bg)), var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.hn-menu-lista[hidden] {
+    display: none;
+}
+
+.hn-menupont {
+    text-align: left;
+    padding: 9px 10px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+}
+
+.hn-menupont:hover {
+    background: var(--border-color);
+}
+
+.hn-menupont.veszelyes {
+    color: var(--hiba-color);
+}
+
+.hn-tipp {
+    flex-basis: 100%;
+    margin: 0;
+    font-size: var(--fs-xs);
+    color: var(--text-secondary);
+}
+
+.hn-tipp[hidden] {
+    display: none;
+}
+
+select.hn-mezo {
+    cursor: pointer;
+}
+
+.hn-cim {
+    margin: 0;
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.hn-napok {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 6px 0 0;
+}
+
+.hn-szam {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--accent-text);
+    font-variant-numeric: tabular-nums;
+}
+
+.hn-egyseg {
+    font-size: var(--fs-base);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.hn-rekord {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+}
+
+.hn-gombok {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.hn-gomb {
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--inner-bg);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.hn-gomb:hover {
+    border-color: var(--accent-color);
+}
+
+.hn-gomb:focus-visible,
+.hn-mezo:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.hn-gomb-fo {
+    min-height: 42px;
+    border-color: var(--accent-color);
+    background: var(--accent-color);
+    color: var(--on-accent);
+    font-weight: 700;
+}
+
+.hn-gomb-fo:hover {
+    background: var(--accent-hover);
+}
+
+.hn-gomb-ujra {
+    font-weight: 700;
+}
+
+.hn-gomb-masik[aria-expanded="true"] {
+    border-color: var(--accent-color);
+    color: var(--accent-text);
+}
+
+/* "Másik napon" lenyíló: felül a felirat, alatta egy sorban a dátum és a mentés */
+.hn-masik-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 10px;
+    border-radius: 12px;
+    background: var(--inner-bg);
+}
+
+.hn-masik-panel[hidden] {
+    display: none;
+}
+
+.hn-masik-panel .hn-datum-cimke {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    min-width: 0;
+}
+
+.hn-masik-panel .hn-mezo {
+    width: 100%;
+    min-width: 0;
+}
+
+.hn-masik-panel .hn-gomb-fo {
+    min-height: 42px;
+}
+
+.hn-gomb-lathato[aria-pressed="true"] {
+    border-color: color-mix(in srgb, var(--ok-color) 50%, transparent);
+    color: var(--ok-color);
+}
+
+.hn-gomb-torles {
+    color: var(--hiba-color);
+}
+
+.hn-gomb-torles:hover {
+    border-color: var(--hiba-color);
+}
+
+.hn-ures {
+    margin: 0;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px dashed var(--border-color);
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+/* telefonon az űrlap elemei egymás alá, teljes szélességben */
+@media (max-width: 600px) {
+    .hn-uj > * {
+        flex: 1 1 100%;
+    }
+
+    .hn-datum-cimke .hn-mezo {
+        flex: 1;
+    }
+
+    .hn-uj .hn-gomb-fo {
+        width: 100%;
+    }
+}

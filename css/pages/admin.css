@@ -377,3 +377,8 @@
     color: var(--text-primary);
     overflow-wrap: anywhere;
 }
+
+/* Hány napja sablonok: magyar, angol, német név egy sorban, telefonon egymás alatt */
+.admin-hn-sor .admin-urlap-sor > .admin-bemenet {
+    flex: 1 1 130px;
+}

@@ -1,12 +1,13 @@
 // Push-értesítések kiküldése. Adatbázis-triggerek hívják (pg_net), nem a kliens:
-//   { "tipus": "tartozas" | "jelentes" | "ital" | "esemeny", "idk": [<a beszúrt sorok azonosítói>] }
+//   { "tipus": "tartozas" | "jelentes" | "ital" | "esemeny" | "hn_sablon" | "hanynapja", "idk": [<a sorok azonosítói>] }
 // - Hitelesítés: az "x-push-titok" fejléc; a push_titok_ellenorzes() RPC veti össze a Vaultban tárolt
 //   titokkal (csak a service role hívhatja). Ezért a függvény JWT-ellenőrzés nélkül fut (verify_jwt: false).
 // - A részleteket (összeg, név, nyelv) a service role-lal maga kérdezi le az azonosítók alapján,
 //   a hívó által küldött szövegben nem bízik.
 // - Címzettek: tartozásnál az adós (ha nem ő maga vette fel); jelentésnél és jóváhagyásra váró italnál
 //   a superadminok (profiles.system_role = 'superadmin'); új naptáreseménynél a csoport tagjai, kivéve
-//   aki felvette (esemenyek.felvette_id).
+//   aki felvette (esemenyek.felvette_id); Hány napja sablonnál függő javaslatkor a superadminok, jóváhagyáskor
+//   a javasló; Hány napja mérföldkőnél (1, 2, 4 hét, 2, 3 hónap; a napi pg_cron feladat jelzi) a számláló gazdája.
 // - Nyelv (magyar, angol, német): profiles.language, ha üres, a feliratkozáskor rögzített eszköznyelv,
 //   végül magyar.
 // - A lejárt (404/410) feliratkozásokat törli.
@@ -124,6 +125,73 @@ async function italok(idk: number[]): Promise<Kuldendo[]> {
     })));
 }
 
+// A sablon neve a címzett nyelvén (ha nincs fordítás, a magyar)
+type SablonNev = { nev: string; nev_en: string | null; nev_de: string | null };
+const sablonNev = (s: SablonNev, ny: Nyelv) => (ny === 'en' ? s.nev_en : ny === 'de' ? s.nev_de : null) || s.nev;
+
+async function hnSablonok(idk: string[]): Promise<Kuldendo[]> {
+    const { data, error } = await admin.from('hanynapja_sablonok').select('id, nev, nev_en, nev_de, jovahagyva, javasolta_id').in('id', idk);
+    if (error) throw error;
+    const sorok = data || [];
+    const fuggok = sorok.filter(s => !s.jovahagyva);
+    const cimzettek = fuggok.length ? await superadminok() : [];
+    return [
+        ...fuggok.flatMap(s => cimzettek.filter(id => id !== s.javasolta_id).map(userId => ({
+            userId,
+            uzenet: (ny: Nyelv) => ({
+                cim: sz(ny, 'Jóváhagyásra váró sablon', 'Template awaiting approval', 'Vorlage wartet auf Freigabe'),
+                szoveg: sz(ny, `Új Hány napja javaslat: ${s.nev}`, `New counter suggestion: ${s.nev}`, `Neuer Zähler-Vorschlag: ${s.nev}`),
+                url: 'admin.html#javaslatok',
+                tag: `hn-sablon-${s.id}`,
+            }),
+        }))),
+        ...sorok.filter(s => s.jovahagyva && s.javasolta_id).map(s => ({
+            userId: s.javasolta_id as string,
+            uzenet: (ny: Nyelv) => ({
+                cim: sz(ny, 'Jóváhagyták a javaslatodat', 'Your suggestion was approved', 'Dein Vorschlag wurde freigegeben'),
+                szoveg: sz(ny, `„${s.nev}” már mindenkinek elérhető.`, `"${sablonNev(s, ny)}" is now available to everyone.`, `„${sablonNev(s, ny)}“ ist jetzt für alle verfügbar.`),
+                url: 'hanynapja.html',
+                tag: `hn-sablon-${s.id}`,
+            }),
+        })),
+    ];
+}
+
+// Hány napja mérföldkövek (napban) és a feliratuk nyelvenként
+const MERFOLDKO: Record<number, { hu: string; en: string; de: string }> = {
+    7: { hu: '1 hete', en: '1 week', de: '1 Woche' },
+    14: { hu: '2 hete', en: '2 weeks', de: '2 Wochen' },
+    28: { hu: '4 hete', en: '4 weeks', de: '4 Wochen' },
+    60: { hu: '2 hónapja', en: '2 months', de: '2 Monaten' },
+    90: { hu: '3 hónapja', en: '3 months', de: '3 Monaten' },
+};
+
+async function hanynapja(idk: string[]): Promise<Kuldendo[]> {
+    const { data, error } = await admin.from('hanynapja').select('id, user_id, mit, sablon_id, ertesitett_merfoldko').in('id', idk);
+    if (error) throw error;
+    const sorok = (data || []).filter(h => MERFOLDKO[h.ertesitett_merfoldko]);
+    // a sablonos számláló neve a címzett nyelvén
+    const sablonIdk = [...new Set(sorok.map(h => h.sablon_id).filter(Boolean))];
+    const { data: sablonSorok } = sablonIdk.length
+        ? await admin.from('hanynapja_sablonok').select('id, nev, nev_en, nev_de').in('id', sablonIdk)
+        : { data: [] };
+    const sablonTar = new Map((sablonSorok || []).map(s => [s.id, s]));
+    return sorok.map(h => {
+        const m = MERFOLDKO[h.ertesitett_merfoldko];
+        const sablon = h.sablon_id ? sablonTar.get(h.sablon_id) : null;
+        const nev = (ny: Nyelv) => (sablon ? sablonNev(sablon, ny) : h.mit);
+        return {
+            userId: h.user_id,
+            uzenet: (ny: Nyelv) => ({
+                cim: sz(ny, 'Szép sorozat!', 'Nice streak!', 'Starke Serie!'),
+                szoveg: sz(ny, `${nev(ny)}: már ${m.hu} tart a sorozatod.`, `${nev(ny)}: your streak is ${m.en} long.`, `${nev(ny)}: deine Serie läuft seit ${m.de}.`),
+                url: 'hanynapja.html',
+                tag: `hanynapja-${h.id}`,
+            }),
+        };
+    });
+}
+
 // A naptár dátuma ("ÉÉÉÉ-HH-NN") olvasható formában, pl. "nov. 14., péntek" / "Fri, 14 Nov"
 const datumSzoveg = (datum: string, nyelv: Nyelv) => {
     const d = new Date(`${datum}T00:00:00Z`);
@@ -227,6 +295,8 @@ Deno.serve(async (req) => {
         else if (adat.tipus === 'jelentes') lista = await jelentesek(idk.map(String));
         else if (adat.tipus === 'ital') lista = await italok(idk.map(Number).filter(Number.isFinite));
         else if (adat.tipus === 'esemeny') lista = await esemenyek(idk.map(String).filter(Boolean));
+        else if (adat.tipus === 'hn_sablon') lista = await hnSablonok(idk.map(String).filter(Boolean));
+        else if (adat.tipus === 'hanynapja') lista = await hanynapja(idk.map(String).filter(Boolean));
         else return valasz(400, { hiba: 'ismeretlen típus' });
         return valasz(200, await kuldes(lista));
     } catch (err) {

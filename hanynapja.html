@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; worker-src 'self' blob:; style-src 'self'; style-src-attr 'none'; img-src 'self' data: blob: https:; font-src 'self'; connect-src 'self' https://bvositlxbeqztnhdembx.supabase.co wss://bvositlxbeqztnhdembx.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- Bejelentkezés mögötti oldal: ne kerüljön a keresőkbe -->
+    <meta name="robots" content="noindex">
+    <title data-i18n="atg_hanynapja">ATG - Hány napja</title>
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="img/favicon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/kulso/fontawesome-6.5.1/css/fontawesome.min.css">
+    <link rel="stylesheet" href="css/kulso/fontawesome-6.5.1/css/solid.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/pages/hanynapja.css">
+
+    <link rel="preconnect" href="https://bvositlxbeqztnhdembx.supabase.co" crossorigin>
+    <link rel="modulepreload" href="js/main.js">
+    <script src="js/segedek/nyelv.js"></script>
+    <script src="js/kulso/supabase-js-2.117.2.js"></script>
+
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/pages/hanynapja.js"></script>
+
+    <script src="js/segedek/csoport-kod.js"></script>
+    <script src="js/segedek/html-esemenyek.js" defer></script>
+</head>
+
+<body data-oldal="hanynapja">
+    <div class="jobb-sav">
+        <div class="jobb-kontenet">
+            <ul id="navBar"></ul>
+        </div>
+
+        <div class="fejlec-gombok-tarolo">
+            <h1 data-i18n="hanynapja_title">Hány napja</h1>
+        </div>
+
+        <main class="hn-oldal">
+            <!-- a csoport toplistája számlálónként: első három + a saját helyezésed (js/pages/hanynapja.js tölti ki) -->
+            <section class="hn-szakasz" id="hn-toplista-szakasz" hidden>
+                <h2 class="hn-szakaszcim" data-i18n="hn_group_top">A csoport toplistája</h2>
+                <div id="hn-toplista" class="hn-toplista"></div>
+            </section>
+
+            <section class="hn-szakasz">
+                <h2 class="hn-szakaszcim" data-i18n="hn_mine">Saját számlálóim</h2>
+
+                <!-- új számláló felvétele -->
+                <form id="hn-uj" class="hn-uj" novalidate>
+                    <select id="hn-sablon" class="hn-mezo hn-mezo-nev" aria-label="Mit számoljon?"
+                        data-i18n-attr="aria-label:hn_what" required>
+                        <option value="" disabled selected data-i18n="hn_pick">Válassz, mit számolj...</option>
+                    </select>
+                    <input type="text" id="hn-mit" class="hn-mezo hn-mezo-nev" maxlength="40" autocomplete="off" hidden
+                        placeholder="Mit nem csinálsz? (pl. Alkohol)" aria-label="Új javaslat neve"
+                        data-i18n-attr="placeholder:hn_what_ph; aria-label:hn_suggestion_name">
+                    <p id="hn-javaslat-tipp" class="hn-tipp" data-i18n="hn_suggestion_tip" hidden>Az új javaslatot jóváhagyás után mindenki választhatja. A számlálód addig is megy.</p>
+                    <label class="hn-datum-cimke">
+                        <span data-i18n="hn_since">Mióta?</span>
+                        <input type="date" id="hn-datum" class="hn-mezo">
+                    </label>
+                    <label class="hn-lathato">
+                        <input type="checkbox" id="hn-lathato">
+                        <span data-i18n="hn_share">Lássa a csoport is</span>
+                    </label>
+                    <button type="submit" class="hn-gomb hn-gomb-fo" data-i18n="add">Hozzáadás</button>
+                    <p id="hn-allapot" class="hn-allapot" role="status" aria-live="polite"></p>
+                </form>
+
+                <div id="fuggosegek" class="hn-lista"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/segedek/sw-regisztracio.js" defer></script>
+</body>
+
+</html>

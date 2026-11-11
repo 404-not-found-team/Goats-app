@@ -20,7 +20,11 @@ function allapot(szoveg, tipus) {
     elem.className = `admin-allapot ${tipus ? `allapot-${tipus}` : ''}`;
 }
 
-function darab(db) {
+// A fül jelvénye az italjavaslatok és a Hány napja sablonjavaslatok együttes száma
+const darabok = { ital: 0, sablon: 0 };
+function darab(db, fajta = 'ital') {
+    darabok[fajta] = db;
+    db = darabok.ital + darabok.sablon;
     const jelveny = $('adminJavaslatokDb');
     jelveny.hidden = !db;
     jelveny.textContent = db ? String(db) : '';
@@ -110,7 +114,155 @@ async function betoltes() {
     $('adminJavaslatok').replaceChildren(...lista.map(j => sor(j, italok.get(j.id), receptek.get(j.id))));
 }
 
+// ---------- Hány napja sablonjavaslatok (list_pending_hn_templates / approve_hn_template / reject_hn_template) ----------
+
+function sablonAllapot(szoveg, tipus) {
+    const elem = $('adminHnSablonokAllapot');
+    if (!elem) return;
+    elem.textContent = szoveg;
+    elem.className = `admin-allapot ${tipus ? `allapot-${tipus}` : ''}`;
+}
+
+// Fordítás-mezők (angol, német) egy sablonhoz; üresen hagyva a magyar név látszik
+function forditasMezok(s) {
+    const mezo = (ertek, cimke) => {
+        const m = ujElem('input', 'admin-bemenet');
+        m.type = 'text';
+        m.maxLength = 40;
+        m.value = ertek || '';
+        m.placeholder = cimke;
+        m.setAttribute('aria-label', cimke);
+        return m;
+    };
+    return {
+        en: mezo(s.nev_en, tr('hn_name_en', 'Angol név')),
+        de: mezo(s.nev_de, tr('hn_name_de', 'Német név')),
+    };
+}
+
+// Függő javaslat: a magyar név és a két fordítás szerkeszthető, aztán jóváhagyás vagy elutasítás
+function sablonSor(s) {
+    const li = ujElem('li', 'admin-sor admin-javaslat admin-hn-sor');
+    const szoveg = ujElem('div', 'admin-sor-szoveg');
+    const datum = s.letrehozva ? new Date(s.letrehozva).toLocaleDateString(goatsNyelv.locale()) : '';
+    szoveg.append(
+        ujElem('span', 'admin-sor-nev', s.nev),
+        ujElem('span', 'admin-sor-leiras', tr('suggested_by', 'javasolta: {name}', { name: s.javasolta_nev || tr('unknown', 'ismeretlen') }) + (datum ? ` · ${datum}` : ''))
+    );
+    const hu = ujElem('input', 'admin-bemenet');
+    hu.type = 'text';
+    hu.maxLength = 40;
+    hu.value = s.nev;
+    hu.setAttribute('aria-label', tr('hn_name_hu', 'Magyar név'));
+    hu.placeholder = tr('hn_name_hu', 'Magyar név');
+    const { en, de } = forditasMezok(s);
+
+    const jovahagy = ujElem('button', 'admin-gomb', tr('approve', 'Jóváhagy'));
+    jovahagy.type = 'button';
+    jovahagy.addEventListener('click', async () => {
+        const ujNev = hu.value.trim();
+        if (!ujNev) return sablonAllapot(tr('hn_err_name', 'Írd be, mit számoljon (legfeljebb 40 karakter).'), 'hiba');
+        // ha a magyar nevet is javítottad, előbb az mentődik (superadmin update policy)
+        if (ujNev !== s.nev) {
+            const { error } = await client.from('hanynapja_sablonok').update({ nev: ujNev }).eq('id', s.id);
+            if (error) {
+                console.error('A sablon átnevezése nem sikerült:', error);
+                return sablonAllapot(tr('err_save_msg', 'A mentés nem sikerült: {msg}', { msg: error.message }), 'hiba');
+            }
+        }
+        sablonDontes('approve_hn_template', { template_id: s.id, nev_en: en.value, nev_de: de.value },
+            tr('hn_template_approved', '{name}: jóváhagyva, mindenki választhatja.', { name: ujNev }), gombok);
+    });
+    const elutasit = ujElem('button', 'admin-gomb veszelyes', tr('reject', 'Elutasít'));
+    elutasit.type = 'button';
+    elutasit.addEventListener('click', () => {
+        if (!confirm(tr('hn_confirm_reject_template', 'Biztosan elutasítod ezt a sablont: „{name}”? A javasló számlálója megmarad.', { name: s.nev }))) return;
+        sablonDontes('reject_hn_template', { template_id: s.id }, tr('hn_template_rejected', '{name}: elutasítva.', { name: s.nev }), gombok);
+    });
+    const gombok = ujElem('div', 'admin-urlap-sor');
+    gombok.append(hu, en, de, jovahagy, elutasit);
+    li.append(szoveg, gombok);
+    return li;
+}
+
+// Jóváhagyott sablon: a nevek (magyar, angol, német) utólag is javíthatók
+function jovahagyottSor(s) {
+    const li = ujElem('li', 'admin-sor admin-javaslat admin-hn-sor');
+    const hu = ujElem('input', 'admin-bemenet');
+    hu.type = 'text';
+    hu.maxLength = 40;
+    hu.value = s.nev;
+    hu.setAttribute('aria-label', tr('hn_name_hu', 'Magyar név'));
+    hu.placeholder = tr('hn_name_hu', 'Magyar név');
+    const { en, de } = forditasMezok(s);
+    const ment = ujElem('button', 'admin-gomb', tr('save', 'Mentés'));
+    ment.type = 'button';
+    ment.addEventListener('click', async () => {
+        const nev = hu.value.trim();
+        if (!nev) return sablonAllapot(tr('hn_err_name', 'Írd be, mit számoljon (legfeljebb 40 karakter).'), 'hiba');
+        ment.disabled = true;
+        const { error } = await client.from('hanynapja_sablonok')
+            .update({ nev, nev_en: en.value.trim() || null, nev_de: de.value.trim() || null })
+            .eq('id', s.id);
+        ment.disabled = false;
+        if (error) {
+            console.error('A sablon mentése nem sikerült:', error);
+            return sablonAllapot(error.code === '23505'
+                ? tr('hn_err_template_exists', 'Már van ilyen nevű sablon.')
+                : tr('err_save_msg', 'A mentés nem sikerült: {msg}', { msg: error.message }), 'hiba');
+        }
+        sablonAllapot(tr('saved_x', '{name}: mentve.', { name: nev }), 'ok');
+    });
+    const sor = ujElem('div', 'admin-urlap-sor');
+    sor.append(hu, en, de, ment);
+    li.append(sor);
+    return li;
+}
+
+async function sablonDontes(rpc, parameterek, siker, gombok) {
+    gombok.querySelectorAll('button').forEach(g => { g.disabled = true; });
+    const { error } = await client.rpc(rpc, parameterek);
+    if (error) {
+        console.error(`${rpc} hiba:`, error);
+        sablonAllapot(error.message || tr('err_operation', 'Hiba a művelet során.'), 'hiba');
+        gombok.querySelectorAll('button').forEach(g => { g.disabled = false; });
+        return;
+    }
+    sablonAllapot(siker, 'ok');
+    await sablonBetoltes();
+}
+
+async function sablonBetoltes() {
+    const doboz = $('adminHnSablonok');
+    if (!doboz) return;
+    const [fuggo, jovahagyott] = await Promise.all([
+        client.rpc('list_pending_hn_templates'),
+        client.from('hanynapja_sablonok').select('id, nev, nev_en, nev_de').eq('jovahagyva', true).order('nev'),
+    ]);
+    if (fuggo.error) {
+        console.error('A sablonjavaslatok betöltése nem sikerült:', fuggo.error);
+        sablonAllapot(fuggo.error.message || tr('err_suggestions_load', 'A javaslatok betöltése nem sikerült.'), 'hiba');
+        return;
+    }
+    // a függő sorhoz a fordítás-mezők üresen indulnak (a lista RPC nem adja vissza őket)
+    const lista = fuggo.data || [];
+    darab(lista.length, 'sablon');
+    doboz.replaceChildren(...(lista.length
+        ? lista.map(sablonSor)
+        : [ujElem('li', 'admin-sor admin-ures', tr('hn_no_pending_templates', 'Nincs jóváhagyásra váró sablon.'))]));
+
+    const kesz = $('adminHnJovahagyott');
+    if (kesz) {
+        if (jovahagyott.error) console.error('A jóváhagyott sablonok betöltése nem sikerült:', jovahagyott.error);
+        const sorok = jovahagyott.data || [];
+        kesz.replaceChildren(...(sorok.length
+            ? sorok.map(jovahagyottSor)
+            : [ujElem('li', 'admin-sor admin-ures', tr('hn_no_templates', 'Még nincs jóváhagyott sablon.'))]));
+    }
+}
+
 export async function indit() {
+    sablonBetoltes();
     try {
         if (!K().fo.length) await K().betolt(client);
     } catch (err) {

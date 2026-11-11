@@ -13,9 +13,10 @@ export const OLDALAK = [
     { kulcs: 'ranglista', nev: tr('page_tierlist', 'Ranglista'), emoji: '🍹', fajl: 'ranglista.html', kapcsolo: 'oldal_ranglista', fo: true, publikus: true },
     { kulcs: 'kepek', nev: tr('page_pictures', 'Képek'), emoji: '🖼️', fajl: 'kepek.html', kapcsolo: 'oldal_kepek', navban: false },
     { kulcs: 'tervek', nev: tr('page_plans', 'Tervek'), emoji: '📋', fajl: 'tervek.html', kapcsolo: 'oldal_tervek' },
+    // kulcs: 'hanynapja', nev: tr('page_hanynapja', 'Hány napja'), emoji: '⏳', fajl: 'hanynapja.html', kapcsolo: null },
     { kulcs: 'goatsgame', nev: tr('page_goatsgame', 'Tabella'), emoji: '🎮', fajl: 'goatsgame.html', kapcsolo: 'oldal_goatsgame', menu: 'jatekok' },
     { kulcs: 'jatekszabalyok', nev: tr('page_rules', 'Szabályok'), emoji: '📜', fajl: 'jatekszabalyok.html', kapcsolo: 'oldal_jatekszabalyok', menu: 'jatekok' },
-    { kulcs: 'hanynapja', nev: tr('', 'hanynapja'), emoji: '🅰️', fajl: 'hanynapja.html', kapcsolo: 'oldal_hanynapja'},
+    //{ kulcs: 'teszt', nev: tr('', 'teszt'), emoji: '🅰️', fajl: 'teszt.html', kapcsolo: 'oldal_teszt'},
 ];
 
 // Összevont menüpontok: a tagjaik közül az első látható oldalra visznek

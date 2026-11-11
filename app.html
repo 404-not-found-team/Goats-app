@@ -23,6 +23,7 @@
 
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/pages/app-orzo.js"></script>
+    <script type="module" src="js/elemek/fooldal-hanynapja.js"></script>
 
     <script src="js/segedek/csoport-kod.js"></script>
     <script defer src="js/elemek/galeria.js"></script>
@@ -59,6 +60,15 @@
 
             <div id="galeria-placeholder" class="galeria-ures" hidden></div>
         </div>
+
+        <!-- a saját "Hány napja" számlálóid röviden (js/elemek/fooldal-hanynapja.js tölti; csoport nélkül rejtve) -->
+        <section id="fo-hn" class="fo-hn" aria-labelledby="fo-hn-cim" hidden>
+            <div class="fo-hn-fejlec">
+                <h2 id="fo-hn-cim" data-i18n="hanynapja_title">Hány napja</h2>
+                <a href="hanynapja.html" class="fo-hn-link" data-i18n="hn_all">Mind &rarr;</a>
+            </div>
+            <div id="fo-hn-lista" class="fo-hn-lista"></div>
+        </section>
 
         <div class="naptar-kontener">
             <div class="naptar-fejlec">

@@ -497,3 +497,127 @@
         background: var(--inner-bg);
     }
 }
+
+/* --------------------------------------------------------------------------
+   HÁNY NAPJA a képek alatt (js/elemek/fooldal-hanynapja.js)
+   Telefonon vízszintesen görgethető sor, gépen a teljes szélességben rács.
+   -------------------------------------------------------------------------- */
+.fo-hn {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+}
+
+.fo-hn[hidden] {
+    display: none;
+}
+
+.fo-hn-fejlec {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.fo-hn-fejlec h2 {
+    margin: 0;
+    font-size: var(--fs-lg);
+    color: var(--text-primary);
+}
+
+.fo-hn-link {
+    color: var(--accent-text);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.fo-hn-link:hover {
+    text-decoration: underline;
+}
+
+.fo-hn-lista {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+}
+
+.fo-hn-lista::-webkit-scrollbar {
+    display: none;
+}
+
+.fo-hn-csempe {
+    flex: 0 0 132px;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: inherit;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+}
+
+.fo-hn-csempe:hover {
+    border-color: var(--accent-color);
+}
+
+.fo-hn-csempe:focus-visible,
+.fo-hn-link:focus-visible,
+.fo-hn-ures:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.fo-hn-nev {
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fo-hn-szam {
+    margin-top: 4px;
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--accent-text);
+    font-variant-numeric: tabular-nums;
+}
+
+.fo-hn-egyseg {
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+}
+
+.fo-hn-ures {
+    flex: 1;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px dashed var(--border-color);
+    color: var(--text-secondary);
+    text-align: center;
+    text-decoration: none;
+}
+
+@media screen and (min-width: 1001px) {
+    .hatter > .fo-hn {
+        grid-column: 1 / -1;
+    }
+
+    .fo-hn-lista {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        overflow: visible;
+    }
+}
