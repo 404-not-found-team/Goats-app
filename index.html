@@ -70,18 +70,18 @@
         <section id="pwa-install-card" class="telepito-kartya">
             <div class="telepito-fej">
                 <div>
-                    <span class="tl-cimke" id="telepito-cimke" hidden><i class="fa-solid fa-mobile-screen"></i> <span id="telepito-cimke-szoveg"></span></span>
+                    <span class="tl-cimke ures" id="telepito-cimke"><i id="telepito-cimke-ikon" class="fa-solid fa-mobile-screen"></i> <span id="telepito-cimke-szoveg"></span></span>
                     <h2 data-i18n="download_app">Telepítsd az ATG-t!</h2>
                     <p data-i18n="inst_subtitle">Egy perc, és úgy indul, mint bármelyik app a telefonodon vagy a gépeden.</p>
                 </div>
                 <button type="button" id="pwa-install-btn" class="tl-fo-gomb" hidden><i class="fa-solid fa-download"></i> <span data-i18n="inst_one_tap">Telepítés egy koppintással</span></button>
             </div>
             <div class="telepito-fulek" role="tablist" aria-label="Eszköz" data-i18n-attr="aria-label:inst_platform">
-                    <button type="button" role="tab" id="telepito-ful-android" data-platform="android" aria-controls="telepito-panel-android" aria-selected="false"><i class="fa-solid fa-mobile-screen"></i> <span data-i18n="inst_tab_android">Android</span></button>
+                    <button type="button" role="tab" id="telepito-ful-android" data-platform="android" aria-controls="telepito-panel-android" aria-selected="true"><i class="fa-solid fa-mobile-screen"></i> <span data-i18n="inst_tab_android">Android</span></button>
                     <button type="button" role="tab" id="telepito-ful-ios" data-platform="ios" aria-controls="telepito-panel-ios" aria-selected="false"><i class="fa-solid fa-mobile-screen-button"></i> <span data-i18n="inst_tab_ios">iPhone</span></button>
                     <button type="button" role="tab" id="telepito-ful-gep" data-platform="gep" aria-controls="telepito-panel-gep" aria-selected="false"><i class="fa-solid fa-desktop"></i> <span data-i18n="inst_tab_pc">Számítógép</span></button>
             </div>
-                <div class="tl-lepesek" id="telepito-panel-android" role="tabpanel" aria-labelledby="telepito-ful-android" hidden>
+                <div class="tl-lepesek" id="telepito-panel-android" role="tabpanel" aria-labelledby="telepito-ful-android">
                     <div class="tl-lepes">
                         <div class="tl-telefon" aria-hidden="true"><div class="tl-kepernyo"><div class="tl-cimsor"><span class="tl-url">atg…/Goats-app</span><i class="fa-solid fa-ellipsis-vertical tl-kiemel tl-kicsi"></i></div><div class="tl-lenyilo"><span></span><span></span><span class="tl-kiemel tl-menupont"><i class="fa-solid fa-mobile-screen"></i> <span data-i18n="inst_ill_install_app">App telepítése</span></span><span></span></div><div class="tl-tartalom"></div></div></div>
                         <div class="tl-lepes-szoveg"><span class="tl-szam">1</span>
@@ -159,7 +159,7 @@
                         </div>
                     </div>
                 </div>
-            <div class="telepito-also" id="telepito-tesztelo" hidden>
+            <div class="telepito-also" id="telepito-tesztelo">
                 <div class="tl-sav"><i class="fa-solid fa-store"></i>
                     <span data-i18n="inst_play_soon"><b>Hamarosan a Play Áruházban is!</b> Addig a böngészős telepítés ugyanazt az appot adja.</span>
                 </div>

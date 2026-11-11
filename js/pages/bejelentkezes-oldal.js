@@ -105,14 +105,17 @@ function kezelPWATelepitest() {
     });
     valaszt(platform);
 
-    // a felismert eszköz címkéje a cím fölött
+    // a felismert eszköz címkéje a cím fölött (a helye a HTML-ben már le van foglalva, hogy ne ugorjon el a kártya)
     const cimke = document.getElementById('telepito-cimke');
     const cimkeSzoveg = document.getElementById('telepito-cimke-szoveg');
-    if (cimke && cimkeSzoveg && platform !== 'gep') {
-        cimkeSzoveg.textContent = platform === 'ios'
-            ? tr('inst_you_use_ios', 'iPhone-t használsz')
-            : tr('inst_you_use_android', 'Androidot használsz');
-        cimke.hidden = false;
+    if (cimke && cimkeSzoveg) {
+        cimkeSzoveg.textContent = {
+            ios: tr('inst_you_use_ios', 'iPhone-t használsz'),
+            android: tr('inst_you_use_android', 'Androidot használsz'),
+            gep: tr('inst_you_use_pc', 'Számítógépet használsz'),
+        }[platform];
+        if (platform === 'gep') document.getElementById('telepito-cimke-ikon')?.classList.replace('fa-mobile-screen', 'fa-desktop');
+        cimke.classList.remove('ures');
     }
 
     window.addEventListener('beforeinstallprompt', (e) => {

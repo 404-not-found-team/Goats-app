@@ -1,7 +1,7 @@
 {
     "welcome_title": "Üdvözöl az ATG-ben! 🏆",
     "hero-subtitle": " A legegyszerűbb alkalmazás közös tartozások, tervek és ital ranglisták kezelésére baráti társaságoknak.",
-    "lets_start": "Kezjdük",
+    "lets_start": "Kezdjük!",
     "login_google": "Bejelentkezés Google-fiókkal",
     "login_agreement_prefix": "A bejelentkezéssel elfogadod a",
     "the_terms_link": "Felhasználási feltételeket",
@@ -652,6 +652,7 @@
     "inst_play_soon": "<b>Hamarosan a Play Áruházban is!</b> Addig a böngészős telepítés ugyanazt az appot adja.",
     "inst_become_tester": "Jelentkezz tesztelőnek",
     "inst_you_use_ios": "iPhone-t használsz",
+    "inst_you_use_pc": "Számítógépet használsz",
     "inst_you_use_android": "Androidot használsz",
     "inst_platform": "Eszköz",
     "title_testers": "ATG - Tesztelőknek",

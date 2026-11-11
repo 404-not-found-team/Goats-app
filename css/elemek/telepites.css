@@ -16,6 +16,11 @@
     font-size: var(--fs-xs);
 }
 
+/* amíg a script nem tudja, milyen eszközön vagyunk: a helye megvan, csak nem látszik (nincs elugrás) */
+.tl-cimke.ures {
+    visibility: hidden;
+}
+
 .tl-fo-gomb {
     display: inline-flex;
     align-items: center;

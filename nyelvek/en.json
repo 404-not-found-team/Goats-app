@@ -667,6 +667,7 @@
     "inst_play_soon": "<b>Coming soon to Google Play!</b> Until then, the browser install gives you the same app.",
     "inst_become_tester": "Become a tester",
     "inst_you_use_ios": "You are on iPhone",
+    "inst_you_use_pc": "You are on a computer",
     "inst_you_use_android": "You are on Android",
     "inst_platform": "Device",
     "title_testers": "ATG - For testers",
