@@ -218,6 +218,13 @@
     }
 }
 
+/* billentyűzetes fókusz (Tab): jól látható keret, egérrel kattintva nem jelenik meg */
+.ital-kartya:focus-visible,
+.forras-fejlec:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
 .ital-kartya:hover {
     background-color: rgba(127, 127, 127, 0.1);
 }

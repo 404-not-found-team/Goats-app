@@ -142,7 +142,9 @@ function teljesKirajzolas(adat) {
     epitKiszerelesValaszto();
     epitFormaValaszto();
     document.querySelectorAll('.forras-doboz').forEach(d => {
-        if (nyitottDobozok.has(d.dataset.kategoria)) d.classList.remove('csukva');
+        if (!nyitottDobozok.has(d.dataset.kategoria)) return;
+        d.classList.remove('csukva');
+        d.querySelector('.forras-fejlec')?.setAttribute('aria-expanded', 'true');
     });
 
     document.querySelectorAll('.ranglista-dropzone .ital-kartya').forEach(k => k.remove());
@@ -230,8 +232,24 @@ async function kategoriatValaszt(tier) {
 
 function modalBezár() {
     document.getElementById('modal-hatter').hidden = true;
+    // a fókusz visszakerül arra az italra, amelyiket megnyitották (billentyűzettel így lehet folytatni)
+    const kartya = aktivElemId && document.getElementById(aktivElemId);
     aktivElemId = null;
     aktivItalAdat = null;
+    kartya?.focus();
+}
+
+// Egy nem gomb elem (pl. italkártya, lenyitható fejléc) billentyűzettel is elérhető és megnyomható:
+// Tab-bal ráléphető, Enter vagy szóköz ugyanazt csinálja, mint a kattintás
+function billentyuvelKattinthato(elem, muvelet) {
+    elem.tabIndex = 0;
+    elem.setAttribute('role', 'button');
+    elem.addEventListener('click', muvelet);
+    elem.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        muvelet();
+    });
 }
 
 // ---------- Felépítés ----------
@@ -258,8 +276,7 @@ function epitTierek() {
 }
 
 // Főkategóriánként egy lenyitható doboz; ha vannak alkategóriái, azokon belül alcsoportok
-// (alkategóriánként egy; az alkategória nélküli italok simán a lista szintjén maradnak, nincs
-// külön "Egyéb" csoport)
+// (alkategóriánként egy; az alkategória nélküli italok a lista alján egy "Egyéb" csoportba kerülnek)
 function epitForrasDobozok() {
     const forrasKontenerElem = document.getElementById('forras-dobozok-kontener');
     if (!forrasKontenerElem) return;
@@ -267,7 +284,11 @@ function epitForrasDobozok() {
         const doboz = ujElem('div', 'forras-doboz csukva');
         doboz.dataset.kategoria = fo.kod;
         const fejlec = ujElem('div', 'forras-fejlec');
-        fejlec.addEventListener('click', () => doboz.classList.toggle('csukva'));
+        fejlec.setAttribute('aria-expanded', 'false');
+        billentyuvelKattinthato(fejlec, () => {
+            const csukva = doboz.classList.toggle('csukva');
+            fejlec.setAttribute('aria-expanded', String(!csukva));
+        });
         const cim = ujElem('h3');
         cim.append(document.createTextNode(`${K().nevForditva(fo)} `));
         cim.appendChild(ujElem('span', 'nyil-ikon', '▼'));
@@ -1128,7 +1149,8 @@ function addItalKartyaToUI(ital, rendez = true) {
         kartya.appendChild(ujElem('span', 'jovahagyasra-var', tr('pending_approval', 'Jóváhagyásra vár')));
     }
 
-    kartya.addEventListener('click', () => italReszletek(kartya, ital, fo, kepAdat));
+    kartya.setAttribute('aria-label', ital.nev || '');
+    billentyuvelKattinthato(kartya, () => italReszletek(kartya, ital, fo, kepAdat));
 
     const cel = forrasKontener(kartya);
     if (!cel) return;
@@ -1193,6 +1215,8 @@ function italReszletek(kartya, ital, fo, kepAdat) {
     if (szerkesztesGomb) szerkesztesGomb.hidden = !window.goatsAuth?.isSuperadmin?.();
 
     document.getElementById('modal-hatter').hidden = false;
+    // billentyűzettel a fókusz az ablakba kerül (a bezárás gombra), Esc vagy ✕ után vissza a kártyára
+    document.getElementById('modal-bezar-gomb')?.focus();
 }
 
 // ---------- Ranglista-napló: ki, mikor, hová tette az italt ----------

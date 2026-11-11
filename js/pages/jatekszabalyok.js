@@ -379,30 +379,20 @@ async function jatekMentese() {
     allapot.textContent = tr('saving', 'Mentés...');
 
     try {
-        let jatekId = szerkesztettJatekId;
-
-        if (jatekId) {
-            const { error } = await client.from('jatek_szabalyok').update({
-                cim, leiras, min_jatekosok: minJatekosok, eszkozok, publikus,
-            }).eq('id', jatekId);
-            if (error) throw error;
-
-            const { error: delError } = await client.from('jatek_lepesek').delete().eq('jatek_id', jatekId);
-            if (delError) throw delError;
-        } else {
-            const { data, error } = await client.from('jatek_szabalyok').insert([{
-                cim, leiras, min_jatekosok: minJatekosok, eszkozok, publikus,
-                group_id: sajatGroup.id,
-                csoport_nev: sajatGroup.group_name,
-            }]).select().single();
-            if (error) throw error;
-            jatekId = data.id;
-        }
-
-        const { error: insError } = await client.from('jatek_lepesek').insert(
-            lepesek.map(l => ({ ...l, jatek_id: jatekId }))
-        );
-        if (insError) throw insError;
+        // Egyetlen adatbázis-hívás (jatek_mentese): a játék és a lépései egy tranzakcióban mentődnek,
+        // így hiba esetén nem maradhat lépések nélküli játék
+        const { data: jatekId, error } = await client.rpc('jatek_mentese', {
+            p_jatek_id: szerkesztettJatekId || null,
+            p_cim: cim,
+            p_leiras: leiras,
+            p_min_jatekosok: minJatekosok,
+            p_eszkozok: eszkozok,
+            p_publikus: publikus,
+            p_group_id: sajatGroup.id,
+            p_csoport_nev: sajatGroup.group_name,
+            p_lepesek: lepesek,
+        });
+        if (error) throw error;
 
         document.getElementById('jatek-szerkeszto-modal').hidden = true;
         await betoltesJatekok();
