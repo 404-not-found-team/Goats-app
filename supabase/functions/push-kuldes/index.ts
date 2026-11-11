@@ -7,14 +7,19 @@
 // - Címzettek: tartozásnál az adós (ha nem ő maga vette fel); jelentésnél és jóváhagyásra váró italnál
 //   a superadminok (profiles.system_role = 'superadmin'); új naptáreseménynél a csoport tagjai, kivéve
 //   aki felvette (esemenyek.felvette_id).
-// - Nyelv: profiles.language, ha üres, a feliratkozáskor rögzített eszköznyelv, végül magyar.
+// - Nyelv (magyar, angol, német): profiles.language, ha üres, a feliratkozáskor rögzített eszköznyelv,
+//   végül magyar.
 // - A lejárt (404/410) feliratkozásokat törli.
 // Titkos beállítások: VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT (mailto:...).
 // Telepítés: supabase functions deploy push-kuldes --no-verify-jwt
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import webpush from 'npm:web-push@3.6.7';
 
-type Nyelv = 'hu' | 'en';
+type Nyelv = 'hu' | 'en' | 'de';
+const NYELVEK: Nyelv[] = ['hu', 'en', 'de'];
+const LOCALE: Record<Nyelv, string> = { hu: 'hu-HU', en: 'en-GB', de: 'de-DE' };
+// a három nyelvű szövegek közül a címzett nyelvén lévő
+const sz = (ny: Nyelv, hu: string, en: string, de: string) => (ny === 'hu' ? hu : ny === 'de' ? de : en);
 type Uzenet = { cim: string; szoveg: string; url: string; tag: string };
 
 const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
@@ -34,16 +39,16 @@ const valasz = (statusz: number, adat: Record<string, unknown>) =>
 const nakNek = (nev: string) => nev + (/[aáoóuú]/i.test(nev) ? 'nak' : 'nek');
 
 const osszeg = (ertek: number, nyelv: Nyelv) =>
-    `${new Intl.NumberFormat(nyelv === 'hu' ? 'hu-HU' : 'en-GB', { maximumFractionDigits: 0 }).format(ertek)} Ft`;
+    `${new Intl.NumberFormat(LOCALE[nyelv], { maximumFractionDigits: 0 }).format(ertek)} Ft`;
 
 // A közös költség leírásának végén lévő "(10 000 Ft / 4 fő)" záradék itt felesleges
 const alapMiert = (miert: string) => String(miert || '').replace(/\s*\([^)]*\)\s*$/, '');
 
 const JELENTES_OK: Record<string, Record<Nyelv, string>> = {
-    gyermekbiztonsag: { hu: 'gyermekbiztonság', en: 'child safety' },
-    jogellenes: { hu: 'jogellenes tartalom', en: 'illegal content' },
-    zaklatas: { hu: 'zaklatás', en: 'harassment' },
-    egyeb: { hu: 'egyéb', en: 'other' },
+    gyermekbiztonsag: { hu: 'gyermekbiztonság', en: 'child safety', de: 'Kinderschutz' },
+    jogellenes: { hu: 'jogellenes tartalom', en: 'illegal content', de: 'illegaler Inhalt' },
+    zaklatas: { hu: 'zaklatás', en: 'harassment', de: 'Belästigung' },
+    egyeb: { hu: 'egyéb', en: 'other', de: 'Sonstiges' },
 };
 
 async function nevek(idk: string[]): Promise<Map<string, string>> {
@@ -72,10 +77,11 @@ async function tartozasok(idk: number[]): Promise<Kuldendo[]> {
         return {
             userId: t.ados_id,
             uzenet: (ny) => ({
-                cim: ny === 'hu' ? 'Új tartozás' : 'New debt',
-                szoveg: ny === 'hu'
-                    ? `Tartozol ${nakNek(hitelezo)} ${osszeg(Number(t.mennyiert) || 0, ny)}-tal: ${miert}`
-                    : `You owe ${hitelezo} ${osszeg(Number(t.mennyiert) || 0, ny)}: ${miert}`,
+                cim: sz(ny, 'Új tartozás', 'New debt', 'Neue Schuld'),
+                szoveg: sz(ny,
+                    `Tartozol ${nakNek(hitelezo)} ${osszeg(Number(t.mennyiert) || 0, ny)}-tal: ${miert}`,
+                    `You owe ${hitelezo} ${osszeg(Number(t.mennyiert) || 0, ny)}: ${miert}`,
+                    `Du schuldest ${hitelezo} ${osszeg(Number(t.mennyiert) || 0, ny)}: ${miert}`),
                 url: 'tartozasok.html',
                 tag: `tartozas-${t.id}`,
             }),
@@ -90,10 +96,11 @@ async function jelentesek(idk: string[]): Promise<Kuldendo[]> {
     return (data || []).flatMap(j => cimzettek.map(userId => ({
         userId,
         uzenet: (ny: Nyelv) => ({
-            cim: ny === 'hu' ? 'Új jelentés' : 'New report',
-            szoveg: ny === 'hu'
-                ? `Egy felhasználó jelentett egy ${j.cel_tipus === 'kep' ? 'képet' : 'tartalmat'} (${JELENTES_OK[j.ok]?.hu || j.ok}).`
-                : `A user reported ${j.cel_tipus === 'kep' ? 'a picture' : 'some content'} (${JELENTES_OK[j.ok]?.en || j.ok}).`,
+            cim: sz(ny, 'Új jelentés', 'New report', 'Neue Meldung'),
+            szoveg: sz(ny,
+                `Egy felhasználó jelentett egy ${j.cel_tipus === 'kep' ? 'képet' : 'tartalmat'} (${JELENTES_OK[j.ok]?.hu || j.ok}).`,
+                `A user reported ${j.cel_tipus === 'kep' ? 'a picture' : 'some content'} (${JELENTES_OK[j.ok]?.en || j.ok}).`,
+                `Ein Nutzer hat ${j.cel_tipus === 'kep' ? 'ein Bild' : 'einen Inhalt'} gemeldet (${JELENTES_OK[j.ok]?.de || j.ok}).`),
             url: 'admin.html#jelentesek',
             tag: `jelentes-${j.id}`,
         }),
@@ -109,8 +116,8 @@ async function italok(idk: number[]): Promise<Kuldendo[]> {
     return varakozok.flatMap(i => cimzettek.filter(id => id !== i.javasolta_id).map(userId => ({
         userId,
         uzenet: (ny: Nyelv) => ({
-            cim: ny === 'hu' ? 'Jóváhagyásra váró ital' : 'Drink awaiting approval',
-            szoveg: ny === 'hu' ? `Új italjavaslat: ${i.nev}` : `New drink suggestion: ${i.nev}`,
+            cim: sz(ny, 'Jóváhagyásra váró ital', 'Drink awaiting approval', 'Getränk wartet auf Freigabe'),
+            szoveg: sz(ny, `Új italjavaslat: ${i.nev}`, `New drink suggestion: ${i.nev}`, `Neuer Getränkevorschlag: ${i.nev}`),
             url: 'admin.html#javaslatok',
             tag: `ital-${i.id}`,
         }),
@@ -121,7 +128,7 @@ async function italok(idk: number[]): Promise<Kuldendo[]> {
 const datumSzoveg = (datum: string, nyelv: Nyelv) => {
     const d = new Date(`${datum}T00:00:00Z`);
     if (Number.isNaN(d.getTime())) return datum;
-    return new Intl.DateTimeFormat(nyelv === 'hu' ? 'hu-HU' : 'en-GB', {
+    return new Intl.DateTimeFormat(LOCALE[nyelv], {
         month: 'short', day: 'numeric', weekday: 'long', timeZone: 'UTC',
     }).format(d);
 };
@@ -153,10 +160,11 @@ async function esemenyek(idk: string[]): Promise<Kuldendo[]> {
         return (kodSzerintiTagok.get(e.group_code) || []).filter(id => id !== e.felvette_id).map(userId => ({
             userId,
             uzenet: (ny: Nyelv) => ({
-                cim: ny === 'hu' ? 'Új esemény' : 'New event',
-                szoveg: ny === 'hu'
-                    ? `${ki ? `${ki} felvette: ` : ''}${e.cim} – ${datumSzoveg(e.datum, ny)}`
-                    : `${ki ? `${ki} added: ` : ''}${e.cim} – ${datumSzoveg(e.datum, ny)}`,
+                cim: sz(ny, 'Új esemény', 'New event', 'Neuer Termin'),
+                szoveg: sz(ny,
+                    `${ki ? `${ki} felvette: ` : ''}${e.cim} – ${datumSzoveg(e.datum, ny)}`,
+                    `${ki ? `${ki} added: ` : ''}${e.cim} – ${datumSzoveg(e.datum, ny)}`,
+                    `${ki ? `${ki} hat hinzugefügt: ` : ''}${e.cim} – ${datumSzoveg(e.datum, ny)}`),
                 url: 'app.html',
                 tag: `esemeny-${e.id}`,
             }),
@@ -177,7 +185,8 @@ async function kuldes(lista: Kuldendo[]) {
     const sikeres: number[] = [];
 
     await Promise.all(lista.flatMap(k => (feliratkozasok || []).filter(f => f.user_id === k.userId).map(async f => {
-        const ny: Nyelv = (fiokNyelv.get(f.user_id) || f.nyelv) === 'en' ? 'en' : 'hu';
+        const nyelvKod = fiokNyelv.get(f.user_id) || f.nyelv;
+        const ny: Nyelv = NYELVEK.includes(nyelvKod) ? nyelvKod : 'hu';
         try {
             await webpush.sendNotification(
                 { endpoint: f.endpoint, keys: { p256dh: f.p256dh, auth: f.auth } },

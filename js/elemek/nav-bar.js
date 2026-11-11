@@ -116,6 +116,10 @@ function rajzol() {
 
     oldalFulekKirajzolasa(menuOldalak, aktualisUtvonal);
 
+    // oldalra húzás telefonon: az alsó sáv fő oldalai között (Kezdőlap, Tartozások, Ranglista)
+    lapozhatoOldalak = menuOldalak.filter(o => o.fo).map(o => (o.kulcs === 'index' ? (user ? 'app.html' : 'index.html') : o.fajl));
+    lapozasBekotese();
+
     // Mobilon a "Több ☰" gomb, ha van extra oldal
     if (vanExtraOldal) {
         const moreLi = document.createElement('li');
@@ -162,3 +166,66 @@ function oldalFulekKirajzolasa(menuOldalak, aktualisUtvonal) {
         fulek.appendChild(link);
     });
 }
+
+// ---------- Lapozás oldalra húzással (telefonon, mint az Instán) ----------
+// Balra húzva a következő, jobbra húzva az előző fő oldal nyílik meg. Nem lapoz, ha a húzás egy
+// beviteli mezőn, a galérián, egy vízszintesen görgethető elemen indult, ha egy ablak vagy a fiók
+// nyitva van, vagy ha a képernyő szélénél kezdődik (ott a telefon saját "vissza" mozdulata van).
+let lapozhatoOldalak = [];
+let lapozasBekotve = false;
+
+const LAPOZAS_KIVETEL = 'input, textarea, select, [contenteditable="true"], .kepek, .ital-kartya, [data-nem-lapoz]';
+const NYITOTT_ABLAK = '.sm-overlay:not([hidden]), #modal-hatter:not([hidden]), .nav-more-drawer.open, dialog[open]';
+
+function vizszintesenGorgetheto(elem) {
+    for (let e = elem; e && e !== document.body; e = e.parentElement) {
+        if (e.scrollWidth > e.clientWidth + 1 && /(auto|scroll)/.test(getComputedStyle(e).overflowX)) return true;
+    }
+    return false;
+}
+
+function lapozasBekotese() {
+    if (lapozasBekotve) return;
+    lapozasBekotve = true;
+    const telefon = window.matchMedia('(max-width: 600px)');
+    let kezdet = null;
+
+    document.addEventListener('touchstart', (e) => {
+        kezdet = null;
+        if (!telefon.matches || e.touches.length !== 1) return;
+        const t = e.touches[0];
+        if (t.clientX < 24 || t.clientX > window.innerWidth - 24) return;
+        if (e.target.closest?.(LAPOZAS_KIVETEL) || document.querySelector(NYITOTT_ABLAK)) return;
+        if (vizszintesenGorgetheto(e.target)) return;
+        kezdet = { x: t.clientX, y: t.clientY, ido: Date.now() };
+    }, { passive: true });
+
+    document.addEventListener('touchcancel', () => { kezdet = null; }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+        if (!kezdet) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - kezdet.x;
+        const dy = t.clientY - kezdet.y;
+        const ido = Date.now() - kezdet.ido;
+        kezdet = null;
+        if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.8 || ido > 700) return;
+        if (window.getSelection?.()?.toString()) return; // szöveget jelöltek ki
+
+        const aktualis = window.location.pathname.split('/').pop() || 'index.html';
+        const i = lapozhatoOldalak.indexOf(aktualis === 'index.html' && lapozhatoOldalak.includes('app.html') ? 'app.html' : aktualis);
+        if (i === -1) return;
+        const cel = lapozhatoOldalak[i + (dx < 0 ? 1 : -1)];
+        if (!cel) return;
+        lapozasFolyamatban = true;
+        window.location.href = cel;
+    }, { passive: true });
+}
+
+// Csak a húzással indított oldalváltásnál legyen áttűnés (lásd navbar.css @view-transition), minden más
+// oldalváltásnál kihagyjuk; ezért a figyelő minden oldalon fut, nem csak ahol van menü
+let lapozasFolyamatban = false;
+window.addEventListener('pageswap', (e) => {
+    if (!lapozasFolyamatban) e.viewTransition?.skipTransition();
+    lapozasFolyamatban = false;
+});

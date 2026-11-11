@@ -9,6 +9,7 @@
 const NYELVEK = [
     { id: 'hu', name: 'Magyar' },
     { id: 'en', name: 'English' },
+    { id: 'de', name: 'Deutsch' },
 ];
 
 const nyelv = () => window.goatsNyelv;

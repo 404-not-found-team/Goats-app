@@ -19,7 +19,7 @@ export const OLDALAK = [
 
 // Összevont menüpontok: a tagjaik közül az első látható oldalra visznek
 export const MENUK = {
-    jatekok: { kulcs: 'jatekok', nev: tr('page_games', 'Játékok'), emoji: '🎲', fo: true },
+    jatekok: { kulcs: 'jatekok', nev: tr('page_games', 'Játékok'), emoji: '🎲' },
 };
 
 // Csak superadminnak, a csoporttól és a kapcsolóktól függetlenül

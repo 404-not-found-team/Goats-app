@@ -10,11 +10,11 @@
 //   Ha a kulcs nincs a nyelvi fájlban, az alapszöveg (magyar) jelenik meg.
 // - A script a <head> ELSŐ scriptje, hogy minden más (modulok is) már lefordított szöveget kapjon.
 (function () {
-    const NYELVEK = ['hu', 'en'];
+    const NYELVEK = ['hu', 'en', 'de'];
     const ALAP = 'hu';
     const TAROLO_NYELV = 'goats_lang';
     const TAROLO_FORDITAS = (kod) => `goats_forditas_${kod}`;
-    const LOCALE = { hu: 'hu-HU', en: 'en-GB' };
+    const LOCALE = { hu: 'hu-HU', en: 'en-GB', de: 'de-DE' };
 
     const olvas = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
     const ir = (k, v) => { try { localStorage.setItem(k, v); } catch { /* privát mód, tele tár: nem kritikus */ } };

@@ -299,7 +299,8 @@ function menuBezarasa(fokuszVissza = false) {
 }
 
 // Egy lépés szövegét (a tárolt sortördelt formátumot) értelmezi: a "-"-tal kezdődő sorok
-// elágazások (feltétel+következmény, "?" választja el őket), a többi a felvezető szöveg.
+// elágazások, a többi a felvezető szöveg. Egy elágazás: "-feltétel → következmény". A régebbi
+// mentésekben nincs nyíl, ott az első "?" választja el őket ("-Ha nem iszik? Dupla adag").
 // Ugyanezt a formátumot építi vissza a szerkesztő (lásd lepesSzovegEpit).
 function lepesSzovegFelbont(szoveg) {
     const sorok = String(szoveg || '').split('\n').map(s => s.trim()).filter(Boolean);
@@ -308,6 +309,11 @@ function lepesSzovegFelbont(szoveg) {
     sorok.forEach(sor => {
         if (!sor.startsWith('-')) { bekezdes.push(sor); return; }
         const tartalom = sor.slice(1).trim();
+        const nyil = tartalom.indexOf('→');
+        if (nyil !== -1) {
+            kimenetek.push({ feltetel: tartalom.slice(0, nyil).trim(), kovetkezmeny: tartalom.slice(nyil + 1).trim() });
+            return;
+        }
         const i = tartalom.indexOf('?');
         kimenetek.push(i === -1
             ? { feltetel: '', kovetkezmeny: tartalom }
@@ -323,7 +329,9 @@ function lepesSzovegEpit(bekezdes, kimenetek) {
     kimenetek.forEach(({ feltetel, kovetkezmeny }) => {
         const f = (feltetel || '').trim();
         const k = (kovetkezmeny || '').trim();
-        if (f || k) sorok.push(`-${[f, k].filter(Boolean).join(' ')}`);
+        // feltétellel nyíl választja el (így a kérdőjel nélküli feltétel sem csúszik át a következménybe)
+        if (f) sorok.push(`-${f} → ${k}`.trimEnd());
+        else if (k) sorok.push(`-${k}`);
     });
     return sorok.join('\n');
 }

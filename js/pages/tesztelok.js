@@ -2,8 +2,9 @@
 // Feladata: az "Újdonságok" idővonal kirajzolása a kiválasztott nyelven, és a lábléci nyelvváltó.
 import { UJDONSAGOK } from './tesztelok-ujdonsagok.js';
 
+// az újdonságok magyarul és angolul vannak meg: minden más nyelven (pl. német) az angol jelenik meg
 function nyelv() {
-    return window.goatsNyelv?.aktualis?.() === 'en' ? 'en' : 'hu';
+    return window.goatsNyelv?.aktualis?.() === 'hu' ? 'hu' : 'en';
 }
 
 function datumSzoveg(iso) {
@@ -47,7 +48,7 @@ function kirajzolUjdonsagokat() {
 
 function kezelNyelvvaltot() {
     const gombok = [...document.querySelectorAll('[data-nyelv]')];
-    const jelol = () => gombok.forEach((g) => g.setAttribute('aria-pressed', String(g.dataset.nyelv === nyelv())));
+    const jelol = () => gombok.forEach((g) => g.setAttribute('aria-pressed', String(g.dataset.nyelv === window.goatsNyelv?.aktualis?.())));
     gombok.forEach((g) => g.addEventListener('click', () => window.goatsNyelv?.valt?.(g.dataset.nyelv)));
     jelol();
     window.goatsNyelv?.onValtozas?.(() => {

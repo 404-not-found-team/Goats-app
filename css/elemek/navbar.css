@@ -1,3 +1,22 @@
+/* Oldalak közti áttűnés: csak az oldalra húzással indított lapozásnál fut
+   (a többi oldalváltásnál a nav-bar.js kihagyja, lásd pageswap) */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 0.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
+    }
+}
+
 /* Felső menüsor */
 ul {
     list-style: none;

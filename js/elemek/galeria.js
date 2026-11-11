@@ -53,6 +53,7 @@ async function betoltKepek() {
             currentIndex = Math.max(0, kepekLista.length - 1);
         }
         frissitGaleria();
+        automataUtemezes();
     };
 
     if (window.goatsAdatTar) await window.goatsAdatTar.betolt('galeria', lekero, megjelenito);
@@ -124,12 +125,54 @@ function eloKep() {
     if (kepekLista.length === 0) return;
     currentIndex = (currentIndex + 1) % kepekLista.length;
     frissitGaleria();
+    automataUtemezes(); // kézi lapozás után újra a teljes idő, mielőtt magától továbblép
 }
 
 function kovKep() {
     if (kepekLista.length === 0) return;
     currentIndex = (currentIndex - 1 + kepekLista.length) % kepekLista.length;
     frissitGaleria();
+    automataUtemezes();
+}
+
+// ---------- Automatikus váltás és húzás ----------
+// A képek 6 másodpercenként maguktól továbblépnek: a jobb oldali kép kerül középre. Megáll, amíg az egér a képsáv
+// fölött van, a fókusz benne van, a lap nem látszik, vagy ha a rendszerben kérték a mozgás csökkentését.
+// Telefonon a képsávon oldalra húzva is lehet lapozni (a nav-bar.js oldallapozása itt nem indul el).
+const VALTAS_MS = 6000;
+let automataIdozito = null;
+let automataSzunetel = false;
+const kevesebbMozgas = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+
+function automataUtemezes() {
+    clearTimeout(automataIdozito);
+    if (kepekLista.length < 2 || kevesebbMozgas?.matches) return;
+    automataIdozito = setTimeout(() => {
+        if (automataSzunetel || document.hidden) automataUtemezes();
+        else eloKep();
+    }, VALTAS_MS);
+}
+
+function automataBekotese() {
+    const sav = document.querySelector('.kepek');
+    if (!sav) return;
+    sav.addEventListener('mouseenter', () => { automataSzunetel = true; });
+    sav.addEventListener('mouseleave', () => { automataSzunetel = false; });
+    sav.addEventListener('focusin', () => { automataSzunetel = true; });
+    sav.addEventListener('focusout', () => { automataSzunetel = false; });
+
+    let kezdet = null;
+    sav.addEventListener('touchstart', (e) => {
+        kezdet = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+    }, { passive: true });
+    sav.addEventListener('touchend', (e) => {
+        if (!kezdet) return;
+        const dx = e.changedTouches[0].clientX - kezdet.x;
+        const dy = e.changedTouches[0].clientY - kezdet.y;
+        kezdet = null;
+        if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        if (dx < 0) eloKep(); else kovKep(); // balra húzva a jobb oldali kép kerül középre
+    }, { passive: true });
 }
 
 // Az "Összes kép" link ugyanakkor látszik, mint a menüben a Képek fül: superadminnak mindig,
@@ -146,5 +189,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (window.goatsAuth) await window.goatsAuth.ready;
     osszesKepLinkFrissites();
     window.goatsAuth?.onChange(osszesKepLinkFrissites); // a háttérben érkező friss kapcsolók után is
+    automataBekotese();
     betoltKepek();
 });
