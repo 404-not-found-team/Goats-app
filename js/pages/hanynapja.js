@@ -1,6 +1,6 @@
 // Hány napja: a saját számlálóid és a csoporttársak megosztott számlálói (public.hanynapja).
-// A láthatóságot és a jogosultságot az RLS dönti el: a sajátod mindig látszik és módosítható,
-// másé csak akkor látszik, ha lathato_csoportnak = true (és csak olvasható).
+// Minden számlálót a csoport is lát (lathato_csoportnak = true, ez az alapérték); a jogosultságot
+// az RLS dönti el: a sajátod módosítható, a csoporttársakéi csak olvashatók.
 import { client } from '../supabase-client.js';
 import { ready, getState } from '../hitelesites.js';
 
@@ -129,7 +129,7 @@ function kartya(h) {
     return elem;
 }
 
-// ⋮ menü (mint a Képek oldalon): láthatóság váltása és törlés
+// ⋮ menü (mint a Képek oldalon): törlés
 function muveletMenu(h) {
     const menu = document.createElement('div');
     menu.className = 'hn-menu';
@@ -159,8 +159,6 @@ function muveletMenu(h) {
         return b;
     };
     lista.append(
-        pont(h.lathato_csoportnak ? tr('hn_hide_from_group', 'Elrejtés a csoport elől') : tr('hn_show_to_group', 'Lássa a csoport is'),
-            '', () => lathatosagValtas(h)),
         pont(tr('delete', 'Törlés'), 'veszelyes', () => torles(h)),
     );
 
@@ -400,7 +398,7 @@ async function felvetel(e) {
         sablon_id: sablon.id,
         utoljara: datum,
         group_id: group.id,
-        lathato_csoportnak: document.getElementById('hn-lathato').checked,
+        lathato_csoportnak: true,
     });
     if (error) {
         console.error('A számláló felvétele nem sikerült:', error);
@@ -440,18 +438,6 @@ async function ujrakezdes(h, datum) {
         return;
     }
     allapot('');
-    await betoltes();
-}
-
-async function lathatosagValtas(h) {
-    const { error } = await client.from('hanynapja')
-        .update({ lathato_csoportnak: !h.lathato_csoportnak })
-        .eq('id', h.id);
-    if (error) {
-        console.error('A láthatóság módosítása nem sikerült:', error);
-        allapot(tr('err_saving', 'Hiba történt a mentéskor!'), true);
-        return;
-    }
     await betoltes();
 }
 

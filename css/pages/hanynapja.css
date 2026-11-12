@@ -182,20 +182,13 @@
     min-width: 0;
 }
 
-.hn-datum-cimke,
-.hn-lathato {
+.hn-datum-cimke {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     color: var(--text-secondary);
     font-size: var(--fs-sm);
     font-weight: 600;
-}
-
-.hn-lathato input {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--accent-color);
 }
 
 .hn-allapot {
@@ -459,11 +452,6 @@ select.hn-mezo {
 
 .hn-masik-panel .hn-gomb-fo {
     min-height: 42px;
-}
-
-.hn-gomb-lathato[aria-pressed="true"] {
-    border-color: color-mix(in srgb, var(--ok-color) 50%, transparent);
-    color: var(--ok-color);
 }
 
 .hn-gomb-torles {
