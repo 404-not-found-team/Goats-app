@@ -27,8 +27,10 @@ async function regisztracio() {
 
 async function aktualisFeliratkozas() {
     if (!tamogatott()) return null;
-    const reg = await regisztracio();
-    return reg.pushManager.getSubscription();
+    // getRegistration() nem vár: ha az oldalhoz még nincs aktív service worker, a ready sosem
+    // teljesülne, és a kijelentkezés (ami ezt hívja) örökre megakadna. Service worker nélkül feliratkozás sincs.
+    const reg = await navigator.serviceWorker.getRegistration();
+    return reg?.active ? reg.pushManager.getSubscription() : null;
 }
 
 export async function bekapcsol() {

@@ -1,8 +1,3 @@
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-        .then(() => console.log('Service Worker regisztrálva'));
-}
-
 const BUCKET_NEV = 'kepek';
 
 // Főoldali galéria: csak lapozható nézegető, kis képekkel (nagyítás nincs, FELADAT12).
