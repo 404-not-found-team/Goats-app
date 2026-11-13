@@ -122,6 +122,8 @@
     "previous_section": "Previous Section",
     "next_section": "Next Section",
     "back_to_app": "← Back to App",
+    "not_found_title": "Page not found",
+    "not_found_text": "This page does not exist or has moved.",
     "last_updated": "Last updated:",
     "effective_date": "Effective date:",
     "version": "Version:",

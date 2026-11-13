@@ -1,6 +1,8 @@
 // A beállítások menü modaljai, modalonként külön sablonban (statikus HTML, felhasználói szöveg nincs
 // benne: a neveket, adatokat a modulok textContent-tel írják be). A feliratok tr()-rel a kiválasztott
 // nyelven kerülnek be (a nyelvi fájlból, ezért HTML-ként beilleszthetők). Az injectUserNavHTML() fűzi be őket.
+// A jogi oldalak linkjei az ut()-tal teljes címek, mert a modal az app minden mappájának oldalain megnyílik.
+import { ut } from '../../segedek/utvonal.js';
 
 // Kis vonalas ikonok (SVG) a gombokhoz: emoji helyett, a téma szövegszínét veszik fel
 const IKON = {
@@ -39,9 +41,9 @@ const BELEPES_MODAL = `
         </button>
         <p class="mt-15 szoveg-kicsi">
           ${tr('login_agreement_prefix', 'A bejelentkezéssel elfogadod a')}
-          <a href="felhasznalasi-feltetelek.html" target="_blank" rel="noopener" class="link-akcent">${tr('the_terms_link', 'Felhasználási feltételeket')}</a>
+          <a href="${ut('jogi/felhasznalasi-feltetelek.html')}" target="_blank" rel="noopener" class="link-akcent">${tr('the_terms_link', 'Felhasználási feltételeket')}</a>
           ${tr('login_agreement_middle', 'és az')}
-          <a href="privacy.html" target="_blank" rel="noopener" class="link-akcent">${tr('the_privacy_link', 'Adatvédelmi tájékoztatót')}</a>${tr('login_agreement_suffix', ', és kijelented, hogy elmúltál 18 éves.')}
+          <a href="${ut('jogi/privacy.html')}" target="_blank" rel="noopener" class="link-akcent">${tr('the_privacy_link', 'Adatvédelmi tájékoztatót')}</a>${tr('login_agreement_suffix', ', és kijelented, hogy elmúltál 18 éves.')}
         </p>
       </div>
 
@@ -160,7 +162,7 @@ const TOS_UJRAELFOGADAS_MODAL = `
           ${tr('tos_updated_text', 'A Felhasználási feltételeket azóta frissítettük, hogy utoljára elfogadtad. A továbbhasználathoz el kell fogadnod az új verziót.')}
         </p>
         <p>
-          <a href="felhasznalasi-feltetelek.html" target="_blank" rel="noopener" class="link-akcent">${tr('open_full_text', 'A teljes szöveg megnyitása')}</a>
+          <a href="${ut('jogi/felhasznalasi-feltetelek.html')}" target="_blank" rel="noopener" class="link-akcent">${tr('open_full_text', 'A teljes szöveg megnyitása')}</a>
         </p>
         <button id="ujraelfogad-btn" type="button" class="sm-btn sm-btn-save">${tr('i_accept', 'Elfogadom')}</button>
         <p id="ujraelfogadas-status" class="sm-status sm-status-small"></p>
@@ -208,7 +210,7 @@ const BEALLITASOK_MODAL = `
         </div>
 
         <p class="sm-label valaszto-kovetkezo">${tr('other', 'Egyéb')}</p>
-        <a href="jogi.html" class="beall-doboz beall-link-sor"><span>${tr('legal_information', 'Jogi információk')}</span><span class="arrow-icon">›</span></a>
+        <a href="${ut('jogi/')}" class="beall-doboz beall-link-sor"><span>${tr('legal_information', 'Jogi információk')}</span><span class="arrow-icon">›</span></a>
 
         <p class="sm-label valaszto-kovetkezo">${tr('danger_zone', 'Veszélyes műveletek')}</p>
         <div class="beall-veszely">

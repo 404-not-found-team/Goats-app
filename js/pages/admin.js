@@ -7,6 +7,7 @@
 import { client } from '../supabase-client.js';
 import { ready, getState, isSuperadmin, onChange } from '../hitelesites.js';
 import { OLDALAK, FUNKCIOK } from '../segedek/oldalak.js';
+import { ut } from '../segedek/utvonal.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -29,11 +30,11 @@ let ertekek = {}; // kulcs -> boolean (a szerver szerinti állapot)
 // Igaz, ha továbbirányítottunk (ilyenkor semmit nem töltünk be)
 function jogosultsagEllenorzes() {
     if (!getState().user) {
-        location.replace('index.html');
+        location.replace(ut('index.html'));
         return true;
     }
     if (!isSuperadmin()) {
-        location.replace('app.html');
+        location.replace(ut('oldalak/app.html'));
         return true;
     }
     return false;

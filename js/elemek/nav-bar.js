@@ -1,6 +1,7 @@
 import { ready, getState, onChange, isSuperadmin, oldalEngedelyezett } from '../hitelesites.js';
 import { jeloles } from '../segedek/teljesitmeny.js';
 import { OLDALAK, ADMIN_OLDAL, MENUK } from '../segedek/oldalak.js';
+import { ut, aktualisOldal } from '../segedek/utvonal.js';
 
 // Az utoljára kirajzolt menü azonosítója: a háttérfrissítés (onChange) csak változáskor rajzol újra
 let kirajzoltMenu = null;
@@ -47,7 +48,7 @@ function rajzol() {
     if (menuAzonosito === kirajzoltMenu) return;
     kirajzoltMenu = menuAzonosito;
 
-    const aktualisUtvonal = window.location.pathname.split('/').pop() || "index.html";
+    const aktualisUtvonal = aktualisOldal();
     navBar.innerHTML = '';
 
     // Felnyíló fiók (More Drawer) mobilon
@@ -79,9 +80,9 @@ function rajzol() {
     let vanExtraOldal = false;
 
     for (const o of menuOldalak) {
-        // A "Kezdőlap" fül bejelentkezve az app.html-re visz (ott az alkalmazás), kijelentkezve
+        // A "Kezdőlap" fül bejelentkezve az oldalak/app.html-re visz (ott az alkalmazás), kijelentkezve
         // (vagy ha még nincs session) az index.html-re (a bejelentkezési oldalra).
-        const celFajl = o.kulcs === 'index' ? (user ? 'app.html' : 'index.html') : o.fajl;
+        const celFajl = o.kulcs === 'index' ? (user ? 'oldalak/app.html' : 'index.html') : o.fajl;
         const isMainTab = !!o.fo;
 
         const oldal = document.createElement('li');
@@ -90,7 +91,7 @@ function rajzol() {
         const emojiNev = document.createElement('span');
 
         // Az "app.html" is a "Kezdőlap" fület jelöli aktívnak, nem csak az "index.html"
-        const aktivE = aktualisUtvonal === celFajl || (o.kulcs === 'index' && aktualisUtvonal === 'app.html')
+        const aktivE = aktualisUtvonal === celFajl || (o.kulcs === 'index' && aktualisUtvonal === 'oldalak/app.html')
             || !!o.tagok?.some(t => t.fajl === aktualisUtvonal);
         if (aktivE) oldal.className = "active";
 
@@ -102,7 +103,7 @@ function rajzol() {
         emojiNev.className = "rovid-szoveg";
         link.appendChild(emojiNev);
 
-        link.href = celFajl;
+        link.href = ut(celFajl);
         oldal.appendChild(link);
 
         if (isMainTab) {
@@ -119,7 +120,7 @@ function rajzol() {
     oldalFulekKirajzolasa(menuOldalak, aktualisUtvonal);
 
     // oldalra húzás telefonon: az alsó sáv fő oldalai között (Kezdőlap, Tartozások, Ranglista)
-    lapozhatoOldalak = menuOldalak.filter(o => o.fo).map(o => (o.kulcs === 'index' ? (user ? 'app.html' : 'index.html') : o.fajl));
+    lapozhatoOldalak = menuOldalak.filter(o => o.fo).map(o => (o.kulcs === 'index' ? (user ? 'oldalak/app.html' : 'index.html') : o.fajl));
     lapozasBekotese();
 
     // Mobilon a "Több ☰" gomb, ha van extra oldal
@@ -162,7 +163,7 @@ function oldalFulekKirajzolasa(menuOldalak, aktualisUtvonal) {
     tagok.forEach(t => {
         const link = document.createElement('a');
         link.className = 'oldal-ful';
-        link.href = t.fajl;
+        link.href = ut(t.fajl);
         link.textContent = t.nev;
         if (t.fajl === aktualisUtvonal) link.setAttribute('aria-current', 'page');
         fulek.appendChild(link);
@@ -214,13 +215,13 @@ function lapozasBekotese() {
         if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.8 || ido > 700) return;
         if (window.getSelection?.()?.toString()) return; // szöveget jelöltek ki
 
-        const aktualis = window.location.pathname.split('/').pop() || 'index.html';
-        const i = lapozhatoOldalak.indexOf(aktualis === 'index.html' && lapozhatoOldalak.includes('app.html') ? 'app.html' : aktualis);
+        const aktualis = aktualisOldal();
+        const i = lapozhatoOldalak.indexOf(aktualis === 'index.html' && lapozhatoOldalak.includes('oldalak/app.html') ? 'oldalak/app.html' : aktualis);
         if (i === -1) return;
         const cel = lapozhatoOldalak[i + (dx < 0 ? 1 : -1)];
         if (!cel) return;
         lapozasFolyamatban = true;
-        window.location.href = cel;
+        window.location.href = ut(cel);
     }, { passive: true });
 }
 

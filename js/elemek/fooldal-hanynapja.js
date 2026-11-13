@@ -4,6 +4,7 @@
 import { client } from '../supabase-client.js';
 import { ready, getState, oldalEngedelyezett } from '../hitelesites.js';
 import { betolt } from '../segedek/adat-gyorsitotar.js';
+import { ut } from '../segedek/utvonal.js';
 
 // Hány nap telt el az "utoljara" dátum (ÉÉÉÉ-HH-NN) óta, helyi idő szerint
 function napokOta(datum) {
@@ -16,7 +17,7 @@ function napokOta(datum) {
 function csempe(h) {
     const a = document.createElement('a');
     a.className = 'fo-hn-csempe';
-    a.href = 'hanynapja.html';
+    a.href = ut('oldalak/hanynapja.html');
 
     const nev = document.createElement('span');
     nev.className = 'fo-hn-nev';
@@ -47,7 +48,7 @@ function kirajzol(sorok) {
     } else {
         const ures = document.createElement('a');
         ures.className = 'fo-hn-ures';
-        ures.href = 'hanynapja.html';
+        ures.href = ut('oldalak/hanynapja.html');
         ures.textContent = tr('hn_home_empty', 'Még nincs számlálód. Vegyél fel egyet!');
         lista.replaceChildren(ures);
     }

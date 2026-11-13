@@ -6,6 +6,7 @@
 // ezért a publikus oldalakat (pl. Ranglista) ilyenkor nem korlátozza.
 // Modul: a main.js importálja.
 import { ready, getState, onChange, oldalEngedelyezett } from '../hitelesites.js';
+import { ut } from './utvonal.js';
 
 const UZENET_KULCS = 'goats_oldal_uzenet';
 export const NEM_ELERHETO_SZOVEG = tr('page_unavailable', 'Ez az oldal jelenleg nem elérhető.');
@@ -14,7 +15,7 @@ function ellenorzes() {
     const oldal = document.body?.dataset.oldal;
     if (!oldal || !getState().user || oldalEngedelyezett(oldal)) return;
     try { sessionStorage.setItem(UZENET_KULCS, NEM_ELERHETO_SZOVEG); } catch { /* nem kritikus */ }
-    location.replace('app.html');
+    location.replace(ut('oldalak/app.html'));
 }
 
 // Előbb a helyben tárolt állapottal, majd a háttérben érkező friss kapcsolókkal is (onChange)

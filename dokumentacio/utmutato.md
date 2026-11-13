@@ -164,7 +164,7 @@ az lesz; ha egyik sem támogatott, angol. A jogi oldalak szövege csak magyar, e
 ```
 
 A függvénynek az oldal klasszikus (nem modul) scriptjében kell lennie globálisan (`function nev() {}`).
-Az oldal `<head>`-jében kell a `<script src="js/segedek/html-esemenyek.js" defer></script>`.
+Az oldal `<head>`-jében kell a `<script src="../js/segedek/html-esemenyek.js" defer></script>`.
 Modulos kódban egyszerűbb a sima `elem.addEventListener('click', …)`.
 
 ---
@@ -183,15 +183,17 @@ A függvény egy osztályt ad, ami a `--szin` CSS-változót állítja be; a CSS
 
 ## Új oldal
 
-Példa: `kviz.html`.
+Példa: `oldalak/kviz.html`.
 
-1. **HTML** – másolj le egy egyszerű oldalt (pl. `tervek.html`). A `<head>` maradjon ugyanaz: CSP meta, `nyelv.js` elsőként, supabase-js, `main.js`, az oldal scriptje, `html-esemenyek.js`. A `<body data-oldal="kviz">`, és benne `<ul id="navBar"></ul>`.
+Az app oldalai az `oldalak/`, a jogi oldalak a `jogi/` mappában vannak, a gyökérben csak az `index.html` (és a `404.html`). Az almappás oldalban a `css/`, `js/`, `img/` hivatkozások elé `../` kell. JS-ből oldalra vagy fájlra mindig a `js/segedek/utvonal.js` `ut()` függvényével hivatkozz (pl. `ut('oldalak/kepek.html')`), mert a sima relatív cím az éppen megnyitott oldalhoz képest oldódik fel.
+
+1. **HTML** – másolj le egy egyszerű oldalt (pl. `oldalak/tervek.html`). A `<head>` maradjon ugyanaz: CSP meta, `nyelv.js` elsőként, supabase-js, `main.js`, az oldal scriptje, `html-esemenyek.js`. A `<body data-oldal="kviz">`, és benne `<ul id="navBar"></ul>`.
 2. **Cím** – `<title data-i18n="title_quiz">ATG - Kvíz</title>`, a kulcs mindkét nyelvi fájlba.
 3. **Stílus** – `css/pages/kviz.css`, a HTML-ben külön `<link>`-kel (a `main.css`-be nem kell).
 4. **Script** – `js/pages/kviz.js`.
 5. **Menü** – `js/segedek/oldalak.js`, az `OLDALAK` listába:
    ```js
-   { kulcs: 'kviz', nev: tr('page_quiz', 'Kvíz'), emoji: '❓', fajl: 'kviz.html', kapcsolo: 'oldal_kviz' },
+   { kulcs: 'kviz', nev: tr('page_quiz', 'Kvíz'), emoji: '❓', fajl: 'oldalak/kviz.html', kapcsolo: 'oldal_kviz' },
    ```
    `fo: true` = mobilon az alsó sávban, különben a „Több ☰” fiókban; `navban: false` = nem kerül a menübe.
 6. **Globális kapcsoló** – az adatbázisban egy sor az `app_kapcsolok` táblába (`kulcs = 'oldal_kviz'`, `ertek = true`), különben az oldal kikapcsoltnak számít. Az admin oldal ezután magától listázza.

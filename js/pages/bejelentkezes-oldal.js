@@ -2,6 +2,7 @@
 // az átirányítás és a Google-gombos bejelentkezés. A teljes alkalmazás (galéria, naptár, nav stb.)
 // az app.html-en tölt be, ide nem.
 import { ready, getState, signInWithGoogle } from '../hitelesites.js';
+import { ut } from '../segedek/utvonal.js';
 
 // Gyors, hálózat nélküli előzetes ellenőrzés: a supabase-js alapból a localStorage-ban tárolja a
 // munkamenet-tokent ("sb-<projekt>-auth-token" néven). Ha ez megvan, szinte biztos, hogy a
@@ -19,7 +20,7 @@ function vanGyorsitotarazottMunkamenet() {
 
 const gyorsAtiranyitasFolyamatban = vanGyorsitotarazottMunkamenet();
 if (gyorsAtiranyitasFolyamatban) {
-    location.replace('app.html');
+    location.replace(ut('oldalak/app.html'));
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -30,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await ready;
     const { user } = getState();
     if (user) {
-        location.replace('app.html');
+        location.replace(ut('oldalak/app.html'));
         return;
     }
 

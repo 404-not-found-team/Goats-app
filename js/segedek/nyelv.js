@@ -10,6 +10,9 @@
 //   Ha a kulcs nincs a nyelvi fájlban, az alapszöveg (magyar) jelenik meg.
 // - A script a <head> ELSŐ scriptje, hogy minden más (modulok is) már lefordított szöveget kapjon.
 (function () {
+    // a nyelvi fájlok helye az app gyökeréhez képest; a gyökér e script helyéből (js/segedek/ -> ../../),
+    // mert az oldalak almappákban vannak (lásd js/segedek/utvonal.js)
+    const GYOKER = new URL('../../', document.currentScript.src);
     const NYELVEK = ['hu', 'en', 'de'];
     const ALAP = 'hu';
     const TAROLO_NYELV = 'goats_lang';
@@ -100,7 +103,7 @@
     }
 
     async function betolt(kod) {
-        const valasz = await fetch(`nyelvek/${kod}.json`, { cache: 'no-cache' });
+        const valasz = await fetch(new URL(`nyelvek/${kod}.json`, GYOKER), { cache: 'no-cache' });
         if (!valasz.ok) throw new Error(`Nem sikerült betölteni: nyelvek/${kod}.json`);
         const szoveg = await valasz.text();
         const adat = JSON.parse(szoveg);

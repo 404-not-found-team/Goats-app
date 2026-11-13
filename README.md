@@ -3,7 +3,7 @@
 Baráti társaságok appja: közös tartozások és egyenlítésük, ital ranglista, tervek, közös naptár (Google Naptár szinkronnal) és galéria – csoportonként, kóddal csatlakozva. Statikus PWA (HTML/CSS/vanilla JS, build nélkül), a háttér Supabase.
 
 - **Élő oldal:** https://404-not-found-team.github.io/Goats-app/
-- **Android (Play Áruház, zárt teszt):** `hu.goatsapp.app` – tesztelőknek: [tesztelok.html](https://404-not-found-team.github.io/Goats-app/tesztelok.html)
+- **Android (Play Áruház, zárt teszt):** `hu.goatsapp.app` – tesztelőknek: [tesztelok.html](https://404-not-found-team.github.io/Goats-app/oldalak/tesztelok.html)
 
 ## Dokumentáció
 - [Áttekintés](dokumentacio/attekintes.md) – mi miért van, hol mit találsz
@@ -17,6 +17,13 @@ Baráti társaságok appja: közös tartozások és egyenlítésük, ital rangli
 - **Ranglista:** italok S–D szintekre sorolva, javaslás admin jóváhagyással, csoport- és saját szűrő.
 - **Tervek, Képek, Goats Game, Beállítások** (profil, csoport, téma, nyelv: magyar/angol).
 - **Admin oldal:** globális oldal- és funkciókapcsolók, italjavaslatok, kategóriák, jelentések.
+
+## Mappaszerkezet
+- `index.html` – kezdőlap és bejelentkezés (a gyökérben marad, erre mutat a manifest `start_url`-je)
+- `oldalak/` – az app oldalai (`app.html`, `tartozasok.html`, `ranglista.html` …)
+- `jogi/` – adatvédelmi és jogi oldalak (`index.html` = Jogi információk, `privacy.html`, `fiok-torles.html` …)
+- `404.html` + `js/segedek/regi-cim.js` – a régi, mappa nélküli címeket az új helyükre küldi
+- JS-ből oldalra/fájlra a `js/segedek/utvonal.js` `ut()` függvényével hivatkozunk
 
 ## Helyi indítás
 Build nincs, de `file://`-ként nem működik (ES modulok, Supabase), helyi szerver kell:

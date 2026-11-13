@@ -83,7 +83,7 @@ async function tartozasok(idk: number[]): Promise<Kuldendo[]> {
                     `Tartozol ${nakNek(hitelezo)} ${osszeg(Number(t.mennyiert) || 0, ny)}-tal: ${miert}`,
                     `You owe ${hitelezo} ${osszeg(Number(t.mennyiert) || 0, ny)}: ${miert}`,
                     `Du schuldest ${hitelezo} ${osszeg(Number(t.mennyiert) || 0, ny)}: ${miert}`),
-                url: 'tartozasok.html',
+                url: 'oldalak/tartozasok.html',
                 tag: `tartozas-${t.id}`,
             }),
         };
@@ -102,7 +102,7 @@ async function jelentesek(idk: string[]): Promise<Kuldendo[]> {
                 `Egy felhasználó jelentett egy ${j.cel_tipus === 'kep' ? 'képet' : 'tartalmat'} (${JELENTES_OK[j.ok]?.hu || j.ok}).`,
                 `A user reported ${j.cel_tipus === 'kep' ? 'a picture' : 'some content'} (${JELENTES_OK[j.ok]?.en || j.ok}).`,
                 `Ein Nutzer hat ${j.cel_tipus === 'kep' ? 'ein Bild' : 'einen Inhalt'} gemeldet (${JELENTES_OK[j.ok]?.de || j.ok}).`),
-            url: 'admin.html#jelentesek',
+            url: 'oldalak/admin.html#jelentesek',
             tag: `jelentes-${j.id}`,
         }),
     })));
@@ -119,7 +119,7 @@ async function italok(idk: number[]): Promise<Kuldendo[]> {
         uzenet: (ny: Nyelv) => ({
             cim: sz(ny, 'Jóváhagyásra váró ital', 'Drink awaiting approval', 'Getränk wartet auf Freigabe'),
             szoveg: sz(ny, `Új italjavaslat: ${i.nev}`, `New drink suggestion: ${i.nev}`, `Neuer Getränkevorschlag: ${i.nev}`),
-            url: 'admin.html#javaslatok',
+            url: 'oldalak/admin.html#javaslatok',
             tag: `ital-${i.id}`,
         }),
     })));
@@ -141,7 +141,7 @@ async function hnSablonok(idk: string[]): Promise<Kuldendo[]> {
             uzenet: (ny: Nyelv) => ({
                 cim: sz(ny, 'Jóváhagyásra váró sablon', 'Template awaiting approval', 'Vorlage wartet auf Freigabe'),
                 szoveg: sz(ny, `Új Hány napja javaslat: ${s.nev}`, `New counter suggestion: ${s.nev}`, `Neuer Zähler-Vorschlag: ${s.nev}`),
-                url: 'admin.html#javaslatok',
+                url: 'oldalak/admin.html#javaslatok',
                 tag: `hn-sablon-${s.id}`,
             }),
         }))),
@@ -150,7 +150,7 @@ async function hnSablonok(idk: string[]): Promise<Kuldendo[]> {
             uzenet: (ny: Nyelv) => ({
                 cim: sz(ny, 'Jóváhagyták a javaslatodat', 'Your suggestion was approved', 'Dein Vorschlag wurde freigegeben'),
                 szoveg: sz(ny, `„${s.nev}” már mindenkinek elérhető.`, `"${sablonNev(s, ny)}" is now available to everyone.`, `„${sablonNev(s, ny)}“ ist jetzt für alle verfügbar.`),
-                url: 'hanynapja.html',
+                url: 'oldalak/hanynapja.html',
                 tag: `hn-sablon-${s.id}`,
             }),
         })),
@@ -185,7 +185,7 @@ async function hanynapja(idk: string[]): Promise<Kuldendo[]> {
             uzenet: (ny: Nyelv) => ({
                 cim: sz(ny, 'Szép sorozat!', 'Nice streak!', 'Starke Serie!'),
                 szoveg: sz(ny, `${nev(ny)}: már ${m.hu} tart a sorozatod.`, `${nev(ny)}: your streak is ${m.en} long.`, `${nev(ny)}: deine Serie läuft seit ${m.de}.`),
-                url: 'hanynapja.html',
+                url: 'oldalak/hanynapja.html',
                 tag: `hanynapja-${h.id}`,
             }),
         };
@@ -233,7 +233,7 @@ async function esemenyek(idk: string[]): Promise<Kuldendo[]> {
                     `${ki ? `${ki} felvette: ` : ''}${e.cim} – ${datumSzoveg(e.datum, ny)}`,
                     `${ki ? `${ki} added: ` : ''}${e.cim} – ${datumSzoveg(e.datum, ny)}`,
                     `${ki ? `${ki} hat hinzugefügt: ` : ''}${e.cim} – ${datumSzoveg(e.datum, ny)}`),
-                url: 'app.html',
+                url: 'oldalak/app.html',
                 tag: `esemeny-${e.id}`,
             }),
         }));

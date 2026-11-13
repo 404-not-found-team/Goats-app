@@ -122,6 +122,8 @@
     "previous_section": "Vorheriger Abschnitt",
     "next_section": "Nächster Abschnitt",
     "back_to_app": "← Zurück zur App",
+    "not_found_title": "Seite nicht gefunden",
+    "not_found_text": "Diese Seite existiert nicht oder wurde verschoben.",
     "last_updated": "Zuletzt aktualisiert:",
     "effective_date": "Gültig ab:",
     "version": "Version:",

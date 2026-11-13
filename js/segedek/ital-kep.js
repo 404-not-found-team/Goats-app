@@ -7,8 +7,13 @@
 // Márkás rajzokat jogi okból nem tárolunk: márkás italnál is a színezett forma (vagy az ikon) jelenik meg.
 // A képek betöltési hibáját onerror kezeli, így a hiányzó fájl nem töri el a kártyát.
 // Klasszikus script (nem modul): window.italKep-en keresztül érhető el.
+// A képek útvonala az app gyökeréhez viszonyított (img/...), ezt a script saját helyéből számoljuk
+// (js/segedek/ -> két szinttel feljebb), mert az oldal almappában van (lásd js/segedek/utvonal.js).
 // A MARKA_MINTAK listát a sql/03_ital_marka.sql-ből kell szinkronban tartani.
 (function () {
+    const GYOKER = new URL('../../', document.currentScript.src);
+    const abszolut = (ut) => new URL(ut, GYOKER).href;
+
     const MARKA_MINTAK = [
     ['Hell ', 'hell'],
     ['Monster Energy', 'monster-energy'],
@@ -117,7 +122,7 @@
         if (ital.kep_url) jeloltek.push(ital.kep_url);
         if (String(ital.kategoria || '').toLowerCase() === 'koktel') {
             const szlug = nevSzlug(ital.nev);
-            if (szlug) jeloltek.push(`img/koktelok/${szlug}.webp`);
+            if (szlug) jeloltek.push(abszolut(`img/koktelok/${szlug}.webp`));
         }
         return jeloltek;
     }
@@ -185,7 +190,6 @@
         }
         return lap;
     }
-    const abszolut = (ut) => new URL(ut, document.baseURI).href;
 
     function formaOsztaly(forma) {
         const nev = 'forma-' + forma;
@@ -256,7 +260,7 @@
                 if (elem.id) tartalek.id = elem.id;
                 elem.replaceWith(tartalek);
             };
-            proba.src = `img/formak/${ital.kep_forma}-szin.webp`;
+            proba.src = abszolut(`img/formak/${ital.kep_forma}-szin.webp`);
             return elem;
         }
         return kepesElem(ital);
@@ -288,12 +292,12 @@
     // Egyetlen URL a nagy nézethez (modal). Ikonnál az SVG fájl útvonala.
     function elsoUrl(ital) {
         const jeloltek = kepJeloltek(ital);
-        return jeloltek[0] || `img/ikonok/${ikonNev(ital)}.svg`;
+        return jeloltek[0] || abszolut(`img/ikonok/${ikonNev(ital)}.svg`);
     }
 
     // Az összes jelölt URL a nagy nézethez, a végén a kategória-ikonnal (onerror-láncoláshoz)
     function osszesUrl(ital) {
-        return [...kepJeloltek(ital), `img/ikonok/${ikonNev(ital)}.svg`];
+        return [...kepJeloltek(ital), abszolut(`img/ikonok/${ikonNev(ital)}.svg`)];
     }
 
     window.italKep = {

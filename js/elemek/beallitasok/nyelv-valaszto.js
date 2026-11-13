@@ -6,6 +6,8 @@
 // - Ha ezen az eszközön még nem választottak, de a fiókban van választás (másik eszközről), az érvényes.
 // - Ha itt kézzel választottak, és a fiókban más van, a helyi választás kerül a fiókba.
 
+import { ut } from '../../segedek/utvonal.js';
+
 const NYELVEK = [
     { id: 'hu', name: 'Magyar' },
     { id: 'en', name: 'English' },
@@ -57,7 +59,7 @@ function nyelvKartya(n) {
 
     const zaszlo = document.createElement('img');
     zaszlo.className = 'nyelv-zaszlo';
-    zaszlo.src = `img/zaszlok/${n.id}.svg`;
+    zaszlo.src = ut(`img/zaszlok/${n.id}.svg`);
     zaszlo.alt = '';
     zaszlo.width = 54;
     zaszlo.height = 36;

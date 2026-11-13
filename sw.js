@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v73';
+const CACHE_NEV = 'goats-v74';
 
 // Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
 // indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
@@ -9,22 +9,22 @@ const CACHE_NEV = 'goats-v73';
 const ELOGYORSITOTT = [
     './',
     'index.html',
-    'app.html',
-    'ranglista.html',
-    'tartozasok.html',
-    'tervek.html',
-    'kepek.html',
-    'admin.html',
-    'goatsgame.html',
-    'jatekszabalyok.html',
-    'hanynapja.html',
-    'jogi.html',
-    'privacy.html',
-    'felhasznalasi-feltetelek.html',
-    'fiok-torles.html',
-    'impresszum.html',
-    'ujdonsagok.html',
-    'tesztelok.html',
+    'oldalak/app.html',
+    'oldalak/ranglista.html',
+    'oldalak/tartozasok.html',
+    'oldalak/tervek.html',
+    'oldalak/kepek.html',
+    'oldalak/admin.html',
+    'oldalak/goatsgame.html',
+    'oldalak/jatekszabalyok.html',
+    'oldalak/hanynapja.html',
+    'oldalak/ujdonsagok.html',
+    'oldalak/tesztelok.html',
+    'jogi/',
+    'jogi/privacy.html',
+    'jogi/felhasznalasi-feltetelek.html',
+    'jogi/fiok-torles.html',
+    'jogi/impresszum.html',
     'favicon.ico',
     'img/favicon-192.png',
     'css/base/segedosztalyok.css',
@@ -109,6 +109,7 @@ const ELOGYORSITOTT = [
     'js/segedek/szin-osztaly.js',
     'js/segedek/teljesitmeny.js',
     'js/segedek/tema.js',
+    'js/segedek/utvonal.js',
     'js/kulso/supabase-js-2.117.2.js',
     'js/supabase-client.js',
     'manifest.json',
@@ -211,7 +212,14 @@ self.addEventListener('fetch', (event) => {
 });
 
 // ---------- Push-értesítések (supabase/functions/push-kuldes küldi) ----------
-// A tartalom JSON: { cim, szoveg, url, tag }. Az url az app egyik oldala (relatív, pl. "tartozasok.html").
+// A tartalom JSON: { cim, szoveg, url, tag }. Az url az app egyik oldala, a gyökérhez viszonyítva
+// (pl. "oldalak/tartozasok.html"). A régi, mappa nélküli alak (pl. "tartozasok.html") is működik:
+// azokat az oldalak/ mappába irányítjuk (a régebbi push-kuldes függvény még így küldte).
+const ertesitesCel = (url) => {
+    const ut = url || 'oldalak/app.html';
+    return ut.includes('/') ? ut : 'oldalak/' + ut;
+};
+
 self.addEventListener('push', (event) => {
     let adat = {};
     try { adat = event.data ? event.data.json() : {}; } catch { adat = { szoveg: event.data?.text() || '' }; }
@@ -222,14 +230,14 @@ self.addEventListener('push', (event) => {
         // a státuszsorban az Android csak az átlátszóságot nézi: fehér sziluett átlátszó háttéren kell
         badge: 'img/ertesites-jelveny.png',
         tag: adat.tag || undefined,
-        data: { url: adat.url || 'app.html' },
+        data: { url: ertesitesCel(adat.url) },
     }));
 });
 
 // Koppintásra: ha az app már nyitva van, azt hozza előre és oda navigál; különben új ablakot nyit
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
-    const cel = new URL(event.notification.data?.url || 'app.html', self.registration.scope).href;
+    const cel = new URL(ertesitesCel(event.notification.data?.url), self.registration.scope).href;
     event.waitUntil((async () => {
         const ablakok = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
         const nyitott = ablakok.find(a => a.url.startsWith(self.registration.scope));

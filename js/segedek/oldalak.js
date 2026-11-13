@@ -8,17 +8,18 @@
 // - csakAndroid: true esetén csak androidos eszközön látszik a nav-barban (a tesztelőoldal)
 // - menu: az azonos menu-kulcsú oldalak a nav-barban egyetlen menüpontként jelennek meg (MENUK),
 //   az oldalak fejlécében pedig fülként lehet váltani közöttük (#oldal-fulek, lásd nav-bar.js)
+// - fajl: az app gyökeréhez viszonyított útvonal (a nav-bar a js/segedek/utvonal.js ut()-jával teszi teljes címmé)
 export const OLDALAK = [
-    { kulcs: 'index', nev: tr('page_home', 'Kezdőlap'), emoji: '🏠', fajl: 'app.html', kapcsolo: null, fo: true, publikus: true },
-    { kulcs: 'tartozasok', nev: tr('page_debts', 'Tartozások'), emoji: '💸', fajl: 'tartozasok.html', kapcsolo: 'oldal_tartozasok', fo: true },
-    { kulcs: 'ranglista', nev: tr('page_tierlist', 'Ranglista'), emoji: '🍹', fajl: 'ranglista.html', kapcsolo: 'oldal_ranglista', fo: true, publikus: true },
-    { kulcs: 'kepek', nev: tr('page_pictures', 'Képek'), emoji: '🖼️', fajl: 'kepek.html', kapcsolo: 'oldal_kepek', navban: false },
-    { kulcs: 'tervek', nev: tr('page_plans', 'Tervek'), emoji: '📋', fajl: 'tervek.html', kapcsolo: 'oldal_tervek' },
-    // kulcs: 'hanynapja', nev: tr('page_hanynapja', 'Hány napja'), emoji: '⏳', fajl: 'hanynapja.html', kapcsolo: null },
-    { kulcs: 'goatsgame', nev: tr('page_goatsgame', 'Tabella'), emoji: '🎮', fajl: 'goatsgame.html', kapcsolo: 'oldal_goatsgame', menu: 'jatekok' },
-    { kulcs: 'jatekszabalyok', nev: tr('page_rules', 'Szabályok'), emoji: '📜', fajl: 'jatekszabalyok.html', kapcsolo: 'oldal_jatekszabalyok', menu: 'jatekok' },
+    { kulcs: 'index', nev: tr('page_home', 'Kezdőlap'), emoji: '🏠', fajl: 'oldalak/app.html', kapcsolo: null, fo: true, publikus: true },
+    { kulcs: 'tartozasok', nev: tr('page_debts', 'Tartozások'), emoji: '💸', fajl: 'oldalak/tartozasok.html', kapcsolo: 'oldal_tartozasok', fo: true },
+    { kulcs: 'ranglista', nev: tr('page_tierlist', 'Ranglista'), emoji: '🍹', fajl: 'oldalak/ranglista.html', kapcsolo: 'oldal_ranglista', fo: true, publikus: true },
+    { kulcs: 'kepek', nev: tr('page_pictures', 'Képek'), emoji: '🖼️', fajl: 'oldalak/kepek.html', kapcsolo: 'oldal_kepek', navban: false },
+    { kulcs: 'tervek', nev: tr('page_plans', 'Tervek'), emoji: '📋', fajl: 'oldalak/tervek.html', kapcsolo: 'oldal_tervek' },
+    // kulcs: 'hanynapja', nev: tr('page_hanynapja', 'Hány napja'), emoji: '⏳', fajl: 'oldalak/hanynapja.html', kapcsolo: null },
+    { kulcs: 'goatsgame', nev: tr('page_goatsgame', 'Tabella'), emoji: '🎮', fajl: 'oldalak/goatsgame.html', kapcsolo: 'oldal_goatsgame', menu: 'jatekok' },
+    { kulcs: 'jatekszabalyok', nev: tr('page_rules', 'Szabályok'), emoji: '📜', fajl: 'oldalak/jatekszabalyok.html', kapcsolo: 'oldal_jatekszabalyok', menu: 'jatekok' },
     // az androidos zárt teszt oldala; a teszt végén az Adminban kikapcsolható (oldal_tesztelok)
-    { kulcs: 'tesztelok', nev: tr('page_testers', 'Tesztelőknek'), emoji: '🧪', fajl: 'tesztelok.html', kapcsolo: 'oldal_tesztelok', csakAndroid: true },
+    { kulcs: 'tesztelok', nev: tr('page_testers', 'Tesztelőknek'), emoji: '🧪', fajl: 'oldalak/tesztelok.html', kapcsolo: 'oldal_tesztelok', csakAndroid: true },
     //{ kulcs: 'teszt', nev: tr('', 'teszt'), emoji: '🅰️', fajl: 'teszt.html', kapcsolo: 'oldal_teszt'},
 ];
 
@@ -28,7 +29,7 @@ export const MENUK = {
 };
 
 // Csak superadminnak, a csoporttól és a kapcsolóktól függetlenül
-export const ADMIN_OLDAL = { kulcs: 'admin', nev: 'Admin', emoji: '⚙️', fajl: 'admin.html' };
+export const ADMIN_OLDAL = { kulcs: 'admin', nev: 'Admin', emoji: '⚙️', fajl: 'oldalak/admin.html' };
 
 // Globálisan kapcsolható funkciók (a szerver a public.funkcio_engedelyezve()-vel kényszeríti ki)
 export const FUNKCIOK = [
