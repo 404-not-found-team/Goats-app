@@ -146,7 +146,7 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
         if (!confirm(tr('confirm_revert_settle', 'Biztosan visszavonod ezt az egyenlítést? Az érintett tartozások nyitott összege visszaáll.'))) return;
         btn.disabled = true;
         const { error } = await _supabase.rpc('tartozas_egyenlites_visszavonasa', { p_egyenlites: e.id });
-        if (error) {
+        if (window.goatsHiba.hibaVan(error, 'az egyenlítés visszavonásakor')) {
           alert(error.message || tr('err_revert', 'A visszavonás nem sikerült.'));
           btn.disabled = false;
           return;
@@ -218,7 +218,7 @@ export function nyitEgyenlitesModal({ aId, aNev, bId, bNev, aTartozikBnek, bTart
     ujOkBtn.disabled = true;
     const { error } = await _supabase.rpc('tartozasok_egyenlitese', { p_a: aId, p_b: bId });
     ujOkBtn.disabled = false;
-    if (error) {
+    if (window.goatsHiba.hibaVan(error, 'az egyenlítéskor')) {
       alert(error.message || tr('err_settle', 'Az egyenlítés nem sikerült.'));
       return;
     }

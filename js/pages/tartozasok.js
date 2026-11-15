@@ -223,13 +223,10 @@ async function loadTartozasok(elsoBetoltes = false) {
                 .or('ados_id.is.null,hitelezo_id.is.null')
                 .order('id', { ascending: false }),
         ]);
-        if (osszesitesRes.error) {
-            console.error('Hiba az összesítés betöltésekor:', osszesitesRes.error);
-            return undefined;
-        }
-        if (legacyRes.error) {
-            console.error('Hiba a régi tartozások betöltésekor:', legacyRes.error);
-        }
+        if (window.goatsHiba.hibaVan(osszesitesRes.error, 'az összesítés betöltésekor')) return undefined;
+
+        window.goatsHiba.hibaVan(legacyRes.error, 'a régi tartozások betöltésekor');
+
         return { osszesites: osszesitesRes.data || [], legacy: legacyRes.data || [] };
     };
 
@@ -421,10 +418,7 @@ async function deleteTartozas(id) {
         .eq('id', id)
         .eq('group_code', groupCode);
 
-    if (error) {
-        alert(tr('err_deleting', 'Hiba történt a törlés során!'));
-        return;
-    }
+    if (window.goatsHiba.hibaVan(error, 'a tartozás törlésekor', tr('err_deleting', 'Hiba történt a törlés során!'))) return;
 
     loadTartozasok();
 }
@@ -663,8 +657,7 @@ async function addTartozas() {
         .from('tartozasok')
         .insert(ujTartozasok);
 
-    if (error) {
-        console.error('Hiba a mentéskor:', error);
+    if (window.goatsHiba.hibaVan(error, 'a tartozás mentésekor')) {
         alert(tartozasHiba(error));
         return;
     }
@@ -682,4 +675,4 @@ async function addTartozas() {
 
     zardUjTartozasModal();
     loadTartozasok();
-}
+}
