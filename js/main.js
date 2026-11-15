@@ -9,3 +9,4 @@ import './segedek/funkcio-kapcsolo.js';
 import './segedek/oldal-orzo.js';
 import './segedek/adat-gyorsitotar.js';
 import './admin-muveletek.js';
+import './adat/hibakezeles.js';

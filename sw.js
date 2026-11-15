@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v75';
+const CACHE_NEV = 'goats-v76';
 
 // Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
 // indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
@@ -112,6 +112,7 @@ const ELOGYORSITOTT = [
     'js/segedek/utvonal.js',
     'js/kulso/supabase-js-2.117.2.js',
     'js/supabase-client.js',
+    'js/adat/hibakezeles.js',
     'manifest.json',
     'img/icon-192.png',
     'img/ertesites-jelveny.png',

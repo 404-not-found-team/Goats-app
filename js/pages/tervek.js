@@ -16,10 +16,9 @@ async function loadTervek(elsoBetoltes = false) {
             .select('*')
             .eq('group_code', groupCode)
             .order('id', { ascending: false });
-        if (error) {
-            console.error('Hiba a betöltéskor:', error);
-            return undefined;
-        }
+
+        if (window.goatsHiba.hibaVan(error, 'betöltéskor')) return;
+
         return data || [];
     };
     const megjelenito = (data) => {
@@ -53,17 +52,14 @@ async function add() {
 
     const { data, error } = await _supabase
         .from('tervek')
-        .insert([{ 
-            text: text, 
+        .insert([{
+            text: text,
             completed: false,
             group_code: groupCode
         }])
         .select();
 
-    if (error) {
-        console.error('Hiba a mentéskor:', error);
-        return;
-    }
+    if (window.goatsHiba.hibaVan(error, 'mentéskor')) return;
 
     inputField.value = '';
     loadTervek();
@@ -79,11 +75,7 @@ async function deleteTerv(id) {
         .eq('id', id)
         .eq('group_code', groupCode);
 
-    if (error) {
-        console.error('Hiba a törléskor:', error);
-        alert(tr('err_deleting', 'Hiba történt a törlés során!'));
-        return;
-    }
+    if (window.goatsHiba.hibaVan(error, 'törléskor', tr('err_deleting', 'Hiba történt a törlés során!'))) return;
 
     loadTervek();
 }
@@ -120,7 +112,7 @@ function renderTervItem(id, text, isCompleted, felvetteId, createdAt) {
     deleteSpan.textContent = '🗑️';
     deleteSpan.className = 'delete-btn';
     deleteSpan.title = tr('delete', 'Törlés');
-    deleteSpan.addEventListener('click', function(e) {
+    deleteSpan.addEventListener('click', function (e) {
         e.stopPropagation();
         deleteTerv(id);
     });
@@ -135,10 +127,7 @@ function renderTervItem(id, text, isCompleted, felvetteId, createdAt) {
             .eq('id', id)
             .eq('group_code', groupCode);
 
-        if (error) {
-            console.error('Hiba a frissítéskor:', error);
-            return;
-        }
+        if (window.goatsHiba.hibaVan(error, 'frissítéskor')) { checkbox.checked = !checked; return; }
 
         loadTervek();
     });
