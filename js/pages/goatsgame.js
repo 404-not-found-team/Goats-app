@@ -47,11 +47,9 @@ async function betoltesSupabasebol() {
                 .eq('group_id', groupId)
                 .order('created_at', { ascending: true }),
         ]);
-        if (szinRes.error) console.error('Színek betöltési hiba:', szinRes.error);
-        if (jatekRes.error) {
-            console.error('Játékok betöltési hiba:', jatekRes.error);
-            return undefined;
-        }
+
+        window.goatsHiba.hibaVan(szinRes.error, 'a színek betöltésekor');
+        if (window.goatsHiba.hibaVan(jatekRes.error, 'a játékok betöltésekor')) return;
         return { szinek: szinRes.data || [], jatekok: jatekRes.data || [] };
     };
 
@@ -262,8 +260,7 @@ async function frissitJatekosSzinet(userId, picker) {
         .from('goatgame_szinek')
         .upsert({ group_id: groupId, user_id: userId, szin: ujSzin }, { onConflict: 'group_id,user_id' });
 
-    if (error) {
-        console.error('Hiba a szín mentésekor:', error);
+    if (window.goatsHiba.hibaVan(error, 'a szín mentésekor')) {
         alert(tr('err_color_save', 'Nem sikerült menteni a színt: {msg}', { msg: error.message }));
         jatekosSzinek.set(userId, regiSzin);
         picker.value = regiSzin;
@@ -322,8 +319,7 @@ async function mentUjJatek() {
         .select('id, nev, szin')
         .single();
 
-    if (error) {
-        console.error('Hiba a játék mentésekor:', error);
+    if (window.goatsHiba.hibaVan(error, 'a játék mentésekor')) {
         alert(tr('err_game_add', 'Hiba történt a játék felvételekor: {msg}', { msg: error.message }));
         return;
     }
@@ -357,8 +353,7 @@ async function ujMeccsHozzaadasa(jatek, gombElem) {
     gombElem.disabled = true;
     // A meccs és a pontok egy tranzakcióban mentődnek, így nem maradhat félig mentett meccs
     const { data: meccsId, error } = await db.rpc('goatgame_meccs_mentese', { p_jatek_id: jatek.id, p_pontok: pontok });
-    if (error) {
-        console.error('Hiba a pontok mentésekor:', error);
+    if (window.goatsHiba.hibaVan(error, 'a pontok mentésekor')) {
         alert(tr('err_points_save', 'Hiba történt a pontok mentése során: {msg}', { msg: error.message }));
         gombElem.disabled = false;
         return;
@@ -376,8 +371,7 @@ async function meccsTorlese(jatek, meccs) {
     if (!db) return;
 
     const { error } = await db.from('goatgame_meccsek').delete().eq('id', meccs.id);
-    if (error) {
-        console.error('Hiba a meccs törlésekor:', error);
+    if (window.goatsHiba.hibaVan(error, 'a meccs törlésekor')) {
         alert(tr('err_match_delete', 'Nem sikerült törölni a meccset: {msg}', { msg: error.message }));
         return;
     }
@@ -396,8 +390,7 @@ async function jatekTorlese(jatek, gombElem) {
     gombElem.disabled = true;
     // A meccsek és a pontok az adatbázisban kaszkádoltan törlődnek a játékkal együtt
     const { error } = await db.from('goatgame_jatekok').delete().eq('id', jatek.id);
-    if (error) {
-        console.error('Hiba a játék törlésekor:', error);
+    if (window.goatsHiba.hibaVan(error, 'a játék törlésekor')) {
         alert(tr('err_game_delete', 'Nem sikerült törölni a játékot: {msg}', { msg: error.message }));
         gombElem.disabled = false;
         return;
