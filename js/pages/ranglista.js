@@ -86,18 +86,13 @@ async function inicializalas() {
             client.from('szin_paletta').select('id, nev, kep_szin_1').order('nev', { ascending: true }),
         ]);
 
-        if (kategoriak.hiba) {
-            console.error('Hiba a kategóriák betöltésekor:', kategoriak.hiba);
-            return undefined;
-        }
-        if (katalogusRes.error) {
-            console.error('Hiba a katalógus betöltésekor:', katalogusRes.error);
-            return undefined;
-        }
-        if (osszetevoRes.error) console.error('Hiba a receptek betöltésekor:', osszetevoRes.error);
-        if (rangRes.error) console.error('Hiba a ranglista betöltésekor:', rangRes.error);
-        if (szuroRes.error) console.error('Hiba a szűrő beállítások betöltésekor:', szuroRes.error);
-        if (szinPalettaRes.error) console.error('Hiba a színpaletta betöltésekor:', szinPalettaRes.error);
+        if (window.goatsHiba.hibaVan(kategoriak.hiba, 'a kategóriák betöltésekor')) return undefined;
+        if (window.goatsHiba.hibaVan(katalogusRes.error, 'a katalógus betöltésekor')) return undefined;
+
+        window.goatsHiba.hibaVan(osszetevoRes.error, 'a receptek betöltésekor');
+        window.goatsHiba.hibaVan(rangRes.error, 'a ranglista betöltésekor');
+        window.goatsHiba.hibaVan(szuroRes.error, 'a szűrő beállítások betöltésekor');
+        window.goatsHiba.hibaVan(szinPalettaRes.error, 'a színpaletta betöltésekor');
 
         return {
             kategoriak,
@@ -220,9 +215,7 @@ async function kategoriatValaszt(tier) {
                     group_code: groupCode
                 }, { onConflict: 'id,group_code' });
 
-            if (error) {
-                console.error('Hiba a mentés során:', error);
-            }
+            window.goatsHiba.hibaVan(error, 'a ranglista-helyezés mentésekor');
         }
     }
 
@@ -1022,19 +1015,17 @@ async function mentUjItal() {
         };
 
         const { data, error } = await client.from('italok').update(valtozas).eq('id', italId).select(KIVALASZTANDO).single();
-        if (error) {
-            console.error('Supabase hiba:', error);
+        if (window.goatsHiba.hibaVan(error, 'az ital módosításakor')) {
             alert(tr('err_saving_msg', 'Hiba történt a mentéskor: {msg}', { msg: error.message }));
             return;
         }
 
         const { error: delError } = await client.from('ital_osszetevok').delete().eq('ital_id', italId);
-        if (delError) console.error('A régi hozzávalók törlése nem sikerült:', delError);
+        window.goatsHiba.hibaVan(delError, 'a régi hozzávalók törlésekor');
 
         if (hozzavalok.length > 0) {
             const { error: receptHiba } = await client.from('ital_osszetevok').insert(hozzavalok.map(h => ({ ...h, ital_id: italId })));
-            if (receptHiba) {
-                console.error('A recept mentése nem sikerült:', receptHiba);
+            if (window.goatsHiba.hibaVan(receptHiba, 'a recept mentésekor')) {
                 alert(tr('err_ingredients_save', 'Az ital elmentve, de a hozzávalók mentése nem sikerült.'));
             } else {
                 osszetevokItalonkent.set(italId, hozzavalok);
@@ -1069,8 +1060,7 @@ async function mentUjItal() {
         .select(KIVALASZTANDO)
         .single();
 
-    if (error) {
-        console.error('Supabase hiba:', error);
+    if (window.goatsHiba.hibaVan(error, 'az új ital mentésekor')) {
         alert(tr('err_saving_msg', 'Hiba történt a mentéskor: {msg}', { msg: error.message }));
         return;
     }
@@ -1079,8 +1069,7 @@ async function mentUjItal() {
         const { error: receptHiba } = await client
             .from('ital_osszetevok')
             .insert(hozzavalok.map(h => ({ ...h, ital_id: data.id })));
-        if (receptHiba) {
-            console.error('A recept mentése nem sikerült:', receptHiba);
+        if (window.goatsHiba.hibaVan(receptHiba, 'a recept mentésekor')) {
             alert(tr('err_ingredients_save', 'Az ital elmentve, de a hozzávalók mentése nem sikerült.'));
         } else {
             osszetevokItalonkent.set(data.id, hozzavalok);
@@ -1266,10 +1255,7 @@ async function betoltNaplo(ital) {
         .limit(20);
     // közben másik italt nyitottak meg, vagy bezárták az ablakot
     if (aktivItalAdat?.id !== keresettId) return;
-    if (error) {
-        console.error('Hiba a ranglista-napló betöltésekor:', error);
-        return;
-    }
+    if (window.goatsHiba.hibaVan(error, 'a ranglista-napló betöltésekor')) return;
     if (!data || data.length === 0) return;
 
     const elso = data[0];
