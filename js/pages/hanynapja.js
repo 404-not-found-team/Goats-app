@@ -3,6 +3,7 @@
 // az RLS dönti el: a sajátod módosítható, a csoporttársakéi csak olvashatók.
 import { client } from '../supabase-client.js';
 import { ready, getState } from '../hitelesites.js';
+import { hibaVan } from '../adat/hibakezeles.js';
 
 // a választható sablonok: a jóváhagyottak + a saját függő javaslataid (az RLS csak ezeket adja vissza)
 let sablonok = [];
@@ -291,13 +292,11 @@ async function betoltes() {
             .select('id, nev, nev_en, nev_de, jovahagyva, javasolta_id')
             .order('nev'),
     ]);
-    if (sablonHiba) console.error('A sablonok betöltése nem sikerült:', sablonHiba);
+
+    hibaVan(sablonHiba, 'a sablonok betöltésekor');
     sablonok = sablonSorok || [];
-    if (error) {
-        console.error('A Hány napja adatai betöltése nem sikerült:', error);
-        uzenet(sajatDoboz, tr('err_operation', 'Hiba a művelet során.'));
-        return;
-    }
+
+    if (hibaVan(error, 'a Hány napja adatainak betöltésekor')) { uzenet(sajatDoboz, tr('err_operation', 'Hiba a művelet során.')); return; }
 
     const sajat = hanynapja.filter(h => h.user_id === user?.id);
     sablonValasztoFrissites(sajat);
@@ -380,14 +379,13 @@ async function felvetel(e) {
         } else {
             const { data, error } = await client.from('hanynapja_sablonok')
                 .insert({ nev }).select('id, nev, nev_en, nev_de, jovahagyva, javasolta_id').single();
-            if (error) {
-                console.error('A javaslat beküldése nem sikerült:', error);
-                // 23505: van már ilyen nevű sablon, csak még más javaslataként jóváhagyásra vár
+            if (hibaVan(error, 'a javaslat beküldésekor')) {
                 allapot(error.code === '23505'
                     ? tr('hn_err_suggested', 'Ezt már valaki javasolta, jóváhagyás után választhatod.')
                     : tr('err_saving', 'Hiba történt a mentéskor!'), true);
                 return;
             }
+
             sablon = data;
             sablonok.push(data);
         }
@@ -400,9 +398,7 @@ async function felvetel(e) {
         group_id: group.id,
         lathato_csoportnak: true,
     });
-    if (error) {
-        console.error('A számláló felvétele nem sikerült:', error);
-        // 23505: már van ilyen számlálója (unique (user_id, mit) / (user_id, sablon_id))
+    if (hibaVan(error, 'a számláló felvételekor')) {
         allapot(error.code === '23505'
             ? tr('hn_err_exists', 'Már van ilyen számlálód.')
             : tr('err_saving', 'Hiba történt a mentéskor!'), true);
@@ -432,8 +428,7 @@ async function ujrakezdes(h, datum) {
     const { error } = await client.from('hanynapja')
         .update({ utoljara: datum, rekord: Math.max(h.rekord, napok) })
         .eq('id', h.id);
-    if (error) {
-        console.error('Az újrakezdés nem sikerült:', error);
+    if (hibaVan(error, 'az újrakezdéskor')) {
         allapot(tr('err_saving', 'Hiba történt a mentéskor!'), true);
         return;
     }
@@ -444,8 +439,7 @@ async function ujrakezdes(h, datum) {
 async function torles(h) {
     if (!confirm(tr('hn_confirm_delete', 'Biztosan törlöd a(z) „{name}” számlálót?', { name: szamlaloNev(h) }))) return;
     const { error } = await client.from('hanynapja').delete().eq('id', h.id);
-    if (error) {
-        console.error('A törlés nem sikerült:', error);
+    if (hibaVan(error, 'a törléskor')) {
         allapot(tr('err_deleting', 'Hiba történt a törlés során!'), true);
         return;
     }
