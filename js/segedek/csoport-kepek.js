@@ -5,6 +5,7 @@
 // Modul: a main.js importálja, és a window.goatsKepek-en keresztül a klasszikus
 // galeria.js is eléri.
 import { client } from '../supabase-client.js';
+import { hibaVan } from '../adat/hibakezeles.js';
 
 export const BUCKET = 'kepek';
 export const ATMENETI_REGI_MAPPA = false; // a képek átmozgatva (duckies: 7 kép); a kód törlése következhet
@@ -56,8 +57,7 @@ export async function torolCsoportKepei(groupId, groupCode) {
         }
         for (let i = 0; i < utak.length; i += LISTA_LAPMERET) {
             const { error } = await client.storage.from(BUCKET).remove(utak.slice(i, i + LISTA_LAPMERET));
-            if (error) {
-                console.error('Képtörlési hiba a csoport törlésekor:', error);
+            if (hibaVan(error, 'a csoport képeinek törlésekor')) {
                 hibak.push(error.message || String(error));
             }
         }

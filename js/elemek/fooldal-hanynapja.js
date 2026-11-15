@@ -5,6 +5,7 @@ import { client } from '../supabase-client.js';
 import { ready, getState, oldalEngedelyezett } from '../hitelesites.js';
 import { betolt } from '../segedek/adat-gyorsitotar.js';
 import { ut } from '../segedek/utvonal.js';
+import { hibaVan } from '../adat/hibakezeles.js';
 
 // Hány nap telt el az "utoljara" dátum (ÉÉÉÉ-HH-NN) óta, helyi idő szerint
 function napokOta(datum) {
@@ -69,10 +70,7 @@ async function indit() {
             .eq('user_id', user.id)
             .order('letrehozva', { ascending: false })
             .limit(12);
-        if (error) {
-            console.error('A Hány napja számlálók betöltése nem sikerült:', error);
-            return undefined;
-        }
+        if (hibaVan(error, 'a Hány napja számlálók betöltésekor')) return undefined;
         return data || [];
     }, kirajzol);
 }

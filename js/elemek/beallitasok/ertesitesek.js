@@ -6,6 +6,7 @@
 //   a sw.js "push" és "notificationclick" eseménykezelője végzi.
 // A VAPID-kulcspár nyilvános fele; a titkos fele csak az Edge Function titkos beállításai között van.
 export const VAPID_NYILVANOS = 'BFGVX3bnT-_HbdPPQP1gkb3NKE3ghGKGQYM_RzZP0Axpkxh2jqrK7serklLTUS9FLpD7mu9NO9r7Ia9KH7tST_c';
+import { hibaVan } from "../../adat/hibakezeles.js";
 
 const kliens = () => window._supabase || null;
 
@@ -58,7 +59,7 @@ export async function leiratkozas() {
     const c = kliens();
     if (c) {
         const { error } = await c.rpc('push_leiratkozas', { endpoint_in: endpoint });
-        if (error) console.error('Hiba a leiratkozáskor:', error.message);
+        hibaVan(error, 'a leiratkozáskor');
     }
 }
 

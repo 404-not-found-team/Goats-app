@@ -7,6 +7,7 @@
 // - Globálisan kapcsolható (admin oldal: funkcio_google_naptar). Kikapcsolva csak az látja a kapcsolót, akinél
 //   már be van kapcsolva (hogy ki tudja kapcsolni); az új bekapcsolást a szerver is tiltja. A superadminra nem vonatkozik.
 import { funkcioEngedelyezett } from '../../hitelesites.js';
+import { hibaVan } from '../../adat/hibakezeles.js';
 
 const kliens = () => window._supabase || null;
 
@@ -33,7 +34,7 @@ export function initGoogleNaptar(state) {
     gomb.disabled = true;
     kliens()?.from('naptar_szinkron').select('user_id').eq('user_id', state.user.id).maybeSingle()
         .then(({ data, error }) => {
-            if (error) console.error('Google Naptár állapot:', error.message);
+            hibaVan(error, 'a Google Naptár állapotának lekérdezésekor');
             jelol(!!data);
             if (!engedelyezett && !data) szakasz.hidden = true;
         })

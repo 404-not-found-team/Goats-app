@@ -10,6 +10,7 @@
 // - Ha a Cache Storage nem érhető el (pl. privát mód), az aláírt URL-t használjuk közvetlenül.
 // Modul: a main.js importálja, a klasszikus galeria.js a window.goatsKepGyorsitotar-on éri el.
 import { client } from '../supabase-client.js';
+import { hibaVan } from '../adat/hibakezeles.js';
 
 const CACHE_NEV = 'goats-kepek-v1';
 const INDEX_KULCS = 'goats_kep_cache_index';
@@ -56,7 +57,7 @@ async function takaritas(cache, index, kimelt) {
     for (const [utvonal, e] of sorrend) {
         if (darab <= MAX_DARAB && bajt <= MAX_BAJT) break;
         if (kimelt.has(utvonal)) continue;
-        await cache.delete(kulcsUrl(utvonal)).catch(() => {});
+        await cache.delete(kulcsUrl(utvonal)).catch(() => { });
         const url = blobUrlek.get(utvonal);
         if (url) { URL.revokeObjectURL(url); blobUrlek.delete(utvonal); }
         delete index[utvonal];
@@ -98,9 +99,8 @@ export async function kepUrlek(utvonalak) {
 
     if (hianyzo.length > 0) {
         const { data, error } = await client.storage.from(BUCKET).createSignedUrls(hianyzo, ALAIRAS_LEJARAT_MP);
-        if (error) {
-            console.error('Hiba a képek aláírásakor:', error);
-        } else {
+
+        if (!hibaVan(error, 'a képek aláírásakor')) {
             await Promise.all((data || []).map(async (a) => {
                 if (!a.signedUrl || a.error) return;
                 if (!cache) { eredmeny.set(a.path, a.signedUrl); return; }
@@ -134,7 +134,7 @@ export async function torolKepGyorsitotarbol(utvonal) {
     delete index[utvonal];
     indexIr(index);
     const cache = await cacheNyitas();
-    if (cache) await cache.delete(kulcsUrl(utvonal)).catch(() => {});
+    if (cache) await cache.delete(kulcsUrl(utvonal)).catch(() => { });
 }
 
 // A teljes helyi képtár ürítése (kijelentkezéskor)

@@ -7,6 +7,7 @@
 // - Ha itt kézzel választottak, és a fiókban más van, a helyi választás kerül a fiókba.
 
 import { ut } from '../../segedek/utvonal.js';
+import { hibaVan } from '../../adat/hibakezeles.js';
 
 const NYELVEK = [
     { id: 'hu', name: 'Magyar' },
@@ -29,17 +30,14 @@ async function mentesFiokba(kod) {
     const userId = await felhasznaloId();
     if (!userId) return;
     const { error } = await kliens().from('profiles').update({ language: kod }).eq('id', userId);
-    if (error) console.error('Hiba a nyelv fiókba mentésekor:', error.message);
+    hibaVan(error, 'a nyelv fiókba mentésekor');
 }
 
 async function szinkronFiokkal() {
     const userId = await felhasznaloId();
     if (!userId) return;
     const { data, error } = await kliens().from('profiles').select('language').eq('id', userId).maybeSingle();
-    if (error) {
-        console.error('Hiba a fiók nyelvének lekérdezésekor:', error.message);
-        return;
-    }
+    if (hibaVan(error, 'a fiók nyelvének lekérdezésekor')) return;
     const fiokNyelve = NYELVEK.some(n => n.id === data?.language) ? data.language : null;
     if (nyelv()?.automatikus()) {
         // másik eszközön választott nyelv: ezen az eszközön is az legyen (újratölt, ha más)
