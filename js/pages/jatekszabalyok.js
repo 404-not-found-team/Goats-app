@@ -8,6 +8,7 @@
 import { client } from '../supabase-client.js';
 import { ready, getState, callRpc } from '../hitelesites.js';
 import { betolt } from '../segedek/adat-gyorsitotar.js';
+import { hibaVan } from '../adat/hibakezeles.js';
 
 let jatekok = [];
 let szuro = 'mind';
@@ -117,10 +118,8 @@ async function betoltesJatekok(elsoBetoltes = false) {
             console.warn('A lépésszám nem kérhető le, nélküle töltöm be:', error);
             ({ data, error } = await client.from('jatek_szabalyok').select('*').order('letrehozva', { ascending: false }));
         }
-        if (error) {
-            console.error('Hiba a játékok betöltésekor:', error);
-            return undefined;
-        }
+        if (hibaVan(error, 'a játékok betöltésekor')) return undefined;
+
         return data || [];
     };
     await betolt('jatekszabalyok', lekero, (adat) => {
@@ -196,8 +195,8 @@ async function reszletekBetoltese(jatek, friss = false) {
         client.from('jatek_lepesek').select('*').eq('jatek_id', jatek.id).order('sorrend', { ascending: true }),
         client.from('jatek_javaslatok').select('*').eq('jatek_id', jatek.id).order('letrehozva', { ascending: true }),
     ]);
-    if (lepesekRes.error) console.error('Hiba a lépések betöltésekor:', lepesekRes.error);
-    if (javaslatokRes.error) console.error('Hiba a javaslatok betöltésekor:', javaslatokRes.error);
+    hibaVan(lepesekRes.error, 'a lépések betöltésekor');
+    hibaVan(javaslatokRes.error, 'a javaslatok betöltésekor');
     const adat = { lepesek: lepesekRes.data || [], javaslatok: javaslatokRes.data || [] };
     reszletek.set(jatek.id, adat);
     return adat;
@@ -650,11 +649,8 @@ async function jatekTorlese() {
     if (!confirm(tr('confirm_delete_game_x', 'Biztosan törlöd a "{name}" játékot? Ez nem vonható vissza.', { name: jatek.cim }))) return;
 
     const { error } = await client.from('jatek_szabalyok').delete().eq('id', jatek.id);
-    if (error) {
-        console.error('Hiba a törléskor:', error);
-        alert(tr('err_deleting', 'Hiba történt a törlés során!'));
-        return;
-    }
+    if (hibaVan(error, 'a törlésekor', tr('err_deleting', 'Hiba történt a törlés során!'))) return;
+
     reszletek.delete(jatek.id);
     aktivJatek = null;
     await betoltesJatekok();
@@ -681,11 +677,7 @@ async function javaslatKuldese() {
         cim, szoveg,
     }]);
 
-    if (error) {
-        console.error('Hiba a javaslat küldésekor:', error);
-        alert(tr('err_proposal_send', 'Hiba történt a javaslat küldésekor.'));
-        return;
-    }
+    if (hibaVan(error, 'a javaslat küldésekor', tr('err_proposal_send', 'Hiba történt a javaslat küldésekor.'))) return;
 
     $('jatek-javaslat-cim-input').value = '';
     $('jatek-javaslat-szoveg-input').value = '';
