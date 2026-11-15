@@ -11,6 +11,7 @@ import { BUCKET, csoportMappak, mappaFajljai } from '../segedek/csoport-kepek.js
 import { kepUrlek, torolKepGyorsitotarbol } from '../segedek/kep-gyorsitotar.js';
 import { funkcioGombTiltas, TILTVA_SZOVEG } from '../segedek/funkcio-kapcsolo.js';
 import { betolt, ir } from '../segedek/adat-gyorsitotar.js';
+import { hibaVan } from '../adat/hibakezeles.js';
 
 const KORLAT_UZENET = tr('err_image_limit', 'A csoport elérte a képkorlátot, törölj régebbi képeket.');
 const BETOLTES_KOTEG_MS = 50; // a láthatóvá vált csempéket ennyi ideig gyűjtjük egy aláírás-kötegbe
@@ -79,7 +80,7 @@ async function betoltKepek(elsoBetoltes = false) {
                 .from('kepek')
                 .select('utvonal, feltoltotte_id, letrehozva')
                 .eq('group_id', csoport.id);
-            if (error) console.error('Hiba a képadatok lekérésekor:', error);
+            hibaVan(error, 'a képadatok lekérésekor');
             (data || []).forEach(s => adatok.set(s.utvonal, s));
         }
 
@@ -231,15 +232,14 @@ async function torolKep(kep) {
     if (!confirm(tr('confirm_delete_picture', 'Biztosan törölni szeretnéd ezt a képet?'))) return;
 
     const { error } = await client.storage.from(BUCKET).remove([kep.path]);
-    if (error) {
-        console.error('Hiba a törléskor:', error);
+    if (hibaVan(error, 'a kép törlésekor')) {
         alert(tr('err_delete_msg', 'Sikertelen törlés! Hiba: {msg}', { msg: error.message }));
         return;
     }
 
     // A kepek tábla sora (FELADAT9). Nem blokkoló: az árva sor nem okoz hibát.
     const { error: sorHiba } = await client.from('kepek').delete().eq('utvonal', kep.path);
-    if (sorHiba) console.error('A kepek tábla sorának törlése nem sikerült:', sorHiba);
+    hibaVan(sorHiba, 'a képsor törlésekor');
 
     await torolKepGyorsitotarbol(kep.path);
     kepek = kepek.filter(k => k.path !== kep.path);
@@ -419,8 +419,7 @@ async function feltoltKepek(event) {
                     contentType: blob.type,
                     upsert: false
                 });
-                if (error) {
-                    console.error('Feltöltési hiba (Supabase Storage):', error);
+                if (hibaVan(error, 'a kép feltöltésekor')) {
                     if (rlsHibaE(error)) {
                         const frissKorlat = await lekerKepKorlat();
                         if (frissKorlat !== null && kepek.length + sikeres >= frissKorlat) throw new KepHiba(KORLAT_UZENET);
@@ -436,10 +435,9 @@ async function feltoltKepek(event) {
                     console.warn('A kepek sor beszúrása nem sikerült, újrapróbálás:', sorHiba);
                     sorHiba = (await client.from('kepek').insert(sor)).error;
                 }
-                if (sorHiba) {
-                    console.error('A kepek sor beszúrása másodszorra sem sikerült, a fájl törlése:', sorHiba);
+                if (hibaVan(sorHiba, 'a képsor második beszúrásakor')) {
                     const { error: takaritasHiba } = await client.storage.from(BUCKET).remove([eleresiUt]);
-                    if (takaritasHiba) console.error('A gazdátlanul maradt fájl törlése is sikertelen:', takaritasHiba, eleresiUt);
+                    hibaVan(takaritasHiba, 'a gazdátlan fájl törlésekor');
                     throw new KepHiba(tr('err_upload_incomplete', 'A feltöltés nem fejeződött be rendesen, kérlek próbáld újra.'));
                 }
                 sikeres++;
