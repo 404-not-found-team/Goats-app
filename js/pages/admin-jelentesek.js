@@ -5,6 +5,7 @@
 // - "Lezárás": nincs teendő. "Kép törlése és lezárás": az eredeti kép törlődik a csoport galériájából
 //   (kepek sor + tárhely-fájl), és az ugyanerre a képre vonatkozó többi nyitott jelentés is lezárul.
 import { client } from '../supabase-client.js';
+import { hibaVan } from '../adat/hibakezeles.js';
 
 const $ = (id) => document.getElementById(id);
 const MASOLAT_BUCKET = 'jelentett';
@@ -116,16 +117,14 @@ function sor(j) {
 async function lezaras(j, kepTorlese, gombok) {
     gombok.querySelectorAll('button').forEach(g => { g.disabled = true; });
     const { data: utvonal, error } = await client.rpc('admin_jelentes_lezarasa', { jelentes_id: j.id, kep_torlese: kepTorlese });
-    if (error) {
-        console.error('admin_jelentes_lezarasa hiba:', error);
+    if (hibaVan(error, 'a jelentés lezárásakor')) {
         allapot(error.message || tr('err_operation', 'Hiba a művelet során.'), 'hiba');
         gombok.querySelectorAll('button').forEach(g => { g.disabled = false; });
         return;
     }
     if (kepTorlese && utvonal) {
         const { error: tarHiba } = await client.storage.from(KEP_BUCKET).remove([utvonal]);
-        if (tarHiba) {
-            console.error('A képfájl törlése nem sikerült:', tarHiba);
+        if (hibaVan(tarHiba, 'a képfájl törlésekor')) {
             allapot(tr('err_report_file_delete', 'A jelentés lezárva, de a képfájl törlése nem sikerült: {msg}', { msg: tarHiba.message }), 'hiba');
             await betoltes();
             return;
@@ -137,8 +136,7 @@ async function lezaras(j, kepTorlese, gombok) {
 
 async function betoltes() {
     const { data, error } = await client.rpc('admin_jelentesek', { csak_nyitott: csakNyitott });
-    if (error) {
-        console.error('A jelentések betöltése nem sikerült:', error);
+    if (hibaVan(error, 'a jelentések betöltésekor')) {
         allapot(error.message || tr('err_reports_load', 'A jelentések betöltése nem sikerült.'), 'hiba');
         return;
     }

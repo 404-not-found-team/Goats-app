@@ -8,6 +8,7 @@ import { client } from '../supabase-client.js';
 import { ready, getState, isSuperadmin, onChange } from '../hitelesites.js';
 import { OLDALAK, FUNKCIOK } from '../segedek/oldalak.js';
 import { ut } from '../segedek/utvonal.js';
+import { hibaVan } from '../adat/hibakezeles.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -117,8 +118,7 @@ function fulekBekotese() {
 async function betoltes() {
     // Mindig friss lekérdezés (nem a munkamenet-gyorsítótárból)
     const { data, error } = await client.from('app_kapcsolok').select('kulcs, ertek');
-    if (error) {
-        console.error('A kapcsolók betöltése nem sikerült:', error);
+    if (hibaVan(error,'a kapcsolók betöltésekor')) {
         allapot(tr('err_switches_load', 'A kapcsolók betöltése nem sikerült. Lefutott már a FELADAT15 SQL-je?'), 'hiba');
         return;
     }
@@ -135,8 +135,7 @@ async function mentes(input, k) {
     const { error } = await client.rpc('admin_beallitas_mentese', { kulcs_in: k.kulcs, ertek_in: uj });
     input.disabled = false;
 
-    if (error) {
-        console.error('A beállítás mentése nem sikerült:', error);
+    if (hibaVan(error,'a beállítás mentésekor')) {
         input.checked = !uj; // visszaáll a szerver szerinti állapotra
         allapot(error.code === '42501'
             ? tr('err_no_permission_settings', 'Nincs jogosultságod a beállítások módosításához.')
