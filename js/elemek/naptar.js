@@ -93,8 +93,7 @@ async function betoltEsemenyek() {
             .from('esemenyek')
             .select('*')
             .eq('group_code', groupCode);
-        if (error) {
-            console.error('Hiba az események betöltésekor:', error);
+        if (window.goatsHiba.hibaVan(error, 'az események betöltésekor')) {
             return undefined;
         }
         return data || [];
@@ -228,7 +227,7 @@ function kozelgoElem(es) {
     const mikor = document.createElement('span');
     mikor.textContent = hanyNap === 0 ? tr('today', 'Ma')
         : hanyNap === 1 ? tr('tomorrow', 'Holnap')
-        : tr('in_days', '{n} nap múlva', { n: hanyNap });
+            : tr('in_days', '{n} nap múlva', { n: hanyNap });
     szoveg.append(cim, mikor);
 
     elem.append(jelveny, szoveg);
@@ -317,8 +316,7 @@ async function modositEsemeny() {
             .eq('id', aktivEsemeny.id)
             .select();
 
-        if (error) {
-            console.error('❌ Supabase frissítési hiba:', error);
+        if (window.goatsHiba.hibaVan(error, 'az esemény módosításakor')) {
             alert(tr('err_modify', 'Hiba a módosításkor: {msg}', { msg: error.message }));
             return;
         }
@@ -360,11 +358,7 @@ async function mentUjEsemeny() {
         .insert([újEsemeny])
         .select();
 
-    if (error) {
-        console.error('Hiba a mentésnél:', error);
-        alert(tr('err_saving', 'Hiba történt a mentéskor!'));
-        return;
-    }
+    if (window.goatsHiba.hibaVan(error, 'az esemény mentésekor', tr('err_saving', 'Hiba történt a mentéskor!'))) return;
 
     if (data) esemenyekListaja.push(data[0]);
 
@@ -383,10 +377,7 @@ async function torolEsemeny(id) {
         .delete()
         .eq('id', id);
 
-    if (error) {
-        alert(tr('err_deleting', 'Hiba történt a törlés során!'));
-        return;
-    }
+    if (window.goatsHiba.hibaVan(error, 'az esemény törlésekor', tr('err_deleting', 'Hiba történt a törlés során!'))) return;
 
     esemenyekListaja = esemenyekListaja.filter(e => e.id !== id);
     esemenyekTarolasa();
