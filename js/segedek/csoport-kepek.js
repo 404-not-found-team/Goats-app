@@ -5,7 +5,7 @@
 // Modul: a main.js importálja, és a window.goatsKepek-en keresztül a klasszikus
 // galeria.js is eléri.
 import { client } from '../supabase-client.js';
-import { hibaVan } from '../adat/hibakezeles.js';
+import { hibaVan } from '../supabase_hibakezeles.js';
 
 export const BUCKET = 'kepek';
 export const ATMENETI_REGI_MAPPA = false; // a képek átmozgatva (duckies: 7 kép); a kód törlése következhet

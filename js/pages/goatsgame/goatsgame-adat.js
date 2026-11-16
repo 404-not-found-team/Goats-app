@@ -4,7 +4,7 @@
 // Hiba esetén a hibaVan naplóz; mivel a felület a hibaüzenetet (error.message) is kiírja,
 // a módosítások magát a hibát adják vissza (sikernél null), ahol új adat is jön, ott { data, error }-t.
 import { client } from '../../supabase-client.js';
-import { hibaVan } from '../../adat/hibakezeles.js';
+import { hibaVan } from '../../supabase_hibakezeles.js';
 
 // A teljes tábla: játékosszínek + játékok a meccseikkel és pontjaikkal.
 // A nyers lekérdezési eredményt adja vissza (ezt tárolja a gyorsítótár is); hibánál undefined.

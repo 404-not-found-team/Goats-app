@@ -1,5 +1,5 @@
 import { client } from '../../supabase-client.js';
-import { hibaVan } from '../../adat/hibakezeles.js';
+import { hibaVan } from '../../supabase_hibakezeles.js';
 
 export async function tervekLekerese(groupCode) {
     const { data, error } = await client

@@ -1,8 +1,8 @@
 // Képek oldal (kepek.html): a csoport összes képe rácsban, feltöltéssel, törléssel és jelentéssel.
-// A feltöltő neve és a dátum csak itt látszik; a főoldali galéria (js/elemek/galeria.js) csak lapozható nézegető.
+// A feltöltő neve és a dátum csak itt látszik; a főoldali galéria (js/pages/app/galeria.js) csak lapozható nézegető.
 // Ez a vezérlő: az állapot (a képek listája) itt van, és ez köti össze az adatréteget (kepek-adat.js)
 // a megjelenítéssel (kepek-megjelenites.js).
-// - Feltöltés: négyzetes kivágás (js/elemek/kep-kivago.js), majd tömörítés (js/segedek/kep-tomorites.js);
+// - Feltöltés: négyzetes kivágás (js/pages/kepek/kepek-kivago.js), majd tömörítés (js/segedek/kep-tomorites.js);
 //   mindkettő az első feltöltéskor töltődik be
 // - Jelentés: a kep-jelentes Edge Function (public.jelentesek sor + másolat a privát "jelentett" bucketbe)
 import { ready, getState, funkcioEngedelyezett } from '../../hitelesites.js';
@@ -130,7 +130,7 @@ async function feltoltKepek(event) {
     try {
         allapotMutat(tr('loading_compressor', 'Tömörítő betöltése…'), null, null);
         const [{ kepBetoltes, kepTomoritesKivagassal, forrasFelszabaditas, KepHiba }, { kivagasValasztas, kozepsoNegyzet }] =
-            await Promise.all([import('../../segedek/kep-tomorites.js'), import('../../elemek/kep-kivago.js')]);
+            await Promise.all([import('../../segedek/kep-tomorites.js'), import('./kepek-kivago.js')]);
         const korlat = await kepKorlatLekerese();
         let mindKozepre = false; // "A többit középre": a további képeknél nincs kivágó ablak
 

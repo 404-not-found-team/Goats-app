@@ -35,7 +35,7 @@ function jogosultsagEllenorzes() {
         return true;
     }
     if (!isSuperadmin()) {
-        location.replace(ut('oldalak/app.html'));
+        location.replace(ut('html/pages/app.html'));
         return true;
     }
     return false;

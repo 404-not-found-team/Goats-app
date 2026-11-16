@@ -3,7 +3,7 @@
 // kiegészítései). Hiba esetén a hibaVan naplóz; a visszatérési érték mondja meg a hívónak, mi történt.
 import { client } from '../../supabase-client.js';
 import { callRpc } from '../../hitelesites.js';
-import { hibaVan } from '../../adat/hibakezeles.js';
+import { hibaVan } from '../../supabase_hibakezeles.js';
 
 // Az összes látható játék, a lépések számával együtt (a lista kártyáin látszik); hibánál undefined
 export async function jatekokLekerese() {

@@ -4,7 +4,7 @@
 //   érvényesül, a vászonra rajzolás után pedig semmilyen metaadat (EXIF, GPS) nem kerül a kimenetbe.
 // - Méret: a rövidebb oldal legfeljebb a kijelzett méret 2×-ese (a galéria 180 px-es négyzetben
 //   mutatja a képet, így 360 px), a hosszabb oldal legfeljebb 720 px. A Képek oldalon a feltöltő
-//   négyzetre vágja a képet (js/elemek/kep-kivago.js), így a kimenet 360×360 px.
+//   négyzetre vágja a képet (js/pages/kepek/kepek-kivago.js), így a kimenet 360×360 px.
 // - Kimenet: WebP (ha a böngésző nem tud WebP-t kódolni, JPEG), célméret 100 KB, kemény korlát 150 KB.
 
 export const MAX_HOSSZABB_OLDAL = 720;

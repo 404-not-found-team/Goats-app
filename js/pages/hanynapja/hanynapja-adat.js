@@ -4,7 +4,7 @@
 // - ahol a hívónak a hibakód is kell (23505 = már létezik): maga a hiba (sikernél null)
 // - a többi módosítás: true, ha sikerült
 import { client } from '../../supabase-client.js';
-import { hibaVan } from '../../adat/hibakezeles.js';
+import { hibaVan } from '../../supabase_hibakezeles.js';
 
 const SABLON_MEZOK = 'id, nev, nev_en, nev_de, jovahagyva, javasolta_id';
 

@@ -10,7 +10,7 @@
 // - Ha a Cache Storage nem érhető el (pl. privát mód), az aláírt URL-t használjuk közvetlenül.
 // Modul: a main.js importálja, a klasszikus galeria.js a window.goatsKepGyorsitotar-on éri el.
 import { client } from '../supabase-client.js';
-import { hibaVan } from '../adat/hibakezeles.js';
+import { hibaVan } from '../supabase_hibakezeles.js';
 
 const CACHE_NEV = 'goats-kepek-v1';
 const INDEX_KULCS = 'goats_kep_cache_index';

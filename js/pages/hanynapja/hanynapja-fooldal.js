@@ -11,7 +11,7 @@ import { sajatSzamlalokLekerese } from './hanynapja-adat.js';
 function csempe(h) {
     const a = document.createElement('a');
     a.className = 'fo-hn-csempe';
-    a.href = ut('oldalak/hanynapja.html');
+    a.href = ut('html/pages/hanynapja.html');
 
     const nev = document.createElement('span');
     nev.className = 'fo-hn-nev';
@@ -39,7 +39,7 @@ function kirajzol(sorok) {
     } else {
         const ures = document.createElement('a');
         ures.className = 'fo-hn-ures';
-        ures.href = ut('oldalak/hanynapja.html');
+        ures.href = ut('html/pages/hanynapja.html');
         ures.textContent = tr('hn_home_empty', 'Még nincs számlálód. Vegyél fel egyet!');
         lista.replaceChildren(ures);
     }

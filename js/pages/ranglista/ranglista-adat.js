@@ -2,7 +2,7 @@
 // Kijelentkezve is működik (publikus katalógus): ilyenkor nincs csoport, a csoportos lekérések üresek.
 // Hiba esetén a hibaVan naplóz; a visszatérési érték mondja meg a hívónak, mi történt.
 import { client } from '../../supabase-client.js';
-import { hibaVan } from '../../adat/hibakezeles.js';
+import { hibaVan } from '../../supabase_hibakezeles.js';
 
 const K = () => window.italKategoriak;
 

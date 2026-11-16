@@ -2,7 +2,7 @@
 // egyenlítés-modul, a tartozasok-egyenlites.js is innen hív). Hiba esetén a hibaVan naplóz; a
 // visszatérési érték mondja meg a hívónak, mi történt (ahol a felület kiírja az üzenetet, ott magát a hibát).
 import { client } from '../../supabase-client.js';
-import { hibaVan } from '../../adat/hibakezeles.js';
+import { hibaVan } from '../../supabase_hibakezeles.js';
 
 // Az összesítés (ki kinek mennyivel tartozik, RPC) és a régi, azonosító nélküli tételek:
 // { osszesites, legacy }; ha az összesítés nem jött le, undefined

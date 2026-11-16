@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v83';
+const CACHE_NEV = 'goats-v84';
 
 // Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
 // indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
@@ -51,7 +51,7 @@ const KOZOS_JS = [
     'js/supabase-client.js',
     'js/admin-muveletek.js',
     'js/kulso/supabase-js-2.117.2.js',
-    'js/adat/hibakezeles.js',
+    'js/supabase_hibakezeles.js',
     'js/segedek/adat-gyorsitotar.js',
     'js/segedek/csoport-kepek.js',
     'js/segedek/csoport-kod.js',
@@ -59,7 +59,6 @@ const KOZOS_JS = [
     'js/segedek/gyors-atiranyitas.js',
     'js/segedek/html-esemenyek.js',
     'js/segedek/ital-kategoriak.js',
-    'js/segedek/ital-kep.js',
     'js/segedek/kep-gyorsitotar.js',
     'js/segedek/kep-tomorites.js',
     'js/segedek/keslelteto.js',
@@ -74,47 +73,47 @@ const KOZOS_JS = [
     'js/segedek/utvonal.js',
 ];
 
-// Közös felületelemek: menü, beállítások, galéria, naptár stb.
+// Közös felületelemek: menü és a beállítások ablak (js/settings/)
 const KOZOS_ELEMEK = [
-    'js/elemek/nav-bar.js',
-    'js/elemek/beallitasok-modal.js',
-    'js/elemek/beallitasok/beallitasok-sablonok.js',
-    'js/elemek/beallitasok/belepes-modal.js',
-    'js/elemek/beallitasok/csoport-adatok.js',
-    'js/elemek/beallitasok/ertesitesek.js',
-    'js/elemek/beallitasok/google-naptar.js',
-    'js/elemek/beallitasok/nyelv-valaszto.js',
-    'js/elemek/beallitasok/profil-modal.js',
-    'js/elemek/beallitasok/tema-valaszto.js',
-    'js/elemek/beallitasok/tos-ujraelfogadas.js',
-    'js/elemek/ertesites-felajanlas.js',
-    'js/elemek/galeria.js',
-    'js/elemek/kep-kivago.js',
-    'js/elemek/naptar.js',
+    'js/nav-bar.js',
+    'js/beallitasok-modal.js',
+    'js/settings/beallitasok-sablonok.js',
+    'js/settings/belepes-modal.js',
+    'js/settings/csoport-adatok.js',
+    'js/settings/ertesites-felajanlas.js',
+    'js/settings/ertesitesek.js',
+    'js/settings/google-naptar.js',
+    'js/settings/nyelv-valaszto.js',
+    'js/settings/profil-modal.js',
+    'js/settings/tema-valaszto.js',
+    'js/settings/tos-ujraelfogadas.js',
 ];
 
 // --- Oldalanként ---
 
 const BEJELENTKEZES = [
     'css/pages/bejelentkezes.css',
-    'js/pages/bejelentkezes-oldal.js',
+    'js/pages/bejelentkezes/bejelentkezes-oldal.js',
 ];
 
 const FOOLDAL = [
-    'oldalak/app.html',
+    'html/pages/app.html',
     'css/pages/fooldal.css',
-    'js/pages/app-orzo.js',
+    'js/pages/app/app-orzo.js',
+    'js/pages/app/galeria.js',
+    'js/pages/app/naptar.js',
 ];
 
 const RANGLISTA = [
-    'oldalak/ranglista.html',
+    'html/pages/ranglista.html',
     'css/pages/ranglista.css',
     'js/pages/ranglista/ranglista.js',
     'js/pages/ranglista/ranglista-adat.js',
+    'js/pages/ranglista/ital-kep.js',
 ];
 
 const TARTOZASOK = [
-    'oldalak/tartozasok.html',
+    'html/pages/tartozasok.html',
     'css/pages/tartozasok.css',
     'js/pages/tartozasok/tartozasok.js',
     'js/pages/tartozasok/tartozasok-adat.js',
@@ -122,7 +121,7 @@ const TARTOZASOK = [
 ];
 
 const TERVEK = [
-    'oldalak/tervek.html',
+    'html/pages/tervek.html',
     'css/pages/tervek.css',
     'js/pages/tervek/tervek.js',
     'js/pages/tervek/tervek-adat.js',
@@ -130,15 +129,16 @@ const TERVEK = [
 ];
 
 const KEPEK = [
-    'oldalak/kepek.html',
+    'html/pages/kepek.html',
     'css/pages/kepek.css',
     'js/pages/kepek/kepek.js',
     'js/pages/kepek/kepek-adat.js',
     'js/pages/kepek/kepek-megjelenites.js',
+    'js/pages/kepek/kepek-kivago.js',
 ];
 
 const HANYNAPJA = [
-    'oldalak/hanynapja.html',
+    'html/pages/hanynapja.html',
     'css/pages/hanynapja.css',
     'js/pages/hanynapja/hanynapja.js',
     'js/pages/hanynapja/hanynapja-adat.js',
@@ -148,7 +148,7 @@ const HANYNAPJA = [
 ];
 
 const GOATSGAME = [
-    'oldalak/goatsgame.html',
+    'html/pages/goatsgame.html',
     'css/pages/goatsgame.css',
     'js/pages/goatsgame/goatsgame.js',
     'js/pages/goatsgame/goatsgame-adat.js',
@@ -156,14 +156,14 @@ const GOATSGAME = [
 ];
 
 const JATEKSZABALYOK = [
-    'oldalak/jatekszabalyok.html',
+    'html/pages/jatekszabalyok.html',
     'css/pages/jatekszabalyok.css',
     'js/pages/jatekszabalyok/jatekszabalyok.js',
     'js/pages/jatekszabalyok/jatekszabalyok-adat.js',
 ];
 
 const ADMIN = [
-    'oldalak/admin.html',
+    'html/pages/admin.html',
     'css/pages/admin.css',
     'js/pages/admin/admin.js',
     'js/pages/admin/admin-adat.js',
@@ -173,23 +173,23 @@ const ADMIN = [
 ];
 
 const TESZTELOK = [
-    'oldalak/tesztelok.html',
+    'html/pages/tesztelok.html',
     'css/pages/tesztelok.css',
-    'js/pages/tesztelok.js',
-    'js/pages/tesztelok-ujdonsagok.js',
+    'js/pages/tesztelok/tesztelok.js',
+    'js/pages/tesztelok/tesztelok-ujdonsagok.js',
 ];
 
 const UJDONSAGOK = [
-    'oldalak/ujdonsagok.html',
-    'js/pages/ujdonsagok.js',
+    'html/pages/ujdonsagok.html',
+    'js/pages/tesztelok/ujdonsagok.js',
 ];
 
 const JOGI = [
-    'jogi/',
-    'jogi/privacy.html',
-    'jogi/felhasznalasi-feltetelek.html',
-    'jogi/fiok-torles.html',
-    'jogi/impresszum.html',
+    'html/jogi/',
+    'html/jogi/privacy.html',
+    'html/jogi/felhasznalasi-feltetelek.html',
+    'html/jogi/fiok-torles.html',
+    'html/jogi/impresszum.html',
     'css/pages/jogi.css',
 ];
 
@@ -304,11 +304,12 @@ self.addEventListener('fetch', (event) => {
 
 // ---------- Push-értesítések (supabase/functions/push-kuldes küldi) ----------
 // A tartalom JSON: { cim, szoveg, url, tag }. Az url az app egyik oldala, a gyökérhez viszonyítva
-// (pl. "oldalak/tartozasok.html"). A régi, mappa nélküli alak (pl. "tartozasok.html") is működik:
-// azokat az oldalak/ mappába irányítjuk (a régebbi push-kuldes függvény még így küldte).
+// (pl. "html/pages/tartozasok.html"). A régebbi alakok is működnek: a mappa nélküli
+// ("tartozasok.html") és az oldalak/ mappás ("oldalak/tartozasok.html") cím is a html/pages/-be kerül
+// (a push-kuldes függvény és a régi értesítések még így küldhetik).
 const ertesitesCel = (url) => {
-    const ut = url || 'oldalak/app.html';
-    return ut.includes('/') ? ut : 'oldalak/' + ut;
+    const ut = (url || 'html/pages/app.html').replace(/^oldalak\//, 'html/pages/');
+    return ut.includes('/') ? ut : 'html/pages/' + ut;
 };
 
 self.addEventListener('push', (event) => {

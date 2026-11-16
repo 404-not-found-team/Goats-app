@@ -1,7 +1,7 @@
 import './supabase-client.js';
 import './hitelesites.js';
-import './elemek/beallitasok-modal.js';
-import './elemek/nav-bar.js';
+import './beallitasok-modal.js';
+import './nav-bar.js';
 import './segedek/tema.js';
 import './segedek/csoport-kepek.js';
 import './segedek/kep-gyorsitotar.js';
@@ -9,4 +9,4 @@ import './segedek/funkcio-kapcsolo.js';
 import './segedek/oldal-orzo.js';
 import './segedek/adat-gyorsitotar.js';
 import './admin-muveletek.js';
-import './adat/hibakezeles.js';
+import './supabase_hibakezeles.js';

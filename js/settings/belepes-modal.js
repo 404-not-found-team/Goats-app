@@ -1,0 +1,102 @@
+import { ready, signInWithGoogle, joinGroup, createGroup, getState, onChange, funkcioEngedelyezett } from '../hitelesites.js';
+import { funkcioGombTiltas, TILTVA_SZOVEG } from '../segedek/funkcio-kapcsolo.js';
+
+export function initAuthModal() {
+  const get = id => document.getElementById(id);
+
+  const el = {
+    title: get('auth-title'),
+    stepLogin: get('auth-step-login'),
+    stepGroup: get('auth-step-group'),
+    userLine: get('auth-user-line'),
+    status: get('auth-status'),
+    googleBtn: get('google-login-btn'),
+    codeInput: get('auth-group-code-input'),
+    joinBtn: get('auth-submit-btn'),
+    nameInput: get('new-group-name-input'),
+    createBtn: get('create-group-btn'),
+  };
+
+  const STATUS_OSZTALY = { error: 'status-hiba', info: 'status-info', ok: 'status-ok' };
+  const setStatus = (msg, kind) => {
+    if (!el.status) return;
+    el.status.textContent = msg || '';
+    el.status.className = STATUS_OSZTALY[kind] || '';
+  };
+  const setBusy = (btn, on) => { if (btn) btn.disabled = on; };
+
+  // A felület a valós állapotot tükrözi: nincs session -> belépés, van session -> csoport lépés
+  function renderStep() {
+    const { user } = getState();
+    if (el.stepLogin) el.stepLogin.hidden = !!user;
+    if (el.stepGroup) el.stepGroup.hidden = !user;
+    if (el.title) el.title.textContent = user ? tr('group', 'Csoport') : tr('login', 'Belépés');
+    if (el.userLine) el.userLine.textContent = user ? tr('logged_in_as', 'Bejelentkezve: {email}', { email: user.email }) : '';
+    // Globálisan kikapcsolt csatlakozás / csoportlétrehozás (FELADAT15); a szerver is elutasítaná
+    funkcioGombTiltas(el.joinBtn, 'funkcio_csoportcsatlakozas');
+    funkcioGombTiltas(el.createBtn, 'funkcio_uj_csoport');
+  }
+  renderStep();
+  onChange(renderStep);
+  ready.then(renderStep); // pillanatképből betöltött állapotnál nincs onChange: a kapcsolókat így is alkalmazzuk
+
+  // ---- 1. Google bejelentkezés ----
+  // Nincs külön elfogadó checkbox: a bejelentkezési képernyőn lévő szöveg mondja ki, hogy a
+  // bejelentkezés egyben elfogadás is. A tényleges rögzítés változatlanul az accept_tos RPC-vel
+  // történik (lásd hitelesites.js signInWithGoogle / applyPendingTos).
+  el.googleBtn?.addEventListener('click', async () => {
+    setBusy(el.googleBtn, true);
+    setStatus(tr('redirect_google', 'Átirányítás a Google bejelentkezéshez...'), 'info');
+    try {
+      await signInWithGoogle(); // az oldal elnavigál, ha sikeres
+    } catch (err) {
+      setStatus(err.message || tr('err_login_start', 'Nem sikerült elindítani a bejelentkezést.'), 'error');
+      setBusy(el.googleBtn, false);
+    }
+  });
+
+  // ---- 2. Csatlakozás meglévő csoporthoz ----
+  async function doJoin() {
+    const code = (el.codeInput?.value || '').trim();
+    if (!code) return setStatus(tr('enter_group_code', 'Írd be a csoportkódot!'), 'error');
+    if (!funkcioEngedelyezett('funkcio_csoportcsatlakozas')) return setStatus(TILTVA_SZOVEG, 'error');
+
+    setBusy(el.joinBtn, true);
+    setStatus(tr('joining', 'Csatlakozás...'), 'info');
+    try {
+      await joinGroup(code);
+      setStatus(tr('joined_ok', 'Sikeresen csatlakoztál!'), 'ok');
+      setTimeout(() => location.reload(), 600);
+    } catch (err) {
+      setStatus(err.message || tr('err_invalid_code', 'Érvénytelen csoportkód!'), 'error');
+      setBusy(el.joinBtn, false);
+      funkcioGombTiltas(el.joinBtn, 'funkcio_csoportcsatlakozas');
+    }
+  }
+  el.joinBtn?.addEventListener('click', doJoin);
+  el.codeInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doJoin(); });
+
+  // ---- 3. Új csoport létrehozása ----
+  async function doCreate() {
+    const name = (el.nameInput?.value || '').trim();
+    if (name.length < 2 || name.length > 40) {
+      return setStatus(tr('err_group_name_2_40', 'A csoport neve 2–40 karakter legyen!'), 'error');
+    }
+    if (!funkcioEngedelyezett('funkcio_uj_csoport')) return setStatus(TILTVA_SZOVEG, 'error');
+
+    setBusy(el.createBtn, true);
+    setStatus(tr('creating_group', 'Új csoport létrehozása...'), 'info');
+    try {
+      const data = await createGroup(name);
+      try { await navigator.clipboard?.writeText(data.join_code); } catch { /* nem kritikus */ }
+      setStatus(tr('group_created', 'Csoport létrehozva! Csoportkódod: {code} (a vágólapra másoltuk, később a Csoport adatoknál is megtalálod)', { code: data.join_code }), 'ok');
+      setTimeout(() => location.reload(), 3500);
+    } catch (err) {
+      setStatus(err.message || tr('err_group_create', 'Hiba a csoport létrehozásakor!'), 'error');
+      setBusy(el.createBtn, false);
+      funkcioGombTiltas(el.createBtn, 'funkcio_uj_csoport');
+    }
+  }
+  el.createBtn?.addEventListener('click', doCreate);
+  el.nameInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') doCreate(); });
+}

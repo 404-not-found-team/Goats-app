@@ -1,0 +1,308 @@
+import { getState, refresh, onChange, leaveGroup } from '../hitelesites.js';
+import { torolCsoportKepei } from '../segedek/csoport-kepek.js';
+import {
+  removeMember, transferOwnership, renameGroup, regenerateGroupCode, deleteCurrentGroup,
+} from '../admin-muveletek.js';
+import { debounce } from '../segedek/keslelteto.js';
+import { IKON } from './beallitasok-sablonok.js';
+
+export function initGroupDetails() {
+  const get = id => document.getElementById(id);
+
+  const STATUS_OSZTALY = { '#ef4444': 'status-hiba', '#10b981': 'status-ok', '#3b82f6': 'status-info' };
+  const setStatus = (msg, color = '') => {
+    const s = get('group-details-status');
+    if (s) { s.textContent = msg || ''; s.className = STATUS_OSZTALY[color] || ''; }
+  };
+
+  let utolsoMentettCsoportnev = null;
+  // A "Műveletek" blokk kiválasztási módja: null (nincs kiválasztás), 'eltavolitas' vagy 'atadas'
+  let kivalasztasMod = null;
+
+  const updateAvatars = () => {
+    const { group, displayName } = getState();
+    const emoji = localStorage.getItem('goats_group_emoji');
+    const sign = emoji || (group?.group_name || displayName || '🐐').charAt(0).toUpperCase();
+    if (get('group-avatar-badge')) get('group-avatar-badge').textContent = sign;
+    if (get('header-user-avatar')) get('header-user-avatar').textContent = sign;
+    if (get('header-group-name')) get('header-group-name').textContent = group?.group_name || '';
+    if (get('profile-group-name')) get('profile-group-name').textContent = group?.group_name || '';
+  };
+
+  // Egy tag sora. Kiválasztás módban (admin, nem a saját sor) checkbox vagy rádiógomb jelenik meg
+  // gomb helyett; a tényleges műveletet a "Végrehajtás" gomb indítja a kiválasztott tag(ok)ra.
+  function memberRow(m, me, isAdmin, mod) {
+    const row = document.createElement('div');
+    row.className = 'tag-sor';
+
+    const valaszthato = isAdmin && m.user_id !== me && mod;
+    if (valaszthato) {
+      const input = document.createElement('input');
+      input.type = mod === 'eltavolitas' ? 'checkbox' : 'radio';
+      input.className = mod === 'eltavolitas' ? 'tag-eltavolitas-cb' : 'tag-atadas-radio';
+      if (mod === 'atadas') input.name = 'tag-atadas-radio';
+      input.value = m.user_id;
+      row.appendChild(input);
+    }
+
+    const kor = document.createElement('span');
+    kor.className = 'tag-kor';
+    kor.setAttribute('aria-hidden', 'true');
+    kor.textContent = (m.display_name || '?').charAt(0).toUpperCase();
+    row.appendChild(kor);
+
+    const name = document.createElement('span');
+    name.className = 'nyujt';
+    name.textContent = m.display_name + (m.user_id === me ? ` (${tr('you', 'te')})` : '');
+    row.appendChild(name);
+
+    if (m.group_role === 'admin') {
+      const badge = document.createElement('span');
+      badge.className = 'admin-jel';
+      badge.textContent = 'admin';
+      row.appendChild(badge);
+    }
+
+    return row;
+  }
+
+  // A tag-lista frissítése a jelenlegi kiválasztási mód szerint (állapotváltozáskor és módváltáskor is)
+  function renderTagok() {
+    const { group, groupRole, user, members } = getState();
+    const isAdmin = groupRole === 'admin';
+    const list = get('group-members-list');
+    if (list && group) {
+      list.replaceChildren(...members.map(m => memberRow(m, user?.id, isAdmin, kivalasztasMod)));
+    }
+    const cim = get('tagok-cim');
+    if (cim && group) cim.textContent = tr('members_n', 'Tagok · {n}', { n: members.length });
+  }
+
+  function render() {
+    const { group, groupRole, members } = getState();
+    const isAdmin = groupRole === 'admin';
+
+    const noGroup = get('group-no-group');
+    const content = get('group-content');
+    if (noGroup) noGroup.hidden = !!group;
+    if (content) content.hidden = !group;
+    updateAvatars();
+    if (!group) return;
+
+    // A név mezőt csak akkor írjuk felül, ha épp nem gépelünk bele
+    const nameInput = get('group-name-display');
+    if (nameInput && document.activeElement !== nameInput) {
+      nameInput.value = group.group_name || '';
+      utolsoMentettCsoportnev = group.group_name || '';
+    }
+    if (nameInput) nameInput.readOnly = !isAdmin;
+
+    const codeInput = get('group-code-display');
+    if (codeInput) { codeInput.value = group.group_code; codeInput.type = 'password'; }
+    kodGombAllapot(false);
+
+    // A Műveletek blokk mindenkinek látszik (a Kilépés mindig ott van), a tartalma admin-függő
+    const muveletekBlokk = get('csoport-muveletek-blokk');
+    if (muveletekBlokk) muveletekBlokk.hidden = false;
+    if (!isAdmin && kivalasztasMod) zarjMuveletMod();
+    frissitsAdminGombokLathatosagat(isAdmin);
+
+    renderTagok();
+    // Ha az admin jog átkerült máshoz (vagy elfogyott a kiválasztható tag), lépjünk ki a kiválasztásból
+    if (kivalasztasMod && !members.some(m => m.user_id !== getState().user?.id)) zarjMuveletMod();
+  }
+
+  onChange(render);
+  render();
+
+  // Megnyitáskor friss adat a szerverről
+  get('open-group-details-btn')?.addEventListener('click', async () => {
+    setStatus('');
+    zarjMuveletMod();
+    render();
+    await refresh();
+  });
+
+  // A csoport képeinek törlése a csoport törlése/utolsó tag kilépése ELŐTT (utána már nincs jogunk)
+  async function csoportKepeinekTorlese(group) {
+    const hibak = await torolCsoportKepei(group.id, group.group_code);
+    if (hibak.length) setStatus(tr('err_some_images_delete', 'Néhány kép törlése nem sikerült, de a művelet folytatódik.'), '#ef4444');
+  }
+
+  // Kód mutatása/elrejtése, másolása (a gombokban SVG ikon van, ezért closest-tel keressük a gombot)
+  function kodGombAllapot(lathato) {
+    const gomb = get('toggle-group-code-visibility');
+    if (!gomb) return;
+    gomb.innerHTML = lathato ? IKON.szemKi : IKON.szem;
+    gomb.setAttribute('aria-label', lathato ? tr('hide_code', 'Kód elrejtése') : tr('show_code', 'Kód mutatása'));
+    gomb.setAttribute('aria-pressed', String(lathato));
+  }
+  let masolasIdozito = null;
+  document.addEventListener('click', async (e) => {
+    if (e.target.closest?.('#toggle-group-code-visibility')) {
+      const input = get('group-code-display');
+      if (!input) return;
+      const lathato = input.type === 'password';
+      input.type = lathato ? 'text' : 'password';
+      kodGombAllapot(lathato);
+    }
+    const masolGomb = e.target.closest?.('#copy-group-code-btn');
+    if (masolGomb) {
+      const code = getState().group?.group_code;
+      if (!code) return;
+      try {
+        await navigator.clipboard.writeText(code);
+        // rövid visszajelzés a gombon: pipa, majd vissza a másolás ikonra
+        masolGomb.innerHTML = IKON.pipa;
+        masolGomb.setAttribute('aria-label', tr('copied', 'Másolva'));
+        clearTimeout(masolasIdozito);
+        masolasIdozito = setTimeout(() => {
+          masolGomb.innerHTML = IKON.masol;
+          masolGomb.setAttribute('aria-label', tr('copy_code', 'Kód másolása'));
+        }, 1500);
+      } catch {
+        setStatus(tr('err_copy', 'A másolás nem sikerült, jelöld ki kézzel.'), '#ef4444');
+      }
+    }
+  });
+
+  // Csoportnév: automatikus mentés gépelés közben, csak admin (a mező a többieknek readonly)
+  const setNameStatus = (msg, color = '') => {
+    const s = get('group-name-status');
+    if (s) { s.textContent = msg || ''; s.className = `beall-mezo-allapot ${STATUS_OSZTALY[color] || ''}`; }
+  };
+  async function mentCsoportnevet() {
+    const { group, groupRole } = getState();
+    if (groupRole !== 'admin' || !group) return;
+    const name = (get('group-name-display')?.value || '').trim();
+    if (name === utolsoMentettCsoportnev) return;
+    if (name.length < 2 || name.length > 40) {
+      return setNameStatus(tr('err_name_2_40', 'A név 2–40 karakter legyen.'), '#ef4444');
+    }
+    setNameStatus(tr('saving', 'Mentés...'), '#3b82f6');
+    const ok = await renameGroup(group.id, name);
+    if (ok) {
+      utolsoMentettCsoportnev = name;
+      setNameStatus(tr('saved_check', 'Mentve ✓'), '#10b981');
+    } else {
+      setNameStatus(tr('err_save', 'A mentés nem sikerült.'), '#ef4444');
+    }
+  }
+  const mentCsoportnevetKesleltetve = debounce(mentCsoportnevet, 800);
+  get('group-name-display')?.addEventListener('input', () => {
+    setNameStatus('');
+    mentCsoportnevetKesleltetve();
+  });
+  get('group-name-display')?.addEventListener('blur', () => mentCsoportnevetKesleltetve.flush());
+
+  // ---------- Műveletek blokk: lenyitás, kiválasztásos eltávolítás/átadás ----------
+
+  // Az admin-only gombok láthatósága. Kiválasztás közben az indító gombok amúgy is el vannak
+  // rejtve, azokat ilyenkor nem írjuk felül (a kiválasztás lezárásakor úgyis újrafut).
+  function frissitsAdminGombokLathatosagat(isAdmin) {
+    if (!kivalasztasMod) {
+      get('indit-eltavolitas-btn')?.toggleAttribute('hidden', !isAdmin);
+      get('indit-atadas-btn')?.toggleAttribute('hidden', !isAdmin);
+    }
+    get('regenerate-code-btn')?.toggleAttribute('hidden', !isAdmin);
+    get('delete-group-btn')?.toggleAttribute('hidden', !isAdmin);
+  }
+
+  function zarjMuveletMod() {
+    kivalasztasMod = null;
+    get('muveletek-sugo')?.setAttribute('hidden', '');
+    get('muveletek-vegrehajt-btn')?.setAttribute('hidden', '');
+    get('muveletek-megse-btn')?.setAttribute('hidden', '');
+    frissitsAdminGombokLathatosagat(getState().groupRole === 'admin');
+    renderTagok();
+  }
+
+  function inditsdKivalasztast(mod, sugoSzoveg) {
+    kivalasztasMod = mod;
+    get('indit-eltavolitas-btn')?.setAttribute('hidden', '');
+    get('indit-atadas-btn')?.setAttribute('hidden', '');
+    const sugo = get('muveletek-sugo');
+    if (sugo) { sugo.textContent = sugoSzoveg; sugo.hidden = false; }
+    get('muveletek-vegrehajt-btn')?.removeAttribute('hidden');
+    get('muveletek-megse-btn')?.removeAttribute('hidden');
+    renderTagok();
+  }
+
+  get('indit-eltavolitas-btn')?.addEventListener('click', () => {
+    inditsdKivalasztast('eltavolitas', tr('select_members_remove', 'Jelöld be, kiket távolítasz el a csoportból, majd nyomd meg a Végrehajtást.'));
+  });
+
+  get('indit-atadas-btn')?.addEventListener('click', () => {
+    inditsdKivalasztast('atadas', tr('select_member_transfer', 'Válaszd ki, kire ruházod át az admin jogot, majd nyomd meg a Végrehajtást.'));
+  });
+
+  get('muveletek-megse-btn')?.addEventListener('click', () => zarjMuveletMod());
+
+  get('muveletek-vegrehajt-btn')?.addEventListener('click', async () => {
+    const { group, members } = getState();
+    if (!group) return;
+
+    if (kivalasztasMod === 'eltavolitas') {
+      const kijeloltek = [...document.querySelectorAll('#group-members-list .tag-eltavolitas-cb:checked')]
+        .map(cb => cb.value);
+      if (kijeloltek.length === 0) return setStatus(tr('err_select_one_member', 'Jelölj be legalább egy tagot.'), '#ef4444');
+      const nevek = kijeloltek
+        .map(id => members.find(m => m.user_id === id)?.display_name || id)
+        .join(', ');
+      if (!confirm(tr('confirm_remove_members', 'Eltávolítod a csoportból: {names}?', { names: nevek }))) return;
+
+      setStatus(tr('removing', 'Eltávolítás...'), '#3b82f6');
+      // Párhuzamosan, nem egyenként: a tagok eltávolítása egymástól független művelet
+      const eredmenyek = await Promise.all(kijeloltek.map(userId => removeMember(userId, group.id)));
+      const hibaDb = eredmenyek.filter(ok => !ok).length;
+      setStatus(hibaDb === 0 ? tr('members_removed', 'A kiválasztott tagok eltávolítva.') : tr('err_members_remove', '{n} tag eltávolítása nem sikerült.', { n: hibaDb }), hibaDb === 0 ? '#10b981' : '#ef4444');
+      zarjMuveletMod();
+      return;
+    }
+
+    if (kivalasztasMod === 'atadas') {
+      const kijelolt = document.querySelector('#group-members-list .tag-atadas-radio:checked');
+      if (!kijelolt) return setStatus(tr('err_select_member', 'Válassz ki egy tagot.'), '#ef4444');
+      const nev = members.find(m => m.user_id === kijelolt.value)?.display_name || '';
+      if (!confirm(tr('confirm_transfer_admin', 'Átadod az admin jogot neki: {name}? Utána te sima tag leszel.', { name: nev }))) return;
+
+      setStatus(tr('saving', 'Mentés...'), '#3b82f6');
+      const ok = await transferOwnership(kijelolt.value, group.id);
+      setStatus(ok ? tr('admin_transferred', 'Az admin jog átadva.') : tr('err_transfer', 'Az átadás nem sikerült.'), ok ? '#10b981' : '#ef4444');
+      zarjMuveletMod();
+    }
+  });
+
+  // Új kód (admin)
+  get('regenerate-code-btn')?.addEventListener('click', async () => {
+    if (!confirm(tr('confirm_new_code', 'Új csoportkódot generálsz. A régi kód azonnal érvénytelen lesz, a meglévő tagok bent maradnak. Az új kódot MEG KELL OSZTANOD a tagokkal, mert a régivel már nem tudnak csatlakozni. A csoport képei nem változnak. Folytatod?'))) return;
+    const code = await regenerateGroupCode(getState().group.id);
+    if (code) setStatus(tr('new_group_code', 'Új csoportkód: {code}', { code }), '#10b981');
+  });
+
+  // Csoport törlése (admin) – a csoport nevét kell begépelni
+  get('delete-group-btn')?.addEventListener('click', async () => {
+    const { group } = getState();
+    const typed = prompt(
+      tr('confirm_delete_group', 'A csoport és MINDEN adata (tartozások, tervek, események...) véglegesen törlődik.\n\nA megerősítéshez írd be a csoport nevét: {name}', { name: group.group_name })
+    );
+    if (typed === null) return;
+    if (typed.trim() !== group.group_name) return setStatus(tr('err_group_name_mismatch', 'A név nem egyezik, a csoport nem lett törölve.'), '#ef4444');
+    await csoportKepeinekTorlese(group);
+    const ok = await deleteCurrentGroup(group.id);
+    if (ok) location.reload();
+  });
+
+  // Kilépés (mindenkinek, nem csak adminnak)
+  get('leave-group-btn')?.addEventListener('click', async () => {
+    if (!confirm(tr('confirm_leave_group', 'Biztosan kilépsz a csoportból?'))) return;
+    try {
+      const { group, members } = getState();
+      if (members.length === 1) await csoportKepeinekTorlese(group);
+      await leaveGroup();
+      location.reload();
+    } catch (err) {
+      setStatus(err.message, '#ef4444');
+    }
+  });
+}

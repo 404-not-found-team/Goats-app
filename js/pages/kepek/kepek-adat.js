@@ -2,7 +2,7 @@
 // Edge Function. A felülethez nem nyúl; hiba esetén a hibaVan naplóz, a visszatérési érték mondja meg,
 // mi történt (a felület a hibaüzenetet is kiírja, ezért a módosítások magát a hibát adják vissza).
 import { client } from '../../supabase-client.js';
-import { hibaVan } from '../../adat/hibakezeles.js';
+import { hibaVan } from '../../supabase_hibakezeles.js';
 import { BUCKET, csoportMappak, mappaFajljai } from '../../segedek/csoport-kepek.js';
 
 // A csoport összes képe, a legújabb elöl: [{ path, feltoltotteId, letrehozva }]; hibánál undefined

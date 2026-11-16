@@ -15,7 +15,7 @@ function ellenorzes() {
     const oldal = document.body?.dataset.oldal;
     if (!oldal || !getState().user || oldalEngedelyezett(oldal)) return;
     try { sessionStorage.setItem(UZENET_KULCS, NEM_ELERHETO_SZOVEG); } catch { /* nem kritikus */ }
-    location.replace(ut('oldalak/app.html'));
+    location.replace(ut('html/pages/app.html'));
 }
 
 // Előbb a helyben tárolt állapottal, majd a háttérben érkező friss kapcsolókkal is (onChange)

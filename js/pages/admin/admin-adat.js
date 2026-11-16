@@ -2,7 +2,7 @@
 // Supabase-művelete. A felülethez nem nyúl. Hiba esetén a hibaVan naplóz; mivel az admin felület szinte
 // mindenhol kiírja a hibaüzenetet vagy a hibakódot, a függvények egységesen { data, error }-t adnak vissza.
 import { client } from '../../supabase-client.js';
-import { hibaVan } from '../../adat/hibakezeles.js';
+import { hibaVan } from '../../supabase_hibakezeles.js';
 
 // Naplózás után a Supabase-válasz { data, error } része változatlanul
 function eredmeny({ data, error }, muvelet) {
