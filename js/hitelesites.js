@@ -33,9 +33,7 @@ const listeners = new Set();
 let signingOut = false;
 
 export const getState = () => state;
-export const isLoggedIn = () => !!state.user;
 export const hasGroup = () => !!state.group;
-export const isGroupAdmin = () => state.groupRole === 'admin';
 export const isSuperadmin = () => state.profile?.system_role === 'superadmin';
 
 // Globális kapcsolók (FELADAT15). A superadminra egyik sem vonatkozik. Ismeretlen vagy be nem

@@ -142,34 +142,70 @@
     const FORMAK = [
         ['nagy-doboz', 'Nagy doboz (500 ml)'],
         ['kozep-doboz', 'Közepes doboz (330 ml)'],
-        ['karcsu-doboz', 'Kis doboz (250 ml)'],
         ['uveg', 'Üveg (330 ml, sör / cider) – fő szín: címke, 2. szín: üveg'],
         ['vodka', 'Vodkás üveg – fő szín: címke, 2. szín: üveg'],
-        ['vodka-also', 'Vodkás üveg, színes alj – fő szín: az alja, 2. szín: üveg'],
+        ['royal', 'Vodkás üveg szalaggal (pl. Royal) – fő szín: kupak és szalag, 2. szín: üveg'],
+        ['finlandia', 'Magas vodkás üveg (pl. Finlandia) – fő szín: kupak és címke, 2. szín: üveg'],
+        ['absolut', 'Kerek vállú vodkás üveg (pl. Absolut) – fő szín: címke, 2. szín: üveg'],
+        ['ciroc', 'Magas, egyenes vodkás üveg (pl. Cîroc) – fő szín: alsó csík, 2. szín: üveg'],
+        ['belvedere', 'Magas, karcsú vodkás üveg (pl. Belvedere) – fő szín: nyakcímke, 2. szín: üveg'],
+        ['beluga', 'Vodkás üveg fémsávval (pl. Beluga) – fő szín: sáv és nyakcímke, 2. szín: üveg'],
+        ['euphoria', 'Hengeres palack (pl. Euphoria) – fő szín: palack, 2. szín: kupak'],
         ['whiskey', 'Whiskys üveg, kerek – fő szín: címke, 2. szín: ital'],
-        ['whiskey-szogletes', 'Whiskys üveg, szögletes – fő szín: címke, 2. szín: ital'],
+        ['jim', 'Whiskys üveg, nagy címkével (pl. Jim Beam) – fő szín: címke, 2. szín: ital'],
+        ['jack', 'Whiskys üveg, címke és nyak (pl. Jack Daniel’s) – fő szín: címke és nyak, 2. szín: ital'],
+        ['jameson', 'Whiskys üveg, lejtős vállú (pl. Jameson) – fő szín: címke, 2. szín: üveg'],
+        ['johnnie-walker', 'Szögletes whiskys üveg ferde címkével (pl. Johnnie Walker) – fő szín: címke és kupak, 2. szín: ital'],
+        ['ballantines', 'Széles whiskys üveg (pl. Ballantine’s) – fő szín: címke és kupak, 2. szín: ital'],
         ['jager', 'Likőrös üveg – fő szín: címke, 2. szín: üveg'],
-        ['tea-likor', 'Kerek likőrös üveg (pl. teás likőr) – fő szín: címke, 2. szín: üveg'],
-        ['rum', 'Rumos üveg – fő szín: címke, 2. szín: ital'],
+        ['tea-likor', 'Kerek likőrös üveg (pl. teás likőr) – fő szín: üveg, 2. szín: kupak'],
+        ['bacardi', 'Átlátszó rumos üveg (pl. Bacardi) – fő szín: címke, 2. szín: ital'],
+        ['havana', 'Rumos üveg arany kupakkal (pl. Havana Club) – fő szín: címke, 2. szín: ital'],
+        ['malibu', 'Fehér likőrös üveg (pl. Malibu) – fő szín: üveg, 2. szín: kupak'],
         ['bor', 'Boros üveg (0,75 l) – fő szín: címke, 2. szín: üveg'],
         ['froccs', 'Fröccsös pohár – fő szín: ital, 2. szín: üveg'],
+        ['koktel-feles', 'Feles pohár (shot) – fő szín: ital'],
+        ['koktel-rovid', 'Rövid pohár – fő szín: ital, 2. szín: karika'],
+        ['koktel-magas', 'Magas pohár – fő szín: ital, 2. szín: szívószál'],
     ].map(([kod, nev]) => [kod, tr(`form_${kod}`, nev)]);
     // Formák, amelyeknek van saját logó-rétege (<forma>-logo.webp): az app logója a doboz elején,
     // a színezéstől függetlenül, mindig ugyanolyan. Új forma logóval: fájl be + a kódja ide.
-    const LOGOS_FORMAK = new Set(['karcsu-doboz', 'nagy-doboz', 'kozep-doboz', 'uveg', 'vodka', 'vodka-also', 'whiskey', 'whiskey-szogletes', 'jager',
-        'tea-likor', 'rum', 'bor', 'froccs']);
+    // Formák, amelyek egy másik forma üvegét (és logóját) használják, csak a címkéjük (-szin) és a
+    // kupakjuk (-reszletek) saját: pl. a jim és a jack ugyanaz a whiskys üveg, más címkével.
+    const KOZOS_UVEG = { jim: 'whiskey', jack: 'whiskey' };
+    const uvegForma = (forma) => KOZOS_UVEG[forma] || forma;
+    const LOGOS_FORMAK = new Set(['nagy-doboz', 'kozep-doboz', 'uveg', 'vodka', 'whiskey', 'jager', 'royal', 'finlandia', 'absolut', 'jim', 'jack', 'jameson', 'johnnie-walker', 'ballantines', 'ciroc', 'bacardi', 'havana', 'malibu',
+        'tea-likor', 'bor', 'froccs', 'koktel-feles', 'koktel-rovid', 'koktel-magas', 'belvedere', 'beluga', 'euphoria']);
 
     // Minták: [kód, név, formák]. A minta formához kötött, mert egy dobozra rajzolt minta más formára
     // nem illik; a fájl: img/mintak/<forma>-<minta>.webp. Az űrlapon csak az adott formához tartozók jelennek meg.
     // Új minta: fájl(ok) be az img/mintak/ mappába + egy sor ide (vagy egy forma hozzáadása a listához).
     const MINTAK = [
-        ['ecset', 'Ecsetvonások', ['karcsu-doboz']],
-        ['dekor', 'Díszítés', ['karcsu-doboz']],
-        ['felezett', 'Felezett (jobb fele)', ['karcsu-doboz', 'nagy-doboz', 'kozep-doboz']],
-        ['atlos', 'Átlós (alsó-jobb rész)', ['karcsu-doboz', 'nagy-doboz', 'kozep-doboz']],
-        ['korok', 'Két kör (íz színe)', ['vodka', 'vodka-also']],
-        ['felso-cimke', 'Felső címke', ['vodka', 'vodka-also']],
+        ['felezett', 'Felezett (jobb fele)', ['nagy-doboz', 'kozep-doboz']],
+        ['atlos', 'Átlós (alsó-jobb rész)', ['nagy-doboz', 'kozep-doboz']],
+        ['also-fele', 'Alsó fele (vízszintes felezés)', ['nagy-doboz', 'kozep-doboz']],
+        ['iv', 'Ív (minta színe)', ['nagy-doboz']],
+        ['haromszog', 'Háromszög jel', ['nagy-doboz']],
+        ['gyumolcs', 'Gyümölcs', ['nagy-doboz']],
+        ['racs', 'Háromszög-rács (felül)', ['nagy-doboz']],
+        ['szalag', 'Szalag (minta színe)', ['nagy-doboz']],
+        ['hegy', 'Hegy havas csúcsokkal', ['nagy-doboz']],
+        ['keret', 'Keret a logó körül', ['nagy-doboz']],
+        ['csikok', 'Csíkok felül és alul', ['nagy-doboz']],
+        ['villam', 'Villám', ['koktel-feles']],
+        ['kacsa', 'Gumikacsa', ['koktel-feles']],
+        ['kaktusz', 'Kaktusz', ['koktel-rovid']],
+        ['mogyoro', 'Mogyoró', ['koktel-rovid']],
+        ['krokodil', 'Krokodil', ['koktel-magas']],
+        ['korok', 'Két kör (íz színe)', ['finlandia']],
+        ['almak', 'Almák a címkén (íz színe)', ['jim']],
     ].map(([kod, nev, formak]) => [kod, tr(`pattern_${kod}`, nev), formak]);
+    // Formák, amelyeknél a minta a fő színű rész (címke, színes alj) MÖGÖTT van: a minta előbb kerül
+    // a dobozba, így a címke eltakarja az alsó részét (pl. a körök kikandikálnak a címke mögül).
+    // Minták, amelyeknek van egy nem színezett része is (<forma>-<minta>-fix.webp, pl. a háromszög jel
+    // fehér közepe): ez a színezett minta fölé kerül, mindig a rajzolt színében.
+    const MINTA_FIX = new Set(['haromszog', 'hegy', 'kacsa', 'kaktusz', 'mogyoro', 'krokodil']);
+    const MINTA_A_SZIN_MOGOTT = new Set(['finlandia']);
     const mintakFormahoz = (forma) => MINTAK.filter(([, , formak]) => formak.includes(forma));
     const vanMinta = (forma, minta) => MINTAK.some(([kod, , formak]) => kod === minta && formak.includes(forma));
 
@@ -198,9 +234,9 @@
             const sl = stiluslap();
             sl.insertRule(`.${nev} {
                 --kep-szin: url("${abszolut(`img/formak/${forma}-szin.webp`)}");
-                --kep-sav: url("${abszolut(`img/formak/${forma}-sav.webp`)}");
+                --kep-sav: url("${abszolut(`img/formak/${uvegForma(forma)}-sav.webp`)}");
                 --kep-reszletek: url("${abszolut(`img/formak/${forma}-reszletek.webp`)}");
-                --kep-logo: url("${abszolut(`img/formak/${forma}-logo.webp`)}");
+                --kep-logo: url("${abszolut(`img/formak/${uvegForma(forma)}-logo.webp`)}");
             }`, sl.cssRules.length);
         }
         return nev;
@@ -211,7 +247,9 @@
         if (!ismertOsztalyok.has(nev)) {
             ismertOsztalyok.add(nev);
             const sl = stiluslap();
-            sl.insertRule(`.${nev} { --kep-minta: url("${abszolut(`img/mintak/${forma}-${minta}.webp`)}"); }`, sl.cssRules.length);
+            const fix = MINTA_FIX.has(minta)
+                ? ` --kep-minta-fix: url("${abszolut(`img/mintak/${forma}-${minta}-fix.webp`)}");` : '';
+            sl.insertRule(`.${nev} { --kep-minta: url("${abszolut(`img/mintak/${forma}-${minta}.webp`)}");${fix} }`, sl.cssRules.length);
         }
         return nev;
     }
@@ -238,11 +276,19 @@
         const szin3 = HEX.test(String(ital.kep_szin_3 || '')) ? ital.kep_szin_3 : null;
         // A sáv-réteg a teljes testet lefedi, a szín-réteg erre kerül középre (így nincs varrat a határon).
         // Második szín híján a sáv is a fő színt kapja, így a doboz egyszínű (pl. New Gen: fehér + minta).
+        const szinReteg = reteg('reteg-szin', ital.kep_szin_1);
         doboz.appendChild(reteg('reteg-sav', szin2 || ital.kep_szin_1));
-        doboz.appendChild(reteg('reteg-szin', ital.kep_szin_1));
+        doboz.appendChild(szinReteg);
         if (SZLUG.test(String(ital.kep_minta || '')) && vanMinta(ital.kep_forma, ital.kep_minta)) {
-            doboz.appendChild(reteg('reteg-minta ' + mintaOsztaly(ital.kep_forma, ital.kep_minta),
-                szin3 || szin2 || ital.kep_szin_1));
+            const minta = reteg('reteg-minta ' + mintaOsztaly(ital.kep_forma, ital.kep_minta),
+                szin3 || szin2 || ital.kep_szin_1);
+            // a szín-réteg elé szúrva a minta mögötte lesz, különben fölötte
+            if (MINTA_A_SZIN_MOGOTT.has(ital.kep_forma)) doboz.insertBefore(minta, szinReteg);
+            else doboz.appendChild(minta);
+            // a minta nem színezett része (pl. fehér háromszög) közvetlenül a minta fölé
+            if (MINTA_FIX.has(ital.kep_minta)) {
+                minta.after(reteg('reteg-minta-fix ' + mintaOsztaly(ital.kep_forma, ital.kep_minta)));
+            }
         }
         doboz.appendChild(reteg('reteg-reszletek'));
         if (LOGOS_FORMAK.has(ital.kep_forma)) doboz.appendChild(reteg('reteg-logo'));
@@ -253,14 +299,14 @@
     function elemLetrehoz(ital) {
         if (vanSzinezettForma(ital)) {
             const elem = szinezettElem(ital);
-            // Ha a forma fájlja még nincs feltöltve, a régi lánc (márkakép, ikon) veszi át a helyét
+            // Ha a forma fájlja még nincs feltöltve, a régi lánc (márkakép, ikon) veszi át a helyét.
             const proba = new Image();
             proba.onerror = () => {
                 const tartalek = kepesElem(ital);
                 if (elem.id) tartalek.id = elem.id;
                 elem.replaceWith(tartalek);
             };
-            proba.src = abszolut(`img/formak/${ital.kep_forma}-szin.webp`);
+            proba.src = abszolut(`img/formak/${uvegForma(ital.kep_forma)}-sav.webp`);
             return elem;
         }
         return kepesElem(ital);
@@ -289,19 +335,8 @@
         return img;
     }
 
-    // Egyetlen URL a nagy nézethez (modal). Ikonnál az SVG fájl útvonala.
-    function elsoUrl(ital) {
-        const jeloltek = kepJeloltek(ital);
-        return jeloltek[0] || abszolut(`img/ikonok/${ikonNev(ital)}.svg`);
-    }
-
-    // Az összes jelölt URL a nagy nézethez, a végén a kategória-ikonnal (onerror-láncoláshoz)
-    function osszesUrl(ital) {
-        return [...kepJeloltek(ital), abszolut(`img/ikonok/${ikonNev(ital)}.svg`)];
-    }
-
     window.italKep = {
-        elemLetrehoz, elsoUrl, osszesUrl, markaNevbol, nevMarkaNelkul, ikonFajl, nevSzlug,
-        FORMAK, MINTAK, mintakFormahoz,
+        elemLetrehoz, markaNevbol, nevMarkaNelkul, ikonFajl,
+        FORMAK, mintakFormahoz,
     };
 })();

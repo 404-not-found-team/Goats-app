@@ -815,6 +815,9 @@
 /* Alkategória-csoportok a forrásdobozban (pl. Energiaitalok -> Hell, Monster, Red Bull) */
 .ital-lista.van-alcsoport {
     flex-direction: column;
+    /* oszlopirányú flexnél a wrap miatt a böngésző egyforma magasra húzta az alcsoportokat
+       (a rövid csoport alatt nagy üres hely maradt); itt nincs mit tördelni */
+    flex-wrap: nowrap;
     align-items: stretch;
     gap: 14px;
 }

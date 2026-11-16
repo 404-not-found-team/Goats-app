@@ -2,7 +2,7 @@
 // szerver kényszeríti ki (public.funkcio_engedelyezve() a policykban és az RPC-kben).
 // A superadminra nem vonatkozik (a funkcioEngedelyezett() neki mindig igaz).
 // Modul: a main.js importálja; a klasszikus oldalscriptek a window.goatsKapcsolok-on érik el.
-import { ready, onChange, funkcioEngedelyezett, oldalEngedelyezett } from '../hitelesites.js';
+import { onChange, funkcioEngedelyezett, oldalEngedelyezett } from '../hitelesites.js';
 
 export const TILTVA_SZOVEG = tr('feature_disabled', 'Ez a funkció jelenleg ki van kapcsolva.');
 
@@ -52,16 +52,9 @@ function alkalmaz(gomb, kulcs) {
     return false;
 }
 
-// Ha az állapot betöltése után kell alkalmazni (klasszikus oldalscriptekből)
-export async function funkcioGombTiltasBetoltesUtan(gomb, kulcs) {
-    await ready;
-    return funkcioGombTiltas(gomb, kulcs);
-}
-
 window.goatsKapcsolok = {
     TILTVA_SZOVEG,
     funkcioEngedelyezett,
     oldalEngedelyezett,
     funkcioGombTiltas,
-    funkcioGombTiltasBetoltesUtan,
 };

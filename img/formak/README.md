@@ -14,13 +14,12 @@ Egy formából (pl. magas doboz) bármennyi ital kijön: a színt az adatbázis 
 
 ## Minták
 
-- Fájl: `img/mintak/<forma>-<minta>.webp` (pl. `karcsu-doboz-ecset.webp`), szintén világos szürkeárnyalatban,
+- Fájl: `img/mintak/<forma>-<minta>.webp` (pl. `finlandia-korok.webp`), szintén világos szürkeárnyalatban,
   pontosan az adott formára illesztve – ezért formánként külön fájl kell.
 - Saját színe van (`kep_szin_3`, az űrlapon „Minta színe”); ha nincs megadva, a 2., végül az 1. színt kapja.
 - Felvétel: a fájl az `img/mintak/` mappába + a `js/segedek/ital-kep.js` `MINTAK` listájában a minta
   sorához hozzáadni a forma kódját. Az űrlapon csak az adott formához rajzolt minták jelennek meg.
 - Ha nincs második szín, a sávok is a fő színt kapják, így a doboz egyszínű (pl. New Gen: fehér + színes minta).
-- A jelenlegi `ecset` és `dekor` minta ideiglenes, gépi vázlat.
 
 ## Szabályok a rajzhoz
 

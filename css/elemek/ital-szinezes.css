@@ -42,6 +42,11 @@
     --reteg-kep: var(--kep-minta);
 }
 
+/* A minta nem színezett része (pl. a háromszög jel fehér közepe): mindig a rajzolt színében */
+.reteg-minta-fix {
+    background: var(--kep-minta-fix) center / contain no-repeat;
+}
+
 .reteg-reszletek {
     background: var(--kep-reszletek) center / contain no-repeat;
 }

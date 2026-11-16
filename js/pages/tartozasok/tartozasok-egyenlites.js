@@ -20,10 +20,6 @@ function nev(id) {
   return window.tagNev ? window.tagNev(id) : tr('deleted_member', 'Törölt tag');
 }
 
-function nak(nevSzoveg) {
-  return window.getNakNek ? window.getNakNek(nevSzoveg) : `${nevSzoveg}-nak`;
-}
-
 // A megadott ados–hitelező pár egyedi tartozás-tételeit és az egyenlítési előzményeket
 // tölti be, és a kontener elembe rajzolja.
 export async function toltsReszleteket(kontener, adosId, hitelezoId) {
@@ -194,8 +190,6 @@ export function nyitEgyenlitesModal({ aId, aNev, bId, bNev, aTartozikBnek, bTart
   bizonyosodjModalRol();
   const modal = document.getElementById('tartozas-egyenlites-modal');
 
-  const bNak = nak(bNev);
-  const aNak = nak(aNev);
   const utanaA = Math.max(aTartozikBnek - beszamithato, 0);
   const utanaB = Math.max(bTartozikAnak - beszamithato, 0);
 

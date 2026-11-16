@@ -9,7 +9,6 @@ import { initErtesitesek } from './settings/ertesitesek.js';
 import { initGoogleNaptar } from './settings/google-naptar.js';
 import { ertesitesFelajanlas } from './settings/ertesites-felajanlas.js';
 import { initTosUjraelfogadas } from './settings/tos-ujraelfogadas.js';
-import { fokuszAllit } from './segedek/modal-fokusz.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Megvárjuk a session betöltését, hogy a felület már a valós állapotot mutassa

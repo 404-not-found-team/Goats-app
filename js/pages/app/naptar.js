@@ -310,11 +310,10 @@ async function modositEsemeny() {
     try {
         const client = typeof _supabase !== 'undefined' ? _supabase : supabase;
 
-        const { data, error } = await client
+        const { error } = await client
             .from('esemenyek')
             .update({ cim: ujCim, datum: ujDatum })
-            .eq('id', aktivEsemeny.id)
-            .select();
+            .eq('id', aktivEsemeny.id);
 
         if (window.goatsHiba.hibaVan(error, 'az esemény módosításakor')) {
             alert(tr('err_modify', 'Hiba a módosításkor: {msg}', { msg: error.message }));

@@ -1,5 +1,3 @@
-const BUCKET_NEV = 'kepek';
-
 // Főoldali galéria: csak lapozható nézegető, kis képekkel (nagyítás nincs, FELADAT12).
 // Feltöltés, törlés, jelentés és a feltöltő neve a Képek oldalon van (kepek.html, js/pages/kepek/kepek.js).
 // A képeket a helyi gyorsítótár (js/segedek/kep-gyorsitotar.js) adja blob URL-ként.

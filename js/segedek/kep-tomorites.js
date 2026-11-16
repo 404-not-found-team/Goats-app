@@ -191,16 +191,3 @@ export async function kepTomoritesKivagassal(kep, kivagas) {
     }
     return { ...legjobb, kiterjesztes: webp ? 'webp' : 'jpg' };
 }
-
-/**
- * Egy képfájl tömörítése feltöltéshez, kivágás nélkül (betöltés + tömörítés + felszabadítás).
- * @throws {KepHiba} érthető magyar üzenettel, ha a kép nem tölthető fel
- */
-export async function kepTomorites(fajl) {
-    const kep = await kepBetoltes(fajl);
-    try {
-        return await kepTomoritesKivagassal(kep);
-    } finally {
-        forrasFelszabaditas(kep.forras);
-    }
-}

@@ -622,7 +622,6 @@ async function addTartozas() {
         ? `${miert} (${formatFt(osszeg)}, ${mod})`
         : `${miert} (${formatFt(osszeg)} / ${resztvevok.length} fő)`;
 
-    const nevek = id => tagNeve(id) || null;
     const ujTartozasok = sorok.map(({ adosId, osszeg: resz }) => ({
         miert: leirasSzoveg,
         mennyiert: resz,
@@ -659,5 +658,5 @@ async function addTartozas() {
 // - az egyenlítés-modul (tartozasok-egyenlites.js): frissítés, törlés, névformázás.
 Object.assign(window, {
     nyisdUjTartozasModal, zardUjTartozasModal, toggleDropdown, toggleKinekDropdown, addTartozas,
-    loadTartozasok, deleteTartozas, formatFt, tagNev, getNakNek,
+    loadTartozasok, deleteTartozas, formatFt, tagNev,
 });
