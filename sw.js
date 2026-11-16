@@ -1,32 +1,33 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v77';
+const CACHE_NEV = 'goats-v78';
 
 // Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
 // indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
 // (ha kimarad, az első használatkor a futás közbeni gyorsítótárba kerül, csak lassabban).
-// Egyesével töltjük: ha egy fájl hiányzik, a telepítés attól még sikeres marad.
-const ELOGYORSITOTT = [
+// A fájlok csoportonként vannak felsorolva: közös alap, közös stílusok és scriptek, majd oldalanként
+// (az oldal HTML-je, CSS-e és JS-e együtt). A végén a ... (spread) operátor fűzi őket egy listába.
+
+// Kezdőoldal, manifest, ikonok, nyelvi fájlok
+const ALAP = [
     './',
     'index.html',
-    'oldalak/app.html',
-    'oldalak/ranglista.html',
-    'oldalak/tartozasok.html',
-    'oldalak/tervek.html',
-    'oldalak/kepek.html',
-    'oldalak/admin.html',
-    'oldalak/goatsgame.html',
-    'oldalak/jatekszabalyok.html',
-    'oldalak/hanynapja.html',
-    'oldalak/ujdonsagok.html',
-    'oldalak/tesztelok.html',
-    'jogi/',
-    'jogi/privacy.html',
-    'jogi/felhasznalasi-feltetelek.html',
-    'jogi/fiok-torles.html',
-    'jogi/impresszum.html',
+    'manifest.json',
     'favicon.ico',
     'img/favicon-192.png',
+    'img/icon-192.png',
+    'img/ertesites-jelveny.png',
+    'img/zaszlok/de.svg',
+    'img/zaszlok/en.svg',
+    'img/zaszlok/hu.svg',
+    'nyelvek/de.json',
+    'nyelvek/en.json',
+    'nyelvek/hu.json',
+];
+
+// Minden oldal által használt stílusok
+const KOZOS_CSS = [
+    'css/main.css',
     'css/base/segedosztalyok.css',
     'css/base/valtozok.css',
     'css/base/visszaallitas.css',
@@ -41,55 +42,16 @@ const ELOGYORSITOTT = [
     'css/kulso/fontawesome-6.5.1/css/fontawesome.min.css',
     'css/kulso/fontawesome-6.5.1/css/solid.min.css',
     'css/kulso/fontawesome-6.5.1/webfonts/fa-solid-900.woff2',
-    'css/main.css',
-    'css/pages/admin.css',
-    'css/pages/bejelentkezes.css',
-    'css/pages/fooldal.css',
-    'css/pages/goatsgame.css',
-    'css/pages/hanynapja.css',
-    'css/pages/jatekszabalyok.css',
-    'css/pages/jogi.css',
-    'css/pages/kepek.css',
-    'css/pages/ranglista.css',
-    'css/pages/tartozasok.css',
-    'css/pages/tervek.css',
-    'css/pages/tesztelok.css',
-    'js/admin-muveletek.js',
-    'js/elemek/beallitasok-modal.js',
-    'js/elemek/beallitasok/beallitasok-sablonok.js',
-    'js/elemek/beallitasok/belepes-modal.js',
-    'js/elemek/beallitasok/csoport-adatok.js',
-    'js/elemek/beallitasok/profil-modal.js',
-    'js/elemek/beallitasok/tema-valaszto.js',
-    'js/elemek/beallitasok/nyelv-valaszto.js',
-    'js/elemek/beallitasok/ertesitesek.js',
-    'js/elemek/beallitasok/google-naptar.js',
-    'js/elemek/ertesites-felajanlas.js',
-    'js/elemek/beallitasok/tos-ujraelfogadas.js',
-    'js/elemek/fooldal-hanynapja.js',
-    'js/elemek/galeria.js',
-    'js/elemek/kep-kivago.js',
-    'js/elemek/naptar.js',
-    'js/elemek/nav-bar.js',
-    'js/elemek/tartozasok-egyenlitese.js',
-    'js/hitelesites.js',
+];
+
+// Közös scriptek: indítás, bejelentkezés, Supabase, hibakezelés, segédek
+const KOZOS_JS = [
     'js/main.js',
-    'js/pages/admin-javaslatok.js',
-    'js/pages/admin-kategoriak.js',
-    'js/pages/admin-jelentesek.js',
-    'js/pages/admin.js',
-    'js/pages/app-orzo.js',
-    'js/pages/bejelentkezes-oldal.js',
-    'js/pages/goatsgame.js',
-    'js/pages/hanynapja.js',
-    'js/pages/jatekszabalyok.js',
-    'js/pages/kepek.js',
-    'js/pages/ranglista.js',
-    'js/pages/tartozasok.js',
-    'js/pages/tervek.js',
-    'js/pages/tesztelok.js',
-    'js/pages/tesztelok-ujdonsagok.js',
-    'js/pages/ujdonsagok.js',
+    'js/hitelesites.js',
+    'js/supabase-client.js',
+    'js/admin-muveletek.js',
+    'js/kulso/supabase-js-2.117.2.js',
+    'js/adat/hibakezeles.js',
     'js/segedek/adat-gyorsitotar.js',
     'js/segedek/csoport-kepek.js',
     'js/segedek/csoport-kod.js',
@@ -102,26 +64,143 @@ const ELOGYORSITOTT = [
     'js/segedek/kep-tomorites.js',
     'js/segedek/keslelteto.js',
     'js/segedek/modal-fokusz.js',
-    'js/segedek/oldal-orzo.js',
     'js/segedek/nyelv.js',
+    'js/segedek/oldal-orzo.js',
     'js/segedek/oldalak.js',
     'js/segedek/sw-regisztracio.js',
     'js/segedek/szin-osztaly.js',
     'js/segedek/teljesitmeny.js',
     'js/segedek/tema.js',
     'js/segedek/utvonal.js',
-    'js/kulso/supabase-js-2.117.2.js',
-    'js/supabase-client.js',
-    'js/adat/hibakezeles.js',
-    'manifest.json',
-    'img/icon-192.png',
-    'img/ertesites-jelveny.png',
-    'img/zaszlok/de.svg',
-    'img/zaszlok/en.svg',
-    'img/zaszlok/hu.svg',
-    'nyelvek/de.json',
-    'nyelvek/en.json',
-    'nyelvek/hu.json',
+];
+
+// Közös felületelemek: menü, beállítások, galéria, naptár stb.
+const KOZOS_ELEMEK = [
+    'js/elemek/nav-bar.js',
+    'js/elemek/beallitasok-modal.js',
+    'js/elemek/beallitasok/beallitasok-sablonok.js',
+    'js/elemek/beallitasok/belepes-modal.js',
+    'js/elemek/beallitasok/csoport-adatok.js',
+    'js/elemek/beallitasok/ertesitesek.js',
+    'js/elemek/beallitasok/google-naptar.js',
+    'js/elemek/beallitasok/nyelv-valaszto.js',
+    'js/elemek/beallitasok/profil-modal.js',
+    'js/elemek/beallitasok/tema-valaszto.js',
+    'js/elemek/beallitasok/tos-ujraelfogadas.js',
+    'js/elemek/ertesites-felajanlas.js',
+    'js/elemek/fooldal-hanynapja.js',
+    'js/elemek/galeria.js',
+    'js/elemek/kep-kivago.js',
+    'js/elemek/naptar.js',
+    'js/elemek/tartozasok-egyenlitese.js',
+];
+
+// --- Oldalanként ---
+
+const BEJELENTKEZES = [
+    'css/pages/bejelentkezes.css',
+    'js/pages/bejelentkezes-oldal.js',
+];
+
+const FOOLDAL = [
+    'oldalak/app.html',
+    'css/pages/fooldal.css',
+    'js/pages/app-orzo.js',
+];
+
+const RANGLISTA = [
+    'oldalak/ranglista.html',
+    'css/pages/ranglista.css',
+    'js/pages/ranglista.js',
+];
+
+const TARTOZASOK = [
+    'oldalak/tartozasok.html',
+    'css/pages/tartozasok.css',
+    'js/pages/tartozasok.js',
+];
+
+const TERVEK = [
+    'oldalak/tervek.html',
+    'css/pages/tervek.css',
+    'js/pages/tervek/tervek.js',
+    'js/pages/tervek/tervek-adat.js',
+    'js/pages/tervek/tervek-megjelenites.js',
+];
+
+const KEPEK = [
+    'oldalak/kepek.html',
+    'css/pages/kepek.css',
+    'js/pages/kepek.js',
+];
+
+const HANYNAPJA = [
+    'oldalak/hanynapja.html',
+    'css/pages/hanynapja.css',
+    'js/pages/hanynapja.js',
+];
+
+const GOATSGAME = [
+    'oldalak/goatsgame.html',
+    'css/pages/goatsgame.css',
+    'js/pages/goatsgame.js',
+];
+
+const JATEKSZABALYOK = [
+    'oldalak/jatekszabalyok.html',
+    'css/pages/jatekszabalyok.css',
+    'js/pages/jatekszabalyok.js',
+];
+
+const ADMIN = [
+    'oldalak/admin.html',
+    'css/pages/admin.css',
+    'js/pages/admin.js',
+    'js/pages/admin-javaslatok.js',
+    'js/pages/admin-jelentesek.js',
+    'js/pages/admin-kategoriak.js',
+];
+
+const TESZTELOK = [
+    'oldalak/tesztelok.html',
+    'css/pages/tesztelok.css',
+    'js/pages/tesztelok.js',
+    'js/pages/tesztelok-ujdonsagok.js',
+];
+
+const UJDONSAGOK = [
+    'oldalak/ujdonsagok.html',
+    'js/pages/ujdonsagok.js',
+];
+
+const JOGI = [
+    'jogi/',
+    'jogi/privacy.html',
+    'jogi/felhasznalasi-feltetelek.html',
+    'jogi/fiok-torles.html',
+    'jogi/impresszum.html',
+    'css/pages/jogi.css',
+];
+
+// Egyesével töltjük: ha egy fájl hiányzik, a telepítés attól még sikeres marad.
+const ELOGYORSITOTT = [
+    ...ALAP,
+    ...KOZOS_CSS,
+    ...KOZOS_JS,
+    ...KOZOS_ELEMEK,
+    ...BEJELENTKEZES,
+    ...FOOLDAL,
+    ...RANGLISTA,
+    ...TARTOZASOK,
+    ...TERVEK,
+    ...KEPEK,
+    ...HANYNAPJA,
+    ...GOATSGAME,
+    ...JATEKSZABALYOK,
+    ...ADMIN,
+    ...TESZTELOK,
+    ...UJDONSAGOK,
+    ...JOGI,
 ];
 
 // A saját domain és a CDN-ek statikus fájljai: "stale-while-revalidate"
