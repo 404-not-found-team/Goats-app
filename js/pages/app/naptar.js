@@ -184,7 +184,7 @@ function datumKulcs(d) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-// Közelgő események kártya (asztali nézetben a naptár mellett): a mai és a későbbi események
+// Közelgő események kártya (asztalin a naptár mellett, telefonon előtte): a mai és a későbbi események
 // időrendben; ha nincs ilyen, egy rövid üzenet hív új esemény felvételére
 const KOZELGO_MAX = 4;
 

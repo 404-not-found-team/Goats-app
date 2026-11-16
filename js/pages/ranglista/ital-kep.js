@@ -151,6 +151,7 @@
         ['belvedere', 'Magas, karcsú vodkás üveg (pl. Belvedere) – fő szín: nyakcímke, 2. szín: üveg'],
         ['beluga', 'Vodkás üveg fémsávval (pl. Beluga) – fő szín: sáv és nyakcímke, 2. szín: üveg'],
         ['euphoria', 'Hengeres palack (pl. Euphoria) – fő szín: palack, 2. szín: kupak'],
+        ['grey-goose', 'Magas vodkás üveg hegyekkel (pl. Grey Goose) – fő szín: kupak és hegyek, 2. szín: üveg'],
         ['whiskey', 'Whiskys üveg, kerek – fő szín: címke, 2. szín: ital'],
         ['jim', 'Whiskys üveg, nagy címkével (pl. Jim Beam) – fő szín: címke, 2. szín: ital'],
         ['jack', 'Whiskys üveg, címke és nyak (pl. Jack Daniel’s) – fő szín: címke és nyak, 2. szín: ital'],
@@ -175,7 +176,7 @@
     const KOZOS_UVEG = { jim: 'whiskey', jack: 'whiskey' };
     const uvegForma = (forma) => KOZOS_UVEG[forma] || forma;
     const LOGOS_FORMAK = new Set(['nagy-doboz', 'kozep-doboz', 'uveg', 'vodka', 'whiskey', 'jager', 'royal', 'finlandia', 'absolut', 'jim', 'jack', 'jameson', 'johnnie-walker', 'ballantines', 'ciroc', 'bacardi', 'havana', 'malibu',
-        'tea-likor', 'bor', 'froccs', 'koktel-feles', 'koktel-rovid', 'koktel-magas', 'belvedere', 'beluga', 'euphoria']);
+        'tea-likor', 'bor', 'froccs', 'koktel-feles', 'koktel-rovid', 'koktel-magas', 'belvedere', 'beluga', 'euphoria', 'grey-goose']);
 
     // Minták: [kód, név, formák]. A minta formához kötött, mert egy dobozra rajzolt minta más formára
     // nem illik; a fájl: img/mintak/<forma>-<minta>.webp. Az űrlapon csak az adott formához tartozók jelennek meg.
