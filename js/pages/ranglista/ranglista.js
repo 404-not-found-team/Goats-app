@@ -1,3 +1,10 @@
+// Ranglista oldal: az italok tier-listája (S–D), szűrőkkel, új ital javaslásával és szerkesztésével.
+// Modul: az adatréteg (ranglista-adat.js) végzi a Supabase-hívásokat; ez a fájl a felület és a vezérlés.
+import { betolt, olvas } from '../../segedek/adat-gyorsitotar.js';
+import {
+    ranglistaLekerese, helyezesMentese, szuroMentese, italModositasa, ujItalMentese, receptMentese, naploLekerese,
+} from './ranglista-adat.js';
+
 // Ital ranglista (ranglista.html).
 // Adatok: public.italok (katalógus), public.ital_kategoriak (fő- és alkategóriák, lásd
 // js/segedek/ital-kategoriak.js), public.ital_osszetevok (koktél/fröccs recept),
@@ -50,7 +57,6 @@ function feliratBeallit(felirat, nev) {
     felirat.title = nev || '';
 }
 
-const kliens = () => (typeof _supabase !== 'undefined' ? _supabase : supabase);
 const K = () => window.italKategoriak;
 
 // Az alkategória-szűrő kulcsa: az alkategória kódja, vagy "<fokód>:egyeb" az alkategória nélküliekre
@@ -64,45 +70,9 @@ async function inicializalas() {
     window.goatsKapcsolok?.funkcioGombTiltas(document.getElementById('uj-ital-gomb'), 'funkcio_italjavaslat');
     const groupCode = aktualisGroupCode();
     const groupId = window.goatsAuth?.getState()?.group?.id || null;
-    const client = kliens();
 
-    // Minden lekérdezés párhuzamosan (korábban egymás után futottak)
-    const lekero = async () => {
-        const [kategoriak, katalogusRes, osszetevoRes, rangRes, szuroRes, szinPalettaRes] = await Promise.all([
-            K().lekeres(client).catch(err => ({ hiba: err })),
-            client.from('italok')
-                .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, kep_szin_3, kep_szin_1_id, kep_szin_2_id, kep_szin_3_id')
-                .order('nev', { ascending: true })
-                .range(0, 1999),
-            client.from('ital_osszetevok')
-                .select('ital_id, sorrend, nev, mennyiseg, egyseg')
-                .order('sorrend', { ascending: true }),
-            groupCode
-                ? client.from('ital_ranglista').select('*').eq('group_code', groupCode)
-                : Promise.resolve({ data: [], error: null }),
-            groupId
-                ? client.from('groups').select('filter_settings').eq('id', groupId).maybeSingle()
-                : Promise.resolve({ data: null, error: null }),
-            client.from('szin_paletta').select('id, nev, kep_szin_1').order('nev', { ascending: true }),
-        ]);
-
-        if (window.goatsHiba.hibaVan(kategoriak.hiba, 'a kategóriák betöltésekor')) return undefined;
-        if (window.goatsHiba.hibaVan(katalogusRes.error, 'a katalógus betöltésekor')) return undefined;
-
-        window.goatsHiba.hibaVan(osszetevoRes.error, 'a receptek betöltésekor');
-        window.goatsHiba.hibaVan(rangRes.error, 'a ranglista betöltésekor');
-        window.goatsHiba.hibaVan(szuroRes.error, 'a szűrő beállítások betöltésekor');
-        window.goatsHiba.hibaVan(szinPalettaRes.error, 'a színpaletta betöltésekor');
-
-        return {
-            kategoriak,
-            katalogus: katalogusRes.data || [],
-            osszetevok: osszetevoRes.data || [],
-            ranglista: rangRes.data || [],
-            filterSettings: szuroRes.data?.filter_settings ?? null,
-            szinPaletta: szinPalettaRes.data || [],
-        };
-    };
+    // Minden lekérdezés párhuzamosan (ranglista-adat.js)
+    const lekero = () => ranglistaLekerese(groupCode, groupId);
 
     // Bejelentkezve előbb az utoljára látott állapot jelenik meg azonnal, a friss a háttérben érkezik
     // (js/segedek/adat-gyorsitotar.js); kijelentkezve nincs tárolás, ott csak a friss adat
@@ -111,8 +81,8 @@ async function inicializalas() {
         teljesKirajzolas(adat);
         if (!tarolt) frissMegjott = true;
     };
-    if (window.goatsAdatTar && window.goatsAuth?.getState()?.user) {
-        await window.goatsAdatTar.betolt('ranglista', lekero, megjelenito);
+    if (window.goatsAuth?.getState()?.user) {
+        await betolt('ranglista', lekero, megjelenito);
     } else {
         const adat = await lekero();
         if (adat !== undefined) megjelenito(adat, false);
@@ -120,7 +90,7 @@ async function inicializalas() {
 
     // A csoport szűrője még nincs beállítva: felkínáljuk (ha a tag módosíthatja). Csak a friss adat
     // alapján (vagy ha az azonos volt a tárolttal, azzal), hogy egy elavult tárolt állapot ne nyissa meg.
-    if (groupId && !csoportSzuro && csoportSzuroModosithato() && (frissMegjott || window.goatsAdatTar?.olvas('ranglista'))) {
+    if (groupId && !csoportSzuro && csoportSzuroModosithato() && (frissMegjott || olvas('ranglista'))) {
         nyisdSzuroModal('csoport');
     }
 }
@@ -207,15 +177,7 @@ async function kategoriatValaszt(tier) {
         rendezKartyakatContainerben(celZona);
 
         if (groupCode) {
-            const { error } = await kliens()
-                .from('ital_ranglista')
-                .upsert({
-                    id: aktivElemId,
-                    kategoria: tier,
-                    group_code: groupCode
-                }, { onConflict: 'id,group_code' });
-
-            window.goatsHiba.hibaVan(error, 'a ranglista-helyezés mentésekor');
+            await helyezesMentese(aktivElemId, tier, groupCode);
         }
     }
 
@@ -749,13 +711,10 @@ async function mentCsoportSzuro() {
     gomb.disabled = true;
     allapot.className = 'szuro-allapot';
     allapot.textContent = tr('filter_saving', 'Mentés…');
-    try {
-        // A groups tábla kliens felől csak olvasható (RLS), az írás RPC-n megy.
-        await window.goatsAuth.callRpc('save_filter_settings', { group_id_input: groupId, settings: beallitas });
-    } catch (err) {
-        console.error('Hiba a szűrő beállítások mentésekor:', err);
+    const szuroHiba = await szuroMentese(groupId, beallitas);
+    if (szuroHiba) {
         allapot.className = 'szuro-allapot hiba';
-        allapot.textContent = err.message || tr('err_save_retry', 'A mentés nem sikerült, próbáld újra.');
+        allapot.textContent = szuroHiba.message || tr('err_save_retry', 'A mentés nem sikerült, próbáld újra.');
         gomb.disabled = false;
         return;
     }
@@ -999,9 +958,6 @@ async function mentUjItal() {
         });
     }
 
-    const client = kliens();
-    const KIVALASZTANDO = 'id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, alkohol_fok, kiszereles, recept_mod, jovahagyva, javasolta_id, kep_forma, kep_minta, kep_szin_1, kep_szin_2, kep_szin_3, kep_szin_1_id, kep_szin_2_id, kep_szin_3_id';
-
     if (szerkesztettItalId) {
         const italId = szerkesztettItalId;
         const valtozas = {
@@ -1014,18 +970,15 @@ async function mentUjItal() {
             ...kepAdatokUrlapbol(),
         };
 
-        const { data, error } = await client.from('italok').update(valtozas).eq('id', italId).select(KIVALASZTANDO).single();
-        if (window.goatsHiba.hibaVan(error, 'az ital módosításakor')) {
+        const { data, error } = await italModositasa(italId, valtozas);
+        if (error) {
             alert(tr('err_saving_msg', 'Hiba történt a mentéskor: {msg}', { msg: error.message }));
             return;
         }
 
-        const { error: delError } = await client.from('ital_osszetevok').delete().eq('ital_id', italId);
-        window.goatsHiba.hibaVan(delError, 'a régi hozzávalók törlésekor');
-
+        const receptRendben = await receptMentese(italId, hozzavalok, true);
         if (hozzavalok.length > 0) {
-            const { error: receptHiba } = await client.from('ital_osszetevok').insert(hozzavalok.map(h => ({ ...h, ital_id: italId })));
-            if (window.goatsHiba.hibaVan(receptHiba, 'a recept mentésekor')) {
+            if (!receptRendben) {
                 alert(tr('err_ingredients_save', 'Az ital elmentve, de a hozzávalók mentése nem sikerült.'));
             } else {
                 osszetevokItalonkent.set(italId, hozzavalok);
@@ -1054,22 +1007,14 @@ async function mentUjItal() {
         javasolta_id: window.goatsAuth?.getState()?.user?.id || null,
     };
 
-    const { data, error } = await client
-        .from('italok')
-        .insert([ujItalAdat])
-        .select(KIVALASZTANDO)
-        .single();
-
-    if (window.goatsHiba.hibaVan(error, 'az új ital mentésekor')) {
+    const { data, error } = await ujItalMentese(ujItalAdat);
+    if (error) {
         alert(tr('err_saving_msg', 'Hiba történt a mentéskor: {msg}', { msg: error.message }));
         return;
     }
 
     if (hozzavalok.length > 0) {
-        const { error: receptHiba } = await client
-            .from('ital_osszetevok')
-            .insert(hozzavalok.map(h => ({ ...h, ital_id: data.id })));
-        if (window.goatsHiba.hibaVan(receptHiba, 'a recept mentésekor')) {
+        if (!await receptMentese(data.id, hozzavalok, false)) {
             alert(tr('err_ingredients_save', 'Az ital elmentve, de a hozzávalók mentése nem sikerült.'));
         } else {
             osszetevokItalonkent.set(data.id, hozzavalok);
@@ -1246,16 +1191,10 @@ async function betoltNaplo(ital) {
     if (!groupId || !ital?.id) return;
 
     const keresettId = ital.id;
-    const { data, error } = await kliens()
-        .from('ital_ranglista_naplo')
-        .select('regi_kategoria, uj_kategoria, user_id, created_at')
-        .eq('group_id', groupId)
-        .eq('ital_id', ital.id)
-        .order('created_at', { ascending: false })
-        .limit(20);
+    const data = await naploLekerese(groupId, ital.id);
     // közben másik italt nyitottak meg, vagy bezárták az ablakot
     if (aktivItalAdat?.id !== keresettId) return;
-    if (window.goatsHiba.hibaVan(error, 'a ranglista-napló betöltésekor')) return;
+    if (data === undefined) return;
     if (!data || data.length === 0) return;
 
     const elso = data[0];
@@ -1340,3 +1279,11 @@ function frissitsItalKartyaDOM(italId, ital) {
 }
 
 window.addEventListener('DOMContentLoaded', inicializalas);
+
+// ---------- Globális elérés ----------
+// Modulként a függvények nem kerülnek automatikusan a window-ra; a HTML data-katt / data-valtozas /
+// data-bevitel attribútumai (js/segedek/html-esemenyek.js) viszont a window-on keresik őket.
+Object.assign(window, {
+    nyisdSzuroModal, nyisdUjItalModal, zardUjItalModal, nyisdSzerkesztesModal, modalBezár, kategoriatValaszt,
+    kategoriaValtozasCheck, kepElonezetFrissit, masodikSzinValtozott, valtsMódot, ujHozzavaloSor, mentUjItal,
+});

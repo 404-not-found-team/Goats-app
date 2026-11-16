@@ -4,8 +4,7 @@
 //   készíti), így akkor is látszik, ha az eredetit közben törölték; ha nincs másolat, az eredetiből.
 // - "Lezárás": nincs teendő. "Kép törlése és lezárás": az eredeti kép törlődik a csoport galériájából
 //   (kepek sor + tárhely-fájl), és az ugyanerre a képre vonatkozó többi nyitott jelentés is lezárul.
-import { client } from '../supabase-client.js';
-import { hibaVan } from '../adat/hibakezeles.js';
+import * as adat from './admin-adat.js';
 
 const $ = (id) => document.getElementById(id);
 const MASOLAT_BUCKET = 'jelentett';
@@ -48,13 +47,12 @@ function darab(db) {
 // A kép aláírt linkje: a másolatból ("jelentett/<id>.<kit>"), ha nincs, az eredetiből
 async function kepLink(j) {
     if (j.masolat_utvonal?.startsWith(`${MASOLAT_BUCKET}/`)) {
-        const { data } = await client.storage.from(MASOLAT_BUCKET)
-            .createSignedUrl(j.masolat_utvonal.slice(MASOLAT_BUCKET.length + 1), 600);
-        if (data?.signedUrl) return data.signedUrl;
+        const link = await adat.alairtLink(MASOLAT_BUCKET, j.masolat_utvonal.slice(MASOLAT_BUCKET.length + 1));
+        if (link) return link;
     }
     if (j.cel_tipus === 'kep' && j.eredeti_megvan && j.cel_azonosito) {
-        const { data } = await client.storage.from(KEP_BUCKET).createSignedUrl(j.cel_azonosito, 600);
-        if (data?.signedUrl) return data.signedUrl;
+        const link = await adat.alairtLink(KEP_BUCKET, j.cel_azonosito);
+        if (link) return link;
     }
     return null;
 }
@@ -116,15 +114,15 @@ function sor(j) {
 
 async function lezaras(j, kepTorlese, gombok) {
     gombok.querySelectorAll('button').forEach(g => { g.disabled = true; });
-    const { data: utvonal, error } = await client.rpc('admin_jelentes_lezarasa', { jelentes_id: j.id, kep_torlese: kepTorlese });
-    if (hibaVan(error, 'a jelentés lezárásakor')) {
+    const { data: utvonal, error } = await adat.jelentesLezarasa(j.id, kepTorlese);
+    if (error) {
         allapot(error.message || tr('err_operation', 'Hiba a művelet során.'), 'hiba');
         gombok.querySelectorAll('button').forEach(g => { g.disabled = false; });
         return;
     }
     if (kepTorlese && utvonal) {
-        const { error: tarHiba } = await client.storage.from(KEP_BUCKET).remove([utvonal]);
-        if (hibaVan(tarHiba, 'a képfájl törlésekor')) {
+        const { error: tarHiba } = await adat.kepfajlTorlese(KEP_BUCKET, utvonal);
+        if (tarHiba) {
             allapot(tr('err_report_file_delete', 'A jelentés lezárva, de a képfájl törlése nem sikerült: {msg}', { msg: tarHiba.message }), 'hiba');
             await betoltes();
             return;
@@ -135,8 +133,8 @@ async function lezaras(j, kepTorlese, gombok) {
 }
 
 async function betoltes() {
-    const { data, error } = await client.rpc('admin_jelentesek', { csak_nyitott: csakNyitott });
-    if (hibaVan(error, 'a jelentések betöltésekor')) {
+    const { data, error } = await adat.jelentesekLekerese(csakNyitott);
+    if (error) {
         allapot(error.message || tr('err_reports_load', 'A jelentések betöltése nem sikerült.'), 'hiba');
         return;
     }

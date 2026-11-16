@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v81';
+const CACHE_NEV = 'goats-v83';
 
 // Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
 // indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
@@ -91,7 +91,6 @@ const KOZOS_ELEMEK = [
     'js/elemek/galeria.js',
     'js/elemek/kep-kivago.js',
     'js/elemek/naptar.js',
-    'js/elemek/tartozasok-egyenlitese.js',
 ];
 
 // --- Oldalanként ---
@@ -110,13 +109,16 @@ const FOOLDAL = [
 const RANGLISTA = [
     'oldalak/ranglista.html',
     'css/pages/ranglista.css',
-    'js/pages/ranglista.js',
+    'js/pages/ranglista/ranglista.js',
+    'js/pages/ranglista/ranglista-adat.js',
 ];
 
 const TARTOZASOK = [
     'oldalak/tartozasok.html',
     'css/pages/tartozasok.css',
-    'js/pages/tartozasok.js',
+    'js/pages/tartozasok/tartozasok.js',
+    'js/pages/tartozasok/tartozasok-adat.js',
+    'js/pages/tartozasok/tartozasok-egyenlites.js',
 ];
 
 const TERVEK = [
@@ -130,7 +132,9 @@ const TERVEK = [
 const KEPEK = [
     'oldalak/kepek.html',
     'css/pages/kepek.css',
-    'js/pages/kepek.js',
+    'js/pages/kepek/kepek.js',
+    'js/pages/kepek/kepek-adat.js',
+    'js/pages/kepek/kepek-megjelenites.js',
 ];
 
 const HANYNAPJA = [
@@ -154,16 +158,18 @@ const GOATSGAME = [
 const JATEKSZABALYOK = [
     'oldalak/jatekszabalyok.html',
     'css/pages/jatekszabalyok.css',
-    'js/pages/jatekszabalyok.js',
+    'js/pages/jatekszabalyok/jatekszabalyok.js',
+    'js/pages/jatekszabalyok/jatekszabalyok-adat.js',
 ];
 
 const ADMIN = [
     'oldalak/admin.html',
     'css/pages/admin.css',
-    'js/pages/admin.js',
-    'js/pages/admin-javaslatok.js',
-    'js/pages/admin-jelentesek.js',
-    'js/pages/admin-kategoriak.js',
+    'js/pages/admin/admin.js',
+    'js/pages/admin/admin-adat.js',
+    'js/pages/admin/admin-javaslatok.js',
+    'js/pages/admin/admin-jelentesek.js',
+    'js/pages/admin/admin-kategoriak.js',
 ];
 
 const TESZTELOK = [

@@ -2,8 +2,7 @@
 // Csak superadminnak: az admin.js a jogosultság-ellenőrzés után tölti be. A listát és a döntést a
 // list_pending_drinks / approve_drink / reject_drink RPC adja, amelyek a szerveren is ellenőrzik a szerepkört.
 // A részletek (kategória, kiszerelés, alkoholfok, recept) a public.italok / ital_osszetevok táblából jönnek.
-import { client } from '../supabase-client.js';
-import { hibaVan } from '../adat/hibakezeles.js';
+import * as adat from './admin-adat.js';
 
 const $ = (id) => document.getElementById(id);
 const K = () => window.italKategoriak;
@@ -73,8 +72,8 @@ function sor(javaslat, ital, recept) {
 
 async function dontes(rpc, javaslat, siker, gombok) {
     gombok.querySelectorAll('button').forEach(g => { g.disabled = true; });
-    const { error } = await client.rpc(rpc, { drink_id: javaslat.id });
-    if (hibaVan(error, `a(z) ${rpc} hívásakor`)) {
+    const { error } = await adat.italJavaslatDontes(rpc, javaslat.id);
+    if (error) {
         allapot(error.message || tr('err_operation', 'Hiba a művelet során.'), 'hiba');
         gombok.querySelectorAll('button').forEach(g => { g.disabled = false; });
         return;
@@ -84,8 +83,8 @@ async function dontes(rpc, javaslat, siker, gombok) {
 }
 
 async function betoltes() {
-    const { data: javaslatok, error } = await client.rpc('list_pending_drinks');
-    if (hibaVan(error, 'a javaslatok betöltésekor')) {
+    const { data: javaslatok, error } = await adat.italJavaslatokLekerese();
+    if (error) {
         allapot(error.message || tr('err_suggestions_load', 'A javaslatok betöltése nem sikerült.'), 'hiba');
         return;
     }
@@ -98,14 +97,10 @@ async function betoltes() {
 
     // Részletek az új táblákból (a superadmin a jóvá nem hagyottakat is látja)
     const azonositok = lista.map(j => j.id);
-    const [italRes, receptRes] = await Promise.all([
-        client.from('italok').select('id, kategoria_id, alkohol_fok, kiszereles, recept_mod').in('id', azonositok),
-        client.from('ital_osszetevok').select('ital_id, sorrend, nev, mennyiseg, egyseg').in('ital_id', azonositok).order('sorrend'),
-    ]);
-    hibaVan(italRes.error, 'a javaslatok részleteinek betöltésekor');
-    const italok = new Map((italRes.data || []).map(i => [i.id, i]));
+    const reszletek = await adat.italJavaslatReszletei(azonositok);
+    const italok = new Map(reszletek.italok.map(i => [i.id, i]));
     const receptek = new Map();
-    (receptRes.data || []).forEach(o => {
+    reszletek.receptek.forEach(o => {
         if (!receptek.has(o.ital_id)) receptek.set(o.ital_id, []);
         receptek.get(o.ital_id).push(o);
     });
@@ -163,8 +158,8 @@ function sablonSor(s) {
         if (!ujNev) return sablonAllapot(tr('hn_err_name', 'Írd be, mit számoljon (legfeljebb 40 karakter).'), 'hiba');
         // ha a magyar nevet is javítottad, előbb az mentődik (superadmin update policy)
         if (ujNev !== s.nev) {
-            const { error } = await client.from('hanynapja_sablonok').update({ nev: ujNev }).eq('id', s.id);
-            if (hibaVan(error, 'a sablon átnevezésekor')) {
+            const { error } = await adat.sablonAtnevezese(s.id, ujNev);
+            if (error) {
                 return sablonAllapot(tr('err_save_msg', 'A mentés nem sikerült: {msg}', { msg: error.message }), 'hiba');
             }
         }
@@ -199,11 +194,9 @@ function jovahagyottSor(s) {
         const nev = hu.value.trim();
         if (!nev) return sablonAllapot(tr('hn_err_name', 'Írd be, mit számoljon (legfeljebb 40 karakter).'), 'hiba');
         ment.disabled = true;
-        const { error } = await client.from('hanynapja_sablonok')
-            .update({ nev, nev_en: en.value.trim() || null, nev_de: de.value.trim() || null })
-            .eq('id', s.id);
+        const { error } = await adat.sablonMentese(s.id, nev, en.value.trim() || null, de.value.trim() || null);
         ment.disabled = false;
-        if (hibaVan(error, 'a sablon mentésekor')) {
+        if (error) {
             return sablonAllapot(error.code === '23505'
                 ? tr('hn_err_template_exists', 'Már van ilyen nevű sablon.')
                 : tr('err_save_msg', 'A mentés nem sikerült: {msg}', { msg: error.message }), 'hiba');
@@ -218,8 +211,8 @@ function jovahagyottSor(s) {
 
 async function sablonDontes(rpc, parameterek, siker, gombok) {
     gombok.querySelectorAll('button').forEach(g => { g.disabled = true; });
-    const { error } = await client.rpc(rpc, parameterek);
-    if (hibaVan(error, `a(z) ${rpc} hívásakor`)) {
+    const { error } = await adat.sablonDontes(rpc, parameterek);
+    if (error) {
         sablonAllapot(error.message || tr('err_operation', 'Hiba a művelet során.'), 'hiba');
         gombok.querySelectorAll('button').forEach(g => { g.disabled = false; });
         return;
@@ -231,11 +224,8 @@ async function sablonDontes(rpc, parameterek, siker, gombok) {
 async function sablonBetoltes() {
     const doboz = $('adminHnSablonok');
     if (!doboz) return;
-    const [fuggo, jovahagyott] = await Promise.all([
-        client.rpc('list_pending_hn_templates'),
-        client.from('hanynapja_sablonok').select('id, nev, nev_en, nev_de').eq('jovahagyva', true).order('nev'),
-    ]);
-    if (hibaVan(fuggo.error, 'a sablonjavaslatok betöltésekor')) {
+    const { fuggo, jovahagyott } = await adat.sablonokLekerese();
+    if (fuggo.error) {
         sablonAllapot(fuggo.error.message || tr('err_suggestions_load', 'A javaslatok betöltése nem sikerült.'), 'hiba');
         return;
     }
@@ -248,7 +238,6 @@ async function sablonBetoltes() {
 
     const kesz = $('adminHnJovahagyott');
     if (kesz) {
-        hibaVan(jovahagyott.error, 'a jóváhagyott sablonok betöltésekor');
         const sorok = jovahagyott.data || [];
         kesz.replaceChildren(...(sorok.length
             ? sorok.map(jovahagyottSor)
@@ -259,7 +248,7 @@ async function sablonBetoltes() {
 export async function indit() {
     sablonBetoltes();
     try {
-        if (!K().fo.length) await K().betolt(client);
+        if (!K().fo.length) await adat.kategoriakBetoltese();
     } catch (err) {
         console.error('Az italkategóriák betöltése nem sikerült:', err);
     }

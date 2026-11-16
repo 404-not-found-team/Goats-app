@@ -5,10 +5,11 @@
 // Egy oldal, három nézet (body[data-nezet]): lista, jatek, szerk. A címsor hash része jelzi a nézetet
 // (#jatek=<id>, #szerk=<id>, #uj, #jatszik=<id>), history.pushState-tel, így a telefon "vissza" gombja
 // az oldalon belül lép vissza. Gépen (széles képernyőn) a lista és a kiválasztott játék egymás mellett látszik.
-import { client } from '../supabase-client.js';
-import { ready, getState, callRpc } from '../hitelesites.js';
-import { betolt } from '../segedek/adat-gyorsitotar.js';
-import { hibaVan } from '../adat/hibakezeles.js';
+import { ready, getState } from '../../hitelesites.js';
+import { betolt } from '../../segedek/adat-gyorsitotar.js';
+// az adatréteg (jatekszabalyok-adat.js): minden Supabase-hívás ott van; "adat." előtaggal hívjuk,
+// mert több függvény neve egyezik az itteni (felületi) függvényekével, pl. jatekMentese, jatekTorlese
+import * as adat from './jatekszabalyok-adat.js';
 
 let jatekok = [];
 let szuro = 'mind';
@@ -108,22 +109,8 @@ async function nezetFrissitese() {
 // Oldalbetöltéskor (elsoBetoltes) előbb az utoljára látott lista jelenik meg azonnal, a friss a háttérben
 // érkezik (js/segedek/adat-gyorsitotar.js); módosítás utáni újratöltésnél csak a friss
 async function betoltesJatekok(elsoBetoltes = false) {
-    const lekero = async () => {
-        // a lépések számával együtt (a lista kártyáin látszik)
-        let { data, error } = await client
-            .from('jatek_szabalyok')
-            .select('*, jatek_lepesek(count)')
-            .order('letrehozva', { ascending: false });
-        if (error) {
-            console.warn('A lépésszám nem kérhető le, nélküle töltöm be:', error);
-            ({ data, error } = await client.from('jatek_szabalyok').select('*').order('letrehozva', { ascending: false }));
-        }
-        if (hibaVan(error, 'a játékok betöltésekor')) return undefined;
-
-        return data || [];
-    };
-    await betolt('jatekszabalyok', lekero, (adat) => {
-        jatekok = adat;
+    await betolt('jatekszabalyok', adat.jatekokLekerese, (sorok) => {
+        jatekok = sorok;
         betoltve = true;
         nezetFrissitese();
     }, { taroltElobb: elsoBetoltes });
@@ -191,15 +178,9 @@ function kirajzolasLista() {
 
 async function reszletekBetoltese(jatek, friss = false) {
     if (!friss && reszletek.has(jatek.id)) return reszletek.get(jatek.id);
-    const [lepesekRes, javaslatokRes] = await Promise.all([
-        client.from('jatek_lepesek').select('*').eq('jatek_id', jatek.id).order('sorrend', { ascending: true }),
-        client.from('jatek_javaslatok').select('*').eq('jatek_id', jatek.id).order('letrehozva', { ascending: true }),
-    ]);
-    hibaVan(lepesekRes.error, 'a lépések betöltésekor');
-    hibaVan(javaslatokRes.error, 'a javaslatok betöltésekor');
-    const adat = { lepesek: lepesekRes.data || [], javaslatok: javaslatokRes.data || [] };
-    reszletek.set(jatek.id, adat);
-    return adat;
+    const r = await adat.reszletekLekerese(jatek.id);
+    reszletek.set(jatek.id, r);
+    return r;
 }
 
 async function jatekMutatasa(jatek) {
@@ -614,20 +595,17 @@ async function jatekMentese() {
     allapot.textContent = tr('saving', 'Mentés...');
     mentesFolyamatban = true;
     try {
-        // Egyetlen adatbázis-hívás (jatek_mentese): a játék és a lépései egy tranzakcióban mentődnek,
-        // így hiba esetén nem maradhat lépések nélküli játék
-        const { data: jatekId, error } = await client.rpc('jatek_mentese', {
-            p_jatek_id: szerkesztettJatekId || null,
-            p_cim: cim,
-            p_leiras: leiras,
-            p_min_jatekosok: minJatekosok,
-            p_eszkozok: eszkozok,
-            p_publikus: publikus,
-            p_group_id: sajatGroup.id,
-            p_csoport_nev: sajatGroup.group_name,
-            p_lepesek: lepesek,
+        // a játék és a lépései egy tranzakcióban mentődnek (lásd jatekszabalyok-adat.js)
+        const { data: jatekId, error } = await adat.jatekMentese({
+            jatekId: szerkesztettJatekId,
+            cim, leiras, minJatekosok, eszkozok, publikus, lepesek,
+            groupId: sajatGroup.id,
+            csoportNev: sajatGroup.group_name,
         });
-        if (error) throw error;
+        if (error) {
+            allapot.textContent = tr('err_saving', 'Hiba történt a mentéskor!');
+            return;
+        }
 
         reszletek.delete(jatekId);
         await betoltesJatekok();
@@ -636,7 +614,7 @@ async function jatekMentese() {
         if (szerkesztettJatekId && history.state?.app) history.back();
         else ugras(`jatek=${encodeURIComponent(jatekId)}`, true);
     } catch (err) {
-        console.error('Hiba a játék mentésekor:', err);
+        console.error('Hiba a játék mentése után:', err);
         allapot.textContent = tr('err_saving', 'Hiba történt a mentéskor!');
     } finally {
         mentesFolyamatban = false;
@@ -648,8 +626,10 @@ async function jatekTorlese() {
     menuBezarasa();
     if (!confirm(tr('confirm_delete_game_x', 'Biztosan törlöd a "{name}" játékot? Ez nem vonható vissza.', { name: jatek.cim }))) return;
 
-    const { error } = await client.from('jatek_szabalyok').delete().eq('id', jatek.id);
-    if (hibaVan(error, 'a törlésekor', tr('err_deleting', 'Hiba történt a törlés során!'))) return;
+    if (!await adat.jatekTorlese(jatek.id)) {
+        alert(tr('err_deleting', 'Hiba történt a törlés során!'));
+        return;
+    }
 
     reszletek.delete(jatek.id);
     aktivJatek = null;
@@ -670,14 +650,10 @@ async function javaslatKuldese() {
     const sajatGroup = getState().group;
     if (!sajatGroup) { alert(tr('err_no_group_proposal', 'Nincs csoportod, így nem küldhetsz javaslatot.')); return; }
 
-    const { error } = await client.from('jatek_javaslatok').insert([{
-        jatek_id: jatek.id,
-        group_id: sajatGroup.id,
-        csoport_nev: sajatGroup.group_name,
-        cim, szoveg,
-    }]);
-
-    if (hibaVan(error, 'a javaslat küldésekor', tr('err_proposal_send', 'Hiba történt a javaslat küldésekor.'))) return;
+    if (!await adat.javaslatKuldese(jatek.id, sajatGroup.id, sajatGroup.group_name, cim, szoveg)) {
+        alert(tr('err_proposal_send', 'Hiba történt a javaslat küldésekor.'));
+        return;
+    }
 
     $('jatek-javaslat-cim-input').value = '';
     $('jatek-javaslat-szoveg-input').value = '';
@@ -685,14 +661,13 @@ async function javaslatKuldese() {
 }
 
 async function javaslatElfogadasa(javaslatId) {
-    try {
-        await callRpc('jatek_javaslat_elfogadasa', { p_javaslat: javaslatId });
-        await reszletFrissites(aktivJatek);
-        await betoltesJatekok();
-    } catch (err) {
-        console.error('Hiba a javaslat elfogadásakor:', err);
-        alert(tr('err_accept', 'Hiba történt az elfogadás során: {msg}', { msg: err.message || err }));
+    const hiba = await adat.javaslatElfogadasa(javaslatId);
+    if (hiba) {
+        alert(tr('err_accept', 'Hiba történt az elfogadás során: {msg}', { msg: hiba.message || hiba }));
+        return;
     }
+    await reszletFrissites(aktivJatek);
+    await betoltesJatekok();
 }
 
 async function reszletFrissites(jatek) {

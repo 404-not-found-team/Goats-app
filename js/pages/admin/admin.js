@@ -4,11 +4,11 @@
 // - Globális kapcsolók: public.app_kapcsolok; mentés az admin_beallitas_mentese RPC-vel, amit a
 //   szerver is ellenőriz (csak superadmin). Hiba esetén a kapcsoló visszaáll.
 // - Italjavaslatok: js/pages/admin-javaslatok.js; italkategóriák: js/pages/admin-kategoriak.js.
-import { client } from '../supabase-client.js';
-import { ready, getState, isSuperadmin, onChange } from '../hitelesites.js';
-import { OLDALAK, FUNKCIOK } from '../segedek/oldalak.js';
-import { ut } from '../segedek/utvonal.js';
-import { hibaVan } from '../adat/hibakezeles.js';
+import { ready, getState, isSuperadmin, onChange } from '../../hitelesites.js';
+import { OLDALAK, FUNKCIOK } from '../../segedek/oldalak.js';
+import { ut } from '../../segedek/utvonal.js';
+// az adatréteg (admin-adat.js): a négy admin-fül összes Supabase-hívása
+import * as adat from './admin-adat.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -117,8 +117,8 @@ function fulekBekotese() {
 
 async function betoltes() {
     // Mindig friss lekérdezés (nem a munkamenet-gyorsítótárból)
-    const { data, error } = await client.from('app_kapcsolok').select('kulcs, ertek');
-    if (hibaVan(error,'a kapcsolók betöltésekor')) {
+    const { data, error } = await adat.kapcsolokLekerese();
+    if (error) {
         allapot(tr('err_switches_load', 'A kapcsolók betöltése nem sikerült. Lefutott már a FELADAT15 SQL-je?'), 'hiba');
         return;
     }
@@ -132,10 +132,10 @@ async function mentes(input, k) {
     const uj = input.checked;
     input.disabled = true;
     allapot(tr('saving_item', 'Mentés: {name}…', { name: k.nev }), null);
-    const { error } = await client.rpc('admin_beallitas_mentese', { kulcs_in: k.kulcs, ertek_in: uj });
+    const { error } = await adat.beallitasMentese(k.kulcs, uj);
     input.disabled = false;
 
-    if (hibaVan(error,'a beállítás mentésekor')) {
+    if (error) {
         input.checked = !uj; // visszaáll a szerver szerinti állapotra
         allapot(error.code === '42501'
             ? tr('err_no_permission_settings', 'Nincs jogosultságod a beállítások módosításához.')

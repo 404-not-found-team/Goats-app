@@ -3,8 +3,7 @@
 // - Alkategória: public.ital_kategoriak, szulo_id = a főkategória; szabály: márka egyezik vagy a név eleje.
 // - Italonkénti felülírás: italok.alkategoria_kezi + alkategoria_id (kézi; üresen: egyik sem),
 //   energiaitalnál italok.zero (null: automatikus a név alapján).
-import { client } from '../supabase-client.js';
-import { hibaVan } from '../adat/hibakezeles.js';
+import * as adat from './admin-adat.js';
 
 const $ = (id) => document.getElementById(id);
 const K = () => window.italKategoriak;
@@ -34,12 +33,8 @@ function opcio(ertek, felirat, kivalasztva) {
 }
 
 async function adatokBetoltese() {
-    await K().betolt(client);
-    const { data, error } = await client
-        .from('italok')
-        .select('id, marka, nev, kategoria_id, alkategoria_id, alkategoria_kezi, zero, jovahagyva')
-        .order('nev', { ascending: true })
-        .range(0, 1999);
+    await adat.kategoriakBetoltese();
+    const { data, error } = await adat.italokLekerese();
     if (error) throw error;
     italok = data || [];
 }
@@ -100,11 +95,7 @@ async function alkategoriaMozgatasa(a, irany) {
     const masik = lista[irany === 'fel' ? idx - 1 : idx + 1];
     if (!masik) return;
 
-    const [r1, r2] = await Promise.all([
-        client.from('ital_kategoriak').update({ sorrend: masik.sorrend }).eq('id', a.id),
-        client.from('ital_kategoriak').update({ sorrend: a.sorrend }).eq('id', masik.id),
-    ]);
-    if (hibaVan(r1.error, 'a sorrend mentésekor') || hibaVan(r2.error, 'a sorrend mentésekor')) {
+    if (!await adat.sorrendCsere(a, masik)) {
         return allapot(tr('err_order_save', 'A sorrend mentése nem sikerült.'), 'hiba');
     }
     await ujratoltes();
@@ -165,11 +156,8 @@ async function alkategoriaMentes(a, { nev, tipus, ertek, sorrend }) {
     const tisztaNev = String(nev || '').trim();
     if (!tisztaNev) return allapot(tr('err_subcat_name', 'Add meg az alkategória nevét.'), 'hiba');
     if (tipus !== 'nincs' && !String(ertek || '').trim()) return allapot(tr('err_rule_value', 'Add meg a szabály értékét.'), 'hiba');
-    const { error } = await client
-        .from('ital_kategoriak')
-        .update({ nev: tisztaNev, sorrend: Number(sorrend) || 0, ...szabalyOszlopok(tipus, ertek) })
-        .eq('id', a.id);
-    if (hibaVan(error, 'az alkategória mentésekor')) {
+    const { error } = await adat.alkategoriaModositasa(a.id, { nev: tisztaNev, sorrend: Number(sorrend) || 0, ...szabalyOszlopok(tipus, ertek) });
+    if (error) {
         return allapot(tr('err_save_msg', 'A mentés nem sikerült: {msg}', { msg: error.message }), 'hiba');
     }
     allapot(`${tisztaNev}: elmentve.`, 'ok');
@@ -179,15 +167,8 @@ async function alkategoriaMentes(a, { nev, tipus, ertek, sorrend }) {
 async function alkategoriaTorles(a) {
     if (!confirm(tr('confirm_delete_subcat', 'Biztosan törlöd a(z) „{name}” alkategóriát? Az italai alkategória nélkül maradnak.', { name: a.nev }))) return;
     // A kézzel ide sorolt italok visszakerülnek a szabály szerinti besorolásra
-    const { error: italHiba } = await client
-        .from('italok')
-        .update({ alkategoria_kezi: false, alkategoria_id: null })
-        .eq('alkategoria_id', a.id);
-    if (hibaVan(italHiba, 'az italok visszaállításakor')) {
-        return allapot(tr('err_delete_msg2', 'A törlés nem sikerült: {msg}', { msg: italHiba.message }), 'hiba');
-    }
-    const { error } = await client.from('ital_kategoriak').delete().eq('id', a.id);
-    if (hibaVan(error, 'az alkategória törlésekor')) {
+    const { error } = await adat.alkategoriaTorlese(a.id);
+    if (error) {
         return allapot(tr('err_delete_msg2', 'A törlés nem sikerült: {msg}', { msg: error.message }), 'hiba');
     }
     allapot(tr('x_deleted', '{name}: törölve.', { name: a.nev }), 'ok');
@@ -204,10 +185,8 @@ async function ujAlkategoria(e) {
     if (tipus !== 'nincs' && !ertek.trim()) return allapot(tr('err_rule_value', 'Add meg a szabály értékét.'), 'hiba');
     const kod = `${fo.kod}-${K().szlug(nev)}`.slice(0, 40);
     const sorrend = Math.max(0, ...K().alkategoriai(fo.id).map(a => a.sorrend)) + 1;
-    const { error } = await client
-        .from('ital_kategoriak')
-        .insert({ kod, nev, szulo_id: fo.id, sorrend, ...szabalyOszlopok(tipus, ertek) });
-    if (hibaVan(error, 'az alkategória létrehozásakor')) {
+    const { error } = await adat.alkategoriaLetrehozasa({ kod, nev, szulo_id: fo.id, sorrend, ...szabalyOszlopok(tipus, ertek) });
+    if (error) {
         return allapot(error.code === '23505'
             ? tr('err_subcat_exists', 'Ilyen nevű alkategória már van ebben a főkategóriában.')
             : tr('err_create_msg', 'A létrehozás nem sikerült: {msg}', { msg: error.message }), 'hiba');
@@ -269,8 +248,8 @@ function italSor(ital) {
 }
 
 async function italMentes(ital, valtozas) {
-    const { error } = await client.from('italok').update(valtozas).eq('id', ital.id);
-    if (hibaVan(error, 'az ital besorolásának mentésekor')) {
+    const { error } = await adat.italBesorolasMentese(ital.id, valtozas);
+    if (error) {
         allapot(tr('err_save_item_msg', '{name}: a mentés nem sikerült ({msg}).', { name: ital.nev, msg: error.message }), 'hiba');
         kirajzolas(); // visszaáll a korábbi értékre
         return;

@@ -1,3 +1,9 @@
+// Tartozások oldal: ki kinek tartozik (összevont kártyák), új tartozás felvétele közös költség-elosztással.
+// Modul: az adatréteg (tartozasok-adat.js) végzi a Supabase-hívásokat; a lenyíló részletek és az egyenlítés
+// a tartozasok-egyenlites.js-ben vannak, csak első használatkor töltődnek be.
+import { betolt } from '../../segedek/adat-gyorsitotar.js';
+import { tartozasokLekerese, tartozasokMentese, tartozasTorlese } from './tartozasok-adat.js';
+
 window.onload = async function () {
     if (window.goatsAuth) await window.goatsAuth.ready;
     // Globálisan kikapcsolt tartozás-felvétel (FELADAT15): a gomb letiltva, a szerver is elutasítaná
@@ -213,29 +219,7 @@ function nyitottOsszeg(adosId, hitelezoId) {
 async function loadTartozasok(elsoBetoltes = false) {
     const groupCode = aktualisGroupCode();
 
-    const lekero = async () => {
-        const [osszesitesRes, legacyRes] = await Promise.all([
-            _supabase.rpc('tartozas_osszesites', { p_group: null }),
-            _supabase
-                .from('tartozasok')
-                .select('*')
-                .eq('group_code', groupCode)
-                .or('ados_id.is.null,hitelezo_id.is.null')
-                .order('id', { ascending: false }),
-        ]);
-        if (window.goatsHiba.hibaVan(osszesitesRes.error, 'az összesítés betöltésekor')) return undefined;
-
-        window.goatsHiba.hibaVan(legacyRes.error, 'a régi tartozások betöltésekor');
-
-        return { osszesites: osszesitesRes.data || [], legacy: legacyRes.data || [] };
-    };
-
-    if (window.goatsAdatTar) {
-        await window.goatsAdatTar.betolt('tartozasok', lekero, megjelenitTartozasok, { taroltElobb: elsoBetoltes === true });
-    } else {
-        const adat = await lekero();
-        if (adat !== undefined) megjelenitTartozasok(adat);
-    }
+    await betolt('tartozasok', () => tartozasokLekerese(groupCode), megjelenitTartozasok, { taroltElobb: elsoBetoltes === true });
 }
 
 function megjelenitTartozasok(adat) {
@@ -319,7 +303,6 @@ function megjelenitTartozasok(adat) {
         }
     });
 }
-window.loadTartozasok = loadTartozasok; // a dinamikusan importált egyenlítés-modul frissítéshez hívja
 
 // Egy összevont (ados → hitelező) sor kártyája: fejléc (összeg + nyíl + esetleg egyenlítés gomb)
 // és egy üres, lazán betöltött részletek-konténer.
@@ -386,7 +369,7 @@ async function kezeldTartozasKattintast(e) {
 
         if (!nyitva && !reszletek.dataset.betoltve) {
             reszletek.dataset.betoltve = '1';
-            const modul = await import('../elemek/tartozasok-egyenlitese.js');
+            const modul = await import('./tartozasok-egyenlites.js');
             modul.toltsReszleteket(reszletek, adosId, hitelezoId);
         }
         return;
@@ -397,7 +380,7 @@ async function kezeldTartozasKattintast(e) {
         const ados = members.find(m => m.user_id === adosId);
         const hitelezo = members.find(m => m.user_id === hitelezoId);
 
-        const modul = await import('../elemek/tartozasok-egyenlitese.js');
+        const modul = await import('./tartozasok-egyenlites.js');
         modul.nyitEgyenlitesModal({
             aId: adosId,
             aNev: ados ? ados.display_name : tr('deleted_member', 'Törölt tag'),
@@ -411,14 +394,10 @@ async function kezeldTartozasKattintast(e) {
 }
 
 async function deleteTartozas(id) {
-    const groupCode = aktualisGroupCode();
-    const { error } = await _supabase
-        .from('tartozasok')
-        .delete()
-        .eq('id', id)
-        .eq('group_code', groupCode);
-
-    if (window.goatsHiba.hibaVan(error, 'a tartozás törlésekor', tr('err_deleting', 'Hiba történt a törlés során!'))) return;
+    if (!await tartozasTorlese(id, aktualisGroupCode())) {
+        alert(tr('err_deleting', 'Hiba történt a törlés során!'));
+        return;
+    }
 
     loadTartozasok();
 }
@@ -653,12 +632,9 @@ async function addTartozas() {
     }));
 
     // Egyetlen insert: vagy minden sor bekerül, vagy egy sem (nincs részleges mentés)
-    const { error } = await _supabase
-        .from('tartozasok')
-        .insert(ujTartozasok);
-
-    if (window.goatsHiba.hibaVan(error, 'a tartozás mentésekor')) {
-        alert(tartozasHiba(error));
+    const mentesHiba = await tartozasokMentese(ujTartozasok);
+    if (mentesHiba) {
+        alert(tartozasHiba(mentesHiba));
         return;
     }
 
@@ -676,3 +652,12 @@ async function addTartozas() {
     zardUjTartozasModal();
     loadTartozasok();
 }
+
+// ---------- Globális elérés ----------
+// Modulként a függvények nem kerülnek automatikusan a window-ra. Ezeket máshonnan hívják:
+// - a HTML data-katt gombjai (js/segedek/html-esemenyek.js a window-on keresi őket),
+// - az egyenlítés-modul (tartozasok-egyenlites.js): frissítés, törlés, névformázás.
+Object.assign(window, {
+    nyisdUjTartozasModal, zardUjTartozasModal, toggleDropdown, toggleKinekDropdown, addTartozas,
+    loadTartozasok, deleteTartozas, formatFt, tagNev, getNakNek,
+});
