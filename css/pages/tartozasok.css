@@ -232,7 +232,7 @@
 .input-tartozasok input[type="text"]:focus,
 .input-tartozasok input[type="number"]:focus {
     border-color: var(--accent-color);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 20%, transparent);
 }
 
 .input-tartozasok input[type="button"] {
@@ -371,7 +371,7 @@
 }
 
 .dropdown-item.selected {
-    background-color: rgba(99, 102, 241, 0.2);
+    background-color: color-mix(in srgb, var(--accent-color) 20%, transparent);
     color: var(--accent-text);
     font-weight: bold;
 }

@@ -23,7 +23,7 @@ Minden kép, amit az app a saját tárhelyéről tölt be. A galéria képei **n
 | `favicon-192.png` | Böngészőfül ikonja |
 | `ertesites-jelveny.png` | Push-értesítés egyszínű jelvénye a státuszsorban |
 | `og-kep.jpg` | Előnézeti kép, ha valaki linket küld az appról |
-| `logo_lekerekített.png` | Nem használt, törölhető |
+| `logo_lekerekített.png` | Az app logója (lekerekített); a kód nem hivatkozik rá, de kell, ne töröld |
 
 ## Italképek: miért van két méret?
 
