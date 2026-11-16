@@ -633,6 +633,11 @@
         padding: 4px 0;
     }
 
+    /* nyitott naptár Lista nézetben ugyanazokat az eseményeket mutatja: ilyenkor nem kell a sáv */
+    .hatter.naptar-nyitva.naptar-listaban .kozelgo {
+        display: none;
+    }
+
     /* telefonon a nyitó sáv a cím, a váltó jobbra kerül */
     .naptar-cim {
         display: none;
@@ -868,6 +873,11 @@
     /* Közelgő események: ugyanolyan magas, mint mellette a naptár */
     .kozelgo {
         align-self: stretch;
+    }
+
+    /* gépen nincs Lista/Hónap váltó (a Közelgő események kártya mutatja a listát) */
+    .naptar-nezetvalto {
+        display: none;
     }
 
     /* Naptár: alacsonyabb cellák, hogy a hónap kiférjen */

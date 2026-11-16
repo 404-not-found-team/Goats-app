@@ -305,19 +305,27 @@ function kirajzolListat() {
     lista.replaceChildren(...elemek);
 }
 
-// Lista / Hónap váltó; a választást a böngésző megjegyzi (alapból Hónap)
+// Lista / Hónap váltó; a választást a böngésző megjegyzi (alapból Hónap).
+// Gépen nincs váltó: ott a "Közelgő események" kártya már listát mutat, a naptár mindig Hónap nézetben van.
 const NAPTAR_NEZET_KULCS = 'goats-naptar-nezet';
+const ASZTALI = window.matchMedia('(min-width: 1001px)');
+let valasztottNezet = 'honap';
 
 function nezetValtoBekotese() {
-    let nezet = 'honap';
-    try { if (localStorage.getItem(NAPTAR_NEZET_KULCS) === 'lista') nezet = 'lista'; } catch { /* privát mód */ }
-    nezetAllit(nezet);
+    try { if (localStorage.getItem(NAPTAR_NEZET_KULCS) === 'lista') valasztottNezet = 'lista'; } catch { /* privát mód */ }
+    nezetFrissit();
+    ASZTALI.addEventListener('change', nezetFrissit);
     document.querySelectorAll('.naptar-nezetvalto [data-nezet]').forEach(gomb => {
         gomb.addEventListener('click', () => {
-            nezetAllit(gomb.dataset.nezet);
-            try { localStorage.setItem(NAPTAR_NEZET_KULCS, gomb.dataset.nezet); } catch { /* privát mód */ }
+            valasztottNezet = gomb.dataset.nezet;
+            nezetFrissit();
+            try { localStorage.setItem(NAPTAR_NEZET_KULCS, valasztottNezet); } catch { /* privát mód */ }
         });
     });
+}
+
+function nezetFrissit() {
+    nezetAllit(ASZTALI.matches ? 'honap' : valasztottNezet);
 }
 
 function nezetAllit(nezet) {
@@ -332,6 +340,8 @@ function nezetAllit(nezet) {
         honap.inert = nezet !== 'honap';
     }
     if (lista) lista.hidden = nezet !== 'lista';
+    // telefonon nyitott Lista nézetnél a Közelgő események sáv elrejtődik (ugyanazt mutatná)
+    document.querySelector('.hatter')?.classList.toggle('naptar-listaban', nezet === 'lista');
 }
 
 // Telefonon a naptár egy összecsukható sáv a közelgő események alatt. A böngésző megjegyzi, hogy nyitva
