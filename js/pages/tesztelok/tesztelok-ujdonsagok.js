@@ -4,6 +4,36 @@
 // Ugyanezt a listát mutatja a nyilvános Újdonságok oldal is (ujdonsagok.html, js/pages/tesztelok/ujdonsagok.js).
 export const UJDONSAGOK = [
     {
+        datum: '2026-11-16',
+        hu: [
+            'Tartozások: legfelül látod a saját egyenlegedet, kinek tartozol és ki tartozik neked',
+            'Tartozások telefonon: a saját dobozod kerül előre, a többiek összecsukott sorok, koppintásra nyílnak',
+            'Telefonon a közelgő események a naptár előtt vannak, a naptár egy koppintással nyílik ki',
+            'Ranglista: új üveg-, doboz- és pohárformák sok márkához, árnyékokkal és új mintákkal',
+            'Ranglista: eltűnt a felesleges üres hely az italcsoportok alatt',
+            'Hány napja: a számlálókat mindig látja a csoport',
+            'A kijelentkezés már nem akad meg',
+        ],
+        en: [
+            'Debts: your own balance is at the top, showing whom you owe and who owes you',
+            'Debts on phones: your own box comes first, the others are collapsed rows that open with a tap',
+            'On phones, upcoming events come before the calendar, and the calendar opens with a tap',
+            'Tier list: new bottle, can and glass shapes for many brands, with shading and new patterns',
+            'Tier list: the extra empty space under drink groups is gone',
+            'Days since: the group can always see the counters',
+            'Signing out no longer gets stuck',
+        ],
+        de: [
+            'Schulden: ganz oben siehst du deinen eigenen Saldo, wem du etwas schuldest und wer dir etwas schuldet',
+            'Schulden auf dem Handy: dein eigenes Feld steht vorne, die anderen sind eingeklappte Zeilen, die sich per Tippen öffnen',
+            'Auf dem Handy stehen die anstehenden Termine vor dem Kalender, der Kalender öffnet sich per Tippen',
+            'Rangliste: neue Flaschen-, Dosen- und Glasformen für viele Marken, mit Schattierung und neuen Mustern',
+            'Rangliste: der überflüssige leere Platz unter den Getränkegruppen ist weg',
+            'Tage seit: die Gruppe sieht die Zähler immer',
+            'Das Abmelden bleibt nicht mehr hängen',
+        ],
+    },
+    {
         datum: '2026-11-11',
         hu: [
             'Új Hány napja oldal: számold, hány napja nem csináltál valamit, rekorddal és csoportos toplistával',
