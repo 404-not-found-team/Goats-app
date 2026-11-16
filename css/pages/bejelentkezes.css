@@ -109,6 +109,11 @@
     width: 100%;
 }
 
+/* Összecsukó sáv: csak telefonon látszik (lásd a 3. pontot) */
+.naptar-nyito {
+    display: none;
+}
+
 .naptar-fejlec {
     display: flex;
     justify-content: space-between;
@@ -258,6 +263,105 @@
     /* a közelgő események a naptár előtt jelennek meg (a HTML-ben utána van, az asztali elrendezés miatt) */
     .hatter > .naptar-kontener {
         order: 1;
+    }
+
+    /* Összecsukható naptár: alapból csak egy "Naptár" sáv, koppintásra nyílik a hónap */
+    .naptar-nyito {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        min-height: 48px;
+        padding: 4px 8px;
+        background: transparent;
+        border: 0;
+        color: var(--text-primary);
+        font: inherit;
+        font-size: var(--fs-lg);
+        font-weight: 600;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .naptar-nyito > span {
+        flex: 1;
+    }
+
+    .naptar-nyito > .fa-calendar-days {
+        color: var(--accent-text);
+    }
+
+    .naptar-nyito-nyil {
+        color: var(--text-secondary);
+        font-size: var(--fs-sm);
+        transition: transform 0.2s ease;
+    }
+
+    .naptar-kontener.nyitva .naptar-nyito-nyil {
+        transform: rotate(90deg);
+    }
+
+    .naptar-kontener:not(.nyitva) .naptar-tartalom {
+        display: none;
+    }
+
+    .naptar-kontener.nyitva .naptar-nyito {
+        margin-bottom: 10px;
+    }
+
+    /* Nyitott naptárnál a közelgő események keskeny, vízszintesen görgethető sáv ("20 NOV  Szülinap") */
+    .hatter.naptar-nyitva .kozelgo {
+        min-width: 0;
+        max-width: 100%;
+        padding: 14px 16px;
+        gap: 8px;
+    }
+
+    .hatter.naptar-nyitva .kozelgo h2 {
+        font-size: var(--fs-base);
+        margin: 0;
+    }
+
+    .hatter.naptar-nyitva .kozelgo-lista {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 8px;
+        scrollbar-width: none;
+    }
+
+    .hatter.naptar-nyitva .kozelgo-elem {
+        flex: 0 0 auto;
+        width: auto;
+        max-width: 80%;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 10px;
+    }
+
+    .hatter.naptar-nyitva .kozelgo-datum {
+        flex-direction: row;
+        gap: 4px;
+        width: auto;
+        height: auto;
+        background: transparent;
+        color: var(--accent-text);
+    }
+
+    .hatter.naptar-nyitva .kozelgo-datum b {
+        font-size: var(--fs-sm);
+    }
+
+    .hatter.naptar-nyitva .kozelgo-szoveg b {
+        font-size: var(--fs-sm);
+    }
+
+    .hatter.naptar-nyitva .kozelgo-szoveg span,
+    .hatter.naptar-nyitva .kozelgo-gomb {
+        display: none;
+    }
+
+    .hatter.naptar-nyitva .kozelgo-ures {
+        padding: 4px 0;
     }
 
     .naptar-nap {

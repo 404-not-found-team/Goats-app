@@ -43,6 +43,118 @@
     border-bottom: 1px solid var(--border-color);
 }
 
+/* A doboz fejléce gomb (telefonon ezzel nyílik/csukódik); asztalin úgy néz ki, mint a sima cím */
+.tagdoboz-fejlec {
+    display: block;
+    width: 100%;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+    cursor: default;
+}
+
+.tagdoboz-info,
+.tagdoboz-osszeg,
+.tagdoboz-nyil {
+    display: none;
+}
+
+/* Az én egyenlegem (a dobozok fölött) */
+.sajat-egyenleg {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 25px;
+    padding: 15px;
+    border-radius: 12px;
+    background-color: var(--inner-bg);
+    box-shadow: var(--box-shadow);
+}
+
+.sajat-egyenleg[hidden] {
+    display: none;
+}
+
+.sajat-egyenleg h2 {
+    margin: 0;
+    font-size: var(--fs-lg);
+    color: var(--text-primary);
+}
+
+.egyenleg-csempek {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.egyenleg-csempe {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px;
+    border-radius: 10px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+.egyenleg-csempe span {
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+}
+
+.egyenleg-csempe b {
+    font-size: var(--fs-xl);
+}
+
+.egyenleg-tartozom {
+    color: var(--hiba-color);
+}
+
+.egyenleg-nekem {
+    color: var(--ok-color);
+}
+
+.egyenleg-sorok {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 8px;
+}
+
+.egyenleg-sor {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: var(--fs-base);
+}
+
+.egyenleg-pont {
+    flex-shrink: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--szin, var(--text-secondary));
+}
+
+.egyenleg-sor-szoveg {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.egyenleg-ures {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: var(--fs-sm);
+}
+
 /* ==========================================================================
    2. TARTOZÁS KÁRTYÁK
    ========================================================================== */
@@ -303,6 +415,83 @@
 
     .tartozasok-grid {
         grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .sajat-egyenleg {
+        margin-bottom: 15px;
+    }
+
+    .egyenleg-sorok {
+        grid-template-columns: 1fr;
+    }
+
+    /* Tagdobozok: összecsukott sor (név, hány tétel, összeg, nyíl); koppintásra nyílik */
+    .box.tagdoboz {
+        min-height: 0;
+        padding: 0;
+    }
+
+    .box.tagdoboz h3 {
+        margin: 0;
+        padding: 0;
+        border-bottom: 0;
+        text-align: left;
+    }
+
+    .tagdoboz-fejlec {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 56px;
+        padding: 10px 14px;
+        cursor: pointer;
+    }
+
+    .tagdoboz-nevblokk {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .tagdoboz-nev {
+        overflow-wrap: anywhere;
+    }
+
+    .tagdoboz-info {
+        display: block;
+        font-size: var(--fs-xs);
+        font-weight: 400;
+        color: var(--text-secondary);
+    }
+
+    .tagdoboz-osszeg {
+        display: block;
+        font-size: var(--fs-base);
+        white-space: nowrap;
+    }
+
+    .tagdoboz-nyil {
+        display: block;
+        color: var(--text-secondary);
+        transition: transform 0.2s ease;
+    }
+
+    .tagdoboz.nyitva .tagdoboz-nyil {
+        transform: rotate(90deg);
+    }
+
+    .tagdoboz.nyitva h3 {
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .tagdoboz-lista {
+        padding: 10px 12px 4px;
+    }
+
+    .tagdoboz:not(.nyitva) .tagdoboz-lista {
+        display: none;
     }
 
     .elosztas-elonezet{

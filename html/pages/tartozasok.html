@@ -42,6 +42,22 @@
     </div>
 
     <div class="container-tartozasok">
+        <!-- A bejelentkezett tag saját egyenlege, hogy ne kelljen a dobozát keresni (a tartozasok.js tölti) -->
+        <section id="sajat-egyenleg" class="sajat-egyenleg" aria-labelledby="sajat-egyenleg-cim" hidden>
+            <h2 id="sajat-egyenleg-cim" data-i18n="my_balance">Az én egyenlegem</h2>
+            <div class="egyenleg-csempek">
+                <div class="egyenleg-csempe">
+                    <span data-i18n="i_owe">Én tartozom</span>
+                    <b id="egyenleg-tartozom" class="egyenleg-tartozom">0 Ft</b>
+                </div>
+                <div class="egyenleg-csempe">
+                    <span data-i18n="owed_to_me">Nekem tartoznak</span>
+                    <b id="egyenleg-nekem" class="egyenleg-nekem">0 Ft</b>
+                </div>
+            </div>
+            <div id="egyenleg-sorok" class="egyenleg-sorok"></div>
+        </section>
+
         <div class="tartozasok-kontener tartozasok-grid"></div>
     </div>
 

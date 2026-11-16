@@ -70,6 +70,15 @@
         </section>
 
         <div class="naptar-kontener">
+            <!-- telefonon a naptár összecsukható sáv; asztalin rejtett, ott mindig látszik a hónap -->
+            <button type="button" id="naptar-nyito" class="naptar-nyito" aria-expanded="false"
+                aria-controls="naptar-tartalom">
+                <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+                <span data-i18n="calendar">Naptár</span>
+                <i class="fa-solid fa-chevron-right naptar-nyito-nyil" aria-hidden="true"></i>
+            </button>
+
+            <div id="naptar-tartalom" class="naptar-tartalom">
             <div class="naptar-fejlec">
                 <button id="elozo-honap-btn">&lt;</button>
                 <h2 id="naptar-honap-nev"></h2>
@@ -83,9 +92,11 @@
             </div>
 
             <div id="naptar-rács" class="naptar-racs"></div>
+            </div>
         </div>
 
-        <!-- Közelgő események (telefonon a naptár előtt, asztalin mellette; a naptar.js tölti a naptár eseményeiből) -->
+        <!-- Közelgő események (telefonon a naptár előtt, asztalin mellette; a naptar.js tölti a naptár eseményeiből).
+             Telefonon, ha a naptár nyitva van, keskeny vízszintes sávvá szűkül. -->
         <section class="kozelgo" aria-labelledby="kozelgo-cim">
             <h2 id="kozelgo-cim" data-i18n="upcoming_events">Közelgő események</h2>
             <div id="kozelgo-lista" class="kozelgo-lista"></div>

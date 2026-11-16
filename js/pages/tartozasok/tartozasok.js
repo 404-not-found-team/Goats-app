@@ -184,18 +184,50 @@ async function initMembersAndContainers() {
         });
     }
 
+    // A saját doboz kerül előre (a szín a tag eredeti sorszámából jön, így nem változik).
+    // Telefonon a dobozok összecsukott sorok (név, összeg); a sajátunk nyitva indul.
     const gridContainer = document.querySelector('.tartozasok-grid');
     if (gridContainer) {
         gridContainer.innerHTML = '';
-        members.forEach((member, index) => {
+        const sajatId = sajatAzonosito();
+        const sorrend = members.map((member, index) => ({ member, index }))
+            .sort((a, b) => (b.member.user_id === sajatId) - (a.member.user_id === sajatId));
+        sorrend.forEach(({ member, index }) => {
+            const sajat = member.user_id === sajatId;
             const boxDiv = document.createElement('div');
             boxDiv.className = 'box';
             boxDiv.classList.add('tagdoboz', szinOsztaly(getMemberColor(index)));
+            boxDiv.classList.toggle('nyitva', sajat);
+            boxDiv.classList.toggle('sajat', sajat);
 
             const h3 = document.createElement('h3');
-            h3.textContent = member.display_name;
+            const fejlec = document.createElement('button');
+            fejlec.type = 'button';
+            fejlec.className = 'tagdoboz-fejlec';
+            fejlec.setAttribute('aria-expanded', String(sajat));
+
+            const nevBlokk = document.createElement('span');
+            nevBlokk.className = 'tagdoboz-nevblokk';
+            const nev = document.createElement('span');
+            nev.className = 'tagdoboz-nev';
+            nev.textContent = member.display_name;
+            const info = document.createElement('span');
+            info.className = 'tagdoboz-info';
+            nevBlokk.append(nev, info);
+
+            const osszeg = document.createElement('span');
+            osszeg.className = 'tagdoboz-osszeg';
+
+            const nyil = document.createElement('span');
+            nyil.className = 'tagdoboz-nyil';
+            nyil.setAttribute('aria-hidden', 'true');
+            nyil.textContent = '›';
+
+            fejlec.append(nevBlokk, osszeg, nyil);
+            h3.appendChild(fejlec);
 
             const listDiv = document.createElement('div');
+            listDiv.className = 'tagdoboz-lista';
             listDiv.dataset.memberId = member.user_id;
 
             boxDiv.appendChild(h3);
@@ -203,6 +235,10 @@ async function initMembersAndContainers() {
             gridContainer.appendChild(boxDiv);
         });
     }
+}
+
+function sajatAzonosito() {
+    return window.goatsAuth?.getState()?.user?.id || null;
 }
 
 // Az utolsó betöltött összesítés ([{ados_id, hitelezo_id, nyitott_osszeg}]) – az egyenlítés-modal
@@ -292,6 +328,9 @@ function megjelenitTartozasok(adat) {
         targetDiv.appendChild(card);
     });
 
+    frissitDobozOsszesitoket(members, adat.legacy || []);
+    frissitSajatEgyenleget(members);
+
     // Üres üzenetek kirakása, ha nincs tartozás
     members.forEach(member => {
         const targetDiv = document.querySelector(`[data-member-id="${CSS.escape(member.user_id)}"]`);
@@ -302,6 +341,74 @@ function megjelenitTartozasok(adat) {
             targetDiv.appendChild(emptyMsg);
         }
     });
+}
+
+// Az összecsukott dobozfejléc (telefonon látszik): mennyivel tartozik összesen és hány tételben
+function frissitDobozOsszesitoket(members, legacy) {
+    members.forEach(member => {
+        const lista = document.querySelector(`[data-member-id="${CSS.escape(member.user_id)}"]`);
+        const doboz = lista?.closest('.tagdoboz');
+        if (!doboz) return;
+        const nyitottak = osszesitesAdatok.filter(s => s.ados_id === member.user_id && s.nyitott_osszeg > 0);
+        const regiek = legacy.filter(l => l.ados_id === member.user_id || (!l.ados_id && l.kitartozik === member.display_name));
+        const db = nyitottak.length + regiek.length;
+        const osszeg = nyitottak.reduce((a, s) => a + Number(s.nyitott_osszeg), 0)
+            + regiek.reduce((a, l) => a + (Number(l.mennyiert) || 0), 0);
+        doboz.querySelector('.tagdoboz-info').textContent = db > 0
+            ? tr('n_debts', '{n} tartozás', { n: db })
+            : tr('no_debts_yet', 'Még nincs tartozás');
+        doboz.querySelector('.tagdoboz-osszeg').textContent = formatFt(osszeg);
+    });
+}
+
+// "Az én egyenlegem": kinek tartozom és ki tartozik nekem (az összevont, nyitott összegekből)
+function frissitSajatEgyenleget(members) {
+    const doboz = document.getElementById('sajat-egyenleg');
+    const sajatId = sajatAzonosito();
+    if (!doboz || !sajatId || !members.some(m => m.user_id === sajatId)) {
+        if (doboz) doboz.hidden = true;
+        return;
+    }
+
+    const tartozom = osszesitesAdatok.filter(s => s.ados_id === sajatId && s.nyitott_osszeg > 0);
+    const nekem = osszesitesAdatok.filter(s => s.hitelezo_id === sajatId && s.nyitott_osszeg > 0);
+    const osszesen = sorok => sorok.reduce((a, s) => a + Number(s.nyitott_osszeg), 0);
+    document.getElementById('egyenleg-tartozom').textContent = formatFt(osszesen(tartozom));
+    document.getElementById('egyenleg-nekem').textContent = formatFt(osszesen(nekem));
+
+    const sor = (masikId, szoveg, osszeg, irany) => {
+        const index = members.findIndex(m => m.user_id === masikId);
+        const elem = document.createElement('div');
+        elem.className = 'egyenleg-sor';
+        const pont = document.createElement('span');
+        pont.className = 'egyenleg-pont';
+        if (index !== -1) pont.classList.add(szinOsztaly(getMemberColor(index)));
+        const szovegElem = document.createElement('span');
+        szovegElem.className = 'egyenleg-sor-szoveg';
+        szovegElem.textContent = szoveg;
+        const osszegElem = document.createElement('b');
+        osszegElem.className = irany;
+        osszegElem.textContent = formatFt(osszeg);
+        elem.append(pont, szovegElem, osszegElem);
+        return elem;
+    };
+
+    const elemek = [
+        ...tartozom.map(s => sor(s.hitelezo_id,
+            tr('you_owe_name', '{name} tartozol', { name: getNakNek(tagNev(s.hitelezo_id)) }),
+            s.nyitott_osszeg, 'egyenleg-tartozom')),
+        ...nekem.map(s => sor(s.ados_id,
+            tr('owes_you', '{name} tartozik neked', { name: tagNev(s.ados_id) }),
+            s.nyitott_osszeg, 'egyenleg-nekem')),
+    ];
+    if (elemek.length === 0) {
+        const ures = document.createElement('p');
+        ures.className = 'egyenleg-ures';
+        ures.textContent = tr('no_open_debts', 'Nincs nyitott tartozásod, és neked sem tartozik senki.');
+        elemek.push(ures);
+    }
+    document.getElementById('egyenleg-sorok').replaceChildren(...elemek);
+    doboz.hidden = false;
 }
 
 // Egy összevont (ados → hitelező) sor kártyája: fejléc (összeg + nyíl + esetleg egyenlítés gomb)
@@ -353,6 +460,14 @@ function epitsOsszevontKartyat(sor, ados, memberIndex, members) {
 
 // Egy kattintás-figyelő a teljes rácson (delegálás, mert a kártyák minden betöltéskor újraépülnek)
 async function kezeldTartozasKattintast(e) {
+    // Telefonon a doboz fejléce nyitja/csukja a tag tartozásait (asztalin a CSS mindig mutatja őket)
+    const dobozFejlec = e.target.closest('.tagdoboz-fejlec');
+    if (dobozFejlec) {
+        const nyitva = dobozFejlec.closest('.tagdoboz').classList.toggle('nyitva');
+        dobozFejlec.setAttribute('aria-expanded', String(nyitva));
+        return;
+    }
+
     const kartya = e.target.closest('.tartozas-osszevont');
     if (!kartya) return;
 

@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function initNaptar() {
     setupGombok();
+    naptarNyitoBekotese();
     kirajzolNaptar(); // a hónap rácsa adat nélkül is azonnal látszik
     if (window.goatsAuth) await window.goatsAuth.ready;
     await betoltEsemenyek();
@@ -177,6 +178,30 @@ function kirajzolNaptar() {
     }
 
     kirajzolKozelgoket();
+}
+
+// Telefonon a naptár egy összecsukható sáv a közelgő események alatt. A böngésző megjegyzi, hogy nyitva
+// hagytad-e (localStorage; ha nem elérhető, mindig összecsukva indul). Asztalin a CSS mindig mutatja.
+const NAPTAR_NYITVA_KULCS = 'goats-naptar-nyitva';
+
+function naptarNyitoBekotese() {
+    const gomb = document.getElementById('naptar-nyito');
+    if (!gomb) return;
+    let nyitva = false;
+    try { nyitva = localStorage.getItem(NAPTAR_NYITVA_KULCS) === '1'; } catch { /* privát mód */ }
+    naptarNyitvaAllit(nyitva);
+    gomb.addEventListener('click', () => {
+        const uj = gomb.getAttribute('aria-expanded') !== 'true';
+        naptarNyitvaAllit(uj);
+        try { localStorage.setItem(NAPTAR_NYITVA_KULCS, uj ? '1' : '0'); } catch { /* privát mód */ }
+    });
+}
+
+function naptarNyitvaAllit(nyitva) {
+    document.getElementById('naptar-nyito')?.setAttribute('aria-expanded', String(nyitva));
+    document.querySelector('.naptar-kontener')?.classList.toggle('nyitva', nyitva);
+    // a .hatter osztálya szűkíti a közelgő események kártyát (csak telefonon)
+    document.querySelector('.hatter')?.classList.toggle('naptar-nyitva', nyitva);
 }
 
 // "ÉÉÉÉ-HH-NN" a helyi dátumból (az esemenyek.datum is ilyen formájú)
