@@ -3,7 +3,7 @@ let meglatogatottEv = maiDatum.getFullYear();
 let meglatogatottHonap = maiDatum.getMonth(); // 0 - 11
 let esemenyekListaja = [];
 let aktivEsemeny = null;
-let kivalasztottDatumString = '';
+let kivalasztottDatumString = ''; // a Hónap nézetben kiválasztott nap ("ÉÉÉÉ-HH-NN"), alapból a mai
 
 const honapNevek = [
     "Január", "Február", "Március", "Április", "Május", "Június",
@@ -17,8 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // aktualisGroupCode(): lásd js/segedek/csoport-kod.js (közös, minden klasszikus oldalscript használja)
 
 async function initNaptar() {
+    kivalasztottDatumString = datumKulcs(new Date());
     setupGombok();
     naptarNyitoBekotese();
+    nezetValtoBekotese();
     kirajzolNaptar(); // a hónap rácsa adat nélkül is azonnal látszik
     if (window.goatsAuth) await window.goatsAuth.ready;
     await betoltEsemenyek();
@@ -43,24 +45,24 @@ function setupGombok() {
         kirajzolNaptar();
     });
 
+    // "Ma": vissza a mai hónapra, és a mai nap lesz kiválasztva
+    document.getElementById('naptar-ma-btn')?.addEventListener('click', () => {
+        maiDatum = new Date();
+        meglatogatottEv = maiDatum.getFullYear();
+        meglatogatottHonap = maiDatum.getMonth();
+        kivalasztottDatumString = datumKulcs(maiDatum);
+        kirajzolNaptar();
+    });
+
+    // új esemény a kiválasztott napra, illetve a Lista nézetből a mai dátummal
+    document.getElementById('naptar-nap-uj')?.addEventListener('click', () => ujEsemenyModal(kivalasztottDatumString));
+    document.getElementById('naptar-lista-uj')?.addEventListener('click', () => ujEsemenyModal(datumKulcs(new Date())));
+
     document.getElementById('close-esemeny-modal')?.addEventListener('click', () => {
         const modal = document.getElementById('esemeny-modal');
         if (modal) modal.hidden = true;
     });
     document.getElementById('ment-esemeny-btn')?.addEventListener('click', mentUjEsemeny);
-
-    // Napi áttekintő modal bezárása
-    document.getElementById('close-napi-esemenyek-modal')?.addEventListener('click', () => {
-        document.getElementById('napi-esemenyek-modal').hidden = true;
-    });
-
-    // Új esemény hozzáadása a napi áttekintőből
-    document.getElementById('napi-uj-esemeny-btn')?.addEventListener('click', () => {
-        document.getElementById('napi-esemenyek-modal').hidden = true;
-        const datumInput = document.getElementById('esemeny-datum-input');
-        if (datumInput) datumInput.value = kivalasztottDatumString;
-        document.getElementById('esemeny-modal').hidden = false;
-    });
 
     // Szerkesztő modal gombjai
     document.getElementById('close-esemeny-reszletek-modal')?.addEventListener('click', () => {
@@ -68,11 +70,7 @@ function setupGombok() {
     });
 
     // "Közelgő események" kártya: új esemény a mai dátummal
-    document.getElementById('kozelgo-uj-gomb')?.addEventListener('click', () => {
-        const datumInput = document.getElementById('esemeny-datum-input');
-        if (datumInput) datumInput.value = datumKulcs(new Date());
-        document.getElementById('esemeny-modal').hidden = false;
-    });
+    document.getElementById('kozelgo-uj-gomb')?.addEventListener('click', () => ujEsemenyModal(datumKulcs(new Date())));
 
     document.getElementById('modosit-esemeny-btn')?.addEventListener('click', modositEsemeny);
     document.getElementById('torol-esemeny-btn')?.addEventListener('click', () => {
@@ -124,60 +122,216 @@ function kirajzolNaptar() {
     honapNevElem.textContent = `${meglatogatottEv} ${honapNevek[meglatogatottHonap]}`;
     racs.innerHTML = '';
 
+    // Mindig 6 hét (42 nap) hétfőtől: az előző és a következő hónap napjai halványan töltik ki a rácsot,
+    // így lapozáskor nem változik a naptár magassága. Egy nap: szám körben (mai: keret, kiválasztott:
+    // kitöltve), alatta pötty, ha van eseménye. Koppintásra kiválasztódik, és a rács alatt megjelennek
+    // az eseményei; más hónap napjára koppintva oda lapoz.
     const elsoNap = new Date(meglatogatottEv, meglatogatottHonap, 1);
-    const utolsoNap = new Date(meglatogatottEv, meglatogatottHonap + 1, 0);
-    const napokSzama = utolsoNap.getDate();
+    const eltolas = (elsoNap.getDay() + 6) % 7; // hétfő = 0
+    const ma = datumKulcs(new Date());
+    for (let i = 0; i < 42; i++) {
+        const datum = new Date(meglatogatottEv, meglatogatottHonap, 1 - eltolas + i);
+        const dString = datumKulcs(datum);
+        const hetNapja = datum.getDay();
+        const masHonap = datum.getMonth() !== meglatogatottHonap;
+        const vanEsemeny = esemenyekListaja.some(e => e.datum === dString);
 
-    let elsoNapHetNapja = elsoNap.getDay() - 1;
-    if (elsoNapHetNapja === -1) elsoNapHetNapja = 6;
-
-    for (let i = 0; i < elsoNapHetNapja; i++) {
-        const uresDiv = document.createElement('div');
-        uresDiv.className = 'naptar-nap ures';
-        racs.appendChild(uresDiv);
-    }
-
-    for (let nap = 1; nap <= napokSzama; nap++) {
-        const napDiv = document.createElement('div');
-        napDiv.className = 'naptar-nap';
+        const napGomb = document.createElement('button');
+        napGomb.type = 'button';
+        napGomb.className = 'naptar-nap';
+        napGomb.classList.toggle('mas-honap', masHonap);
+        napGomb.classList.toggle('hetvege', hetNapja === 0 || hetNapja === 6);
+        napGomb.classList.toggle('mai-nap', dString === ma);
+        napGomb.classList.toggle('kivalasztott', dString === kivalasztottDatumString);
+        napGomb.classList.toggle('van-esemeny', vanEsemeny);
+        napGomb.setAttribute('aria-pressed', String(dString === kivalasztottDatumString));
+        napGomb.setAttribute('aria-label', hosszuDatum(dString)
+            + (vanEsemeny ? `, ${tr('has_events', 'van esemény')}` : ''));
 
         const napSzamSpan = document.createElement('span');
         napSzamSpan.className = 'nap-szam';
-        napSzamSpan.textContent = nap;
-        napDiv.appendChild(napSzamSpan);
+        napSzamSpan.textContent = datum.getDate();
+        const pont = document.createElement('span');
+        pont.className = 'nap-pont';
+        pont.setAttribute('aria-hidden', 'true');
+        napGomb.append(napSzamSpan, pont);
 
-        if (
-            nap === maiDatum.getDate() &&
-            meglatogatottHonap === maiDatum.getMonth() &&
-            meglatogatottEv === maiDatum.getFullYear()
-        ) {
-            napDiv.classList.add('mai-nap');
-        }
-
-        const honapFormatted = String(meglatogatottHonap + 1).padStart(2, '0');
-        const napFormatted = String(nap).padStart(2, '0');
-        const dString = `${meglatogatottEv}-${honapFormatted}-${napFormatted}`;
-
-        const napiEsemenyek = esemenyekListaja.filter(e => e.datum === dString);
-
-        // Kirajzoljuk a badge-eket a cellában
-        napiEsemenyek.forEach(es => {
-            const esemeinyBadge = document.createElement('div');
-            esemeinyBadge.className = 'naptar-esemeny';
-            esemeinyBadge.textContent = es.cim;
-            esemeinyBadge.title = es.cim;
-            napDiv.appendChild(esemeinyBadge);
+        napGomb.addEventListener('click', () => {
+            kivalasztottDatumString = dString;
+            if (masHonap) {
+                meglatogatottEv = datum.getFullYear();
+                meglatogatottHonap = datum.getMonth();
+                kirajzolNaptar();
+                return;
+            }
+            racs.querySelectorAll('.naptar-nap.kivalasztott').forEach(n => {
+                n.classList.remove('kivalasztott');
+                n.setAttribute('aria-pressed', 'false');
+            });
+            napGomb.classList.add('kivalasztott');
+            napGomb.setAttribute('aria-pressed', 'true');
+            kirajzolNapReszleteket();
         });
 
-        // KATTINTÁS A NAPRA -> NAPI ÁTTEKINTŐ MODAL MEGNYITÁSA
-        napDiv.addEventListener('click', () => {
-            nyisdNapiEsemenyeket(dString, napiEsemenyek);
-        });
-
-        racs.appendChild(napDiv);
+        racs.appendChild(napGomb);
     }
 
+    kirajzolNapReszleteket();
+    kirajzolListat();
     kirajzolKozelgoket();
+}
+
+function ujEsemenyModal(datum) {
+    const datumInput = document.getElementById('esemeny-datum-input');
+    if (datumInput) datumInput.value = datum;
+    document.getElementById('esemeny-modal').hidden = false;
+}
+
+// "ÉÉÉÉ-HH-NN" -> helyi Date (éjfél)
+function datumbol(dString) {
+    const [ev, honap, nap] = dString.split('-').map(Number);
+    return new Date(ev, honap - 1, nap);
+}
+
+// pl. "november 20., péntek" (a nyelvnek megfelelően)
+function hosszuDatum(dString) {
+    return datumbol(dString).toLocaleDateString(goatsNyelv.locale(), { month: 'long', day: 'numeric', weekday: 'long' });
+}
+
+// "Ma" / "Holnap" / "4 nap múlva" / "2 napja"
+function mikorSzoveg(dString) {
+    const ma = new Date();
+    ma.setHours(0, 0, 0, 0);
+    const hanyNap = Math.round((datumbol(dString) - ma) / 86400000);
+    if (hanyNap === 0) return tr('today', 'Ma');
+    if (hanyNap === 1) return tr('tomorrow', 'Holnap');
+    if (hanyNap > 1) return tr('in_days', '{n} nap múlva', { n: hanyNap });
+    return tr('days_ago', '{n} napja', { n: -hanyNap });
+}
+
+// Egy esemény kártyája (a kiválasztott nap alatt és a Lista nézetben); koppintásra szerkeszthető
+function esemenyKartya(es, mutatMikor = true) {
+    const kartya = document.createElement('button');
+    kartya.type = 'button';
+    kartya.className = 'naptar-esemeny-kartya';
+    const csik = document.createElement('span');
+    csik.className = 'naptar-esemeny-csik';
+    csik.setAttribute('aria-hidden', 'true');
+    const cim = document.createElement('b');
+    cim.textContent = es.cim;
+    kartya.append(csik, cim);
+    if (mutatMikor) {
+        const mikor = document.createElement('span');
+        mikor.className = 'naptar-esemeny-mikor';
+        mikor.textContent = mikorSzoveg(es.datum);
+        kartya.appendChild(mikor);
+    }
+    kartya.addEventListener('click', () => nyisdEsemenySzerkesztest(es));
+    return kartya;
+}
+
+// A rács alatti rész: a kiválasztott nap dátuma és eseményei
+function kirajzolNapReszleteket() {
+    const cim = document.getElementById('naptar-nap-cim');
+    const lista = document.getElementById('naptar-nap-lista');
+    if (!cim || !lista) return;
+    cim.textContent = hosszuDatum(kivalasztottDatumString);
+    const napiEsemenyek = esemenyekListaja
+        .filter(e => e.datum === kivalasztottDatumString)
+        .sort((a, b) => a.cim.localeCompare(b.cim));
+    if (napiEsemenyek.length === 0) {
+        const ures = document.createElement('p');
+        ures.className = 'naptar-ures';
+        ures.textContent = tr('no_events_day', 'Nincsenek események ezen a napon.');
+        lista.replaceChildren(ures);
+        return;
+    }
+    lista.replaceChildren(...napiEsemenyek.map(es => esemenyKartya(es)));
+}
+
+// Lista nézet: a mai és a későbbi események hónaponként csoportosítva, a lista elején a "Ma" jelölővel
+function kirajzolListat() {
+    const lista = document.getElementById('naptar-lista');
+    if (!lista) return;
+    const maKulcs = datumKulcs(new Date());
+    const maiEv = new Date().getFullYear();
+    const kovetkezok = esemenyekListaja
+        .filter(e => e.datum >= maKulcs)
+        .sort((a, b) => a.datum.localeCompare(b.datum) || a.cim.localeCompare(b.cim));
+
+    const elemek = [];
+    let honapKulcs = '';
+    const honapCim = (dString) => {
+        const d = datumbol(dString);
+        const cim = document.createElement('h4');
+        cim.className = 'naptar-lista-honap';
+        cim.textContent = d.toLocaleDateString(goatsNyelv.locale(), d.getFullYear() === maiEv
+            ? { month: 'long' } : { month: 'long', year: 'numeric' });
+        return cim;
+    };
+
+    // a mai hónap címe és a "Ma" jelölő mindig az elején áll
+    elemek.push(honapCim(maKulcs));
+    honapKulcs = maKulcs.slice(0, 7);
+    const maJelolo = document.createElement('div');
+    maJelolo.className = 'naptar-lista-ma';
+    maJelolo.textContent = `${tr('today', 'Ma')}, ${datumbol(maKulcs).toLocaleDateString(goatsNyelv.locale(), { day: 'numeric', weekday: 'long' })}`;
+    elemek.push(maJelolo);
+
+    kovetkezok.forEach(es => {
+        if (es.datum.slice(0, 7) !== honapKulcs) {
+            honapKulcs = es.datum.slice(0, 7);
+            elemek.push(honapCim(es.datum));
+        }
+        const sor = document.createElement('div');
+        sor.className = 'naptar-lista-sor';
+        const datum = document.createElement('span');
+        datum.className = 'naptar-lista-datum';
+        const napSzam = document.createElement('b');
+        napSzam.textContent = datumbol(es.datum).getDate();
+        const hetNap = document.createElement('span');
+        hetNap.textContent = datumbol(es.datum).toLocaleDateString(goatsNyelv.locale(), { weekday: 'short' }).replace('.', '');
+        datum.append(napSzam, hetNap);
+        sor.append(datum, esemenyKartya(es));
+        elemek.push(sor);
+    });
+
+    if (kovetkezok.length === 0) {
+        const ures = document.createElement('p');
+        ures.className = 'naptar-ures';
+        ures.textContent = tr('no_upcoming_events', 'Még nincs tervezett program. Vegyetek fel egyet!');
+        elemek.push(ures);
+    }
+    lista.replaceChildren(...elemek);
+}
+
+// Lista / Hónap váltó; a választást a böngésző megjegyzi (alapból Hónap)
+const NAPTAR_NEZET_KULCS = 'goats-naptar-nezet';
+
+function nezetValtoBekotese() {
+    let nezet = 'honap';
+    try { if (localStorage.getItem(NAPTAR_NEZET_KULCS) === 'lista') nezet = 'lista'; } catch { /* privát mód */ }
+    nezetAllit(nezet);
+    document.querySelectorAll('.naptar-nezetvalto [data-nezet]').forEach(gomb => {
+        gomb.addEventListener('click', () => {
+            nezetAllit(gomb.dataset.nezet);
+            try { localStorage.setItem(NAPTAR_NEZET_KULCS, gomb.dataset.nezet); } catch { /* privát mód */ }
+        });
+    });
+}
+
+function nezetAllit(nezet) {
+    document.querySelectorAll('.naptar-nezetvalto [data-nezet]').forEach(g => {
+        g.setAttribute('aria-pressed', String(g.dataset.nezet === nezet));
+    });
+    const honap = document.getElementById('naptar-honap-nezet');
+    const lista = document.getElementById('naptar-lista-nezet');
+    // a Hónap nézet Lista nézetben is helyet foglal (láthatatlanul), így nem változik a naptár magassága
+    if (honap) {
+        honap.classList.toggle('nezet-rejtett', nezet !== 'honap');
+        honap.inert = nezet !== 'honap';
+    }
+    if (lista) lista.hidden = nezet !== 'lista';
 }
 
 // Telefonon a naptár egy összecsukható sáv a közelgő események alatt. A böngésző megjegyzi, hogy nyitva
@@ -227,11 +381,8 @@ function kirajzolKozelgoket() {
 }
 
 function kozelgoElem(es) {
-    const [ev, honap, nap] = es.datum.split('-').map(Number);
-    const datum = new Date(ev, honap - 1, nap);
-    const ma = new Date();
-    ma.setHours(0, 0, 0, 0);
-    const hanyNap = Math.round((datum - ma) / 86400000);
+    const datum = datumbol(es.datum);
+    const nap = datum.getDate();
 
     const elem = document.createElement('button');
     elem.type = 'button';
@@ -250,59 +401,12 @@ function kozelgoElem(es) {
     const cim = document.createElement('b');
     cim.textContent = es.cim;
     const mikor = document.createElement('span');
-    mikor.textContent = hanyNap === 0 ? tr('today', 'Ma')
-        : hanyNap === 1 ? tr('tomorrow', 'Holnap')
-            : tr('in_days', '{n} nap múlva', { n: hanyNap });
+    mikor.textContent = mikorSzoveg(es.datum);
     szoveg.append(cim, mikor);
 
     elem.append(jelveny, szoveg);
     elem.addEventListener('click', () => nyisdEsemenySzerkesztest(es));
     return elem;
-}
-
-// Napi áttekintő modal feltöltése és megnyitása
-function nyisdNapiEsemenyeket(dString, napiEsemenyek) {
-    kivalasztottDatumString = dString;
-    const modal = document.getElementById('napi-esemenyek-modal');
-    const cimElem = document.getElementById('napi-modal-cím');
-    const listaDiv = document.getElementById('napi-esemenyek-lista');
-
-    if (cimElem) cimElem.textContent = tr('events_of_day', '{date} eseményei', { date: dString });
-    if (listaDiv) {
-        listaDiv.innerHTML = '';
-
-        if (napiEsemenyek.length === 0) {
-            const uzenet = document.createElement('p');
-            uzenet.className = 'ures-uzenet';
-            uzenet.textContent = tr('no_events_day', 'Nincsenek események ezen a napon.');
-            listaDiv.replaceChildren(uzenet);
-        } else {
-            napiEsemenyek.forEach(es => {
-                const elem = document.createElement('div');
-                elem.className = 'naptar-esemeny-sor';
-
-                const cimSpan = document.createElement('span');
-                cimSpan.textContent = es.cim;
-
-                const szerkesztesSpan = document.createElement('span');
-                szerkesztesSpan.className = 'szerkesztes-jel';
-                szerkesztesSpan.textContent = tr('edit_pencil', 'Szerkesztés');
-
-                elem.appendChild(cimSpan);
-                elem.appendChild(szerkesztesSpan);
-
-                // Kattintásra megnyílik a módosítás/törlés modal
-                elem.addEventListener('click', () => {
-                    modal.hidden = true;
-                    nyisdEsemenySzerkesztest(es);
-                });
-
-                listaDiv.appendChild(elem);
-            });
-        }
-    }
-
-    if (modal) modal.hidden = false;
 }
 
 // Szerkesztő modal megnyitása

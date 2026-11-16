@@ -114,28 +114,106 @@
     display: none;
 }
 
+/* Cím + Lista/Hónap váltó */
+.naptar-nezet-sor {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.naptar-cim {
+    flex: 1;
+    margin: 0;
+    font-size: var(--fs-xl);
+    color: var(--text-primary);
+}
+
+.naptar-nezetvalto {
+    display: flex;
+    padding: 4px;
+    border-radius: 12px;
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+}
+
+.naptar-nezetvalto button {
+    height: 36px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--text-secondary);
+    font: inherit;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.naptar-nezetvalto button[aria-pressed="true"] {
+    background: var(--accent-color);
+    color: var(--on-accent);
+    font-weight: 700;
+}
+
+/* A két nézet egymáson: a magasságot mindig a Hónap nézet adja, Lista nézetben is (láthatatlanul),
+   a Lista ezen belül görög. Így a váltás és a hónaplapozás sem rángatja az oldalt. */
+.naptar-nezetek {
+    position: relative;
+}
+
+.naptar-honap-nezet.nezet-rejtett {
+    visibility: hidden;
+}
+
+.naptar-lista-nezet[hidden] {
+    display: none;
+}
+
+/* Hónap neve, "Ma" gomb, lapozó nyilak */
 .naptar-fejlec {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    gap: 8px;
+    margin-bottom: 12px;
 }
 
-.naptar-fejlec button {
-    background: var(--inner-bg);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    padding: 6px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.naptar-fejlec h2 {
+.naptar-fejlec h3 {
+    flex: 1;
+    margin: 0;
     min-height: 1.3em;
     /* a hónap neve JS-ből kerül be: addig se ugorjon az elrendezés */
     font-size: var(--fs-lg);
     color: var(--text-primary);
+}
+
+.naptar-ma {
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--accent-text);
+    font: inherit;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.naptar-lapozo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 0;
+    background: var(--inner-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.naptar-ma:hover,
+.naptar-lapozo:hover {
+    background: var(--card-bg);
+    box-shadow: inset 0 0 0 1px var(--accent-color);
 }
 
 .naptar-napok-fejlec {
@@ -150,68 +228,258 @@
 
 .naptar-racs {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    row-gap: 4px;
 }
 
+/* Egy nap: szám körben, alatta pötty, ha van eseménye */
 .naptar-nap {
-    background: var(--inner-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    height: 85px;
-    padding: 4px;
+    height: 48px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-primary);
+    font: inherit;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
     min-width: 0;
-    box-sizing: border-box;
     cursor: pointer;
-    overflow: hidden;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.naptar-nap:hover {
-    border-color: var(--accent-color);
-    background-color: var(--card-bg);
-}
-
-.naptar-nap::-webkit-scrollbar {
-    width: 3px;
-}
-
-.naptar-nap::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 3px;
-}
-
-/* Sorrend számít: az .ures és a .mai-nap a :hover UTÁN van (mind 0,2,0) */
-.naptar-nap.ures {
-    background: transparent;
-    border: none;
-}
-
-.naptar-nap.mai-nap {
-    border-color: var(--accent-color);
-    background: rgba(99, 102, 241, 0.1);
+/* az előző és a következő hónap napjai halványan */
+.naptar-nap.mas-honap {
+    opacity: 0.35;
 }
 
 .nap-szam {
-    font-size: var(--fs-xs);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-base);
+    transition: background-color 0.15s ease;
+}
+
+.naptar-nap.hetvege .nap-szam {
     color: var(--text-secondary);
 }
 
-.naptar-esemeny {
+.naptar-nap:hover .nap-szam {
+    background: var(--inner-bg);
+}
+
+.naptar-nap:focus-visible {
+    outline: none;
+}
+
+.naptar-nap:focus-visible .nap-szam {
+    outline: 2px solid var(--accent-text);
+    outline-offset: 2px;
+}
+
+/* Sorrend számít: a kiválasztott a mai után áll, így ha a kettő egybeesik, ki van töltve */
+.naptar-nap.mai-nap .nap-szam {
+    box-shadow: inset 0 0 0 2px var(--accent-color);
+    color: var(--accent-text);
+    font-weight: 700;
+}
+
+.naptar-nap.kivalasztott .nap-szam {
     background: var(--accent-color);
     color: var(--on-accent);
-    font-size: var(--fs-xs);
-    padding: 2px 4px;
-    border-radius: 4px;
+    font-weight: 700;
+}
+
+.nap-pont {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+}
+
+.naptar-nap.van-esemeny .nap-pont {
+    background: var(--accent-text);
+}
+
+/* A kiválasztott nap eseményei a rács alatt */
+.naptar-nap-reszletek {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.naptar-nap-cim {
+    margin: 0;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.naptar-nap-cim::first-letter {
+    text-transform: uppercase;
+}
+
+.naptar-esemeny-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.naptar-esemeny-kartya {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    background: var(--inner-bg);
+    color: var(--text-primary);
+    font: inherit;
+    text-align: left;
     cursor: pointer;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
     box-sizing: border-box;
+}
+
+.naptar-esemeny-kartya:hover {
+    border-color: var(--accent-color);
+}
+
+.naptar-esemeny-csik {
+    width: 4px;
+    align-self: stretch;
+    border-radius: 4px;
+    background: var(--accent-color);
+}
+
+.naptar-esemeny-kartya b {
+    flex: 1;
+    min-width: 0;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.naptar-esemeny-mikor {
+    flex-shrink: 0;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+}
+
+.naptar-ures {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+}
+
+.naptar-uj-gomb {
+    min-height: 46px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px dashed var(--accent-color);
+    background: transparent;
+    color: var(--accent-text);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.naptar-uj-gomb:hover {
+    background: var(--inner-bg);
+}
+
+/* Lista nézet */
+.naptar-lista-nezet {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* az események görögnek, az "+ Új esemény" gomb mindig legalul marad */
+.naptar-lista-nezet .naptar-lista {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.naptar-lista-nezet .naptar-uj-gomb {
+    flex-shrink: 0;
+}
+
+.naptar-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.naptar-lista-honap {
+    margin: 6px 0 0;
+    font-size: var(--fs-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.naptar-lista-honap:first-child {
+    margin-top: 0;
+}
+
+.naptar-lista-ma {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--accent-text);
+}
+
+.naptar-lista-ma::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent-color);
+}
+
+.naptar-lista-ma::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.naptar-lista-sor {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+}
+
+.naptar-lista-datum {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.1;
+}
+
+.naptar-lista-datum b {
+    font-size: var(--fs-xl);
+    color: var(--text-primary);
+}
+
+.naptar-lista-datum span {
+    font-size: var(--fs-xs);
+    color: var(--text-secondary);
 }
 
 /* --------------------------------------------------------------------------
@@ -365,28 +633,30 @@
         padding: 4px 0;
     }
 
-    .naptar-nap {
-        min-height: 45px;
+    /* telefonon a nyitó sáv a cím, a váltó jobbra kerül */
+    .naptar-cim {
+        display: none;
+    }
+
+    /* a váltó a "Naptár" sáv jobb oldalára kerül, a lenyíló nyíl elé (csak nyitott naptárnál látszik) */
+    .naptar-kontener {
+        position: relative;
+    }
+
+    .naptar-nezet-sor {
+        position: absolute;
+        top: 14px;
+        right: 44px;
+        margin: 0;
+    }
+
+    .naptar-nezetvalto button {
+        height: 34px;
+        padding: 0 12px;
     }
 }
 
 @media (max-width: 600px) {
-    .naptar-nap {
-        height: 50px;
-    }
-
-    /* Az események kis pöttyök a cellákban */
-    .naptar-esemeny {
-        font-size: 0;
-        height: 8px;
-        width: 8px;
-        min-height: 8px;
-        border-radius: 50%;
-        margin: 2px auto 0 auto;
-        padding: 0;
-        display: block;
-    }
-
     .jobb-sav {
         display: grid;
         grid-template-columns: 1fr;
@@ -604,10 +874,6 @@
     .hatter .naptar-kontener {
         padding: 22px;
         box-sizing: border-box;
-    }
-
-    .hatter .naptar-nap {
-        height: 66px;
     }
 
 }

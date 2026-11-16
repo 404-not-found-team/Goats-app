@@ -79,19 +79,50 @@
             </button>
 
             <div id="naptar-tartalom" class="naptar-tartalom">
-            <div class="naptar-fejlec">
-                <button id="elozo-honap-btn">&lt;</button>
-                <h2 id="naptar-honap-nev"></h2>
-                <button id="kovetkezo-honap-btn">&gt;</button>
-            </div>
+                <!-- cím (telefonon a nyitó sáv a cím) + Lista/Hónap váltó; a választást a böngésző megjegyzi -->
+                <div class="naptar-nezet-sor">
+                    <h2 class="naptar-cim" data-i18n="calendar">Naptár</h2>
+                    <div class="naptar-nezetvalto" role="group" aria-label="Nézet" data-i18n-attr="aria-label:calendar_view">
+                        <button type="button" data-nezet="lista" aria-pressed="false" data-i18n="view_list">Lista</button>
+                        <button type="button" data-nezet="honap" aria-pressed="true" data-i18n="view_month">Hónap</button>
+                    </div>
+                </div>
 
-            <div class="naptar-napok-fejlec">
-                <span data-i18n="monday">H</span><span data-i18n="tuesday">K</span><span
-                    data-i18n="wednesday">Sze</span><span data-i18n="thursday">Cs</span><span
-                    data-i18n="friday">P</span><span data-i18n="saturday">Szo</span><span data-i18n="sunday">V</span>
-            </div>
+                <!-- A két nézet egymáson: a doboz magasságát mindig a Hónap nézet adja (Lista nézetben
+                     láthatatlanul is helyet foglal), a Lista azon belül görög, így váltáskor nem ugrál az oldal -->
+                <div class="naptar-nezetek">
+                <!-- Hónap nézet: a napok rácsa, alatta a kiválasztott nap eseményei -->
+                <div id="naptar-honap-nezet" class="naptar-honap-nezet">
+                    <div class="naptar-fejlec">
+                        <h3 id="naptar-honap-nev"></h3>
+                        <button type="button" id="naptar-ma-btn" class="naptar-ma" data-i18n="today">Ma</button>
+                        <button type="button" id="elozo-honap-btn" class="naptar-lapozo" aria-label="Előző hónap"
+                            data-i18n-attr="aria-label:prev_month"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+                        <button type="button" id="kovetkezo-honap-btn" class="naptar-lapozo" aria-label="Következő hónap"
+                            data-i18n-attr="aria-label:next_month"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+                    </div>
 
-            <div id="naptar-rács" class="naptar-racs"></div>
+                    <div class="naptar-napok-fejlec">
+                        <span data-i18n="monday">H</span><span data-i18n="tuesday">K</span><span
+                            data-i18n="wednesday">Sze</span><span data-i18n="thursday">Cs</span><span
+                            data-i18n="friday">P</span><span data-i18n="saturday">Szo</span><span data-i18n="sunday">V</span>
+                    </div>
+
+                    <div id="naptar-rács" class="naptar-racs"></div>
+
+                    <section class="naptar-nap-reszletek" aria-labelledby="naptar-nap-cim">
+                        <h4 id="naptar-nap-cim" class="naptar-nap-cim"></h4>
+                        <div id="naptar-nap-lista" class="naptar-esemeny-lista"></div>
+                        <button type="button" id="naptar-nap-uj" class="naptar-uj-gomb" data-i18n="add_event_this_day">+ Esemény erre a napra</button>
+                    </section>
+                </div>
+
+                <!-- Lista nézet: a mai és a későbbi események hónaponként -->
+                <div id="naptar-lista-nezet" class="naptar-lista-nezet" hidden>
+                    <div id="naptar-lista" class="naptar-lista"></div>
+                    <button type="button" id="naptar-lista-uj" class="naptar-uj-gomb" data-i18n="new_event_btn">+ Új esemény</button>
+                </div>
+                </div>
             </div>
         </div>
 
@@ -122,20 +153,6 @@
                 </div>
 
                 <button id="ment-esemeny-btn" class="sm-btn sm-btn-save" data-i18n="save">Mentés</button>
-            </div>
-        </div>
-
-        <div id="napi-esemenyek-modal" class="sm-overlay" hidden>
-            <div class="sm-card modal-magas">
-                <div class="sm-header">
-                    <h3 id="napi-modal-cím" data-i18n="events">Események</h3>
-                    <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close"
-                        id="close-napi-esemenyek-modal" class="sm-close-btn">&times;</button>
-                </div>
-                <div id="napi-esemenyek-lista" class="napi-lista">
-                </div>
-                <button id="napi-uj-esemeny-btn" class="sm-btn sm-btn-save" data-i18n="new_event_this_day">Új esemény
-                    ezen a napon</button>
             </div>
         </div>
 

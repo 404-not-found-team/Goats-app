@@ -41,19 +41,6 @@
     margin-top: auto;
 }
 
-#napi-esemenyek-modal .sm-card {
-    justify-content: flex-start;
-}
-
-#napi-esemenyek-lista {
-    margin-top: 10px;
-    margin-bottom: 0;
-}
-
-#napi-uj-esemeny-btn {
-    margin-top: auto;
-}
-
 #esemeny-reszletek-modal .sm-card {
     justify-content: flex-start;
 }

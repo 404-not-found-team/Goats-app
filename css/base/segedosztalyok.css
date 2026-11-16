@@ -27,7 +27,6 @@
 /* Elrendezés */
 .gomb-sor { display: flex; gap: 10px; margin-top: 10px; }
 .sm-fejlec-sor { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-.napi-lista { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; max-height: 300px; overflow-y: auto; }
 .modal-magas { max-height: 80vh; }
 .auth-kartya { max-width: 420px; text-align: center; padding: 25px; }
 .elvalaszto-szoveg { margin: 15px 0; color: var(--text-secondary); font-size: var(--fs-sm); }
@@ -104,20 +103,6 @@
 .meta-szoveg { font-size: var(--fs-xs); opacity: 0.6; margin-top: 4px; }
 .ures-tartozas { font-style: italic; opacity: 0.5; text-align: center; margin-top: 40px; }
 
-/* Naptár: napi esemény sor */
-.naptar-esemeny-sor {
-    background: var(--inner-bg);
-    border: 1px solid var(--border-color);
-    padding: 10px 14px;
-    border-radius: 8px;
-    color: var(--text-primary);
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-}
-.szerkesztes-jel { font-size: var(--fs-xs); color: var(--accent-text); }
 
 /* Ranglista: koktél-összetevők */
 .koktel-sor { display: flex; justify-content: space-between; padding: 6px 0; font-size: var(--fs-sm); }
