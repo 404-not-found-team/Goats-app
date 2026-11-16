@@ -2,14 +2,14 @@
 // (a kártya data-theme attribútumot kap, a színeket a css/base/valtozok.css adja; css/elemek/valaszto-kartyak.css).
 // A téma helyben (localStorage: goats_theme) tárolódik; az alapértelmezett a js/segedek/tema.js-ben van.
 
-const ALAP_TEMA = 'discord-purple';
+const ALAP_TEMA = 'deep-purple';
 
 const temak = () => [
-  { id: 'discord-purple', name: tr('theme_purple', 'Mélylila') },
+  { id: 'deep-purple', name: tr('theme_purple', 'Mélylila') },
   { id: 'dark', name: tr('theme_dark', 'Sötét') },
   { id: 'light', name: tr('theme_light', 'Világos') },
-  { id: 'discord-brown', name: tr('theme_brown', 'Barna') },
-  { id: 'cyberpunk', name: tr('theme_neon', 'Neon') },
+  { id: 'brown', name: tr('theme_brown', 'Barna') },
+  { id: 'neon', name: tr('theme_neon', 'Neon') },
 ];
 
 function aktualisTema() {

@@ -35,7 +35,7 @@
     --install-btn-shadow-hover: 0 6px 16px rgba(99, 102, 241, 0.5);
 }
 
-[data-theme="discord-brown"] {
+[data-theme="brown"] {
     --bg-color: #1f1b18;
     --bg-gradient: linear-gradient(135deg, #2e1c14 0%, #120d0a 100%);
     --card-bg: rgba(43, 37, 34, 0.85);
@@ -60,7 +60,7 @@
     --install-btn-shadow-hover: 0 6px 16px rgba(217, 119, 6, 0.5);
 }
 
-[data-theme="discord-purple"] {
+[data-theme="deep-purple"] {
     --bg-color: #181528;
     --bg-gradient: linear-gradient(135deg, #2d1f47 0%, #0f0c1b 100%);
     --card-bg: rgba(35, 31, 58, 0.85);
@@ -85,7 +85,7 @@
     --install-btn-shadow-hover: 0 6px 16px rgba(139, 92, 246, 0.5);
 }
 
-[data-theme="cyberpunk"] {
+[data-theme="neon"] {
     --bg-color: #0d0f18;
     --bg-gradient: linear-gradient(135deg, #1f092b 0%, #081226 100%);
     --card-bg: rgba(21, 24, 40, 0.85);
