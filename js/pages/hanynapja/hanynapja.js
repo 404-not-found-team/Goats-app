@@ -28,6 +28,7 @@ async function betoltes() {
 
     if (!group) {
         document.getElementById('hn-uj')?.setAttribute('hidden', '');
+        document.getElementById('hn-uj-nyito')?.setAttribute('hidden', '');
         uzenet(sajatDoboz, tr('err_join_group_first', 'Előbb csatlakozz egy csoporthoz!'));
         return;
     }
@@ -109,6 +110,8 @@ async function felvetel(e) {
     }
     e.target.reset();
     document.getElementById('hn-datum').value = maiDatum();
+    // jóváhagyásra küldött javaslatnál nyitva marad, hogy látszódjon az üzenet
+    if (sablon.jovahagyva) ujModalZar();
     allapot(!sablon.jovahagyva
         ? tr('hn_suggestion_sent', 'Elküldve jóváhagyásra. A számlálód már megy!')
         : '');
@@ -145,6 +148,44 @@ async function torles(h) {
     await betoltes();
 }
 
+// ---------- Telefonos modal az új számláló űrlapjához ----------
+// Gépen az űrlap a fejlécben van; telefonon csak a "Hozzáadás" gomb látszik, és az nyitja meg.
+
+const TELEFON = window.matchMedia('(max-width: 600px)');
+
+function ujModalNyit() {
+    const hatter = document.getElementById('hn-uj-hatter');
+    hatter.classList.add('nyitva');
+    hatter.setAttribute('role', 'dialog');
+    hatter.setAttribute('aria-modal', 'true');
+    hatter.setAttribute('aria-labelledby', 'hn-uj-cim');
+    document.getElementById('hn-uj-nyito').setAttribute('aria-expanded', 'true');
+    document.getElementById('hn-sablon').focus();
+}
+
+function ujModalZar() {
+    const hatter = document.getElementById('hn-uj-hatter');
+    if (!hatter?.classList.contains('nyitva')) return;
+    hatter.classList.remove('nyitva');
+    hatter.removeAttribute('role');
+    hatter.removeAttribute('aria-modal');
+    hatter.removeAttribute('aria-labelledby');
+    const nyito = document.getElementById('hn-uj-nyito');
+    nyito.setAttribute('aria-expanded', 'false');
+    if (TELEFON.matches) nyito.focus();
+}
+
+function ujModalBekotese() {
+    document.getElementById('hn-uj-nyito')?.addEventListener('click', ujModalNyit);
+    document.getElementById('hn-uj-bezar')?.addEventListener('click', ujModalZar);
+    // a sötét háttérre koppintás is bezárja (az űrlapon belüli koppintás nem)
+    document.getElementById('hn-uj-hatter')?.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) ujModalZar();
+    });
+    // ha közben gépi szélességre vált az ablak, ne maradjon modal-állapotban
+    TELEFON.addEventListener('change', () => { if (!TELEFON.matches) ujModalZar(); });
+}
+
 // ---------- Indítás ----------
 
 async function indit() {
@@ -156,11 +197,15 @@ async function indit() {
     }
     document.getElementById('hn-uj')?.addEventListener('submit', felvetel);
     document.getElementById('hn-sablon')?.addEventListener('change', ujJavaslatMezo);
+    ujModalBekotese();
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.hn-menu')) menukBezarasa();
     });
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') menukBezarasa();
+        if (e.key === 'Escape') {
+            menukBezarasa();
+            ujModalZar();
+        }
     });
     await betoltes();
 }

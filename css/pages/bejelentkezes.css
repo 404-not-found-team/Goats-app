@@ -11,7 +11,7 @@
     max-width: 650px;
     margin: 0 auto;
     width: 100%;
-    grid-column: 1; 
+    grid-column: 1;
     box-sizing: border-box;
 }
 
@@ -132,7 +132,8 @@
 }
 
 .naptar-fejlec h2 {
-    min-height: 1.3em; /* a hónap neve JS-ből kerül be: addig se ugorjon az elrendezés */
+    min-height: 1.3em;
+    /* a hónap neve JS-ből kerül be: addig se ugorjon az elrendezés */
     font-size: var(--fs-lg);
     color: var(--text-primary);
 }
@@ -261,7 +262,7 @@
     }
 
     /* a közelgő események a naptár előtt jelennek meg (a HTML-ben utána van, az asztali elrendezés miatt) */
-    .hatter > .naptar-kontener {
+    .hatter>.naptar-kontener {
         order: 1;
     }
 
@@ -283,11 +284,11 @@
         cursor: pointer;
     }
 
-    .naptar-nyito > span {
+    .naptar-nyito>span {
         flex: 1;
     }
 
-    .naptar-nyito > .fa-calendar-days {
+    .naptar-nyito>.fa-calendar-days {
         color: var(--accent-text);
     }
 
@@ -386,16 +387,18 @@
         display: block;
     }
 
-        .jobb-sav {
-    display: grid;
-    grid-template-columns: 1fr  ; /* Bal oldal (tartalom): rugalmas (1fr), Jobb oldal (menü): fix 200px */
-    gap: 20px;
-    min-height: 100vh;
-    margin: 0;
-    box-sizing: border-box;
-    position: relative;
+    .jobb-sav {
+        display: grid;
+        grid-template-columns: 1fr;
+        /* Bal oldal (tartalom): rugalmas (1fr), Jobb oldal (menü): fix 200px */
+        gap: 20px;
+        min-height: 100vh;
+        margin: 0;
+        box-sizing: border-box;
+        position: relative;
+    }
 }
-}
+
 /* --------------------------------------------------------------------------
    5. ASZTALI FŐOLDAL (>=1001px): kiemelt képsáv, alatta a naptár és a
       "Közelgő események" kártya egymás mellett, a fejléc szélességében.
@@ -553,8 +556,9 @@
 }
 
 @media screen and (min-width: 1001px) {
+
     /* (0,2,0): erősebb a .hatter alapszabályánál (max. 650px, középen) */
-    .jobb-sav > .hatter {
+    .jobb-sav>.hatter {
         max-width: none;
         width: 100%;
         margin: 0;
@@ -565,7 +569,7 @@
     }
 
     /* Kiemelt képsáv a teljes szélességben */
-    .hatter > .kepek {
+    .hatter>.kepek {
         grid-column: 1 / -1;
         height: 330px;
         padding: 0;
@@ -617,6 +621,10 @@
     flex-direction: column;
     gap: 12px;
     min-width: 0;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
 }
 
 .fo-hn[hidden] {
@@ -669,7 +677,7 @@
     padding: 14px;
     border-radius: 16px;
     border: 1px solid var(--border-color);
-    background: var(--card-bg);
+    background: var(--inner-bg);
     color: inherit;
     text-decoration: none;
     box-sizing: border-box;
@@ -721,7 +729,7 @@
 }
 
 @media screen and (min-width: 1001px) {
-    .hatter > .fo-hn {
+    .hatter>.fo-hn {
         grid-column: 1 / -1;
     }
 
