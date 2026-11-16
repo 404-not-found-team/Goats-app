@@ -1,41 +1,10 @@
-// Hány napja: a saját számlálóid és a csoporttársak megosztott számlálói (public.hanynapja).
-// Minden számlálót a csoport is lát (lathato_csoportnak = true, ez az alapérték); a jogosultságot
-// az RLS dönti el: a sajátod módosítható, a csoporttársakéi csak olvashatók.
-import { client } from '../supabase-client.js';
-import { ready, getState } from '../hitelesites.js';
-import { hibaVan } from '../adat/hibakezeles.js';
+// Hány napja – megjelenítés: a DOM-elemek felépítése és kirajzolása. Az adatbázist nem ismeri;
+// ha a felhasználó csinál valamit (újrakezdés, törlés), a vezérlőtől kapott callbacket hívja meg:
+//   muveletek = { ujrakezdeskor(h, datum), torleskor(h) }
+// A sablonok listáját is a vezérlő adja át (a nevek és a "Jóváhagyásra vár" jelvény ehhez kell).
+import { UJ_JAVASLAT, sablonNev, szamlaloNev, maiDatum, napokOta, kulcs } from './hanynapja-seged.js';
 
-// a választható sablonok: a jóváhagyottak + a saját függő javaslataid (az RLS csak ezeket adja vissza)
-let sablonok = [];
-const UJ_JAVASLAT = '__uj';
-
-// A sablon neve a választott nyelven (ha nincs fordítás, a magyar)
-function sablonNev(x) {
-    const ny = window.goatsNyelv?.aktualis?.();
-    return (ny === 'en' ? x.nev_en : ny === 'de' ? x.nev_de : null) || x.nev;
-}
-
-// Egy számláló megjelenített neve: sablonosnál a sablon (lefordított) neve, különben a beírt szöveg
-function szamlaloNev(h) {
-    const x = h.sablon_id ? sablonok.find(s => s.id === h.sablon_id) : null;
-    return x ? sablonNev(x) : h.mit;
-}
-
-// A mai nap helyi idő szerint, ÉÉÉÉ-HH-NN formában (a "date" oszlop és a dátummező is ezt várja)
-function maiDatum() {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
-// Hány nap telt el az "utoljara" dátum óta, helyi idő szerint
-function napokOta(datum) {
-    const ma = new Date();
-    ma.setHours(0, 0, 0, 0);
-    const akkor = new Date(`${datum}T00:00:00`);
-    return Math.max(0, Math.round((ma - akkor) / 86400000));
-}
-
-function allapot(szoveg, hiba = false) {
+export function allapot(szoveg, hiba = false) {
     const el = document.getElementById('hn-allapot');
     if (!el) return;
     el.textContent = szoveg || '';
@@ -53,7 +22,7 @@ function gomb(szoveg, osztaly, muvelet) {
 
 // Egy saját számláló kártyája: felül a neve, középen nagy számmal a napok, alatta a rekord és a gombok.
 // A beírt szöveg textContent-tel kerül ki (nem HTML-ként).
-function kartya(h) {
+function kartya(h, sablonok, muveletek) {
     const napok = napokOta(h.utoljara);
 
     const elem = document.createElement('div');
@@ -61,7 +30,7 @@ function kartya(h) {
 
     const cim = document.createElement('h3');
     cim.className = 'hn-cim';
-    cim.textContent = szamlaloNev(h);
+    cim.textContent = szamlaloNev(h, sablonok);
 
     const szamSor = document.createElement('p');
     szamSor.className = 'hn-napok';
@@ -91,7 +60,7 @@ function kartya(h) {
         jelveny.textContent = tr('pending_approval', 'Jóváhagyásra vár');
         cimDoboz.append(jelveny);
     }
-    fejlec.append(cimDoboz, muveletMenu(h));
+    fejlec.append(cimDoboz, muveletMenu(h, muveletek));
 
     const gombok = document.createElement('div');
     gombok.className = 'hn-gombok';
@@ -103,7 +72,7 @@ function kartya(h) {
     });
     masikNap.setAttribute('aria-expanded', 'false');
     gombok.append(
-        gomb(tr('hn_reset', 'Ma csináltam'), 'hn-gomb-ujra', () => ujrakezdes(h, maiDatum())),
+        gomb(tr('hn_reset', 'Ma csináltam'), 'hn-gomb-ujra', () => muveletek.ujrakezdeskor(h, maiDatum())),
         masikNap,
     );
 
@@ -123,7 +92,7 @@ function kartya(h) {
     cimke.append(cimkeSzoveg, datumMezo);
     panel.append(
         cimke,
-        gomb(tr('save', 'Mentés'), 'hn-gomb-fo', () => ujrakezdes(h, datumMezo.value)),
+        gomb(tr('save', 'Mentés'), 'hn-gomb-fo', () => muveletek.ujrakezdeskor(h, datumMezo.value)),
     );
 
     elem.append(fejlec, szamSor, rekord, gombok, panel);
@@ -131,7 +100,7 @@ function kartya(h) {
 }
 
 // ⋮ menü (mint a Képek oldalon): törlés
-function muveletMenu(h) {
+function muveletMenu(h, muveletek) {
     const menu = document.createElement('div');
     menu.className = 'hn-menu';
     const gomb = document.createElement('button');
@@ -160,7 +129,7 @@ function muveletMenu(h) {
         return b;
     };
     lista.append(
-        pont(tr('delete', 'Törlés'), 'veszelyes', () => torles(h)),
+        pont(tr('delete', 'Törlés'), 'veszelyes', () => muveletek.torleskor(h)),
     );
 
     gomb.addEventListener('click', (e) => {
@@ -175,14 +144,9 @@ function muveletMenu(h) {
     return menu;
 }
 
-function menukBezarasa() {
+export function menukBezarasa() {
     document.querySelectorAll('.hn-menu-lista').forEach(l => { l.hidden = true; });
     document.querySelectorAll('.hn-menu-gomb').forEach(g => g.setAttribute('aria-expanded', 'false'));
-}
-
-// Két ÉÉÉÉ-HH-NN dátum között eltelt napok (b - a)
-function napokKozott(a, b) {
-    return Math.round((new Date(`${b}T00:00:00`) - new Date(`${a}T00:00:00`)) / 86400000);
 }
 
 // ---------- Csoport toplista ----------
@@ -190,8 +154,6 @@ function napokKozott(a, b) {
 // sorozat hossza szerint, alatta a saját helyezésed. A sajátod akkor is beleszámít, ha nem osztottad meg
 // (azt csak te látod); a többiek közül csak a megosztottak látszanak (RLS). Csak ott van toplista, ahol
 // legalább ketten vagytok.
-const kulcs = (mit) => String(mit || '').trim().toLocaleLowerCase();
-
 function toplistaKartya(cim, sorok, sajatId, nev) {
     // azonos napszám azonos helyezés (1, 2, 2, 4 ...)
     const rendezett = sorok
@@ -241,7 +203,7 @@ function toplistaKartya(cim, sorok, sajatId, nev) {
     return elem;
 }
 
-function kirajzolToplista(sorok, sajatId, members) {
+export function kirajzolToplista(sorok, sajatId, members, sablonok) {
     const szakasz = document.getElementById('hn-toplista-szakasz');
     const doboz = document.getElementById('hn-toplista');
     if (!szakasz || !doboz) return;
@@ -258,60 +220,28 @@ function kirajzolToplista(sorok, sajatId, members) {
     const kartyak = [...csoportok.values()]
         .filter(lista => new Set(lista.map(h => h.user_id)).size >= 2)
         .sort((a, b) => (b.some(h => h.user_id === sajatId) - a.some(h => h.user_id === sajatId)) || (b.length - a.length))
-        .map(lista => toplistaKartya(szamlaloNev(lista.find(h => h.user_id === sajatId) || lista[0]), lista, sajatId, nev));
+        .map(lista => toplistaKartya(szamlaloNev(lista.find(h => h.user_id === sajatId) || lista[0], sablonok), lista, sajatId, nev));
 
     szakasz.hidden = kartyak.length === 0;
     doboz.replaceChildren(...kartyak);
 }
 
-function uzenet(doboz, szoveg) {
+export function uzenet(doboz, szoveg) {
     const p = document.createElement('p');
     p.className = 'hn-ures';
     p.textContent = szoveg;
     doboz.replaceChildren(p);
 }
 
-async function betoltes() {
-    const { group, user, members } = getState();
-    const sajatDoboz = document.getElementById('fuggosegek');
-    if (!sajatDoboz) return;
-
-    if (!group) {
-        document.getElementById('hn-uj')?.setAttribute('hidden', '');
-        uzenet(sajatDoboz, tr('err_join_group_first', 'Előbb csatlakozz egy csoporthoz!'));
-        return;
-    }
-
-    const [{ data: hanynapja, error }, { data: sablonSorok, error: sablonHiba }] = await Promise.all([
-        client.from('hanynapja')
-            .select('id, user_id, mit, utoljara, rekord, lathato_csoportnak, sablon_id')
-            .eq('group_id', group.id)
-            .order('letrehozva', { ascending: false })
-            .limit(50),
-        client.from('hanynapja_sablonok')
-            .select('id, nev, nev_en, nev_de, jovahagyva, javasolta_id')
-            .order('nev'),
-    ]);
-
-    hibaVan(sablonHiba, 'a sablonok betöltésekor');
-    sablonok = sablonSorok || [];
-
-    if (hibaVan(error, 'a Hány napja adatainak betöltésekor')) { uzenet(sajatDoboz, tr('err_operation', 'Hiba a művelet során.')); return; }
-
-    const sajat = hanynapja.filter(h => h.user_id === user?.id);
-    sablonValasztoFrissites(sajat);
-
-    if (sajat.length) sajatDoboz.replaceChildren(...sajat.map(h => kartya(h)));
-    else uzenet(sajatDoboz, tr('hn_none_yet', 'Még nincs számlálód. Vegyél fel egyet fent!'));
-
-    kirajzolToplista(hanynapja, user?.id, members);
+// A saját számlálók kártyái a dobozba; ha nincs egy sem, egy üzenet
+export function sajatKartyakKirajzolasa(doboz, sajat, sablonok, muveletek) {
+    if (sajat.length) doboz.replaceChildren(...sajat.map(h => kartya(h, sablonok, muveletek)));
+    else uzenet(doboz, tr('hn_none_yet', 'Még nincs számlálód. Vegyél fel egyet fent!'));
 }
-
-// ---------- Műveletek ----------
 
 // A felvételi lista: a jóváhagyott sablonok (és a saját függő javaslataid), amik közül még nincs számlálód,
 // a végén "+ Új javaslat..." - ekkor jelenik meg a szövegmező
-function sablonValasztoFrissites(sajat) {
+export function sablonValasztoFrissites(sajat, sablonok) {
     const valaszto = document.getElementById('hn-sablon');
     if (!valaszto) return;
     const elozo = valaszto.value;
@@ -336,7 +266,7 @@ function sablonValasztoFrissites(sajat) {
     ujJavaslatMezo();
 }
 
-function ujJavaslatMezo() {
+export function ujJavaslatMezo() {
     const uj = document.getElementById('hn-sablon')?.value === UJ_JAVASLAT;
     const mezo = document.getElementById('hn-mit');
     if (!mezo) return;
@@ -344,126 +274,3 @@ function ujJavaslatMezo() {
     document.getElementById('hn-javaslat-tipp').hidden = !uj;
     if (uj) mezo.focus();
 }
-
-async function felvetel(e) {
-    e.preventDefault();
-    const { group } = getState();
-    if (!group) return;
-    const valaszto = document.getElementById('hn-sablon');
-    const mezo = document.getElementById('hn-mit');
-    const datum = document.getElementById('hn-datum').value || maiDatum();
-    if (!valaszto.value) {
-        allapot(tr('hn_err_pick', 'Válaszd ki, mit számoljon.'), true);
-        valaszto.focus();
-        return;
-    }
-    if (datum > maiDatum()) {
-        allapot(tr('hn_err_future', 'A dátum nem lehet a jövőben.'), true);
-        return;
-    }
-
-    let sablon = sablonok.find(x => x.id === valaszto.value);
-    allapot(tr('saving', 'Mentés...'));
-
-    // új javaslat: előbb a sablon (jóváhagyásig csak nálad látszik), aztán a számláló
-    if (valaszto.value === UJ_JAVASLAT) {
-        const nev = mezo.value.trim();
-        if (nev.length < 1 || nev.length > 40) {
-            allapot(tr('hn_err_name', 'Írd be, mit számoljon (legfeljebb 40 karakter).'), true);
-            mezo.focus();
-            return;
-        }
-        const letezo = sablonok.find(x => [x.nev, x.nev_en, x.nev_de].some(n => n && kulcs(n) === kulcs(nev)));
-        if (letezo) {
-            sablon = letezo;
-        } else {
-            const { data, error } = await client.from('hanynapja_sablonok')
-                .insert({ nev }).select('id, nev, nev_en, nev_de, jovahagyva, javasolta_id').single();
-            if (hibaVan(error, 'a javaslat beküldésekor')) {
-                allapot(error.code === '23505'
-                    ? tr('hn_err_suggested', 'Ezt már valaki javasolta, jóváhagyás után választhatod.')
-                    : tr('err_saving', 'Hiba történt a mentéskor!'), true);
-                return;
-            }
-
-            sablon = data;
-            sablonok.push(data);
-        }
-    }
-
-    const { error } = await client.from('hanynapja').insert({
-        mit: sablon.nev,
-        sablon_id: sablon.id,
-        utoljara: datum,
-        group_id: group.id,
-        lathato_csoportnak: true,
-    });
-    if (hibaVan(error, 'a számláló felvételekor')) {
-        allapot(error.code === '23505'
-            ? tr('hn_err_exists', 'Már van ilyen számlálód.')
-            : tr('err_saving', 'Hiba történt a mentéskor!'), true);
-        return;
-    }
-    e.target.reset();
-    document.getElementById('hn-datum').value = maiDatum();
-    allapot(!sablon.jovahagyva
-        ? tr('hn_suggestion_sent', 'Elküldve jóváhagyásra. A számlálód már megy!')
-        : '');
-    await betoltes();
-}
-
-// Újrakezdés: a sorozat a megadott napon (alapból ma) indul újra. Ha a dátum későbbi az eddigi kezdetnél,
-// a közte eltelt napok a rekordba kerülnek, ha az a leghosszabb; ha korábbi, csak a kezdőnapot javítjuk.
-async function ujrakezdes(h, datum) {
-    const ma = maiDatum();
-    if (!datum || datum > ma) {
-        allapot(tr('hn_err_future', 'A dátum nem lehet a jövőben.'), true);
-        return;
-    }
-    const napok = Math.max(0, napokKozott(h.utoljara, datum));
-    const kerdes = datum === ma
-        ? tr('hn_confirm_reset', 'Újrakezded a(z) „{name}” számlálót? A mostani {n} nap a rekordba kerül, ha az a leghosszabb.', { name: szamlaloNev(h), n: napok })
-        : tr('hn_confirm_reset_date', 'A(z) „{name}” számláló {date} napjától indul újra. Rendben?', { name: szamlaloNev(h), date: datum.replaceAll('-', '. ') + '.' });
-    if (!confirm(kerdes)) return;
-    const { error } = await client.from('hanynapja')
-        .update({ utoljara: datum, rekord: Math.max(h.rekord, napok) })
-        .eq('id', h.id);
-    if (hibaVan(error, 'az újrakezdéskor')) {
-        allapot(tr('err_saving', 'Hiba történt a mentéskor!'), true);
-        return;
-    }
-    allapot('');
-    await betoltes();
-}
-
-async function torles(h) {
-    if (!confirm(tr('hn_confirm_delete', 'Biztosan törlöd a(z) „{name}” számlálót?', { name: szamlaloNev(h) }))) return;
-    const { error } = await client.from('hanynapja').delete().eq('id', h.id);
-    if (hibaVan(error, 'a törléskor')) {
-        allapot(tr('err_deleting', 'Hiba történt a törlés során!'), true);
-        return;
-    }
-    await betoltes();
-}
-
-// ---------- Indítás ----------
-
-async function indit() {
-    await ready;
-    const datum = document.getElementById('hn-datum');
-    if (datum) {
-        datum.value = maiDatum();
-        datum.max = maiDatum();
-    }
-    document.getElementById('hn-uj')?.addEventListener('submit', felvetel);
-    document.getElementById('hn-sablon')?.addEventListener('change', ujJavaslatMezo);
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.hn-menu')) menukBezarasa();
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') menukBezarasa();
-    });
-    await betoltes();
-}
-
-indit();

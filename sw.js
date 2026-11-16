@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v78';
+const CACHE_NEV = 'goats-v80';
 
 // Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
 // indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
@@ -88,7 +88,6 @@ const KOZOS_ELEMEK = [
     'js/elemek/beallitasok/tema-valaszto.js',
     'js/elemek/beallitasok/tos-ujraelfogadas.js',
     'js/elemek/ertesites-felajanlas.js',
-    'js/elemek/fooldal-hanynapja.js',
     'js/elemek/galeria.js',
     'js/elemek/kep-kivago.js',
     'js/elemek/naptar.js',
@@ -137,7 +136,11 @@ const KEPEK = [
 const HANYNAPJA = [
     'oldalak/hanynapja.html',
     'css/pages/hanynapja.css',
-    'js/pages/hanynapja.js',
+    'js/pages/hanynapja/hanynapja.js',
+    'js/pages/hanynapja/hanynapja-adat.js',
+    'js/pages/hanynapja/hanynapja-megjelenites.js',
+    'js/pages/hanynapja/hanynapja-seged.js',
+    'js/pages/hanynapja/hanynapja-fooldal.js',
 ];
 
 const GOATSGAME = [

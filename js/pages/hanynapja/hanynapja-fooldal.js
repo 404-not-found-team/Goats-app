@@ -1,18 +1,11 @@
 // Főoldal: a saját "Hány napja" számlálóid röviden a képek alatt (a részletek a hanynapja.html-en).
 // Az Admin → Globális kapcsolók "Hány napja" kapcsolójával az oldallal együtt ez is kikapcsolható.
 // Betöltéskor előbb az utoljára látott lista jelenik meg (js/segedek/adat-gyorsitotar.js), a friss a háttérben érkezik.
-import { client } from '../supabase-client.js';
-import { ready, getState, oldalEngedelyezett } from '../hitelesites.js';
-import { betolt } from '../segedek/adat-gyorsitotar.js';
-import { ut } from '../segedek/utvonal.js';
-import { hibaVan } from '../adat/hibakezeles.js';
-
-// Hány nap telt el az "utoljara" dátum (ÉÉÉÉ-HH-NN) óta, helyi idő szerint
-function napokOta(datum) {
-    const ma = new Date();
-    ma.setHours(0, 0, 0, 0);
-    return Math.max(0, Math.round((ma - new Date(`${datum}T00:00:00`)) / 86400000));
-}
+import { ready, getState, oldalEngedelyezett } from '../../hitelesites.js';
+import { betolt } from '../../segedek/adat-gyorsitotar.js';
+import { ut } from '../../segedek/utvonal.js';
+import { napokOta, sablonNev } from './hanynapja-seged.js';
+import { sajatSzamlalokLekerese } from './hanynapja-adat.js';
 
 // Egy számláló csempéje: név, nagy szám, "napja"; rákattintva a Hány napja oldalra visz
 function csempe(h) {
@@ -22,10 +15,7 @@ function csempe(h) {
 
     const nev = document.createElement('span');
     nev.className = 'fo-hn-nev';
-    // sablonos számlálónál a sablon neve a választott nyelven (ha nincs fordítás, a magyar)
-    const ny = window.goatsNyelv?.aktualis?.();
-    const x = h.sablon;
-    nev.textContent = (x && ((ny === 'en' ? x.nev_en : ny === 'de' ? x.nev_de : null) || x.nev)) || h.mit;
+    nev.textContent = (h.sablon && sablonNev(h.sablon)) || h.mit;
 
     const szam = document.createElement('span');
     szam.className = 'fo-hn-szam';
@@ -62,17 +52,7 @@ async function indit() {
     // csoport nélkül, vagy ha az admin kikapcsolta a Hány napja oldalt (oldal_hanynapja), nem jelenik meg
     if (!user || !group || !oldalEngedelyezett('hanynapja')) return;
 
-    await betolt('fooldal_hanynapja', async () => {
-        const { data, error } = await client
-            .from('hanynapja')
-            .select('id, mit, utoljara, sablon:hanynapja_sablonok(nev, nev_en, nev_de)')
-            .eq('group_id', group.id)
-            .eq('user_id', user.id)
-            .order('letrehozva', { ascending: false })
-            .limit(12);
-        if (hibaVan(error, 'a Hány napja számlálók betöltésekor')) return undefined;
-        return data || [];
-    }, kirajzol);
+    await betolt('fooldal_hanynapja', () => sajatSzamlalokLekerese(group.id, user.id), kirajzol);
 }
 
 indit();
