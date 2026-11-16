@@ -24,7 +24,7 @@
 
     <script type="module" src="../js/main.js"></script>
     <script src="../js/segedek/szin-osztaly.js"></script>
-    <script src="../js/pages/goatsgame.js"></script>
+    <script type="module" src="../js/pages/goatsgame/goatsgame.js"></script>
     <script src="../js/segedek/html-esemenyek.js" defer></script>
 </head>
 
@@ -59,7 +59,7 @@
         <div class="jatekok" id="jatekokKontener">
             <div class="jatek-fejlec">
                 <h2 data-i18n="games">Játékok</h2>
-                <button class="gomb-uj-jatek" data-katt="openUjJatekModal" data-i18n="add_new_game">+ Új játék
+                <button type="button" id="ujJatekGomb" class="gomb-uj-jatek" data-i18n="add_new_game">+ Új játék
                     felvétele</button>
             </div>
 
@@ -73,7 +73,7 @@
             <div class="goatsgame-modal-header">
                 <h3 data-i18n="add_new_game_modal_title">Új játék hozzáadása</h3>
                 <button type="button" aria-label="Bezárás" data-i18n-attr="aria-label:close"
-                    class="goatsgame-modal-close" data-katt="closeUjJatekModal">&times;</button>
+                    id="ujJatekBezaras" class="goatsgame-modal-close">&times;</button>
             </div>
             <div class="goatsgame-modal-body">
                 <div class="input-group">
@@ -87,8 +87,8 @@
                 </div>
             </div>
             <div class="goatsgame-modal-footer">
-                <button class="goatsgame-btn-cancel" data-katt="closeUjJatekModal" data-i18n="back">Mégse</button>
-                <button class="goatsgame-btn-save" data-katt="mentUjJatek" data-i18n="add">Hozzáadás</button>
+                <button type="button" id="ujJatekMegse" class="goatsgame-btn-cancel" data-i18n="back">Mégse</button>
+                <button type="button" id="ujJatekMentes" class="goatsgame-btn-save" data-i18n="add">Hozzáadás</button>
             </div>
         </div>
     </div>
