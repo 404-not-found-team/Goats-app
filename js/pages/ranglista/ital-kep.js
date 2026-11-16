@@ -14,6 +14,14 @@
     const GYOKER = new URL('../../../', document.currentScript.src);
     const abszolut = (ut) => new URL(ut, GYOKER).href;
 
+    // A rétegképek a listákban kicsinyített (256x256) példányból jönnek: img/formak-kicsi/, img/mintak-kicsi/
+    // (eszkozok/kepek_kicsinyitese.py készíti az eredetikből). A nagy nézet (#modal-kep) az 512-es eredetit kapja.
+    // A service worker ezeket tartósan tárolja, és nem kéri le újra: ha egy képet átrajzolsz, futtasd újra a
+    // kicsinyítést, és emeld eggyel a KEP_VERZIO-t, hogy mindenkinél az új kép töltődjön be.
+    const KEP_VERZIO = 1;
+    const kepUt = (mappa, fajl, nagy) =>
+        abszolut(`img/${mappa}${nagy ? '' : '-kicsi'}/${fajl}.webp?v=${KEP_VERZIO}`);
+
     const MARKA_MINTAK = [
     ['Hell ', 'hell'],
     ['Monster Energy', 'monster-energy'],
@@ -233,12 +241,13 @@
         if (!ismertOsztalyok.has(nev)) {
             ismertOsztalyok.add(nev);
             const sl = stiluslap();
-            sl.insertRule(`.${nev} {
-                --kep-szin: url("${abszolut(`img/formak/${forma}-szin.webp`)}");
-                --kep-sav: url("${abszolut(`img/formak/${uvegForma(forma)}-sav.webp`)}");
-                --kep-reszletek: url("${abszolut(`img/formak/${forma}-reszletek.webp`)}");
-                --kep-logo: url("${abszolut(`img/formak/${uvegForma(forma)}-logo.webp`)}");
-            }`, sl.cssRules.length);
+            const valtozok = (nagy) => `
+                --kep-szin: url("${kepUt('formak', `${forma}-szin`, nagy)}");
+                --kep-sav: url("${kepUt('formak', `${uvegForma(forma)}-sav`, nagy)}");
+                --kep-reszletek: url("${kepUt('formak', `${forma}-reszletek`, nagy)}");
+                --kep-logo: url("${kepUt('formak', `${uvegForma(forma)}-logo`, nagy)}");`;
+            sl.insertRule(`.${nev} {${valtozok(false)} }`, sl.cssRules.length);
+            sl.insertRule(`#modal-kep.${nev} {${valtozok(true)} }`, sl.cssRules.length);
         }
         return nev;
     }
@@ -248,9 +257,10 @@
         if (!ismertOsztalyok.has(nev)) {
             ismertOsztalyok.add(nev);
             const sl = stiluslap();
-            const fix = MINTA_FIX.has(minta)
-                ? ` --kep-minta-fix: url("${abszolut(`img/mintak/${forma}-${minta}-fix.webp`)}");` : '';
-            sl.insertRule(`.${nev} { --kep-minta: url("${abszolut(`img/mintak/${forma}-${minta}.webp`)}");${fix} }`, sl.cssRules.length);
+            const valtozok = (nagy) => ` --kep-minta: url("${kepUt('mintak', `${forma}-${minta}`, nagy)}");`
+                + (MINTA_FIX.has(minta) ? ` --kep-minta-fix: url("${kepUt('mintak', `${forma}-${minta}-fix`, nagy)}");` : '');
+            sl.insertRule(`.${nev} {${valtozok(false)} }`, sl.cssRules.length);
+            sl.insertRule(`#modal-kep .${nev} {${valtozok(true)} }`, sl.cssRules.length);
         }
         return nev;
     }
@@ -307,7 +317,7 @@
                 if (elem.id) tartalek.id = elem.id;
                 elem.replaceWith(tartalek);
             };
-            proba.src = abszolut(`img/formak/${uvegForma(ital.kep_forma)}-sav.webp`);
+            proba.src = kepUt('formak', `${uvegForma(ital.kep_forma)}-sav`, false);
             return elem;
         }
         return kepesElem(ital);

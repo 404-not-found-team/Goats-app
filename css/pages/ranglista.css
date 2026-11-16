@@ -130,6 +130,13 @@
     display: none !important;
 }
 
+/* A képernyőn kívüli kategóriákat a böngésző csak akkor rajzolja ki, amikor odagörgetsz
+   (sok színezett, többrétegű italkép esetén ez telefonon érezhetően gyorsít) */
+.forras-doboz {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px;
+}
+
 /* ==========================================================================
    3. DROPZONE ÉS ITALKÁRTYÁK
    ========================================================================== */

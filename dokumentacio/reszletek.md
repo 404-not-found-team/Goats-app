@@ -7,7 +7,7 @@ Az áttekintés: [attekintes.md](attekintes.md), a gyakori feladatok: [utmutato.
 A galéria képei a privát `kepek` Supabase Storage bucketben vannak, csoportonként a csoport azonosítójával elnevezett mappában (`<group_id>/<uuid>.webp`).
 
 **Méret és formátum**
-- A képek mindenhol négyzetben jelennek meg, ezért feltöltéskor a feltöltő kiválasztja a négyzetes kivágást (`js/elemek/kep-kivago.js`): a képet húzni lehet (egérrel, ujjal, nyilakkal), nagyítani csúszkával, görgővel vagy két ujjal. Gombok: Kihagyás (Esc), Középre, Kész; több képnél „A többit középre”. A kivágó `<canvas>`-ra rajzol, inline stílus nélkül.
+- A képek mindenhol négyzetben jelennek meg, ezért feltöltéskor a feltöltő kiválasztja a négyzetes kivágást (`js/pages/kepek/kepek-kivago.js`): a képet húzni lehet (egérrel, ujjal, nyilakkal), nagyítani csúszkával, görgővel vagy két ujjal. Gombok: Kihagyás (Esc), Középre, Kész; több képnél „A többit középre”. A kivágó `<canvas>`-ra rajzol, inline stílus nélkül.
 - Feltöltés előtt a böngésző kicsinyíti és tömöríti a képet (`js/segedek/kep-tomorites.js`, az első feltöltéskor töltődik be): a rövidebb oldal legfeljebb 360 px (a galéria 180 px-es kijelzett méretének 2×-ese), a hosszabb legfeljebb 720 px. A négyzetre vágott kép így 360×360 px, jellemzően 40–50 KB. A FELADAT12 előtti (nem négyzetes) képek maradnak, azok középre vágva jelennek meg.
 - Kimenet: WebP 0,65-ös minőséggel (ha a böngésző nem tud WebP-t kódolni, JPEG 0,6). Ha 100 KB fölött van, a minőség 0,05-ös lépésekben 0,4-ig csökken, utána a méret 10%-onként (legalább 480 px-ig). 150 KB fölött a feltöltés elmarad.
 - A bemenet legfeljebb 15 MB, csak kép; animált GIF nem tölthető fel. A HEIC-et a böngésző (vagy tartalékként a heic2any) alakítja át.
@@ -23,8 +23,8 @@ A galéria képei a privát `kepek` Supabase Storage bucketben vannak, csoporton
 - A korlátot a `storage.objects` táblán egy RESTRICTIVE INSERT policy (`kepek_csoport_korlat`) ellenőrzi a `kep_mappa_korlat_alatt()` függvénnyel; a kliens a `kep_korlat_csoportonkent()` RPC-vel kérdezi le, és elérésekor ezt írja ki: „A csoport elérte a képkorlátot, törölj régebbi képeket.”
 
 **Oldalak**
-- `kepek.html` + `js/pages/kepek.js`: a teljes rács, feltöltés, törlés, jelentés; a csempék képe csak akkor töltődik be, amikor a görgetésben láthatóvá válik (IntersectionObserver, kötegelt aláírással).
-- `app.html` + `js/elemek/galeria.js`: csak lapozás. Az „Összes kép →” link akkor látszik, ha a csoportnál a `kepek` oldal engedélyezett.
+- `kepek.html` + `js/pages/kepek/kepek.js`: a teljes rács, feltöltés, törlés, jelentés; a csempék képe csak akkor töltődik be, amikor a görgetésben láthatóvá válik (IntersectionObserver, kötegelt aláírással).
+- `app.html` + `js/pages/app/galeria.js`: csak lapozás. Az „Összes kép →” link akkor látszik, ha a csoportnál a `kepek` oldal engedélyezett.
 - A Képek oldal ki-be kapcsolása a `groups.enabled_pages` tömbben (`kepek` kulcs); új csoportnál alapból be van kapcsolva.
 
 **Jelentés és a jelentett képek másolata**
@@ -40,10 +40,13 @@ A galéria képei a privát `kepek` Supabase Storage bucketben vannak, csoporton
 - Legfeljebb 150 kép / 20 MB, a legrégebben használt törlődik (index: `localStorage` `goats_kep_cache_index`). Kijelentkezéskor az egész törlődik.
 - A service worker a Storage-kéréseket nem cache-eli, és a `goats-kepek-*` tárolót verzióváltáskor sem törli.
 
+**Italképek** (a ranglista színezett italai): `img/formak/`, `img/mintak/` (eredeti, 512×512) és a belőlük generált
+`img/formak-kicsi/`, `img/mintak-kicsi/` (256×256, a listákhoz). Működés, kicsinyítés, verziózás: [`img/README.md`](../img/README.md).
+
 ---
 
 ## ⚙️ Admin oldal és globális kapcsolók
-Az `admin.html` (`js/pages/admin.js`, `css/pages/admin.css`) csak a superadminoké (`profiles.system_role = 'superadmin'`). Session nélkül az `index.html`-re, nem superadminnak az `app.html`-re irányít (`location.replace`), az adatai addig nem töltődnek be; a profil változásakor (`onChange`) újra ellenőriz. A menüben az „Admin ⚙️” csak superadminnak látszik, a csoporttól és a kapcsolóktól függetlenül (mobilon a „Több ☰” fiókban).
+Az `admin.html` (`js/pages/admin/admin.js`, `css/pages/admin.css`) csak a superadminoké (`profiles.system_role = 'superadmin'`). Session nélkül az `index.html`-re, nem superadminnak az `app.html`-re irányít (`location.replace`), az adatai addig nem töltődnek be; a profil változásakor (`onChange`) újra ellenőriz. A menüben az „Admin ⚙️” csak superadminnak látszik, a csoporttól és a kapcsolóktól függetlenül (mobilon a „Több ☰” fiókban).
 
 **Globális kapcsolók** – az egész alkalmazásra érvényesek (nem csoportonként), a `public.app_kapcsolok` táblában (`kulcs`, `ertek boolean`, `modositotta`, `modositva`). Olvasni minden bejelentkezett felhasználó tudja, írni csak a superadmin az `admin_beallitas_mentese(kulcs_in, ertek_in)` RPC-vel. (A `public.app_beallitasok` a FELADAT12 számértékű beállításait tárolja, pl. a képkorlátot; az külön tábla.)
 
@@ -101,29 +104,19 @@ Az alkalmazás telepíthető asztali és mobil böngészőkből is ("Telepítés
 
 ## 📂 Mappa- és fájlszerkezet
 
-A FELADAT13-as átszervezés óta a mappa- és fájlnevek (ahol lehetett) magyarok, ékezet és szóköz nélkül, kisbetűvel, kötőjellel elválasztva — a GitHub Pages és az URL-ek kis-/nagybetű-érzékenysége miatt. A `css/`, `js/`, `css/base/`, `css/pages/`, `js/pages/`, `main.*`, `navbar.css`, `modals.css` és `supabase-client.js` nevek szándékosan maradtak (már eleve egyértelműek vagy általánosan ismert technikai kifejezések).
+A mappa- és fájlnevek (ahol lehetett) magyarok, ékezet és szóköz nélkül, kisbetűvel, kötőjellel elválasztva — a
+GitHub Pages és az URL-ek kis-/nagybetű-érzékenysége miatt. A fájlonkénti leírás mappánként a `README.md`-ben van:
+[`html/`](../html/README.md), [`css/`](../css/README.md), [`js/`](../js/README.md), [`img/`](../img/README.md).
+Áttekintő táblázat: [attekintes.md, 4. pont](attekintes.md#4-mappák-és-fájlok).
 
-```
-css/
-  base/            # alap: szinek/betumeret (valtozok.css), reset (visszaallitas.css), segedosztalyok.css
-  elemek/          # ujrafelhasznalhato komponensek (navbar.css, modals.css, lenyilo-menu.css, lebego-cimke.css, moderacio.css, tartozasok-egyenlitese.css)
-  pages/           # oldal-specifikus stilusok (bejelentkezes.css = index.html, fooldal.css = app.html, tartozasok/ranglista/tervek/kepek/admin/jogi.css, goatsgame.css)
-  main.css         # a fenti @import-ok gyujtofajlja
-js/
-  hitelesites.js       # kozponti auth/session/csoport-allapot (window.goatsAuth)
-  supabase-client.js   # Supabase kliens singleton
-  admin-muveletek.js   # csoport/profil admin RPC wrapperek
-  main.js              # modul-aggregator a bejelentkezett oldalakhoz
-  elemek/              # ujrafelhasznalhato UI-komponensek (naptar, nav-bar, galeria, kep-kivago, beallitasok-modal, tartozasok-egyenlitese.js)
-    beallitasok/        # a beallitasok-modal al-nezetei (belepes-modal, profil-modal, csoport-adatok, tema-valaszto, ital-moderacio, beallitasok-sablonok, tos-ujraelfogadas)
-  pages/               # egy-egy HTML oldalhoz tartozo belepesi script (bejelentkezes-oldal.js, app-orzo.js, tartozasok.js, tervek.js, kepek.js, admin.js, admin-kategoriak.js, ranglista.js, goatsgame.js)
-  segedek/             # altalanos segedfuggvenyek (ital-kep, modal-fokusz, szin-osztaly, csoport-kepek, csoport-kod, kep-tomorites, kep-gyorsitotar, oldalak, oldal-orzo, funkcio-kapcsolo, ital-kategoriak, keslelteto, teljesitmeny, tema)
-img/
-  icon-*.png           # PWA ikonok (a manifest.json hivatkozza)
-  ikonok/              # ital-kategoria SVG ikonok (CSS maszkkal szinezve)
-```
+**Service worker verziózása:** a `sw.js` tetején lévő `CACHE_NEV` (pl. `'goats-v97'`) minden olyan kiadásnál
+emelendő, ami bármelyik előgyorsítótárazott (`ELOGYORSITOTT`) fájl útvonalát vagy tartalmát megváltoztatja — enélkül a
+már telepített/PWA-ként futó appok a régi, lecserélt fájlokat kapnák a gyorsítótárból. Az `activate` esemény a korábbi
+tárakat törli, kivéve a `goats-kepek-` kezdetűeket (galériaképek, italképek).
 
-**Service worker verziózása:** a `sw.js` tetején lévő `CACHE_NEV` (pl. `'goats-v11'`) minden olyan kiadásnál emelendő, ami bármelyik előgyorsítótárazott (`ELOGYORSITOTT`) fájl útvonalát vagy tartalmát megváltoztatja — enélkül a már telepített/PWA-ként futó appok a régi, lecserélt fájlokat kapnák a gyorsítótárból. Az `activate` esemény a korábbi cache-neveket automatikusan törli.
+**Italképek tára:** az `img/formak*/` és `img/mintak*/` képek a `goats-kepek-italok-v1` tárba kerülnek, és onnan
+hálózat nélkül jönnek (nincs háttérfrissítés). Új vagy átrajzolt képnél a `js/pages/ranglista/ital-kep.js`
+`KEP_VERZIO` értékét kell emelni (a képek címe `?v=<KEP_VERZIO>`-ra végződik), részletek: [`img/README.md`](../img/README.md).
 
 ---
 

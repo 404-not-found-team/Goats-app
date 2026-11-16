@@ -109,7 +109,7 @@ Kulcsot, ami már létezik, ne írj felül más jelentéssel; ha kétséges, ker
 Minden változót adj meg, különben az adott helyen a sötét téma színe marad. Figyelj a kontrasztra: a
 `--text-secondary` a kártya háttérén legalább 4,5:1 legyen.
 
-**2. A választóba** – `js/elemek/beallitasok/tema-valaszto.js`, a `temak` listába:
+**2. A választóba** – `js/settings/tema-valaszto.js`, a `temak` listába:
 
 ```js
 { id: 'erdo', name: tr('theme_forest', 'Erdő') },
@@ -128,7 +128,7 @@ Három helyen kell ugyanarra átírni:
 | Fájl | Mit |
 |---|---|
 | `js/segedek/tema.js`, 1. sor | `localStorage.getItem('goats_theme') \|\| 'discord-purple'` |
-| `js/elemek/beallitasok/tema-valaszto.js` | `const ALAP_TEMA = 'discord-purple';` |
+| `js/settings/tema-valaszto.js` | `const ALAP_TEMA = 'discord-purple';` |
 | `css/base/valtozok.css` | a `:root, [data-theme="dark"]` blokk adja az első pillanat színeit, mielőtt a JS beállítja a témát; ha az alap nem sötét, érdemes a `:root`-ot az új alaptémához tenni |
 
 ---
@@ -141,7 +141,7 @@ Példa: német (`de`).
 |---|---|---|
 | 1 | `nyelvek/de.json` | másold le az `en.json`-t, és fordítsd le az értékeket (a kulcsok maradnak). A hiányzó kulcsok magyarul jelennek meg. A `cat_…` kulcsok a főkategóriák nevei. |
 | 2 | `js/segedek/nyelv.js` | `const NYELVEK = ['hu', 'en', 'de'];` és a `LOCALE` objektumba: `de: 'de-DE'` |
-| 3 | `js/elemek/beallitasok/nyelv-valaszto.js` | a `NYELVEK` listába: `{ id: 'de', name: 'Deutsch' }` (a név a saját nyelvén) |
+| 3 | `js/settings/nyelv-valaszto.js` | a `NYELVEK` listába: `{ id: 'de', name: 'Deutsch' }` (a név a saját nyelvén) |
 | 4 | `img/zaszlok/de.svg` | a zászló, 3:2 arányú SVG |
 | 5 | `sw.js` | az `ELOGYORSITOTT` listába: `'nyelvek/de.json'`, `'img/zaszlok/de.svg'` |
 | 6 | adatbázis | a `push_feliratkozasok.nyelv` oszlop ellenőrzése csak `hu`/`en`-t enged: bővíteni kell (`check (nyelv in ('hu','en','de'))`) – migrációval |
@@ -183,17 +183,17 @@ A függvény egy osztályt ad, ami a `--szin` CSS-változót állítja be; a CSS
 
 ## Új oldal
 
-Példa: `oldalak/kviz.html`.
+Példa: `html/pages/kviz.html`.
 
-Az app oldalai az `oldalak/`, a jogi oldalak a `jogi/` mappában vannak, a gyökérben csak az `index.html` (és a `404.html`). Az almappás oldalban a `css/`, `js/`, `img/` hivatkozások elé `../` kell. JS-ből oldalra vagy fájlra mindig a `js/segedek/utvonal.js` `ut()` függvényével hivatkozz (pl. `ut('oldalak/kepek.html')`), mert a sima relatív cím az éppen megnyitott oldalhoz képest oldódik fel.
+Az app oldalai az `html/pages/`, a jogi oldalak a `jogi/` mappában vannak, a gyökérben csak az `index.html` (és a `404.html`). Az almappás oldalban a `css/`, `js/`, `img/` hivatkozások elé `../` kell. JS-ből oldalra vagy fájlra mindig a `js/segedek/utvonal.js` `ut()` függvényével hivatkozz (pl. `ut('html/pages/kepek.html')`), mert a sima relatív cím az éppen megnyitott oldalhoz képest oldódik fel.
 
-1. **HTML** – másolj le egy egyszerű oldalt (pl. `oldalak/tervek.html`). A `<head>` maradjon ugyanaz: CSP meta, `nyelv.js` elsőként, supabase-js, `main.js`, az oldal scriptje, `html-esemenyek.js`. A `<body data-oldal="kviz">`, és benne `<ul id="navBar"></ul>`.
+1. **HTML** – másolj le egy egyszerű oldalt (pl. `html/pages/tervek.html`). A `<head>` maradjon ugyanaz: CSP meta, `nyelv.js` elsőként, supabase-js, `main.js`, az oldal scriptje, `html-esemenyek.js`. A `<body data-oldal="kviz">`, és benne `<ul id="navBar"></ul>`.
 2. **Cím** – `<title data-i18n="title_quiz">ATG - Kvíz</title>`, a kulcs mindkét nyelvi fájlba.
 3. **Stílus** – `css/pages/kviz.css`, a HTML-ben külön `<link>`-kel (a `main.css`-be nem kell).
-4. **Script** – `js/pages/kviz.js`.
+4. **Script** – `js/pages/kviz/kviz.js`.
 5. **Menü** – `js/segedek/oldalak.js`, az `OLDALAK` listába:
    ```js
-   { kulcs: 'kviz', nev: tr('page_quiz', 'Kvíz'), emoji: '❓', fajl: 'oldalak/kviz.html', kapcsolo: 'oldal_kviz' },
+   { kulcs: 'kviz', nev: tr('page_quiz', 'Kvíz'), emoji: '❓', fajl: 'html/pages/kviz.html', kapcsolo: 'oldal_kviz' },
    ```
    `fo: true` = mobilon az alsó sávban, különben a „Több ☰” fiókban; `navban: false` = nem kerül a menübe.
 6. **Globális kapcsoló** – az adatbázisban egy sor az `app_kapcsolok` táblába (`kulcs = 'oldal_kviz'`, `ertek = true`), különben az oldal kikapcsoltnak számít. Az admin oldal ezután magától listázza.
@@ -217,8 +217,8 @@ Az app oldalai az `oldalak/`, a jogi oldalak a `jogi/` mappában vannak, a gyök
 ## Új admin fül
 
 1. `admin.html`: egy új gomb a `.sm-tabs` sorba (`data-tab="tab-valami"`), és egy `<div id="tab-valami" class="sm-tab-content">` panel.
-2. `js/pages/admin-valami.js` egy `export function indit()` függvénnyel (minta: `admin-jelentesek.js`).
-3. `js/pages/admin.js`: a többi `import('./admin-….js')` mellé `import('./admin-valami.js').then(m => m.indit())`.
+2. `js/pages/admin/admin-valami.js` egy `export function indit()` függvénnyel (minta: `admin-jelentesek.js`).
+3. `js/pages/admin/admin.js`: a többi `import('./admin-….js')` mellé `import('./admin-valami.js').then(m => m.indit())`.
 4. Az adatot **csak superadminnak** szabad adnia: RPC-ben `if not is_superadmin() then raise exception …`.
 5. `admin.html#valami` címmel a fül magától megnyílik (pl. értesítésből).
 
@@ -229,9 +229,11 @@ Az app oldalai az `oldalak/`, a jogi oldalak a `jogi/` mappában vannak, a gyök
 Lépésenként a `img/formak/README.md` írja le (rétegek, rajzolási szabályok). Röviden:
 
 1. Fájlok: `img/formak/<forma>-szin.webp`, `-sav.webp`, `-reszletek.webp`, (opcionális) `-logo.webp`.
-2. `js/segedek/ital-kep.js`: egy sor a `FORMAK` listába (`['uj-forma', 'Megjelenő név – fő szín: …, 2. szín: …']`); logó-réteg esetén a kód a `LOGOS_FORMAK` listába.
+2. `js/pages/ranglista/ital-kep.js`: egy sor a `FORMAK` listába (`['uj-forma', 'Megjelenő név – fő szín: …, 2. szín: …']`); logó-réteg esetén a kód a `LOGOS_FORMAK` listába.
 3. Minta: `img/mintak/<forma>-<minta>.webp`, és a `MINTAK` listában a minta sorához a forma kódja.
-4. Angol név: `form_<kod>` / `pattern_<kod>` kulcs az `en.json`-ba.
+4. Név: `form_<kod>` / `pattern_<kod>` kulcs a `hu.json`, `en.json` és `de.json` fájlba.
+5. Kicsinyített példányok: `python eszkozok/kepek_kicsinyitese.py`, utána a `js/pages/ranglista/ital-kep.js`
+   `KEP_VERZIO` értékét emeld eggyel (lásd [`img/README.md`](../img/README.md)).
 
 Márkaelem (logó, címke-elrendezés, jellegzetes palack) nem lehet a rajzon.
 
@@ -240,7 +242,7 @@ Márkaelem (logó, címke-elrendezés, jellegzetes palack) nem lehet a rajzon.
 ## Új italkategória-ikon
 
 1. SVG az `img/ikonok/` mappába (egyszínű; a CSS maszkkal a téma színét kapja).
-2. `js/segedek/ital-kep.js`, `KATEGORIA_IKON`: a kategória kódja → az ikon fájlneve kiterjesztés nélkül.
+2. `js/pages/ranglista/ital-kep.js`, `KATEGORIA_IKON`: a kategória kódja → az ikon fájlneve kiterjesztés nélkül.
 
 ---
 
@@ -459,6 +461,8 @@ A `main` ág tartalma a GitHub Pagesen azonnal élesbe kerül (pár perc).
 
 1. **`sw.js` → `CACHE_NEV`** emelése (`'goats-v53'` → `'goats-v54'`). Enélkül a telepített appok a régi fájlokat mutatják. A fájl első sorában lévő kommentben is van egy `goats-v…` példa: azt ne írd át, csak a `const CACHE_NEV` sort.
 2. Új fájl → az **`ELOGYORSITOTT`** listába, hogy offline is meglegyen.
+   Italkép (`img/formak/`, `img/mintak/`) nem kell bele: azokat a kicsinyítő script és a `KEP_VERZIO` kezeli.
+   Újdonság a felhasználóknak: a `js/pages/tesztelok/tesztelok-ujdonsagok.js` lista elejére (magyarul, angolul, németül).
 3. Munka külön ágon, a `main`-be pull requesttel.
 4. Élesítés után egy telefonon nyisd meg az appot kétszer (az első megnyitás tölti le az új verziót), és nézd meg a változást.
 

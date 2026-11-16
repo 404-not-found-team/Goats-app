@@ -50,22 +50,22 @@ Nincs build lépés, nincs keretrendszer, nincs npm a weboldalhoz: sima HTML, CS
 
 | Ha ezt keresed… | …itt van |
 |---|---|
-| Színek, témák | `css/base/valtozok.css` (színek), `js/elemek/beallitasok/tema-valaszto.js` (választó), `js/segedek/tema.js` (alapértelmezett téma) |
-| Szövegek, fordítások | `nyelvek/hu.json`, `nyelvek/en.json`; a motor: `js/segedek/nyelv.js` |
-| Nyelvválasztó | `js/elemek/beallitasok/nyelv-valaszto.js`, zászlók: `img/zaszlok/` |
-| Menü (alsó sáv / fiók) | `js/elemek/nav-bar.js`, az oldalak listája: `js/segedek/oldalak.js` |
-| Beállítások ablak, profil, csoport adatok | `js/elemek/beallitasok/` (a HTML-jük: `beallitasok-sablonok.js`) |
+| Színek, témák | `css/base/valtozok.css` (színek), `js/settings/tema-valaszto.js` (választó), `js/segedek/tema.js` (alapértelmezett téma) |
+| Szövegek, fordítások | `nyelvek/hu.json`, `nyelvek/en.json`, `nyelvek/de.json`; a motor: `js/segedek/nyelv.js` |
+| Nyelvválasztó | `js/settings/nyelv-valaszto.js`, zászlók: `img/zaszlok/` |
+| Menü (alsó sáv / fiók) | `js/nav-bar.js`, az oldalak listája: `js/segedek/oldalak.js` |
+| Beállítások ablak, profil, csoport adatok | `js/settings/` (a HTML-jük: `beallitasok-sablonok.js`) |
 | Bejelentkezés, munkamenet, csoport-állapot | `js/hitelesites.js` (`window.goatsAuth`) |
 | Supabase kliens | `js/supabase-client.js`, a könyvtár: `js/kulso/supabase-js-2.117.2.js`; hívásminták: [útmutató](utmutato.md#supabase-hívás-sablonok) |
-| Tartozások | `tartozasok.html`, `js/pages/tartozasok.js`, egyenlítés: `js/elemek/tartozasok-egyenlitese.js` |
-| Ranglista, italok, italképek | `ranglista.html`, `js/pages/ranglista.js`, képek: `js/segedek/ital-kep.js`, `img/formak/`, `img/mintak/` |
+| Tartozások | `tartozasok.html`, `js/pages/tartozasok/tartozasok.js`, egyenlítés: `js/pages/tartozasok/tartozasok-egyenlites.js` |
+| Ranglista, italok, italképek | `ranglista.html`, `js/pages/ranglista/ranglista.js`, képek: `js/pages/ranglista/ital-kep.js`, `img/formak/`, `img/mintak/` |
 | Italkategóriák | `js/segedek/ital-kategoriak.js` (adat: `ital_kategoriak` tábla) |
-| Galéria, képfeltöltés | `kepek.html`, `js/pages/kepek.js`, tömörítés: `js/segedek/kep-tomorites.js`, kivágás: `js/elemek/kep-kivago.js` |
-| Képjelentés | kliens: `js/pages/kepek.js`; szerver: `supabase/functions/kep-jelentes/`; admin: `js/pages/admin-jelentesek.js` |
-| Push-értesítések | kapcsoló: `js/elemek/beallitasok/ertesitesek.js`; felajánlás: `js/elemek/ertesites-felajanlas.js`; megjelenítés: `sw.js` vége; küldés: `supabase/functions/push-kuldes/` |
-| Google Naptár szinkron | kapcsoló: `js/elemek/beallitasok/google-naptar.js`; szerver: `supabase/functions/naptar-szinkron/` |
+| Galéria, képfeltöltés | `kepek.html`, `js/pages/kepek/kepek.js`, tömörítés: `js/segedek/kep-tomorites.js`, kivágás: `js/pages/kepek/kepek-kivago.js` |
+| Képjelentés | kliens: `js/pages/kepek/kepek.js`; szerver: `supabase/functions/kep-jelentes/`; admin: `js/pages/admin/admin-jelentesek.js` |
+| Push-értesítések | kapcsoló: `js/settings/ertesitesek.js`; felajánlás: `js/settings/ertesites-felajanlas.js`; megjelenítés: `sw.js` vége; küldés: `supabase/functions/push-kuldes/` |
+| Google Naptár szinkron | kapcsoló: `js/settings/google-naptar.js`; szerver: `supabase/functions/naptar-szinkron/` |
 | Offline működés, gyorsítótár | `sw.js` (`CACHE_NEV`, `ELOGYORSITOTT`) |
-| Admin oldal | `admin.html`, `js/pages/admin*.js`, `css/pages/admin.css` |
+| Admin oldal | `admin.html`, `js/pages/admin/`, `css/pages/admin.css` |
 | Globális kapcsolók (oldal/funkció ki-be) | `js/segedek/oldalak.js` (lista), `js/segedek/oldal-orzo.js`, `js/segedek/funkcio-kapcsolo.js` |
 | Jogi oldalak | `jogi.html`, `privacy.html`, `felhasznalasi-feltetelek.html`, `fiok-torles.html` |
 | App neve, ikonja (telepítéskor) | `manifest.json`, `img/icon-*.png` |
@@ -105,58 +105,23 @@ akkor is elutasítja.
 
 ## 4. Mappák és fájlok
 
-### Gyökér
+Minden fő mappában van egy `README.md`, ami fájlonként leírja, mi mire való. Itt csak a nagy kép:
 
-| Fájl | Mire való |
-|---|---|
-| `index.html` | Kijelentkezett kezdőlap (bemutató + Google-bejelentkezés). Bejelentkezve azonnal az `app.html`-re visz. |
-| `app.html` | Bejelentkezett főoldal: galéria-nézegető és naptár. |
-| `tartozasok.html`, `ranglista.html`, `tervek.html`, `kepek.html`, `goatsgame.html` | Az app oldalai. |
-| `jatekszabalyok.html` | Játékszabályok (jelenleg kivéve a menüből, a kód megvan). |
-| `admin.html` | Csak superadminoknak. |
-| `jogi.html`, `privacy.html`, `felhasznalasi-feltetelek.html`, `fiok-torles.html` | Jogi oldalak (a Play is ezeket linkeli). |
-| `manifest.json` | PWA-adatok: név, ikonok, start URL. |
-| `sw.js` | Service worker: előgyorsítótár, offline működés, push-értesítések megjelenítése. |
-| `README.md` | Rövid bemutató, indítás, kiadás. A részletes működési leírás (kapcsolók, képek, italkatalógus, PWA) a `dokumentacio/reszletek.md`-ben van. |
-| `dokumentacio/` | Ez a leírás és az [útmutató](utmutato.md). |
-
-### `css/`
-
-| Mappa / fájl | Mire való |
-|---|---|
-| `main.css` | Gyűjtőfájl: `@import`-tal behúzza a többit. Minden oldal ezt tölti be. |
-| `base/valtozok.css` | **A témák színei** CSS-változóként (`--bg-color`, `--accent-color` …) és a betűméret-skála. |
-| `base/visszaallitas.css` | Böngésző-alapstílusok nullázása. |
-| `base/segedosztalyok.css` | Apró újrahasznosítható osztályok (`.status-hiba`, `.szoveg-kicsi` …). |
-| `elemek/` | Komponensek: navbar, modalok, lenyíló menü, lebegő címke, italszínezés, tartozás-egyenlítés, választókártyák (téma/nyelv/értesítés). |
-| `pages/` | Oldalankénti stílus (`bejelentkezes.css` = index, `fooldal.css` = app, a többi a nevéről). |
-| `kulso/fontawesome-6.5.1/` | Font Awesome ikonkészlet (csak a „solid”), saját tárhelyen. |
-
-### `js/`
-
-| Mappa / fájl | Mire való |
-|---|---|
-| `main.js` | A bejelentkezett oldalak közös modulja: auth, menü, beállítások, téma, kapcsolók betöltése. |
-| `hitelesites.js` | Munkamenet, profil, csoport, tagok, globális kapcsolók állapota (`window.goatsAuth`). Pillanatképet tart, hogy az oldal azonnal kirajzolódjon. |
-| `supabase-client.js` | Egyetlen közös Supabase kliens (`window._supabase`). |
-| `admin-muveletek.js` | Csoport- és profilműveletek RPC-hívásai. |
-| `elemek/` | Újrahasználható felületi részek: menü, galéria, naptár, képkivágó, tartozás-egyenlítés, értesítés-felajánlás, beállítások ablak. |
-| `elemek/beallitasok/` | A beállítások al-ablakai: belépés, profil, csoport adatok, téma, nyelv, értesítések, ÁSZF-újraelfogadás, és a HTML-sablonjuk. |
-| `pages/` | Oldalanként egy belépési script (az oldal nevével), plusz az admin fülei (`admin-*.js`). |
-| `segedek/` | Általános segédek: nyelv, téma, italkép, italkategóriák, képtömörítés, gyorsítótárak, kapcsolók, oldallista, eseménykötés. |
-| `kulso/` | Külső könyvtárak saját tárhelyen: supabase-js, heic2any (HEIC-képek átalakítása). Ezekbe nem írunk bele. |
-
-### Egyéb
-
-| Mappa | Mire való |
-|---|---|
-| `nyelvek/` | `hu.json`, `en.json`: kulcs → szöveg. |
-| `img/formak/`, `img/mintak/` | Színezhető italformák rétegei és mintái (lásd `img/formak/README.md`). |
-| `img/ikonok/` | Italkategória-ikonok (SVG, a téma színét veszik fel). |
-| `img/koktelok/` | Koktélképek a nevük alapján. |
-| `img/zaszlok/` | Zászlók a nyelvválasztóhoz. |
-| `img/icon-*.png`, `img/ertesites-jelveny.png` | App-ikonok; az értesítés egyszínű jelvénye a státuszsorba. |
-| `supabase/functions/` | Edge Functionök forrása (`kep-jelentes`, `push-kuldes`, `naptar-szinkron`). A Supabase-be külön kell telepíteni őket. |
+| Mappa / fájl | Mire való | Részletek |
+|---|---|---|
+| `index.html` | Kijelentkezett kezdőlap (bemutató + Google-bejelentkezés). Bejelentkezve azonnal az appba visz. A gyökérben marad, erre mutat a manifest `start_url`-je. | |
+| `404.html` | A régi, mappa nélküli címeket az új helyükre küldi (`js/segedek/regi-cim.js`) | |
+| `html/pages/` | Az app oldalai (`app.html`, `tartozasok.html`, `ranglista.html`, `hanynapja.html` …) | [`html/README.md`](../html/README.md) |
+| `html/jogi/` | Jogi oldalak (adatvédelem, ÁSZF, impresszum, fiók törlése) | [`html/README.md`](../html/README.md) |
+| `css/` | Megjelenés: témák színei, közös elemek, oldalanként egy fájl | [`css/README.md`](../css/README.md) |
+| `js/` | Logika: közös fájlok a gyökérben, `pages/<oldal>/` oldalanként, `segedek/`, `settings/`, `kulso/` | [`js/README.md`](../js/README.md) |
+| `img/` | Képek: italformák és -minták (eredeti és kicsinyített), ikonok, zászlók, app-ikonok | [`img/README.md`](../img/README.md) |
+| `nyelvek/` | `hu.json`, `en.json`, `de.json`: kulcs → szöveg. Mindhárom kulcsai legyenek szinkronban. | |
+| `eszkozok/` | Fejlesztői segédscriptek (pl. `kepek_kicsinyitese.py`), az app nem tölti be őket | [`img/README.md`](../img/README.md) |
+| `supabase/functions/` | Edge Functionök forrása (`kep-jelentes`, `push-kuldes`, `naptar-szinkron`). A Supabase-be külön kell telepíteni őket. | |
+| `manifest.json` | PWA-adatok: név, ikonok, start URL | |
+| `sw.js` | Service worker: előgyorsítótár, offline működés, italképek tartós tára, push-értesítések | [részletek](reszletek.md#-pwa-támogatás) |
+| `dokumentacio/` | Ez a leírás, az [útmutató](utmutato.md) és a [részletes leírás](reszletek.md) | |
 
 ---
 
@@ -194,7 +159,7 @@ A fontosabb táblák:
 | `kepek`, `jelentesek` | Galériaképek adatai; jelentések. A fájlok a `kepek` és a privát `jelentett` bucketben vannak. |
 | `goatgame_*` | Goats Game: játékok, meccsek, pontok, színek. |
 | `jatek_szabalyok`, `jatek_lepesek`, `jatek_javaslatok` | Játékszabályok. |
-| `app_kapcsolok`, `app_beallitasok` | Globális kapcsolók (oldalak/funkciók ki-be), számértékű beállítások. |
+| `app_kapcsolok`, `app_beallitasok` | Globális kapcsolók (html/pages/funkciók ki-be), számértékű beállítások. |
 | `push_feliratkozasok` | Eszközönkénti push-feliratkozások (csak RPC-n írható). |
 | `naptar_szinkron`, `naptar_megosztasok` | Ki kapcsolta be a Google Naptár szinkront (saját sor), és kivel van megosztva melyik csoportnaptár (csak a szerver). |
 | `naplo` | Műveleti napló (csak superadmin látja). |
@@ -278,5 +243,5 @@ a választás a fiókba is mentődik. Nyelvváltáskor az oldal újratölt.
 1. Olvasd el ezt, és fusd át a [részletes leírás](reszletek.md) fejezeteit.
 2. Indítsd el helyben: a repó gyökerében `python -m http.server 8099`, majd `http://localhost:8099/index.html`.
    `file://`-ként nem működik. Az adatok az élő Supabase-ből jönnek, tehát amit helyben csinálsz, az élesben történik.
-3. Nézd meg egy egyszerű oldal útját elejétől végéig: `tervek.html` → `js/pages/tervek.js`.
+3. Nézd meg egy egyszerű oldal útját elejétől végéig: `tervek.html` → `js/pages/tervek/tervek.js`.
 4. Bármi új dolognál előbb nézd meg az [útmutatót](utmutato.md): ott van lépésenként, hogy mit hol kell átírni.

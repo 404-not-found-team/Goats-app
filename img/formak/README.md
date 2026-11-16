@@ -3,6 +3,9 @@
 Egy formából (pl. magas doboz) bármennyi ital kijön: a színt az adatbázis adja
 (`italok.kep_forma`, `kep_szin_1`, `kep_szin_2`, `kep_minta`), a kép csak az alakot és az árnyékolást.
 
+Ez a mappa az **eredeti, 512×512-es** rajzokat tartalmazza; a ranglista listái a belőlük generált
+`img/formak-kicsi/` példányokat mutatják. Hogy miért és hogyan: [`img/README.md`](../README.md).
+
 ## Fájlok formánként
 
 | Fájl | Mi van rajta | Szín a kódban |
@@ -17,7 +20,7 @@ Egy formából (pl. magas doboz) bármennyi ital kijön: a színt az adatbázis 
 - Fájl: `img/mintak/<forma>-<minta>.webp` (pl. `finlandia-korok.webp`), szintén világos szürkeárnyalatban,
   pontosan az adott formára illesztve – ezért formánként külön fájl kell.
 - Saját színe van (`kep_szin_3`, az űrlapon „Minta színe”); ha nincs megadva, a 2., végül az 1. színt kapja.
-- Felvétel: a fájl az `img/mintak/` mappába + a `js/segedek/ital-kep.js` `MINTAK` listájában a minta
+- Felvétel: a fájl az `img/mintak/` mappába + a `js/pages/ranglista/ital-kep.js` `MINTAK` listájában a minta
   sorához hozzáadni a forma kódját. Az űrlapon csak az adott formához rajzolt minták jelennek meg.
 - Ha nincs második szín, a sávok is a fő színt kapják, így a doboz egyszínű (pl. New Gen: fehér + színes minta).
 
@@ -32,8 +35,14 @@ Egy formából (pl. magas doboz) bármennyi ital kijön: a színt az adatbázis 
 
 ## Új forma felvétele
 
-1. A három fájl ide (`img/formak/`).
-2. Egy sor a `js/segedek/ital-kep.js` `FORMAK` listájába (kód + megjelenő név).
+1. A fájlok ide (`img/formak/`).
+2. Egy sor a `js/pages/ranglista/ital-kep.js` `FORMAK` listájába (kód + megjelenő név), a név fordítása
+   `form_<kod>` kulccsal a `nyelvek/hu.json`, `en.json`, `de.json` fájlba.
 3. Ha van logó-rétege is, a forma kódja a `LOGOS_FORMAK` listába.
+4. `python eszkozok/kepek_kicsinyitese.py` a gyökérből, és a `KEP_VERZIO` emelése az `ital-kep.js`-ben.
+
+Közös üveg: ha két forma ugyanazt a palackot használja (pl. `jim` és `jack` → `whiskey`), a `KOZOS_UVEG` listában
+kell megadni; ilyenkor a `-sav` és `-logo` réteg a közös palacké, csak a `-szin` és `-reszletek` saját.
+Minta a szín mögött (pl. Finlandia körök): `MINTA_A_SZIN_MOGOTT`; minta nem színezett része (`-fix.webp`): `MINTA_FIX`.
 
 Ha egy forma fájlja hiányzik, az app automatikusan a márkaképet vagy a kategória-ikont mutatja.

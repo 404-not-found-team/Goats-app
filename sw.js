@@ -1,6 +1,12 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v96';
+const CACHE_NEV = 'goats-v98';
+
+// Az italok rétegképei (a ?v= verzióval együtt) külön, tartós tárba kerülnek: onnan azonnal jönnek,
+// nem kérjük le őket újra minden megnyitáskor, és a CACHE_NEV emelésekor sem törlődnek (az activate a
+// goats-kepek- kezdetű tárakat meghagyja). Új kép: a ?v= (KEP_VERZIO az ital-kep.js-ben) változik.
+const ITALKEP_CACHE = 'goats-kepek-italok-v1';
+const ITALKEP_MAPPAK = ['/img/formak/', '/img/formak-kicsi/', '/img/mintak/', '/img/mintak-kicsi/'];
 
 // Előgyorsítótár: az alkalmazás összes oldala, szkriptje és stíluslapja, hogy már az első
 // indítás után minden oldal azonnal (és offline is) betöltsön. Új fájl felvételekor ide is írd be
@@ -278,6 +284,19 @@ self.addEventListener('fetch', (event) => {
                     }
                     return frissites.then((valasz) => valasz || Response.error());
                 })
+            )
+        );
+        return;
+    }
+
+    // Italképek: ha megvan a tárban, onnan (hálózat nélkül); ha nincs, letöltjük és eltesszük
+    if (url.origin === self.location.origin && ITALKEP_MAPPAK.some((m) => url.pathname.includes(m))) {
+        event.respondWith(
+            caches.open(ITALKEP_CACHE).then((cache) =>
+                cache.match(event.request).then((gyorsitott) => gyorsitott || fetch(event.request).then((valasz) => {
+                    if (valasz && valasz.ok) cache.put(event.request, valasz.clone());
+                    return valasz;
+                }))
             )
         );
         return;

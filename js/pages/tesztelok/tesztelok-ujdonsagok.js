@@ -13,6 +13,9 @@ export const UJDONSAGOK = [
             'Ranglista: eltűnt a felesleges üres hely az italcsoportok alatt',
             'Hány napja: a számlálókat mindig látja a csoport',
             'A kijelentkezés már nem akad meg',
+            'Új naptár: Hónap és Lista nézet, a kiválasztott nap eseményei a naptár alatt, „Ma” gomb, és a szomszéd hónapok napjai halványan',
+            'Hány napja telefonon: egy Hozzáadás gomb nyitja az új számláló ablakát',
+            'Gyorsabban töltődnek be az italok képei a ranglistán',
         ],
         en: [
             'Debts: your own balance is at the top, showing whom you owe and who owes you',
@@ -22,6 +25,9 @@ export const UJDONSAGOK = [
             'Tier list: the extra empty space under drink groups is gone',
             'Days since: the group can always see the counters',
             'Signing out no longer gets stuck',
+            'New calendar: Month and List view, the selected day’s events below the calendar, a “Today” button, and days of the neighbouring months shown faintly',
+            'Days since on phones: an Add button opens the new counter window',
+            'Drink pictures on the tier list load faster',
         ],
         de: [
             'Schulden: ganz oben siehst du deinen eigenen Saldo, wem du etwas schuldest und wer dir etwas schuldet',
@@ -31,6 +37,9 @@ export const UJDONSAGOK = [
             'Rangliste: der überflüssige leere Platz unter den Getränkegruppen ist weg',
             'Tage seit: die Gruppe sieht die Zähler immer',
             'Das Abmelden bleibt nicht mehr hängen',
+            'Neuer Kalender: Monats- und Listenansicht, die Termine des gewählten Tages unter dem Kalender, eine „Heute“-Schaltfläche und die Tage der Nachbarmonate blass',
+            'Tage seit auf dem Handy: eine Hinzufügen-Schaltfläche öffnet das Fenster für einen neuen Zähler',
+            'Die Getränkebilder in der Rangliste laden schneller',
         ],
     },
     {
