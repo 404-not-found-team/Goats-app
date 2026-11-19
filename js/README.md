@@ -52,6 +52,7 @@ Néhány külön fájl:
 | `nyelv.js` | Fordítások (`tr()`, `data-i18n`), szinkron a `<head>` elején |
 | `tema.js` | Téma alkalmazása, alapértelmezett téma |
 | `utvonal.js` | `ut()`: útvonal a gyökérhez képest |
+| `ablakok.js` | Az app saját üzenetei és ablakai a böngésző `alert()`/`confirm()`/`prompt()` helyett: `toast()`, `megerosites()`, `begepeloMegerosites()`, `pontBekeres()`. A `main.js` tölti be, klasszikus scriptből `window.goatsAblak`. **Ne használj `alert()`/`confirm()`-ot**, ezeket hívd. |
 | `html-esemenyek.js` | `data-katt` / `data-valtozas` / `data-bevitel` kezelése (inline `onclick` helyett) |
 | `szin-osztaly.js` | Dinamikus szín CSS-osztályként (`--szin`), inline stílus nélkül |
 | `oldalak.js` | Az app oldalainak listája (menü, admin kapcsolók) |

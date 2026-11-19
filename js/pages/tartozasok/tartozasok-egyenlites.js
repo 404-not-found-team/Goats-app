@@ -132,11 +132,11 @@ export async function toltsReszleteket(kontener, adosId, hitelezoId) {
       btn.className = 'tartozas-egyenlites-visszavon-btn';
       btn.textContent = tr('revert', 'Visszavonás');
       btn.addEventListener('click', async () => {
-        if (!confirm(tr('confirm_revert_settle', 'Biztosan visszavonod ezt az egyenlítést? Az érintett tartozások nyitott összege visszaáll.'))) return;
+        if (!await goatsAblak.megerosites(tr('confirm_revert_settle', 'Biztosan visszavonod ezt az egyenlítést? Az érintett tartozások nyitott összege visszaáll.'), { gomb: tr('revert', 'Visszavonás'), veszely: true })) return;
         btn.disabled = true;
         const hiba = await egyenlitesVisszavonasa(e.id);
         if (hiba) {
-          alert(hiba.message || tr('err_revert', 'A visszavonás nem sikerült.'));
+          goatsAblak.toast(hiba.message || tr('err_revert', 'A visszavonás nem sikerült.'), 'hiba');
           btn.disabled = false;
           return;
         }
@@ -206,7 +206,7 @@ export function nyitEgyenlitesModal({ aId, aNev, bId, bNev, aTartozikBnek, bTart
     const hiba = await tartozasokEgyenlitese(aId, bId);
     ujOkBtn.disabled = false;
     if (hiba) {
-      alert(hiba.message || tr('err_settle', 'Az egyenlítés nem sikerült.'));
+      goatsAblak.toast(hiba.message || tr('err_settle', 'Az egyenlítés nem sikerült.'), 'hiba');
       return;
     }
     modal.hidden = true;

@@ -130,7 +130,7 @@ async function ujrakezdes(h, datum) {
     const kerdes = datum === ma
         ? tr('hn_confirm_reset', 'Újrakezded a(z) „{name}” számlálót? A mostani {n} nap a rekordba kerül, ha az a leghosszabb.', { name: szamlaloNev(h, sablonok), n: napok })
         : tr('hn_confirm_reset_date', 'A(z) „{name}” számláló {date} napjától indul újra. Rendben?', { name: szamlaloNev(h, sablonok), date: datum.replaceAll('-', '. ') + '.' });
-    if (!confirm(kerdes)) return;
+    if (!await goatsAblak.megerosites(kerdes, { gomb: tr('hn_btn_restart', 'Újrakezdés') })) return;
     if (!await szamlaloUjrakezdese(h.id, datum, Math.max(h.rekord, napok))) {
         allapot(tr('err_saving', 'Hiba történt a mentéskor!'), true);
         return;
@@ -140,7 +140,7 @@ async function ujrakezdes(h, datum) {
 }
 
 async function torles(h) {
-    if (!confirm(tr('hn_confirm_delete', 'Biztosan törlöd a(z) „{name}” számlálót?', { name: szamlaloNev(h, sablonok) }))) return;
+    if (!await goatsAblak.megerosites(tr('hn_confirm_delete', 'Biztosan törlöd a(z) „{name}” számlálót?', { name: szamlaloNev(h, sablonok) }), { gomb: tr('delete', 'Törlés'), veszely: true })) return;
     if (!await szamlaloTorlese(h.id)) {
         allapot(tr('err_deleting', 'Hiba történt a törlés során!'), true);
         return;

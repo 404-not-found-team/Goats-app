@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v99';
+const CACHE_NEV = 'goats-v100';
 
 // Az italok rétegképei (a ?v= verzióval együtt) külön, tartós tárba kerülnek: onnan azonnal jönnek,
 // nem kérjük le őket újra minden megnyitáskor, és a CACHE_NEV emelésekor sem törlődnek (az activate a
@@ -43,6 +43,7 @@ const KOZOS_CSS = [
     'css/elemek/modals.css',
     'css/elemek/navbar.css',
     'css/elemek/oldal-fejlec.css',
+    'css/elemek/ablakok.css',
     'css/elemek/tartozasok-egyenlitese.css',
     'css/elemek/telepites.css',
     'css/elemek/valaszto-kartyak.css',
@@ -59,6 +60,7 @@ const KOZOS_JS = [
     'js/admin-muveletek.js',
     'js/kulso/supabase-js-2.117.2.js',
     'js/supabase_hibakezeles.js',
+    'js/segedek/ablakok.js',
     'js/segedek/adat-gyorsitotar.js',
     'js/segedek/csoport-kepek.js',
     'js/segedek/csoport-kod.js',

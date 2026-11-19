@@ -2,7 +2,7 @@ export function hibaVan(error, muvelet, uzenet) {
     if (error) {
         console.error(`Hiba ${muvelet}:`, error);
         if (uzenet)
-            alert(uzenet);
+            goatsAblak.toast(uzenet, 'hiba');
         return true;
     }
     return false;

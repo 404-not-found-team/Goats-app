@@ -93,7 +93,7 @@ export function initProfileModal() {
   });
   // Kijelentkezés
   get('logout-btn')?.addEventListener('click', async () => {
-    if (!confirm(tr('confirm_logout', 'Biztosan ki szeretnél jelentkezni?'))) return;
+    if (!await goatsAblak.megerosites(tr('confirm_logout', 'Biztosan ki szeretnél jelentkezni?'), { gomb: tr('logout', 'Kijelentkezés') })) return;
     // az eszköz ne kapja tovább ennek a fióknak az értesítéseit (ha nem sikerül, a kijelentkezés akkor is megy)
     await leiratkozas().catch(err => console.error('Leiratkozási hiba:', err));
     await signOut();
@@ -148,13 +148,14 @@ export function initProfileModal() {
 
   // Fiók végleges törlése (Google Play követelmény: az appban is elérhető legyen)
   get('delete-account-btn')?.addEventListener('click', async () => {
-    const warning =
-      tr('confirm_delete_account', 'A fiókod végleg törlődik (profil, csoporttagság). Ha te vagy a csoport utolsó tagja, a csoport és adatai is törlődnek.\n\nA megerősítéshez írd be: {word}', { word: tr('delete_word', 'TÖRLÉS') });
-    const answer = prompt(warning);
-    if (answer === null) return;
-    if (answer.trim().toUpperCase() !== tr('delete_word', 'TÖRLÉS').toUpperCase()) {
-      return setStatus(tr('err_confirm_mismatch_account', 'A megerősítő szöveg nem egyezik, a fiók nem lett törölve.'), '#ef4444');
-    }
+    // a törlés gomb csak a megerősítő szó beírása után nyomható (js/segedek/ablakok.js)
+    const megerositve = await goatsAblak.begepeloMegerosites({
+      cim: tr('btn_delete_account', 'Fiók törlése'),
+      szoveg: tr('confirm_delete_account', 'A fiókod végleg törlődik (profil, csoporttagság). Ha te vagy a csoport utolsó tagja, a csoport és adatai is törlődnek.\n\nA megerősítéshez írd be: {word}', { word: tr('delete_word', 'TÖRLÉS') }),
+      szo: tr('delete_word', 'TÖRLÉS'),
+      gomb: tr('btn_delete_account', 'Fiók törlése'),
+    });
+    if (!megerositve) return;
 
     setStatus(tr('deleting_account', 'Fiók törlése...'), '#3b82f6');
     try {
@@ -165,8 +166,9 @@ export function initProfileModal() {
         if (hibak.length) console.warn('Néhány kép nem törlődött a fiók törlésekor:', hibak);
       }
       await deleteMyAccount();
-      alert(tr('account_deleted', 'A fiókod törölve lett.'));
-      location.reload();
+      goatsAblak.toast(tr('account_deleted', 'A fiókod törölve lett.'), 'ok');
+      // a toast még látsszon az újratöltés előtt
+      setTimeout(() => location.reload(), 1500);
     } catch (err) {
       setStatus(err.message || tr('err_account_delete', 'A fiók törlése nem sikerült.'), '#ef4444');
     }

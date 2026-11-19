@@ -1,0 +1,268 @@
+/* Az app saját üzenetei és megerősítő ablakai (js/segedek/ablakok.js), a böngésző alert()/confirm() helyett */
+
+/* ---------- Toast ---------- */
+.toast-sav {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    width: min(420px, calc(100vw - 32px));
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /* a megerősítő ablak alatt marad, hogy ne takarja a gombjait */
+    z-index: 10040;
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 10px 12px 14px;
+    border-radius: 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    color: var(--text-primary);
+    font-size: var(--fs-sm);
+    pointer-events: auto;
+    animation: toast-be 0.2s ease;
+}
+
+.toast.eltunik {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+@keyframes toast-be {
+    from { opacity: 0; transform: translateY(8px); }
+}
+
+.toast-jel {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.toast-ok .toast-jel {
+    background: color-mix(in srgb, var(--ok-color) 20%, transparent);
+    color: var(--ok-color);
+}
+
+.toast-hiba .toast-jel {
+    background: color-mix(in srgb, var(--hiba-color) 20%, transparent);
+    color: var(--hiba-color);
+}
+
+.toast-info .toast-jel {
+    background: color-mix(in srgb, var(--accent-color) 20%, transparent);
+    color: var(--accent-text);
+}
+
+.toast-szoveg {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.toast-bezar {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.toast-bezar:hover {
+    background: var(--inner-bg);
+}
+
+/* telefonon a menüsáv fölött */
+@media (max-width: 600px) {
+    .toast-sav {
+        bottom: calc(96px + env(safe-area-inset-bottom));
+    }
+}
+
+/* ---------- Megerősítő ablak ---------- */
+.app-ablak-hatter {
+    z-index: 10050;
+}
+
+.sm-card.app-ablak {
+    height: auto;
+    max-height: 90vh;
+    overflow-y: auto;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    padding: 26px 22px 20px;
+    text-align: center;
+}
+
+.app-ablak-ikon {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: color-mix(in srgb, var(--accent-color) 20%, transparent);
+    color: var(--accent-text);
+}
+
+.app-ablak-ikon.veszely {
+    background: color-mix(in srgb, var(--hiba-color) 18%, transparent);
+    color: var(--hiba-color);
+}
+
+.app-ablak-cim {
+    margin: 0;
+    font-size: var(--fs-lg);
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+}
+
+.app-ablak-szoveg {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: var(--fs-sm);
+    line-height: 1.45;
+    /* a fordításokban lévő \n sortörések is látsszanak */
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.app-ablak-mezo {
+    width: 100%;
+    box-sizing: border-box;
+    height: 46px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid var(--hiba-color);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: var(--fs-base);
+}
+
+.app-ablak-gombok {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: 6px;
+}
+
+.app-ablak-gombok .sm-btn {
+    flex: 1;
+    min-height: 46px;
+    border-radius: 12px;
+}
+
+.app-gomb-masodlagos {
+    background: var(--inner-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.app-gomb-fo {
+    background: var(--accent-color);
+    color: var(--on-accent);
+}
+
+.app-gomb-veszely {
+    background: var(--hiba-color);
+    color: #111111;
+}
+
+.app-ablak-gombok .sm-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.app-ablak-gombok .sm-btn:focus-visible {
+    outline: 2px solid var(--accent-text);
+    outline-offset: 2px;
+}
+
+/* ---------- Goats Game pontbeíró ---------- */
+.app-pont-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+}
+
+.app-pont-sor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+}
+
+.app-pont-nev {
+    flex: 1;
+    min-width: 0;
+    font-weight: 600;
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+}
+
+.app-pont-gomb {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.app-pont-mezo {
+    width: 64px;
+    height: 40px;
+    box-sizing: border-box;
+    text-align: center;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: var(--fs-base);
+    -moz-appearance: textfield;
+}
+
+.app-pont-mezo::-webkit-inner-spin-button,
+.app-pont-mezo::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toast,
+    .toast.eltunik {
+        animation: none;
+        transition: none;
+    }
+}

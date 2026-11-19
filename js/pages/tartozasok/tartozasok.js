@@ -510,7 +510,7 @@ async function kezeldTartozasKattintast(e) {
 
 async function deleteTartozas(id) {
     if (!await tartozasTorlese(id, aktualisGroupCode())) {
-        alert(tr('err_deleting', 'Hiba történt a törlés során!'));
+        goatsAblak.toast(tr('err_deleting', 'Hiba történt a törlés során!'), 'hiba');
         return;
     }
 
@@ -675,7 +675,7 @@ function tartozasHiba(error) {
 
 function nyisdUjTartozasModal() {
     if (window.goatsKapcsolok && !window.goatsKapcsolok.funkcioEngedelyezett('funkcio_tartozas_felvetel')) {
-        alert(window.goatsKapcsolok.TILTVA_SZOVEG);
+        goatsAblak.toast(window.goatsKapcsolok.TILTVA_SZOVEG, 'info');
         return;
     }
     document.getElementById('uj-tartozas-modal').hidden = false;
@@ -702,7 +702,7 @@ function ujTartozasAblakBekotese() {
 
 async function addTartozas() {
     if (window.goatsKapcsolok && !window.goatsKapcsolok.funkcioEngedelyezett('funkcio_tartozas_felvetel')) {
-        alert(window.goatsKapcsolok.TILTVA_SZOVEG);
+        goatsAblak.toast(window.goatsKapcsolok.TILTVA_SZOVEG, 'info');
         return;
     }
     const groupCode = aktualisGroupCode();
@@ -712,23 +712,23 @@ async function addTartozas() {
     const osszeg = osszegErtek();
 
     if (!miert || !osszeg || !kinek || resztvevok.length === 0) {
-        alert(tr('err_fill_all_debt', 'Kérlek töltsd ki az összes mezőt és válassz ki legalább egy résztvevőt!'));
+        goatsAblak.toast(tr('err_fill_all_debt', 'Kérlek töltsd ki az összes mezőt és válassz ki legalább egy résztvevőt!'), 'hiba');
         return;
     }
 
     const felvevoId = window.goatsAuth?.getState()?.user?.id;
     if (!felvevoId) {
-        alert(tr('err_login_for_debt', 'A tartozás felvételéhez be kell jelentkezned!'));
+        goatsAblak.toast(tr('err_login_for_debt', 'A tartozás felvételéhez be kell jelentkezned!'), 'hiba');
         return;
     }
 
     const { sorok, mod, hiba } = tartozasSorok(osszeg, resztvevok, kinek);
     if (hiba) {
-        alert(hiba);
+        goatsAblak.toast(hiba, 'hiba');
         return;
     }
     if (sorok.length === 0) {
-        alert(tr('err_need_debtor', 'Legalább egy adósnak kell lennie a hitelezőn kívül.'));
+        goatsAblak.toast(tr('err_need_debtor', 'Legalább egy adósnak kell lennie a hitelezőn kívül.'), 'hiba');
         return;
     }
 
@@ -748,7 +748,7 @@ async function addTartozas() {
     // Egyetlen insert: vagy minden sor bekerül, vagy egy sem (nincs részleges mentés)
     const mentesHiba = await tartozasokMentese(ujTartozasok);
     if (mentesHiba) {
-        alert(tartozasHiba(mentesHiba));
+        goatsAblak.toast(tartozasHiba(mentesHiba), 'hiba');
         return;
     }
 

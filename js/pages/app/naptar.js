@@ -73,8 +73,8 @@ function setupGombok() {
     document.getElementById('kozelgo-uj-gomb')?.addEventListener('click', () => ujEsemenyModal(datumKulcs(new Date())));
 
     document.getElementById('modosit-esemeny-btn')?.addEventListener('click', modositEsemeny);
-    document.getElementById('torol-esemeny-btn')?.addEventListener('click', () => {
-        if (aktivEsemeny && confirm(tr('confirm_delete_event', 'Biztosan törlöd ezt az eseményt: "{title}"?', { title: aktivEsemeny.cim }))) {
+    document.getElementById('torol-esemeny-btn')?.addEventListener('click', async () => {
+        if (aktivEsemeny && await goatsAblak.megerosites(tr('confirm_delete_event', 'Biztosan törlöd ezt az eseményt: "{title}"?', { title: aktivEsemeny.cim }), { gomb: tr('delete', 'Törlés'), veszely: true })) {
             torolEsemeny(aktivEsemeny.id);
             document.getElementById('esemeny-reszletek-modal').hidden = true;
         }
@@ -443,7 +443,7 @@ async function modositEsemeny() {
     const ujDatum = datumInput ? datumInput.value : '';
 
     if (!ujCim || !ujDatum) {
-        return alert(tr('err_title_date', 'Adj meg címet és dátumot!'));
+        return goatsAblak.toast(tr('err_title_date', 'Adj meg címet és dátumot!'), 'hiba');
     }
 
     try {
@@ -455,7 +455,7 @@ async function modositEsemeny() {
             .eq('id', aktivEsemeny.id);
 
         if (window.goatsHiba.hibaVan(error, 'az esemény módosításakor')) {
-            alert(tr('err_modify', 'Hiba a módosításkor: {msg}', { msg: error.message }));
+            goatsAblak.toast(tr('err_modify', 'Hiba a módosításkor: {msg}', { msg: error.message }), 'hiba');
             return;
         }
 
@@ -470,7 +470,7 @@ async function modositEsemeny() {
         kirajzolNaptar();
     } catch (err) {
         console.error('Kivétel történt:', err);
-        alert(tr('err_modify_unexpected', 'Váratlan hiba történt a módosítás során!'));
+        goatsAblak.toast(tr('err_modify_unexpected', 'Váratlan hiba történt a módosítás során!'), 'hiba');
     }
 }
 
@@ -479,9 +479,9 @@ async function mentUjEsemeny() {
     const cimInput = document.getElementById('esemeny-cim-input');
     const datumInput = document.getElementById('esemeny-datum-input');
 
-    if (!groupCode) return alert(tr('err_join_group_first', 'Lépj be egy csoportba!'));
+    if (!groupCode) return goatsAblak.toast(tr('err_join_group_first', 'Lépj be egy csoportba!'), 'hiba');
     if (!cimInput.value.trim() || !datumInput.value) {
-        return alert(tr('err_title_date', 'Adj meg címet és dátumot!'));
+        return goatsAblak.toast(tr('err_title_date', 'Adj meg címet és dátumot!'), 'hiba');
     }
 
     const újEsemeny = {

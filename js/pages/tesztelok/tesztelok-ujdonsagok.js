@@ -4,6 +4,24 @@
 // Ugyanezt a listát mutatja a nyilvános Újdonságok oldal is (ujdonsagok.html, js/pages/tesztelok/ujdonsagok.js).
 export const UJDONSAGOK = [
     {
+        datum: '2026-11-19',
+        hu: [
+            'Az üzenetek és megerősítések mostantól az app stílusában jelennek meg: a „Mentve” és a hibaüzenetek alul, rövid sávként',
+            'Törlés előtt piros gombos megerősítő ablak, a fiók és a csoport törlése pedig csak a megerősítő szó beírása után lehetséges',
+            'Goats Game: egy új meccs pontjait egy ablakban adhatod meg, mindenkiét egyszerre',
+        ],
+        en: [
+            'Messages and confirmations now match the app’s style: “Saved” and error messages appear as a short bar at the bottom',
+            'Deleting asks for confirmation with a red button, and deleting your account or a group only works after typing the confirmation word',
+            'Goats Game: enter the points of a new match in one window, for everyone at once',
+        ],
+        de: [
+            'Meldungen und Bestätigungen erscheinen jetzt im Stil der App: „Gespeichert“ und Fehlermeldungen als kurze Leiste unten',
+            'Vor dem Löschen erscheint ein Bestätigungsfenster mit rotem Knopf, Konto und Gruppe lassen sich nur nach Eingabe des Bestätigungsworts löschen',
+            'Goats Game: Die Punkte eines neuen Spiels gibst du in einem Fenster ein, für alle gleichzeitig',
+        ],
+    },
+    {
         datum: '2026-11-16',
         hu: [
             'Tartozások: legfelül látod a saját egyenlegedet, kinek tartozol és ki tartozik neked',

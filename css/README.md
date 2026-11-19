@@ -8,7 +8,7 @@ stílusát (`pages/bejelentkezes.css`, `pages/fooldal.css`). A többi oldal ezen
 | Mappa | Mi van benne |
 |---|---|
 | `base/` | `valtozok.css` (**a témák színei** CSS-változóként, betűméret-skála), `visszaallitas.css` (reset), `segedosztalyok.css` (apró, újrahasználható osztályok) |
-| `elemek/` | Közös komponensek több oldalon: `navbar.css`, `modals.css`, `oldal-fejlec.css`, `lenyilo-menu.css`, `lebego-cimke.css`, `valaszto-kartyak.css` (téma/nyelv kártyák), `ital-szinezes.css` (italok rétegei), `tartozasok-egyenlitese.css`, `telepites.css` |
+| `elemek/` | Közös komponensek több oldalon: `navbar.css`, `modals.css`, `oldal-fejlec.css`, `lenyilo-menu.css`, `lebego-cimke.css`, `valaszto-kartyak.css` (téma/nyelv kártyák), `ital-szinezes.css` (italok rétegei), `tartozasok-egyenlitese.css`, `telepites.css`, `ablakok.css` (toast és megerősítő ablakok) |
 | `pages/` | Oldalanként egy fájl, az oldal nevével (`ranglista.css` = `ranglista.html`). Kivétel: `bejelentkezes.css` = kezdőlap **és** a főoldal (`app.html`) naptára, közelgő eseményei; `fooldal.css` = főoldal; `jogi.css` = jogi oldalak és Újdonságok |
 | `kulso/fontawesome-6.5.1/` | Font Awesome ikonok (csak a „solid”), saját tárhelyen |
 

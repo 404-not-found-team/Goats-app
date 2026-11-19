@@ -1,4 +1,5 @@
 import './supabase-client.js';
+import './segedek/ablakok.js';
 import './hitelesites.js';
 import './beallitasok-modal.js';
 import './nav-bar.js';

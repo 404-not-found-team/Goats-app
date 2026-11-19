@@ -777,7 +777,7 @@ function frissitsSzamlalokat() {
 
 function nyisdUjItalModal() {
     if (window.goatsKapcsolok && !window.goatsKapcsolok.funkcioEngedelyezett('funkcio_italjavaslat')) {
-        alert(window.goatsKapcsolok.TILTVA_SZOVEG);
+        goatsAblak.toast(window.goatsKapcsolok.TILTVA_SZOVEG, 'info');
         return;
     }
     document.getElementById('uj-ital-modal').hidden = false;
@@ -940,11 +940,11 @@ async function mentUjItal() {
     const szazalek = document.getElementById('uj-ital-szazalek').value.trim();
 
     if (!nev) {
-        alert(tr('err_drink_name', 'Kérlek add meg az ital nevét!'));
+        goatsAblak.toast(tr('err_drink_name', 'Kérlek add meg az ital nevét!'), 'hiba');
         return;
     }
     if (!fo) {
-        alert(tr('err_choose_category', 'Válassz kategóriát!'));
+        goatsAblak.toast(tr('err_choose_category', 'Válassz kategóriát!'), 'hiba');
         return;
     }
 
@@ -972,14 +972,14 @@ async function mentUjItal() {
 
         const { data, error } = await italModositasa(italId, valtozas);
         if (error) {
-            alert(tr('err_saving_msg', 'Hiba történt a mentéskor: {msg}', { msg: error.message }));
+            goatsAblak.toast(tr('err_saving_msg', 'Hiba történt a mentéskor: {msg}', { msg: error.message }), 'hiba');
             return;
         }
 
         const receptRendben = await receptMentese(italId, hozzavalok, true);
         if (hozzavalok.length > 0) {
             if (!receptRendben) {
-                alert(tr('err_ingredients_save', 'Az ital elmentve, de a hozzávalók mentése nem sikerült.'));
+                goatsAblak.toast(tr('err_ingredients_save', 'Az ital elmentve, de a hozzávalók mentése nem sikerült.'), 'hiba');
             } else {
                 osszetevokItalonkent.set(italId, hozzavalok);
             }
@@ -1009,13 +1009,13 @@ async function mentUjItal() {
 
     const { data, error } = await ujItalMentese(ujItalAdat);
     if (error) {
-        alert(tr('err_saving_msg', 'Hiba történt a mentéskor: {msg}', { msg: error.message }));
+        goatsAblak.toast(tr('err_saving_msg', 'Hiba történt a mentéskor: {msg}', { msg: error.message }), 'hiba');
         return;
     }
 
     if (hozzavalok.length > 0) {
         if (!await receptMentese(data.id, hozzavalok, false)) {
-            alert(tr('err_ingredients_save', 'Az ital elmentve, de a hozzávalók mentése nem sikerült.'));
+            goatsAblak.toast(tr('err_ingredients_save', 'Az ital elmentve, de a hozzávalók mentése nem sikerült.'), 'hiba');
         } else {
             osszetevokItalonkent.set(data.id, hozzavalok);
         }

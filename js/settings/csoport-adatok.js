@@ -249,7 +249,7 @@ export function initGroupDetails() {
       const nevek = kijeloltek
         .map(id => members.find(m => m.user_id === id)?.display_name || id)
         .join(', ');
-      if (!confirm(tr('confirm_remove_members', 'Eltávolítod a csoportból: {names}?', { names: nevek }))) return;
+      if (!await goatsAblak.megerosites(tr('confirm_remove_members', 'Eltávolítod a csoportból: {names}?', { names: nevek }), { gomb: tr('btn_remove', 'Eltávolítás'), veszely: true })) return;
 
       setStatus(tr('removing', 'Eltávolítás...'), '#3b82f6');
       // Párhuzamosan, nem egyenként: a tagok eltávolítása egymástól független művelet
@@ -264,7 +264,7 @@ export function initGroupDetails() {
       const kijelolt = document.querySelector('#group-members-list .tag-atadas-radio:checked');
       if (!kijelolt) return setStatus(tr('err_select_member', 'Válassz ki egy tagot.'), '#ef4444');
       const nev = members.find(m => m.user_id === kijelolt.value)?.display_name || '';
-      if (!confirm(tr('confirm_transfer_admin', 'Átadod az admin jogot neki: {name}? Utána te sima tag leszel.', { name: nev }))) return;
+      if (!await goatsAblak.megerosites(tr('confirm_transfer_admin', 'Átadod az admin jogot neki: {name}? Utána te sima tag leszel.', { name: nev }), { gomb: tr('btn_transfer', 'Átadás') })) return;
 
       setStatus(tr('saving', 'Mentés...'), '#3b82f6');
       const ok = await transferOwnership(kijelolt.value, group.id);
@@ -275,7 +275,7 @@ export function initGroupDetails() {
 
   // Új kód (admin)
   get('regenerate-code-btn')?.addEventListener('click', async () => {
-    if (!confirm(tr('confirm_new_code', 'Új csoportkódot generálsz. A régi kód azonnal érvénytelen lesz, a meglévő tagok bent maradnak. Az új kódot MEG KELL OSZTANOD a tagokkal, mert a régivel már nem tudnak csatlakozni. A csoport képei nem változnak. Folytatod?'))) return;
+    if (!await goatsAblak.megerosites(tr('confirm_new_code', 'Új csoportkódot generálsz. A régi kód azonnal érvénytelen lesz, a meglévő tagok bent maradnak. Az új kódot MEG KELL OSZTANOD a tagokkal, mert a régivel már nem tudnak csatlakozni. A csoport képei nem változnak. Folytatod?'), { gomb: tr('btn_new_code', 'Új kód') })) return;
     const code = await regenerateGroupCode(getState().group.id);
     if (code) setStatus(tr('new_group_code', 'Új csoportkód: {code}', { code }), '#10b981');
   });
@@ -283,11 +283,14 @@ export function initGroupDetails() {
   // Csoport törlése (admin) – a csoport nevét kell begépelni
   get('delete-group-btn')?.addEventListener('click', async () => {
     const { group } = getState();
-    const typed = prompt(
-      tr('confirm_delete_group', 'A csoport és MINDEN adata (tartozások, tervek, események...) véglegesen törlődik.\n\nA megerősítéshez írd be a csoport nevét: {name}', { name: group.group_name })
-    );
-    if (typed === null) return;
-    if (typed.trim() !== group.group_name) return setStatus(tr('err_group_name_mismatch', 'A név nem egyezik, a csoport nem lett törölve.'), '#ef4444');
+    // a törlés gomb csak a csoport nevének beírása után nyomható (js/segedek/ablakok.js)
+    const megerositve = await goatsAblak.begepeloMegerosites({
+      cim: tr('delete_group', 'Csoport törlése'),
+      szoveg: tr('confirm_delete_group', 'A csoport és MINDEN adata (tartozások, tervek, események...) véglegesen törlődik.\n\nA megerősítéshez írd be a csoport nevét: {name}', { name: group.group_name }),
+      szo: group.group_name,
+      gomb: tr('delete_group', 'Csoport törlése'),
+    });
+    if (!megerositve) return;
     await csoportKepeinekTorlese(group);
     const ok = await deleteCurrentGroup(group.id);
     if (ok) location.reload();
@@ -295,7 +298,7 @@ export function initGroupDetails() {
 
   // Kilépés (mindenkinek, nem csak adminnak)
   get('leave-group-btn')?.addEventListener('click', async () => {
-    if (!confirm(tr('confirm_leave_group', 'Biztosan kilépsz a csoportból?'))) return;
+    if (!await goatsAblak.megerosites(tr('confirm_leave_group', 'Biztosan kilépsz a csoportból?'), { gomb: tr('btn_leave', 'Kilépés'), veszely: true })) return;
     try {
       const { group, members } = getState();
       if (members.length === 1) await csoportKepeinekTorlese(group);

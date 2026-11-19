@@ -109,7 +109,7 @@ async function frissitJatekosSzinet(userId, picker) {
 
     const hiba = await jatekosSzinMentese(groupId, userId, ujSzin);
     if (hiba) {
-        alert(tr('err_color_save', 'Nem sikerült menteni a színt: {msg}', { msg: hiba.message }));
+        goatsAblak.toast(tr('err_color_save', 'Nem sikerült menteni a színt: {msg}', { msg: hiba.message }), 'hiba');
         jatekosSzinek.set(userId, regiSzin);
         picker.value = regiSzin;
         jatekosSzinFrissitese(userId, regiSzin);
@@ -126,19 +126,19 @@ async function mentUjJatek() {
     const szin = SZIN_MINTA.test(szinInput.value) ? szinInput.value.toLowerCase() : ALAP_SZIN;
 
     if (!jatekNev) {
-        alert(tr('err_game_name', 'Kérlek add meg a játék nevét!'));
+        goatsAblak.toast(tr('err_game_name', 'Kérlek add meg a játék nevét!'), 'hiba');
         return;
     }
 
     const groupId = aktualisCsoportId();
     if (!groupId) {
-        alert(tr('err_game_add_need', 'A játék felvételéhez csoporttagság és internetkapcsolat kell.'));
+        goatsAblak.toast(tr('err_game_add_need', 'A játék felvételéhez csoporttagság és internetkapcsolat kell.'), 'hiba');
         return;
     }
 
     const { data, error } = await jatekFelvetele(groupId, jatekNev, szin);
     if (error) {
-        alert(tr('err_game_add', 'Hiba történt a játék felvételekor: {msg}', { msg: error.message }));
+        goatsAblak.toast(tr('err_game_add', 'Hiba történt a játék felvételekor: {msg}', { msg: error.message }), 'hiba');
         return;
     }
 
@@ -150,25 +150,21 @@ async function mentUjJatek() {
 
 async function ujMeccsHozzaadasa(jatek, gombElem) {
     if (jatekosok.length === 0) {
-        alert(tr('err_no_players', 'Nincsenek betöltve játékosok!'));
+        goatsAblak.toast(tr('err_no_players', 'Nincsenek betöltve játékosok!'), 'hiba');
         return;
     }
 
-    const pontok = [];
-    for (const jatekos of jatekosok) {
-        const bekeres = prompt(tr('prompt_points', 'Hány pontot ért el {name} ({game})?', { name: jatekos.display_name, game: jatek.nev }), '0');
-        if (bekeres === null) return;
-
-        let pont = Math.round(Number(bekeres));
-        if (!Number.isFinite(pont)) pont = 0;
-        pont = Math.max(-1000000, Math.min(1000000, pont));
-        pontok.push({ user_id: jatekos.user_id, pont });
-    }
+    // minden játékos pontja egy ablakban (js/segedek/ablakok.js), egész számra kerekítve és korlátozva
+    const pontok = await goatsAblak.pontBekeres({
+        cim: tr('match_new_title', 'Új meccs – {game}', { game: jatek.nev }),
+        jatekosok: jatekosok.map(j => ({ user_id: j.user_id, nev: j.display_name })),
+    });
+    if (!pontok) return;
 
     gombElem.disabled = true;
     const { data: meccsId, error } = await meccsMentese(jatek.id, pontok);
     if (error) {
-        alert(tr('err_points_save', 'Hiba történt a pontok mentése során: {msg}', { msg: error.message }));
+        goatsAblak.toast(tr('err_points_save', 'Hiba történt a pontok mentése során: {msg}', { msg: error.message }), 'hiba');
         gombElem.disabled = false;
         return;
     }
@@ -179,11 +175,11 @@ async function ujMeccsHozzaadasa(jatek, gombElem) {
 }
 
 async function meccsTorlesKerese(jatek, meccs) {
-    if (!confirm(tr('confirm_delete_match', 'Biztosan törlöd ezt a meccset ({game})?', { game: jatek.nev }))) return;
+    if (!await goatsAblak.megerosites(tr('confirm_delete_match', 'Biztosan törlöd ezt a meccset ({game})?', { game: jatek.nev }), { gomb: tr('delete', 'Törlés'), veszely: true })) return;
 
     const hiba = await meccsTorlese(meccs.id);
     if (hiba) {
-        alert(tr('err_match_delete', 'Nem sikerült törölni a meccset: {msg}', { msg: hiba.message }));
+        goatsAblak.toast(tr('err_match_delete', 'Nem sikerült törölni a meccset: {msg}', { msg: hiba.message }), 'hiba');
         return;
     }
 
@@ -193,12 +189,12 @@ async function meccsTorlesKerese(jatek, meccs) {
 }
 
 async function jatekTorlesKerese(jatek, gombElem) {
-    if (!confirm(tr('confirm_delete_game', 'Biztosan törölni szeretnéd ezt a játékot és a hozzá tartozó adatokat?'))) return;
+    if (!await goatsAblak.megerosites(tr('confirm_delete_game', 'Biztosan törölni szeretnéd ezt a játékot és a hozzá tartozó adatokat?'), { gomb: tr('delete', 'Törlés'), veszely: true })) return;
 
     gombElem.disabled = true;
     const hiba = await jatekTorlese(jatek.id);
     if (hiba) {
-        alert(tr('err_game_delete', 'Nem sikerült törölni a játékot: {msg}', { msg: hiba.message }));
+        goatsAblak.toast(tr('err_game_delete', 'Nem sikerült törölni a játékot: {msg}', { msg: hiba.message }), 'hiba');
         gombElem.disabled = false;
         return;
     }

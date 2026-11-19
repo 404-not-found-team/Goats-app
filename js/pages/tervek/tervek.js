@@ -32,7 +32,7 @@ async function add() {
 // Terv törlése Supabase-ből
 async function deleteTerv(id) {
     if (!await tervTorlese(id, aktualisGroupCode())) {
-        alert(tr('err_deleting', 'Hiba történt a törlés során!'));
+        goatsAblak.toast(tr('err_deleting', 'Hiba történt a törlés során!'), 'hiba');
         return;
     }
     loadTervek();

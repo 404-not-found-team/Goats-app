@@ -100,8 +100,8 @@ function sor(j) {
         if (j.cel_tipus === 'kep' && j.eredeti_megvan) {
             const torol = ujElem('button', 'admin-gomb veszelyes', tr('report_delete_close', 'Kép törlése és lezárás'));
             torol.type = 'button';
-            torol.addEventListener('click', () => {
-                if (!confirm(tr('confirm_report_delete', 'Biztosan törlöd ezt a képet a csoport galériájából? A jelentett másolat megmarad.'))) return;
+            torol.addEventListener('click', async () => {
+                if (!await goatsAblak.megerosites(tr('confirm_report_delete', 'Biztosan törlöd ezt a képet a csoport galériájából? A jelentett másolat megmarad.'), { gomb: tr('delete', 'Törlés'), veszely: true })) return;
                 lezaras(j, true, gombok);
             });
             gombok.append(torol);

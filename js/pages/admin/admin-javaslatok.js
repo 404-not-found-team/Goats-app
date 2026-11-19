@@ -60,8 +60,8 @@ function sor(javaslat, ital, recept) {
     jovahagy.addEventListener('click', () => dontes('approve_drink', javaslat, tr('drink_approved', '{name}: jóváhagyva, bekerült a katalógusba.', { name: javaslat.nev }), gombok));
     const elutasit = ujElem('button', 'admin-gomb veszelyes', tr('reject', 'Elutasít'));
     elutasit.type = 'button';
-    elutasit.addEventListener('click', () => {
-        if (!confirm(tr('confirm_reject_drink', 'Biztosan elutasítod és törlöd ezt az italt: „{name}”? Ez nem vonható vissza.', { name: javaslat.nev }))) return;
+    elutasit.addEventListener('click', async () => {
+        if (!await goatsAblak.megerosites(tr('confirm_reject_drink', 'Biztosan elutasítod és törlöd ezt az italt: „{name}”? Ez nem vonható vissza.', { name: javaslat.nev }), { gomb: tr('reject', 'Elutasít'), veszely: true })) return;
         dontes('reject_drink', javaslat, tr('drink_rejected', '{name}: elutasítva, törölve.', { name: javaslat.nev }), gombok);
     });
     gombok.append(jovahagy, elutasit);
@@ -168,8 +168,8 @@ function sablonSor(s) {
     });
     const elutasit = ujElem('button', 'admin-gomb veszelyes', tr('reject', 'Elutasít'));
     elutasit.type = 'button';
-    elutasit.addEventListener('click', () => {
-        if (!confirm(tr('hn_confirm_reject_template', 'Biztosan elutasítod ezt a sablont: „{name}”? A javasló számlálója megmarad.', { name: s.nev }))) return;
+    elutasit.addEventListener('click', async () => {
+        if (!await goatsAblak.megerosites(tr('hn_confirm_reject_template', 'Biztosan elutasítod ezt a sablont: „{name}”? A javasló számlálója megmarad.', { name: s.nev }), { gomb: tr('reject', 'Elutasít'), veszely: true })) return;
         sablonDontes('reject_hn_template', { template_id: s.id }, tr('hn_template_rejected', '{name}: elutasítva.', { name: s.nev }), gombok);
     });
     const gombok = ujElem('div', 'admin-urlap-sor');

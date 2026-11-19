@@ -165,7 +165,7 @@ async function alkategoriaMentes(a, { nev, tipus, ertek, sorrend }) {
 }
 
 async function alkategoriaTorles(a) {
-    if (!confirm(tr('confirm_delete_subcat', 'Biztosan törlöd a(z) „{name}” alkategóriát? Az italai alkategória nélkül maradnak.', { name: a.nev }))) return;
+    if (!await goatsAblak.megerosites(tr('confirm_delete_subcat', 'Biztosan törlöd a(z) „{name}” alkategóriát? Az italai alkategória nélkül maradnak.', { name: a.nev }), { gomb: tr('delete', 'Törlés'), veszely: true })) return;
     // A kézzel ide sorolt italok visszakerülnek a szabály szerinti besorolásra
     const { error } = await adat.alkategoriaTorlese(a.id);
     if (error) {

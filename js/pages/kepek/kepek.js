@@ -54,11 +54,11 @@ async function betoltKepek(elsoBetoltes = false) {
 // ---------- Törlés ----------
 
 async function torolKep(kep) {
-    if (!confirm(tr('confirm_delete_picture', 'Biztosan törölni szeretnéd ezt a képet?'))) return;
+    if (!await goatsAblak.megerosites(tr('confirm_delete_picture', 'Biztosan törölni szeretnéd ezt a képet?'), { gomb: tr('delete', 'Törlés'), veszely: true })) return;
 
     const hiba = await kepTorlese(kep.path);
     if (hiba) {
-        alert(tr('err_delete_msg', 'Sikertelen törlés! Hiba: {msg}', { msg: hiba.message }));
+        goatsAblak.toast(tr('err_delete_msg', 'Sikertelen törlés! Hiba: {msg}', { msg: hiba.message }), 'hiba');
         return;
     }
 
@@ -110,7 +110,7 @@ async function feltoltKepek(event) {
     event.target.value = '';
     if (fajlok.length === 0) return;
     if (!csoport) {
-        alert(tr('err_join_group_settings', 'Előbb lépj be egy csoportba a beállításoknál!'));
+        goatsAblak.toast(tr('err_join_group_settings', 'Előbb lépj be egy csoportba a beállításoknál!'), 'hiba');
         return;
     }
 

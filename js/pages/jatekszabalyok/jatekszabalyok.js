@@ -624,10 +624,10 @@ async function jatekMentese() {
 async function jatekTorlese() {
     const jatek = aktivJatek;
     menuBezarasa();
-    if (!confirm(tr('confirm_delete_game_x', 'Biztosan törlöd a "{name}" játékot? Ez nem vonható vissza.', { name: jatek.cim }))) return;
+    if (!await goatsAblak.megerosites(tr('confirm_delete_game_x', 'Biztosan törlöd a "{name}" játékot? Ez nem vonható vissza.', { name: jatek.cim }), { gomb: tr('delete', 'Törlés'), veszely: true })) return;
 
     if (!await adat.jatekTorlese(jatek.id)) {
-        alert(tr('err_deleting', 'Hiba történt a törlés során!'));
+        goatsAblak.toast(tr('err_deleting', 'Hiba történt a törlés során!'), 'hiba');
         return;
     }
 
@@ -644,14 +644,14 @@ async function javaslatKuldese() {
     const cim = $('jatek-javaslat-cim-input').value.trim();
     const szoveg = $('jatek-javaslat-szoveg-input').value.trim();
 
-    if (cim.length < 2 || cim.length > 80) { alert(tr('err_proposal_title', 'A javaslat címe 2–80 karakter legyen.')); return; }
-    if (szoveg.length === 0) { alert(tr('err_proposal_text', 'Írd le a javaslatot.')); return; }
+    if (cim.length < 2 || cim.length > 80) { goatsAblak.toast(tr('err_proposal_title', 'A javaslat címe 2–80 karakter legyen.'), 'hiba'); return; }
+    if (szoveg.length === 0) { goatsAblak.toast(tr('err_proposal_text', 'Írd le a javaslatot.'), 'hiba'); return; }
 
     const sajatGroup = getState().group;
-    if (!sajatGroup) { alert(tr('err_no_group_proposal', 'Nincs csoportod, így nem küldhetsz javaslatot.')); return; }
+    if (!sajatGroup) { goatsAblak.toast(tr('err_no_group_proposal', 'Nincs csoportod, így nem küldhetsz javaslatot.'), 'hiba'); return; }
 
     if (!await adat.javaslatKuldese(jatek.id, sajatGroup.id, sajatGroup.group_name, cim, szoveg)) {
-        alert(tr('err_proposal_send', 'Hiba történt a javaslat küldésekor.'));
+        goatsAblak.toast(tr('err_proposal_send', 'Hiba történt a javaslat küldésekor.'), 'hiba');
         return;
     }
 
@@ -663,7 +663,7 @@ async function javaslatKuldese() {
 async function javaslatElfogadasa(javaslatId) {
     const hiba = await adat.javaslatElfogadasa(javaslatId);
     if (hiba) {
-        alert(tr('err_accept', 'Hiba történt az elfogadás során: {msg}', { msg: hiba.message || hiba }));
+        goatsAblak.toast(tr('err_accept', 'Hiba történt az elfogadás során: {msg}', { msg: hiba.message || hiba }), 'hiba');
         return;
     }
     await reszletFrissites(aktivJatek);
