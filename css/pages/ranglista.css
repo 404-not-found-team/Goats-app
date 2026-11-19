@@ -79,6 +79,24 @@
     background-color: var(--megjobbansoha);
 }
 
+/* A berangsorolt italok alatt a tier színének halvány árnyalata (a címke élénk marad).
+   Régebbi böngészőben, color-mix nélkül, marad a sima --inner-bg. */
+.ranglista-dropzone[data-tier="S"] {
+    background-color: color-mix(in srgb, var(--legeslegjobb) 12%, var(--inner-bg));
+}
+.ranglista-dropzone[data-tier="A"] {
+    background-color: color-mix(in srgb, var(--legjobb) 12%, var(--inner-bg));
+}
+.ranglista-dropzone[data-tier="B"] {
+    background-color: color-mix(in srgb, var(--elmegy) 12%, var(--inner-bg));
+}
+.ranglista-dropzone[data-tier="C"] {
+    background-color: color-mix(in srgb, var(--soha) 12%, var(--inner-bg));
+}
+.ranglista-dropzone[data-tier="D"] {
+    background-color: color-mix(in srgb, var(--megjobbansoha) 12%, var(--inner-bg));
+}
+
 .forras-fejlec {
     display: flex;
     justify-content: space-between;
