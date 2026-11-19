@@ -39,6 +39,14 @@ Néhány külön fájl:
 | `app/naptar.js` | Főoldali naptár: Hónap/Lista nézet, kiválasztott nap eseményei, közelgő események kártya |
 | `app/galeria.js` | Főoldali képsáv |
 | `app/app-orzo.js` | Munkamenet nélkül visszaküld a kezdőlapra |
+| `ranglista/ranglista.js` | Vezérlő: betöltés, tier-ek kirajzolása, drag & drop mentés, eseménykezelők, `window`-ra tett függvények |
+| `ranglista/ranglista-allapot.js` | Közös, változó állapot egy `allapot` objektumban (modulok között így osztható meg) |
+| `ranglista/ranglista-seged.js` | Apró segédek: `K()`, `alKulcs`, `ujElem`, `billentyuvelKattinthato` |
+| `ranglista/ranglista-kartyak.js` | Tier-sorok, forrásdobozok, italkártyák, kinagyított ital ablaka |
+| `ranglista/ranglista-naplo.js` | Ki, mikor, hová tette az italt (napló a kinagyított ablakban) |
+| `ranglista/ranglista-szuro.js` | Csoport- és saját szűrő: ablak, mentés, alkalmazás, számlálók |
+| `ranglista/ranglista-urlap.js` | Új ital / szerkesztés ablak: kategória, kinézet, hozzávalók, mentés |
+| `ranglista/ranglista-adat.js` | Adatréteg: minden Supabase-hívás |
 | `ranglista/ital-kep.js` | Italkép egy helyen: színezett forma (rétegek), márkakép, kategória-ikon. Itt van a `FORMAK`, `MINTAK` lista és a `KEP_VERZIO` (lásd `img/README.md`) |
 | `tartozasok/tartozasok-egyenlites.js` | Lenyíló részletek, kölcsönös egyenlítés, visszavonás |
 | `hanynapja/hanynapja-fooldal.js` | A főoldali Hány napja sáv |

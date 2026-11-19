@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v100';
+const CACHE_NEV = 'goats-v101';
 
 // Az italok rétegképei (a ?v= verzióval együtt) külön, tartós tárba kerülnek: onnan azonnal jönnek,
 // nem kérjük le őket újra minden megnyitáskor, és a CACHE_NEV emelésekor sem törlődnek (az activate a
@@ -119,6 +119,12 @@ const RANGLISTA = [
     'js/pages/ranglista/ranglista.js',
     'js/pages/ranglista/ranglista-adat.js',
     'js/pages/ranglista/ital-kep.js',
+    'js/pages/ranglista/ranglista-allapot.js',
+    'js/pages/ranglista/ranglista-seged.js',
+    'js/pages/ranglista/ranglista-kartyak.js',
+    'js/pages/ranglista/ranglista-naplo.js',
+    'js/pages/ranglista/ranglista-szuro.js',
+    'js/pages/ranglista/ranglista-urlap.js',
 ];
 
 const TARTOZASOK = [
