@@ -922,13 +922,18 @@
 
 .fo-hn-link {
     color: var(--accent-text);
-    font-size: var(--fs-sm);
-    font-weight: 600;
+    font-size: var(--fs-xs);
     text-decoration: none;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.45);
+    font-weight: 600;
 }
 
-.fo-hn-link:hover {
-    text-decoration: underline;
+.fo-hn-link:hover,
+.fo-hn-link:focus-visible {
+    background: var(--accent-color);
+    color: var(--on-accent);
 }
 
 .fo-hn-lista {
