@@ -1418,6 +1418,12 @@
         min-height: 0;
     }
 
+    /* a forrásdobozok márka szerinti alcsoportjaiban is ugyanakkora rés, különben csak 3 fér egy sorba */
+    .rl-uj-kinezet .ital-alcsoport-lista {
+        gap: 6px;
+        align-items: flex-start;
+    }
+
     .rl-uj-kinezet .kategoria-kontener .ranglista-dropzone {
         min-height: 74px;
     }
@@ -1441,14 +1447,22 @@
         height: 56px;
     }
 
+    /* a betűméret a képernyő szélességéhez igazodik, hogy egy hosszabb szó (pl. „Blackcurrant”) is kiférjen */
     .rl-uj-kinezet .ital-felirat {
-        font-size: 10.5px;
+        font-size: clamp(8.5px, 2.55vw, 10.5px);
         margin-top: 2px;
         height: auto;
         min-height: 0;
     }
 
-    .rl-uj-kinezet .ranglista-dropzone .ital-marka {
+    /* a szavakat nem törjük félbe: egy szó mindig egy sorban marad, csak szóközöknél tör */
+    .rl-uj-kinezet .ital-nev {
+        overflow-wrap: normal;
+        word-break: normal;
+        letter-spacing: -0.01em;
+    }
+
+    .rl-uj-kinezet .ital-marka {
         font-size: 9px;
         line-height: 1.1;
         opacity: 0.85;
