@@ -537,6 +537,11 @@ select.hn-mezo {
         overflow-y: auto;
         padding: 18px;
         text-align: left;
+        /* a modalnak saját doboza van; gépen (a fejlécben) az űrlapnak nincs külön háttere */
+        border: 1px solid var(--border-color);
+        background: var(--card-bg);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px); /* áttetsző témáknál se folyjon át az oldal */
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     }
 
