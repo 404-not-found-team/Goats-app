@@ -59,8 +59,9 @@ Az `admin.html` (`js/pages/admin/admin.js`, `css/pages/admin.css`) csak a supera
 | `funkcio_tartozas_felvetel` | Új tartozás felvétele |
 | `funkcio_csoportcsatlakozas` | Csatlakozás csoportkóddal |
 | `csoportszuro_csak_admin` | Beállítás (alapból ki): bekapcsolva a Ranglista csoportszűrőjét csak a csoport adminja módosíthatja |
+| `ranglista_uj_kinezet` | Beállítás (alapból ki): bekapcsolva a Ranglista új kinézete (tier-betű a sor bal szélén, telefonon soronként 4 kisebb ital, kis márkanév). Mindenkinek egységes, **a superadminoknak is**: a `ranglista.js` közvetlenül az értéket olvassa, és a `body`-ra teszi az `rl-uj-kinezet` osztályt |
 
-**A superadminokra egyik kapcsoló sem vonatkozik**: minden oldalt látnak és minden funkciót használhatnak.
+**A superadminokra az oldal- és funkció-kapcsolók nem vonatkoznak**: minden oldalt látnak és minden funkciót használhatnak. (Kivétel a `ranglista_uj_kinezet` megjelenési beállítás, ami rájuk is érvényes.)
 
 **Működés**
 - Az oldalak listája egy helyen van: `js/segedek/oldalak.js` (a nav-bar és az admin oldal is ezt használja).

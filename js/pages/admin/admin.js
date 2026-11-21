@@ -24,6 +24,14 @@ const KAPCSOLOK = [
         csoport: 'adminBeallitasok',
         figyelmeztet: false,
     },
+    // Beállítás (alapból ki): mindenkinek egységes, a superadminoknak is (a ranglista közvetlenül az értéket olvassa)
+    {
+        kulcs: 'ranglista_uj_kinezet',
+        nev: tr('sw_tierlist_new_look', 'Új ranglista-kinézet'),
+        leiras: tr('sw_tierlist_new_look_desc', 'Bekapcsolva a tier betűje a sor bal szélén van, és soronként több, kisebb ital fér el. Mindenkinek egyszerre vált, a superadminoknak is.'),
+        csoport: 'adminBeallitasok',
+        figyelmeztet: false,
+    },
 ];
 
 let ertekek = {}; // kulcs -> boolean (a szerver szerinti állapot)

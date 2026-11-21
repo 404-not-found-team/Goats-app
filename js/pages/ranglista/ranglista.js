@@ -18,10 +18,22 @@ import { epitFormaValaszto, epitKategoriaValaszto, epitKiszerelesValaszto, kateg
 //    a zero/nem zero látszik. Amíg nincs beállítva, egyetlen ital sem látszik, és az oldal felkínálja.
 //  - Saját nézet: ezen belül tovább szűkít (kategóriák, zero, név szerinti elrejtés), de nem mentjük.
 
+// ---------- Kinézet ----------
+
+// Az admin oldali „Új ranglista-kinézet” kapcsoló (app_kapcsolok.ranglista_uj_kinezet). Közvetlenül az
+// értéket olvassuk, nem a funkcioEngedelyezett()-et, így a superadminokra is ugyanúgy vonatkozik.
+// Kijelentkezve a kapcsolók nem olvashatók: ott a megszokott kinézet marad. A stílus: css/pages/ranglista.css.
+function kinezetBeallit() {
+    const uj = window.goatsAuth?.getState()?.beallitasok?.ranglista_uj_kinezet === true;
+    document.body.classList.toggle('rl-uj-kinezet', uj);
+}
+
 // ---------- Betöltés ----------
 
 async function inicializalas() {
     if (window.goatsAuth) await window.goatsAuth.ready;
+    kinezetBeallit();
+    window.goatsAuth?.onChange(kinezetBeallit); // menet közbeni váltáskor is átáll
     // Globálisan kikapcsolt italjavaslat (FELADAT15): a gomb letiltva, a szerver is elutasítaná
     window.goatsKapcsolok?.funkcioGombTiltas(document.getElementById('uj-ital-gomb'), 'funkcio_italjavaslat');
     const groupCode = aktualisGroupCode();

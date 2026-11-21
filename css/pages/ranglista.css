@@ -1361,3 +1361,100 @@
 .modal-naplo-sor + .modal-naplo-sor {
     margin-top: 4px;
 }
+
+
+/* ==========================================================================
+   Új kinézet (admin kapcsoló: ranglista_uj_kinezet → body.rl-uj-kinezet, lásd ranglista.js)
+   A tier betűje a sor bal szélén, oszlopként; telefonon soronként 4 kisebb ital, a márka kis betűvel.
+   Kikapcsolva ezek egyike sem érvényes, a fenti megszokott kinézet marad.
+   ========================================================================== */
+
+.rl-uj-kinezet .kategoria-kontener {
+    flex-direction: row;
+}
+
+.rl-uj-kinezet .kategoria-kontener .cimke {
+    width: 56px;
+    flex: 0 0 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    font-size: var(--fs-xxl);
+}
+
+.rl-uj-kinezet .kategoria-kontener .ranglista-dropzone {
+    min-height: 96px;
+    border-radius: 0;
+    align-items: flex-start;
+    align-content: flex-start;
+}
+
+/* üres sor: halvány célterület felirattal */
+.rl-uj-kinezet .ranglista-dropzone:empty::after {
+    content: attr(data-ures-felirat);
+    flex: 1;
+    align-self: center;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: var(--fs-sm);
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 14px 0;
+}
+
+@media (max-width: 768px) {
+    .rl-uj-kinezet .kategoria-kontener .cimke {
+        width: 44px;
+        flex-basis: 44px;
+        font-size: var(--fs-xl);
+    }
+
+    .rl-uj-kinezet .ranglista-dropzone,
+    .rl-uj-kinezet .ital-lista {
+        padding: 8px;
+        gap: 6px;
+        min-height: 0;
+    }
+
+    .rl-uj-kinezet .kategoria-kontener .ranglista-dropzone {
+        min-height: 74px;
+    }
+
+    /* soronként 4 kártya: (100% - 3 × 6px rés) / 4 */
+    .rl-uj-kinezet .ital-kartya {
+        min-width: 0;
+        max-width: none;
+        flex: 0 0 calc(25% - 4.5px);
+        box-sizing: border-box;
+        padding: 2px;
+    }
+
+    .rl-uj-kinezet .ital-kartya img,
+    .rl-uj-kinezet .ital-szinezett {
+        height: 56px;
+        max-height: 56px;
+    }
+
+    .rl-uj-kinezet .ital-ikon {
+        height: 56px;
+    }
+
+    .rl-uj-kinezet .ital-felirat {
+        font-size: 10.5px;
+        margin-top: 2px;
+        height: auto;
+        min-height: 0;
+    }
+
+    .rl-uj-kinezet .ranglista-dropzone .ital-marka {
+        font-size: 9px;
+        line-height: 1.1;
+        opacity: 0.85;
+    }
+
+    .rl-uj-kinezet #kategoriak-kontener {
+        gap: 8px;
+    }
+}
