@@ -411,7 +411,6 @@
     "sw_filter_admin_only_desc": "Wenn aus, kann jedes Gruppenmitglied wählen, welche Getränke in der Rangliste erscheinen.",
     "sw_tierlist_new_look": "Neues Ranglisten-Design",
     "sw_tierlist_new_look_desc": "Wenn an, steht der Tier-Buchstabe links in der Zeile und es passen mehr, kleinere Getränke in eine Zeile. Gilt für alle gleichzeitig, auch für Superadmins.",
-    "tier_drop_here": "Getränk hierher ziehen",
     "err_switches_load": "Die Schalter konnten nicht geladen werden. Wurde das SQL FELADAT15 ausgeführt?",
     "err_missing_setting": "Fehlende Einstellung in der Tabelle: {list}",
     "saving_item": "Wird gespeichert: {name}…",

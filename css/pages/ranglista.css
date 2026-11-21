@@ -1391,18 +1391,6 @@
     align-content: flex-start;
 }
 
-/* üres sor: halvány célterület felirattal */
-.rl-uj-kinezet .ranglista-dropzone:empty::after {
-    content: attr(data-ures-felirat);
-    flex: 1;
-    align-self: center;
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: var(--fs-sm);
-    border: 1px dashed var(--border-color);
-    border-radius: 8px;
-    padding: 14px 0;
-}
 
 @media (max-width: 768px) {
     .rl-uj-kinezet .kategoria-kontener .cimke {

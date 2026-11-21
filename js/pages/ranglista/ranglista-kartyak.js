@@ -87,7 +87,6 @@ export function epitTierek() {
         const cimke = ujElem('h3', `cimke ${k.cls} dark`, k.kod);
         const dropzone = ujElem('div', 'ranglista-dropzone');
         dropzone.dataset.tier = k.kod;
-        dropzone.dataset.uresFelirat = tr('tier_drop_here', 'Húzd ide az italt'); // csak az új kinézet mutatja (CSS)
         doboz.append(cimke, dropzone);
         return doboz;
     }));
