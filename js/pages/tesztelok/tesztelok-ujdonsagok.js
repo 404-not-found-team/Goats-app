@@ -4,6 +4,18 @@
 // Ugyanezt a listát mutatja a nyilvános Újdonságok oldal is (ujdonsagok.html, js/pages/tesztelok/ujdonsagok.js).
 export const UJDONSAGOK = [
     {
+        datum: '2026-11-22',
+        hu: [
+            'Ranglista: a Tátrateák alkoholfok szerint, növekvő sorrendben jelennek meg',
+        ],
+        en: [
+            'Tier list: Tatratea drinks are shown in increasing order of alcohol content',
+        ],
+        de: [
+            'Rangliste: Tatratea-Getränke werden in aufsteigender Reihenfolge des Alkoholgehalts angezeigt',
+        ],
+    },
+    {
         datum: '2026-11-19',
         hu: [
             'Az üzenetek és megerősítések mostantól az app stílusában jelennek meg: a „Mentve” és a hibaüzenetek alul, rövid sávként',
