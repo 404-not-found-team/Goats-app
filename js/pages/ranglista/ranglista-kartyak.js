@@ -40,6 +40,17 @@ export function rendezKartyakatContainerben(container) {
     kartyak.sort((a, b) => {
         const nevA = (a.dataset.nev || '').trim();
         const nevB = (b.dataset.nev || '').trim();
+        // A Tátrateák egymás közt alkoholfok szerint növekvő sorrendben (22, 32, 52, …); a nevük
+        // úgyis egy tömbbe esik ábécében, így csak ezen a blokkon belül változik a sorrend. Ha
+        // valamelyiknek nincs megadva alkoholfoka, az a blokk végére kerül, majd név szerint.
+        if ((a.dataset.marka || '').toLowerCase() === 'tatratea'
+            && (b.dataset.marka || '').toLowerCase() === 'tatratea') {
+            const fokA = parseFloat(a.dataset.alkohol);
+            const fokB = parseFloat(b.dataset.alkohol);
+            const szA = Number.isNaN(fokA) ? Infinity : fokA;
+            const szB = Number.isNaN(fokB) ? Infinity : fokB;
+            if (szA !== szB) return szA - szB;
+        }
         return nevA.localeCompare(nevB, 'hu', { sensitivity: 'base' });
     });
 
@@ -186,6 +197,9 @@ export function addItalKartyaToUI(ital, rendez = true) {
     kartya.classList.toggle('kisebb-kiszereles', kisebbKiszereles(ital));
     // Teljes név (márkával) a rendezéshez és a név szerinti elrejtéshez; a felirat márka nélküli
     kartya.dataset.nev = ital.nev || '';
+    // A márka és az alkoholfok a rendezéshez kell (a Tátrateák alkohol szerint növekvő sorrendben)
+    kartya.dataset.marka = megjelenitettMarka(ital.nev);
+    kartya.dataset.alkohol = ital.alkohol_fok != null ? String(ital.alkohol_fok) : '';
 
     const kep = window.italKep.elemLetrehoz(kepAdat);
 
