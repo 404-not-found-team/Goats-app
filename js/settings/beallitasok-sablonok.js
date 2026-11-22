@@ -151,22 +151,15 @@ const CSOPORT_ADATOK_MODAL = `
 
 const TOS_UJRAELFOGADAS_MODAL = `
   <!-- FELTÉTELEK ÚJRAELFOGADÁSA: csak akkor jelenik meg, ha a TOS_VERSION változott azóta,
-       hogy a felhasználó utoljára elfogadta. Szándékosan nincs bezáró (X) gombja. -->
-  <div id="tos-ujraelfogadas-modal" class="sm-overlay" role="dialog" aria-modal="true" hidden>
-    <div class="sm-card">
-      <div class="sm-header">
-        <h3> ${tr('tos_updated_title', 'Frissültek a feltételeink')}</h3>
-      </div>
-      <div class="sm-body">
-        <p>
-          ${tr('tos_updated_text', 'A Felhasználási feltételeket azóta frissítettük, hogy utoljára elfogadtad. A továbbhasználathoz el kell fogadnod az új verziót.')}
-        </p>
-        <p>
-          <a href="${ut('html/jogi/felhasznalasi-feltetelek.html')}" target="_blank" rel="noopener" class="link-akcent">${tr('open_full_text', 'A teljes szöveg megnyitása')}</a>
-        </p>
-        <button id="ujraelfogad-btn" type="button" class="sm-btn sm-btn-save">${tr('i_accept', 'Elfogadom')}</button>
-        <p id="ujraelfogadas-status" class="sm-status sm-status-small"></p>
-      </div>
+       hogy a felhasználó utoljára elfogadta. Szándékosan nincs bezáró (X) gombja (blokkoló). -->
+  <div id="tos-ujraelfogadas-modal" class="tos-ujra" role="dialog" aria-modal="true" aria-labelledby="tos-ujra-cim" hidden>
+    <div class="tos-ujra-panel">
+      <span class="tos-ujra-ikon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg></span>
+      <h1 id="tos-ujra-cim" class="tos-ujra-cim">${tr('tos_updated_title', 'Frissültek a feltételeink')}</h1>
+      <p class="tos-ujra-szoveg">${tr('tos_updated_text', 'A Felhasználási feltételeket azóta frissítettük, hogy utoljára elfogadtad. A továbbhasználathoz el kell fogadnod az új verziót.')}</p>
+      <a href="${ut('html/jogi/felhasznalasi-feltetelek.html')}" target="_blank" rel="noopener" class="tos-ujra-link">${tr('open_full_text', 'A teljes szöveg megnyitása')}</a>
+      <button id="ujraelfogad-btn" type="button" class="tos-ujra-fo">${tr('i_accept', 'Elfogadom')}</button>
+      <p id="ujraelfogadas-status" class="sm-status sm-status-small"></p>
     </div>
   </div>
 `;

@@ -947,3 +947,87 @@ a.google-menu-btn{
     border-color: var(--accent-color);
     outline: none;
 }
+
+/* ===========================================================================
+   FELTÉTELEK ÚJRAELFOGADÁSA – ünnepélyes, teljes képernyős elfogadó (blokkoló,
+   bezáró gomb nélkül). Telefonon teljes képernyő, gépen középre zárt kártya.
+   Ugyanaz a nyelv, mint az „Új az appban" képernyőé (ujdonsag-kepernyo.css).
+   =========================================================================== */
+.tos-ujra {
+    position: fixed;
+    inset: 0;
+    z-index: 10070;
+    background: var(--bg-color);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: max(24px, env(safe-area-inset-top)) 22px max(24px, env(safe-area-inset-bottom));
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+.tos-ujra-panel {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+}
+.tos-ujra-ikon {
+    width: 76px;
+    height: 76px;
+    border-radius: 22px;
+    background: var(--accent-color);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tos-ujra-ikon svg { width: 38px; height: 38px; display: block; }
+.tos-ujra-cim {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+.tos-ujra-szoveg {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+.tos-ujra-link {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-text);
+    text-decoration: none;
+}
+.tos-ujra-link:hover { text-decoration: underline; }
+.tos-ujra-fo {
+    width: 100%;
+    min-height: 52px;
+    margin-top: 4px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--accent-color);
+    color: #000;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.tos-ujra-fo:disabled { opacity: 0.6; cursor: default; }
+/* Gépen lebegő, középre zárt kártya sötétített háttérrel */
+@media (min-width: 769px) {
+    .tos-ujra { background: rgba(0, 0, 0, 0.55); }
+    .tos-ujra-panel {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 34px 30px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+}
