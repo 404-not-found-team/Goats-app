@@ -12,6 +12,13 @@ function datumSzoveg(iso) {
 function kirajzol() {
     const doboz = document.getElementById('ujdonsag-lista');
     if (!doboz) return;
+
+    // Az "Utolsó frissítés" a legfrissebb bejegyzés (a lista első eleme) dátuma, nem kézzel beírva
+    const frissitve = document.getElementById('ujdonsag-frissitve');
+    if (frissitve && UJDONSAGOK.length) {
+        frissitve.dateTime = UJDONSAGOK[0].datum;
+        frissitve.textContent = datumSzoveg(UJDONSAGOK[0].datum);
+    }
     const ny = window.goatsNyelv?.aktualis?.() || 'hu';
     const elemek = UJDONSAGOK.map((bejegyzes, i) => {
         const szakasz = document.createElement('section');

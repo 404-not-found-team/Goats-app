@@ -7,7 +7,7 @@
 // - Címzettek: tartozásnál az adós (ha nem ő maga vette fel); jelentésnél és jóváhagyásra váró italnál
 //   a superadminok (profiles.system_role = 'superadmin'); új naptáreseménynél a csoport tagjai, kivéve
 //   aki felvette (esemenyek.felvette_id); Hány napja sablonnál függő javaslatkor a superadminok, jóváhagyáskor
-//   a javasló; Hány napja mérföldkőnél (1, 2, 4 hét, 2, 3 hónap; a napi pg_cron feladat jelzi) a számláló gazdája.
+//   a javasló; Hány napja mérföldkőnél (1, 2, 4 hét, 2, 3, 6 hónap, majd évente; a napi pg_cron feladat jelzi) a számláló gazdája.
 // - Nyelv (magyar, angol, német): profiles.language, ha üres, a feliratkozáskor rögzített eszköznyelv,
 //   végül magyar.
 // - A lejárt (404/410) feliratkozásokat törli.
@@ -157,19 +157,37 @@ async function hnSablonok(idk: string[]): Promise<Kuldendo[]> {
     ];
 }
 
-// Hány napja mérföldkövek (napban) és a feliratuk nyelvenként
+// Hány napja mérföldkövek (napban) és a feliratuk nyelvenként. A fix listán túl minden teljes év
+// (365 többszöröse) is mérföldkő, a feliratát a merfoldkoFelirat() generálja. A napszámokat a DB
+// hn_elert_merfoldko() függvénye adja; a kettőnek szinkronban kell lennie.
 const MERFOLDKO: Record<number, { hu: string; en: string; de: string }> = {
     7: { hu: '1 hete', en: '1 week', de: '1 Woche' },
     14: { hu: '2 hete', en: '2 weeks', de: '2 Wochen' },
     28: { hu: '4 hete', en: '4 weeks', de: '4 Wochen' },
     60: { hu: '2 hónapja', en: '2 months', de: '2 Monaten' },
     90: { hu: '3 hónapja', en: '3 months', de: '3 Monaten' },
+    180: { hu: 'fél éve', en: '6 months', de: '6 Monaten' },
 };
+
+// Egy elért mérföldkő (napszám) felirata a három nyelven, vagy null, ha az érték nem mérföldkő.
+// A fix listán kívül minden teljes év (365 többszöröse) is mérföldkő: „N éve" / „N years" / „N Jahren".
+function merfoldkoFelirat(nap: number): { hu: string; en: string; de: string } | null {
+    if (MERFOLDKO[nap]) return MERFOLDKO[nap];
+    if (nap > 0 && nap % 365 === 0) {
+        const ev = nap / 365;
+        return {
+            hu: ev === 1 ? '1 éve' : `${ev} éve`,
+            en: ev === 1 ? '1 year' : `${ev} years`,
+            de: ev === 1 ? '1 Jahr' : `${ev} Jahren`,
+        };
+    }
+    return null;
+}
 
 async function hanynapja(idk: string[]): Promise<Kuldendo[]> {
     const { data, error } = await admin.from('hanynapja').select('id, user_id, mit, sablon_id, ertesitett_merfoldko').in('id', idk);
     if (error) throw error;
-    const sorok = (data || []).filter(h => MERFOLDKO[h.ertesitett_merfoldko]);
+    const sorok = (data || []).filter(h => merfoldkoFelirat(h.ertesitett_merfoldko));
     // a sablonos számláló neve a címzett nyelvén
     const sablonIdk = [...new Set(sorok.map(h => h.sablon_id).filter(Boolean))];
     const { data: sablonSorok } = sablonIdk.length
@@ -177,7 +195,7 @@ async function hanynapja(idk: string[]): Promise<Kuldendo[]> {
         : { data: [] };
     const sablonTar = new Map((sablonSorok || []).map(s => [s.id, s]));
     return sorok.map(h => {
-        const m = MERFOLDKO[h.ertesitett_merfoldko];
+        const m = merfoldkoFelirat(h.ertesitett_merfoldko)!;
         const sablon = h.sablon_id ? sablonTar.get(h.sablon_id) : null;
         const nev = (ny: Nyelv) => (sablon ? sablonNev(sablon, ny) : h.mit);
         return {
