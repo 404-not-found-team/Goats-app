@@ -10,7 +10,7 @@ const SABLON_MEZOK = 'id, nev, nev_en, nev_de, jovahagyva, javasolta_id';
 
 export async function szamlalokLekerese(groupId) {
     const { data, error } = await client.from('hanynapja')
-        .select('id, user_id, mit, utoljara, rekord, lathato_csoportnak, sablon_id')
+        .select('id, user_id, mit, utoljara, rekord, lathato_csoportnak, sablon_id, soha')
         .eq('group_id', groupId)
         .order('letrehozva', { ascending: false })
         .limit(50);
@@ -46,7 +46,7 @@ export async function szamlaloFelvetele(adatok) {
 
 export async function szamlaloUjrakezdese(id, datum, rekord) {
     const { error } = await client.from('hanynapja')
-        .update({ utoljara: datum, rekord })
+        .update({ utoljara: datum, rekord, soha: false })
         .eq('id', id);
     return !hibaVan(error, 'az újrakezdéskor');
 }
@@ -62,6 +62,7 @@ export async function sajatSzamlalokLekerese(groupId, userId) {
         .select('id, mit, utoljara, sablon:hanynapja_sablonok(nev, nev_en, nev_de)')
         .eq('group_id', groupId)
         .eq('user_id', userId)
+        .eq('soha', false)
         .order('letrehozva', { ascending: false })
         .limit(12);
     if (hibaVan(error, 'a főoldali számlálók betöltésekor')) return;

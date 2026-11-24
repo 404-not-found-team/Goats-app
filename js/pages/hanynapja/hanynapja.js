@@ -10,8 +10,8 @@ import {
     szamlaloFelvetele, szamlaloUjrakezdese, szamlaloTorlese,
 } from './hanynapja-adat.js';
 import {
-    allapot, uzenet, menukBezarasa, kirajzolToplista,
-    sajatKartyakKirajzolasa, sablonValasztoFrissites, ujJavaslatMezo,
+    allapot, uzenet, menukBezarasa, egyesitettKirajzolasa,
+    sablonValasztoFrissites, ujJavaslatMezo,
 } from './hanynapja-megjelenites.js';
 import { UJ_JAVASLAT, szamlaloNev, maiDatum, napokKozott, kulcs } from './hanynapja-seged.js';
 
@@ -44,8 +44,7 @@ async function betoltes() {
     const sajat = hanynapja.filter(h => h.user_id === user?.id);
     sablonValasztoFrissites(sajat, sablonok);
 
-    sajatKartyakKirajzolasa(sajatDoboz, sajat, sablonok, MUVELETEK);
-    kirajzolToplista(hanynapja, user?.id, members, sablonok);
+    egyesitettKirajzolasa(sajatDoboz, hanynapja, user?.id, sablonok, members, MUVELETEK);
 }
 
 // ---------- Műveletek ----------
@@ -56,13 +55,14 @@ async function felvetel(e) {
     if (!group) return;
     const valaszto = document.getElementById('hn-sablon');
     const mezo = document.getElementById('hn-mit');
-    const datum = document.getElementById('hn-datum').value || maiDatum();
+    const soha = modSoha();
+    const datum = soha ? null : (document.getElementById('hn-datum').value || maiDatum());
     if (!valaszto.value) {
         allapot(tr('hn_err_pick', 'Válaszd ki, mit számoljon.'), true);
         valaszto.focus();
         return;
     }
-    if (datum > maiDatum()) {
+    if (!soha && datum > maiDatum()) {
         allapot(tr('hn_err_future', 'A dátum nem lehet a jövőben.'), true);
         return;
     }
@@ -99,6 +99,7 @@ async function felvetel(e) {
         mit: sablon.nev,
         sablon_id: sablon.id,
         utoljara: datum,
+        soha,
         group_id: group.id,
         lathato_csoportnak: true,
     });
@@ -110,6 +111,7 @@ async function felvetel(e) {
     }
     e.target.reset();
     document.getElementById('hn-datum').value = maiDatum();
+    modValtas(false);
     // jóváhagyásra küldött javaslatnál nyitva marad, hogy látszódjon az üzenet
     if (sablon.jovahagyva) ujModalZar();
     allapot(!sablon.jovahagyva
@@ -126,11 +128,19 @@ async function ujrakezdes(h, datum) {
         allapot(tr('hn_err_future', 'A dátum nem lehet a jövőben.'), true);
         return;
     }
-    const napok = Math.max(0, napokKozott(h.utoljara, datum));
-    const kerdes = datum === ma
-        ? tr('hn_confirm_reset', 'Újrakezded a(z) „{name}” számlálót? A mostani {n} nap a rekordba kerül, ha az a leghosszabb.', { name: szamlaloNev(h, sablonok), n: napok })
-        : tr('hn_confirm_reset_date', 'A(z) „{name}” számláló {date} napjától indul újra. Rendben?', { name: szamlaloNev(h, sablonok), date: datum.replaceAll('-', '. ') + '.' });
-    if (!await goatsAblak.megerosites(kerdes, { gomb: tr('hn_btn_restart', 'Újrakezdés') })) return;
+    const nev = szamlaloNev(h, sablonok);
+    const datumSzoveg = datum.replaceAll('-', '. ') + '.';
+    // soha-számlálónál nincs korábbi sorozat: csak dátumossá válik (a rekord marad)
+    const napok = h.soha ? 0 : Math.max(0, napokKozott(h.utoljara, datum));
+    const kerdes = h.soha
+        ? (datum === ma
+            ? tr('hn_confirm_unnever_today', 'Beírod, hogy mégis csináltad a(z) „{name}” számlálót? Mostantól innen számol.', { name: nev })
+            : tr('hn_confirm_unnever_date', 'A(z) „{name}” számláló {date} óta számol. Rendben?', { name: nev, date: datumSzoveg }))
+        : (datum === ma
+            ? tr('hn_confirm_reset', 'Újrakezded a(z) „{name}” számlálót? A mostani {n} nap a rekordba kerül, ha az a leghosszabb.', { name: nev, n: napok })
+            : tr('hn_confirm_reset_date', 'A(z) „{name}” számláló {date} napjától indul újra. Rendben?', { name: nev, date: datumSzoveg }));
+    const gombSzoveg = h.soha ? tr('hn_did_now', 'Most csináltam') : tr('hn_btn_restart', 'Újrakezdés');
+    if (!await goatsAblak.megerosites(kerdes, { gomb: gombSzoveg })) return;
     if (!await szamlaloUjrakezdese(h.id, datum, Math.max(h.rekord, napok))) {
         allapot(tr('err_saving', 'Hiba történt a mentéskor!'), true);
         return;
@@ -160,6 +170,7 @@ function ujModalNyit() {
     hatter.setAttribute('aria-modal', 'true');
     hatter.setAttribute('aria-labelledby', 'hn-uj-cim');
     document.getElementById('hn-uj-nyito').setAttribute('aria-expanded', 'true');
+    modValtas(false);
     document.getElementById('hn-sablon').focus();
 }
 
@@ -186,6 +197,30 @@ function ujModalBekotese() {
     TELEFON.addEventListener('change', () => { if (!TELEFON.matches) ujModalZar(); });
 }
 
+// ---------- "Sosem csináltam" / "Leszoktam" kapcsoló ----------
+// soha = igaz: nincs kezdődátum (a dátummező rejtve); hamis: a megszokott "leszoktam + dátum".
+
+function modSoha() {
+    return document.getElementById('hn-mod-soha')?.getAttribute('aria-pressed') === 'true';
+}
+
+function modValtas(soha) {
+    const sohaGomb = document.getElementById('hn-mod-soha');
+    const leszokottGomb = document.getElementById('hn-mod-leszokott');
+    const datumSor = document.getElementById('hn-datum-sor');
+    if (!sohaGomb || !leszokottGomb) return;
+    sohaGomb.setAttribute('aria-pressed', String(soha));
+    sohaGomb.classList.toggle('aktiv', soha);
+    leszokottGomb.setAttribute('aria-pressed', String(!soha));
+    leszokottGomb.classList.toggle('aktiv', !soha);
+    if (datumSor) datumSor.hidden = soha;
+}
+
+function modBekotese() {
+    document.getElementById('hn-mod-soha')?.addEventListener('click', () => modValtas(true));
+    document.getElementById('hn-mod-leszokott')?.addEventListener('click', () => modValtas(false));
+}
+
 // ---------- Indítás ----------
 
 async function indit() {
@@ -198,6 +233,8 @@ async function indit() {
     document.getElementById('hn-uj')?.addEventListener('submit', felvetel);
     document.getElementById('hn-sablon')?.addEventListener('change', ujJavaslatMezo);
     ujModalBekotese();
+    modBekotese();
+    modValtas(false);
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.hn-menu')) menukBezarasa();
     });
