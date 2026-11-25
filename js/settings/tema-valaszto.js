@@ -6,6 +6,7 @@ const ALAP_TEMA = 'deep-purple';
 
 const temak = () => [
   { id: 'deep-purple', name: tr('theme_purple', 'Mélylila') },
+  { id: 'sunset', name: tr('theme_sunset', 'Naplemente') },
   { id: 'dark', name: tr('theme_dark', 'Sötét') },
   { id: 'light', name: tr('theme_light', 'Világos') },
   { id: 'brown', name: tr('theme_brown', 'Barna') },

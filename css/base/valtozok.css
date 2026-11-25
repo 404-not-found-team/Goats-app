@@ -135,3 +135,27 @@
     --install-btn-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     --install-btn-shadow-hover: 0 6px 16px rgba(79, 70, 229, 0.45);
 }
+
+[data-theme="sunset"] {
+    --bg-color: #141a30;
+    --bg-gradient: linear-gradient(135deg, #1b2340 0%, #0f1324 100%);
+    --card-bg: rgba(33, 42, 68, 0.85);
+    --inner-bg: #121729;
+    --input-bg: #121729;
+    --border-color: #38466b;
+    --text-primary: #eee6db;
+    --text-secondary: #94a2c4;
+    --accent-color: #c8683b;
+    --accent-hover: #ad5630;
+    --accent-text: #e8a56e;
+    --on-accent: #ffffff;
+    --hiba-color: #f87171;
+    --ok-color: #34d399;
+    color-scheme: dark;
+
+    --install-card-bg: linear-gradient(135deg, rgba(200, 104, 59, 0.18) 0%, rgba(20, 26, 48, 0.95) 100%);
+    --install-card-border: rgba(200, 104, 59, 0.4);
+
+    --install-btn-shadow: 0 4px 12px rgba(200, 104, 59, 0.35);
+    --install-btn-shadow-hover: 0 6px 16px rgba(200, 104, 59, 0.5);
+}

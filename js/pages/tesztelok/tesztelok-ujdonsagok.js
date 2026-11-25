@@ -9,16 +9,19 @@ export const UJDONSAGOK = [
             '„Sosem csináltam” számláló: ha valamit sosem csináltál, külön megjelölheted — arany jelvényt kap, és nem versenyez napszámmal a leszokókkal',
             'Hány napja: egyesített nézet — számlálónként egy kártya, fölül a te értéked, alatta a csoport rangsora (nincs külön saját lista és toplista)',
             'A soha-számlálón a „Most csináltam” gombbal jelölheted, ha mégis megtörtént; a kezdőképernyőn pedig nem jelennek meg a soha-számlálók',
+            'Új téma: „Naplemente” — tengerészkék, terrakotta kiemeléssel (a beállításokban választható)',
         ],
         en: [
             '“Never done it” counter: if you’ve never done something, you can mark it separately — it gets a gold badge and doesn’t compete on days with those who quit',
             'Days since: a unified view — one card per counter, your own value on top and the group ranking below (no separate list and leaderboard)',
             'On a never counter you can tap “Just did it” if it happened after all; and never counters no longer show on the home screen',
+            'New theme: “Sunset” — navy blue with terracotta accents (pick it in Settings)',
         ],
         de: [
             '„Noch nie gemacht“-Zähler: Was du nie getan hast, kannst du gesondert markieren — er bekommt ein goldenes Abzeichen und zählt nicht nach Tagen mit den Aufhörern mit',
             'Tage seit: eine vereinheitlichte Ansicht — eine Karte pro Zähler, oben dein Wert, darunter die Rangliste der Gruppe (keine getrennte Liste und Bestenliste)',
             'Beim Nie-Zähler kannst du mit „Gerade getan“ markieren, falls es doch passiert ist; und Nie-Zähler erscheinen nicht mehr auf dem Startbildschirm',
+            'Neues Design: „Sonnenuntergang“ — Marineblau mit Terrakotta-Akzent (in den Einstellungen wählbar)',
         ],
     },
     {
