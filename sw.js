@@ -1,6 +1,6 @@
 // Cache verzió: minden éles kiadás után EMELD (pl. 'goats-v8'), hogy a felhasználók
 // eszközén a régi, lecserélt fájlok biztosan frissüljenek.
-const CACHE_NEV = 'goats-v116';
+const CACHE_NEV = 'goats-v117';
 
 // Az italok rétegképei (a ?v= verzióval együtt) külön, tartós tárba kerülnek: onnan azonnal jönnek,
 // nem kérjük le őket újra minden megnyitáskor, és a CACHE_NEV emelésekor sem törlődnek (az activate a
